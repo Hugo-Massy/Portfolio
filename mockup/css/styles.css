@@ -7,11 +7,12 @@
   --text: #1b1f1d;
   --text-dim: #5c6360;
   --text-faint: #9aa19c;
-  --accent: #0c8c7e;
-  --accent-dark: #07473e;
-  --accent-soft: rgba(12,140,126,0.08);
-  --accent-glow: rgba(12,140,126,0.25);
-  --accent-tint: #a9ddcd;
+  --accent: #4d6fcb;
+  --accent-dark: #2a3f80;
+  --accent-soft: rgba(77,111,203,0.08);
+  --accent-glow: rgba(77,111,203,0.25);
+  --accent-tint: #8fa6e3;
+  --accent-pale: #dde4f7;
   --term-bg: #14171a;
   --term-bg-2: #1b1e22;
   --term-border: #2a2e33;
@@ -117,7 +118,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .hc-month:hover{border-color:#cfd3cc; transform:translateY(-1px);}
 .hc-month.is-past{opacity:.55;}
 .hc-month.is-available{
-  background:var(--accent-soft); border-color:rgba(12,140,126,0.3); color:var(--accent); font-weight:600;
+  background:var(--accent-soft); border-color:rgba(77,111,203,0.3); color:var(--accent); font-weight:600;
 }
 .hc-month.is-available::after{
   content:''; position:absolute; top:-4px; right:-4px; width:7px; height:7px; border-radius:50%;
@@ -134,24 +135,56 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   background:var(--bg);
 }
 .hero .wrap{position:relative; z-index:1; width:100%;}
-.hero-wave{
-  position:absolute; left:0; bottom:-80px; width:100%; height:clamp(120px, 14vw, 320px);
-  z-index:0; pointer-events:none;
-}
-.hero-wave path.wave-fill{fill:var(--accent-tint);}
-/* taille exprimée en unités du viewBox (1440x160) du <svg> : comme .hero-wave est étiré
-   verticalement via preserveAspectRatio="none" et une hauteur CSS variable (clamp), ce nombre
-   est automatiquement multiplié par ce même facteur d'étirement — le texte grossit/rétrécit
+/* hauteur de la zone de vague, réutilisée par #about (margin/padding) et les calques de vague */
+:root{ --wave-h: clamp(120px, 14vw, 320px); }
+/* taille exprimée en unités du viewBox (1440x160) du <svg> : comme la vague est étirée
+   verticalement via preserveAspectRatio="none" et une hauteur CSS variable, ce nombre est
+   automatiquement multiplié par ce même facteur d'étirement — le texte grossit/rétrécit
    donc avec la hauteur réelle de la vague, sans calcul supplémentaire. */
 .hero-wave-label{
   font-family:'Fraunces', serif; font-size:52px; font-weight:600; font-style:italic;
   letter-spacing:0.01em; fill:var(--accent-dark);
 }
 
-/* ABOUT — bloc de couleur plein, prolonge la teinte de la vague du hero */
-#about{position:relative; background:var(--accent-tint); padding:88px 0 clamp(220px, 30vh, 320px);}
+/* ABOUT — un seul bloc plein coloré + quadrillé. Il REMONTE dans le hero (margin-top négatif)
+   pour que son propre fond remplisse la zone de la vague ; le contenu est repoussé d'autant via
+   padding-top. La vague ne fait que CREUSER le bord supérieur en blanc — exactement comme
+   .about-wave creuse le bord inférieur. Une seule grille, continue, jamais dupliquée ni clippée. */
+#about{
+  position:relative;
+  margin-top:calc(-1 * var(--wave-h));
+  background-color:var(--accent-pale);
+  background-image:
+    linear-gradient(rgba(42,63,128,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(42,63,128,0.06) 1px, transparent 1px);
+  background-size:100px 100px;
+  padding:calc(88px + var(--wave-h)) 0 clamp(220px, 30vh, 320px);
+}
+/* vague du HAUT : creuse le bord supérieur du bloc. AU-DESSUS de la courbe (zone clippée -clip-top)
+   on peint le fond clair du hero (.hero-wave-fill) puis, par-dessus, le canvas #bg-grid-wave qui
+   dessine EXACTEMENT les mêmes points que le canvas du hero (même grille, même réactivité souris) —
+   fidélité totale, c'est le même rendu prolongé. Sous la courbe, le fond coloré+quadrillé de #about
+   reste visible. */
+.hero-wave-fill{
+  position:absolute; top:0; left:0; width:100%; height:var(--wave-h);
+  z-index:0; pointer-events:none;
+  clip-path:url(#hero-wave-clip-top);
+  background-color:var(--bg);
+}
+.hero-wave-dots{
+  position:absolute; top:0; left:0; width:100%; height:var(--wave-h);
+  z-index:0; pointer-events:none;
+  clip-path:url(#hero-wave-clip-top);
+}
+.hero-wave-text{
+  position:absolute; top:0; left:0; width:100%; height:var(--wave-h);
+  z-index:0; pointer-events:none;
+}
+/* aura unique du curseur : couvre tout #about, y compris la zone de la vague (qui fait désormais
+   partie de #about via le margin-top négatif). Plus de second calque dédié à la vague — il créait
+   une coupure nette à son bord inférieur droit (boîte de hauteur fixe). */
 .about-glow{
-  position:absolute; top:-160px; left:0; right:0; bottom:0; z-index:0; pointer-events:none;
+  position:absolute; top:0; left:0; right:0; bottom:0; z-index:0; pointer-events:none;
   background:radial-gradient(circle 180px at var(--mx, 50%) var(--my, 20%), rgba(255,255,255,0.55), transparent 70%);
   transition:opacity .3s ease;
 }
@@ -200,11 +233,11 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:relative; display:flex; flex-direction:column;
   background:var(--term-bg); border:1px solid var(--term-border); border-radius:var(--radius);
   font-family:var(--mono); font-size:14px; overflow:hidden;
-  box-shadow:0 24px 60px -12px rgba(10,14,16,0.35), 0 0 0 1px rgba(63,214,196,0.06);
+  box-shadow:0 24px 60px -12px rgba(10,14,16,0.35), 0 0 0 1px rgba(77,111,203,0.06);
 }
 .term-card::before{
   content:''; position:absolute; top:0; left:0; right:0; height:2px;
-  background:linear-gradient(90deg, transparent, #3fd6c4, transparent); opacity:.5;
+  background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:.5;
 }
 .term-bar{
   display:flex; align-items:center; gap:6px; padding:14px 18px;
@@ -217,7 +250,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   min-height:340px; max-height:420px; overflow-y:auto; scrollbar-width:thin;
 }
 .term-output .l{word-break:break-word;}
-.term-output .prompt{color:#3fd6c4;}
+.term-output .prompt{color:#6f89d9;}
 .term-output .k{color:#7f8a99;}
 .term-output .sep{color:#4b5563; margin-right:2px;}
 .term-output .ok{margin-top:14px;}
@@ -236,7 +269,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   display:flex; align-items:center; gap:8px; flex-shrink:0;
   padding:16px 28px; border-top:1px solid var(--term-border);
 }
-.term-input-row .prompt{color:#3fd6c4;}
+.term-input-row .prompt{color:#6f89d9;}
 .term-input{
   flex:1; min-width:0; background:transparent; border:none; outline:none;
   color:var(--term-text); font-family:var(--mono); font-size:14px; caret-color:var(--term-text);
@@ -353,8 +386,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 
 /* mois clé : fenêtre de disponibilité, le point le plus important du calendrier */
 .cal-month.is-available{
-  background:var(--accent-soft); border-color:rgba(12,140,126,0.35);
-  box-shadow:0 0 0 1px rgba(12,140,126,0.12);
+  background:var(--accent-soft); border-color:rgba(77,111,203,0.35);
+  box-shadow:0 0 0 1px rgba(77,111,203,0.12);
 }
 .cal-month.is-available .cal-name{color:var(--accent);}
 .cal-month.is-available .cal-tag{color:var(--accent); font-weight:600;}

@@ -64,18 +64,27 @@ function initHeroCycle() {
 // ne se déclenche pas quand le curseur passe au-dessus de cette zone.
 function initAboutGlow() {
   const section = document.getElementById('about');
-  const glow = document.getElementById('about-glow');
-  if (!section || !glow) return;
-  const WAVE_OVERLAP = 160;
+  const waveGlow = document.getElementById('hero-wave-glow');
+  if (!section) return;
   const mouse = { x: 0, y: 0 };
 
   function apply() {
     const rect = section.getBoundingClientRect();
-    const glowTop = rect.top - WAVE_OVERLAP;
-    const glowHeight = rect.height + WAVE_OVERLAP;
-    if (mouse.y < glowTop || mouse.y > rect.bottom) return;
-    section.style.setProperty('--mx', `${((mouse.x - rect.left) / rect.width) * 100}%`);
-    section.style.setProperty('--my', `${((mouse.y - glowTop) / glowHeight) * 100}%`);
+    if (mouse.y >= rect.top && mouse.y <= rect.bottom) {
+      section.style.setProperty('--mx', `${((mouse.x - rect.left) / rect.width) * 100}%`);
+      section.style.setProperty('--my', `${((mouse.y - rect.top) / rect.height) * 100}%`);
+    }
+    // l'aura de la vague est un calque distinct, découpé à sa forme exacte (clip-path), pour
+    // ne jamais déborder dans le blanc du hero au-dessus comme le faisait l'ancien calque unique.
+    if (waveGlow) {
+      const waveRect = waveGlow.getBoundingClientRect();
+      const inWave = mouse.y >= waveRect.top && mouse.y <= waveRect.bottom;
+      waveGlow.style.opacity = inWave ? '1' : '0';
+      if (inWave) {
+        waveGlow.style.setProperty('--wmx', `${((mouse.x - waveRect.left) / waveRect.width) * 100}%`);
+        waveGlow.style.setProperty('--wmy', `${((mouse.y - waveRect.top) / waveRect.height) * 100}%`);
+      }
+    }
   }
 
   window.addEventListener('mousemove', (e) => {
@@ -457,6 +466,16 @@ function initBackgroundGrid() {
   if (!canvas || !container) return;
   const ctx = canvas.getContext('2d');
 
+  // Canvas secondaire qui prolonge la même grille de points dans la zone creusée de la vague (dans
+  // #about, qui remonte par-dessus le bas du hero). Il partage la grille et la réactivité souris du
+  // canvas du hero : on dessine les MÊMES points, simplement décalés de waveOffsetY (distance
+  // verticale entre le haut de ce canvas et le haut du hero) — donc rendu rigoureusement identique.
+  const waveCanvas = document.getElementById('bg-grid-wave');
+  const waveCtx = waveCanvas ? waveCanvas.getContext('2d') : null;
+  let waveW = 0;
+  let waveH = 0;
+  let waveOffsetY = 0;
+
   const SPACING = 32;
   const EXTRA_BOTTOM = 80; // déborde sous le hero pour couvrir la zone découverte par la vague abaissée
   const BASE_RADIUS = 1.2;
@@ -538,10 +557,23 @@ function initBackgroundGrid() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     buildPoints();
     updateExclusionRect();
+
+    if (waveCanvas) {
+      const wrect = waveCanvas.getBoundingClientRect();
+      waveW = wrect.width;
+      waveH = wrect.height;
+      // décalage vertical entre le haut du canvas de vague et le haut du hero : permet de réutiliser
+      // les mêmes points (coordonnées locales au hero) en les translatant pour ce canvas.
+      waveOffsetY = wrect.top - rect.top;
+      waveCanvas.width = waveW * dpr;
+      waveCanvas.height = waveH * dpr;
+      waveCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
   }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
+    if (waveCtx) waveCtx.clearRect(0, 0, waveW, waveH);
 
     for (const p of points) {
       let alpha = 1;
@@ -572,10 +604,25 @@ function initBackgroundGrid() {
         }
       }
 
+      const r = BASE_RADIUS * scale;
+      const fill = `rgba(77,111,203,${0.45 * alpha})`;
+
       ctx.beginPath();
-      ctx.arc(p.x + dx, p.y + dy, BASE_RADIUS * scale, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(12,140,126,${0.45 * alpha})`;
+      ctx.arc(p.x + dx, p.y + dy, r, 0, Math.PI * 2);
+      ctx.fillStyle = fill;
       ctx.fill();
+
+      // même point reporté dans le canvas de la vague (coords locales = coords hero - waveOffsetY) ;
+      // on ne dessine que ce qui tombe dans sa boîte (le clip-path CSS masque ensuite sous la courbe).
+      if (waveCtx) {
+        const wy = p.y + dy - waveOffsetY;
+        if (wy > -2 && wy < waveH + 2) {
+          waveCtx.beginPath();
+          waveCtx.arc(p.x + dx, wy, r, 0, Math.PI * 2);
+          waveCtx.fillStyle = fill;
+          waveCtx.fill();
+        }
+      }
     }
 
     requestAnimationFrame(draw);
@@ -590,13 +637,17 @@ function initBackgroundGrid() {
     mouse.y = lastClientY - rect.top;
   }
 
-  container.addEventListener('mousemove', (e) => {
+  // Écoute sur window (et non sur .hero) : la zone de la vague est visuellement #about, posée
+  // par-dessus le bas du hero, donc un listener sur .hero ne se déclencherait pas quand le curseur
+  // y passe. Les coords restent locales au hero (via updateMouseFromClient) pour que les deux canvas
+  // partagent le même repère.
+  window.addEventListener('mousemove', (e) => {
     lastClientX = e.clientX;
     lastClientY = e.clientY;
     updateMouseFromClient();
     mouse.active = true;
-  });
-  container.addEventListener('mouseleave', () => {
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => {
     mouse.active = false;
   });
   window.addEventListener('scroll', () => {

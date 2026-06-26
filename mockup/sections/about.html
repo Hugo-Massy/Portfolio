@@ -1,7 +1,29 @@
 <section id="about">
+  <!-- vague du HAUT : creuse le bord supérieur du bloc #about (comme .about-wave creuse le bord
+       inférieur). La couleur et le quadrillage viennent du fond de #about lui-même, qui remonte
+       dans le hero via margin-top négatif — une seule grille continue, jamais dupliquée.
+       Les deux découpes (objectBoundingBox) suivent la même courbe : -clip = zone SOUS la courbe
+       (le fond coloré reste visible), -clip-top = zone AU-DESSUS (on y peint le blanc + les points
+       du hero, pour que les points descendent jusqu'à la vague sans bande blanche vide). -->
+  <svg class="wave-defs" width="0" height="0" aria-hidden="true">
+    <defs>
+      <clipPath id="hero-wave-clip-top" clipPathUnits="objectBoundingBox">
+        <path d="M0,0.5 C0.25,1 0.5,0 0.75,0.4 C0.875,0.6 0.9375,0.6 1,0.5 L1,0 L0,0 Z"></path>
+      </clipPath>
+    </defs>
+  </svg>
+  <!-- fond crème (= var(--bg) du hero) qui creuse le bord ; le canvas bg-grid-wave dessine PAR-DESSUS
+       exactement les mêmes points que le canvas du hero (même grille, même réactivité souris). -->
+  <div class="hero-wave-fill" aria-hidden="true"></div>
+  <canvas id="bg-grid-wave" class="hero-wave-dots" aria-hidden="true"></canvas>
+  <svg class="hero-wave-text" viewBox="0 0 1440 160" preserveAspectRatio="none" aria-hidden="true">
+    <path id="hero-wave-text-path" d="M0,62 C360,142 720,-18 1080,46 C1260,78 1350,78 1440,62" fill="none" stroke="none"></path>
+    <text class="hero-wave-label">
+      <textPath id="hero-wave-textpath" href="#hero-wave-text-path" startOffset="2%" text-anchor="start">Hugo Menu</textPath>
+    </text>
+  </svg>
   <div class="about-glow" id="about-glow" aria-hidden="true"></div>
   <div class="wrap">
-    <div class="eyebrow">01 — À propos</div>
     <h2 class="section-title reveal d1">Qui je suis</h2>
     <div class="about-card reveal d2">
       <div class="about-grid">
@@ -13,8 +35,7 @@
         </div>
       </div>
     </div>
-    <div class="eyebrow reveal d1" style="margin-top:72px;">Compétences</div>
-    <h3 class="section-title reveal d1" style="font-size:24px;">Ce que je sais faire</h3>
+    <h3 class="section-title reveal d1" style="font-size:24px; margin-top:72px;">Ce que je sais faire</h3>
     <p class="section-sub reveal d1">Regroupées par domaine. Pas de barres de pourcentage — la preuve est dans les projets ci-dessous.</p>
     <div class="skills-wall reveal d2" id="skills-wall">
       <div class="skills-wall-glow" aria-hidden="true"></div>
