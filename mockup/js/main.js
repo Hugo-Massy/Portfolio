@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about', 'projects', 'experience', 'availability', 'contact', 'footer'];
+const SECTIONS = ['nav', 'hero'];
 
 async function loadSections() {
   const root = document.getElementById('app');
@@ -11,16 +11,97 @@ async function loadSections() {
     root.append(...slot.children);
   }
   initRevealObserver();
-  initAvailabilityCalendar();
-  initHeroCalendar();
   initTerminal();
   initBackgroundGrid();
   initTabSpy();
   initScrollDownHide();
-  initSkillsSpotlight();
-  initAboutGlow();
   initHeroCycle();
-  initWaveLabelScroll();
+  initHeroTermGrow();
+}
+
+// Au scroll dans le hero, la console grossit progressivement jusqu'à occuper 95% de
+// l'écran (overlay recentré) tandis que le texte du hero s'efface ; une fois pleinement
+// grossie, elle est déplacée dans #term-landing pour redevenir un élément de flux normal
+// qui défile avec la page.
+function initHeroTermGrow() {
+  const hero = document.getElementById('hero');
+  const card = document.getElementById('term-card');
+  const copy = document.querySelector('.hero-copy');
+  const landing = document.getElementById('term-landing');
+  if (!hero || !card || !landing) return;
+
+  const grid = card.parentNode;
+  let initRect = null;
+  let isLanded = false;
+
+  function captureInitRect() {
+    initRect = card.getBoundingClientRect();
+  }
+
+  function update() {
+    const heroHeight = hero.offsetHeight;
+    const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const targetW = vw * 0.95;
+    const targetH = vh * 0.95;
+    const targetTop = (vh - targetH) / 2;
+    const targetLeft = (vw - targetW) / 2;
+
+    if (progress >= 1) {
+      if (!isLanded) {
+        landing.appendChild(card);
+        isLanded = true;
+      }
+      landing.style.height = `${vh}px`;
+      card.style.position = 'absolute';
+      card.style.top = `${targetTop}px`;
+      card.style.left = `${targetLeft}px`;
+      card.style.width = `${targetW}px`;
+      card.style.height = `${targetH}px`;
+    } else {
+      if (isLanded) {
+        grid.appendChild(card);
+        isLanded = false;
+      }
+      landing.style.height = '0px';
+
+      if (progress <= 0) {
+        card.style.position = '';
+        card.style.top = card.style.left = card.style.width = card.style.height = '';
+        captureInitRect();
+      } else {
+        if (!initRect) captureInitRect();
+        const r = initRect;
+        card.style.position = 'fixed';
+        card.style.top = `${r.top + (targetTop - r.top) * progress}px`;
+        card.style.left = `${r.left + (targetLeft - r.left) * progress}px`;
+        card.style.width = `${r.width + (targetW - r.width) * progress}px`;
+        card.style.height = `${r.height + (targetH - r.height) * progress}px`;
+      }
+    }
+
+    if (copy) {
+      copy.style.opacity = String(1 - progress);
+      copy.style.pointerEvents = progress > 0.05 ? 'none' : 'auto';
+    }
+  }
+
+  captureInitRect();
+
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { update(); ticking = false; });
+  }, { passive: true });
+
+  window.addEventListener('resize', () => {
+    if (!isLanded && card.style.position !== 'fixed') captureInitRect();
+    update();
+  });
+
+  update();
 }
 
 // Fait défiler le mot-clé du titre du Hero, puis s'arrête définitivement sur "protège".
@@ -58,63 +139,6 @@ function initHeroCycle() {
   }, HOLD_MS);
 }
 
-// Fait suivre l'aura lumineuse du bloc À propos à la position de la souris.
-// Écoute sur window (pas juste la section) car la vague du haut déborde visuellement
-// dans le hero : elle appartient à .hero en DOM, donc un listener posé sur #about seul
-// ne se déclenche pas quand le curseur passe au-dessus de cette zone.
-function initAboutGlow() {
-  const section = document.getElementById('about');
-  const waveGlow = document.getElementById('hero-wave-glow');
-  if (!section) return;
-  const mouse = { x: 0, y: 0 };
-
-  function apply() {
-    const rect = section.getBoundingClientRect();
-    if (mouse.y >= rect.top && mouse.y <= rect.bottom) {
-      section.style.setProperty('--mx', `${((mouse.x - rect.left) / rect.width) * 100}%`);
-      section.style.setProperty('--my', `${((mouse.y - rect.top) / rect.height) * 100}%`);
-    }
-    // l'aura de la vague est un calque distinct, découpé à sa forme exacte (clip-path), pour
-    // ne jamais déborder dans le blanc du hero au-dessus comme le faisait l'ancien calque unique.
-    if (waveGlow) {
-      const waveRect = waveGlow.getBoundingClientRect();
-      const inWave = mouse.y >= waveRect.top && mouse.y <= waveRect.bottom;
-      waveGlow.style.opacity = inWave ? '1' : '0';
-      if (inWave) {
-        waveGlow.style.setProperty('--wmx', `${((mouse.x - waveRect.left) / waveRect.width) * 100}%`);
-        waveGlow.style.setProperty('--wmy', `${((mouse.y - waveRect.top) / waveRect.height) * 100}%`);
-      }
-    }
-  }
-
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    apply();
-  }, { passive: true });
-  window.addEventListener('scroll', apply, { passive: true });
-}
-
-// Fait suivre le spot lumineux du mur de compétences à la position de la souris.
-function initSkillsSpotlight() {
-  const wall = document.getElementById('skills-wall');
-  if (!wall) return;
-  const mouse = { x: 0, y: 0 };
-
-  function apply() {
-    const rect = wall.getBoundingClientRect();
-    wall.style.setProperty('--mx', `${((mouse.x - rect.left) / rect.width) * 100}%`);
-    wall.style.setProperty('--my', `${((mouse.y - rect.top) / rect.height) * 100}%`);
-  }
-
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    apply();
-  }, { passive: true });
-  window.addEventListener('scroll', apply, { passive: true });
-}
-
 // Cache le bouton de défilement dès qu'on clique dessus ou qu'on scrolle.
 function initScrollDownHide() {
   const btn = document.querySelector('.scroll-down');
@@ -124,36 +148,6 @@ function initScrollDownHide() {
   window.addEventListener('scroll', () => {
     btn.classList.toggle('is-hidden', window.scrollY > 4);
   }, { passive: true });
-}
-
-// Pousse le nom gravé sur la vague vers la droite au scroll, en le faisant glisser le long de
-// la courbe (startOffset) plutôt qu'en translation rigide, pour qu'il garde le flow de la vague
-// jusqu'à sortir du cadre (clippé par le <svg>).
-function initWaveLabelScroll() {
-  const textPath = document.getElementById('hero-wave-textpath');
-  if (!textPath) return;
-  const BASE_OFFSET = 2; // % de départ
-  const SCROLL_RANGE = 1850; // px de scroll pour aller de visible à totalement sorti
-  const EXIT_OFFSET = 160; // % au-delà du bord droit, pour bien sortir du tracé
-  const EASE = 0.08; // plus c'est petit, plus le rattrapage est doux/fluide
-
-  let target = BASE_OFFSET;
-  let current = BASE_OFFSET;
-
-  function onScroll() {
-    const progress = Math.min(window.scrollY / SCROLL_RANGE, 1);
-    target = BASE_OFFSET + progress * (EXIT_OFFSET - BASE_OFFSET);
-  }
-
-  function tick() {
-    current += (target - current) * EASE;
-    textPath.setAttribute('startOffset', `${current}%`);
-    requestAnimationFrame(tick);
-  }
-
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-  tick();
 }
 
 // Surligne le point du rail correspondant à la section actuellement visible, et fait
@@ -207,44 +201,6 @@ function initRevealObserver() {
     });
   }, { threshold: 0.15 });
   targets.forEach((el) => observer.observe(el));
-}
-
-// Clique sur un mois du calendrier de disponibilité : met à jour l'état actif et le panneau de détail.
-function initAvailabilityCalendar() {
-  const months = document.querySelectorAll('.cal-month');
-  const info = document.getElementById('cal-info');
-  if (!months.length || !info) return;
-
-  bindMonthGroup(months, (month) => {
-    info.classList.remove('is-visible');
-    requestAnimationFrame(() => {
-      info.querySelector('.cal-info-status').textContent = month.dataset.status;
-      info.querySelector('.cal-info-text').innerHTML = month.dataset.info;
-      info.classList.add('is-visible');
-    });
-  });
-}
-
-// Sélectionne un seul mois à la fois dans un groupe de boutons et déclenche un callback au clic.
-function bindMonthGroup(months, onSelect) {
-  months.forEach((month) => {
-    month.addEventListener('click', () => {
-      months.forEach((m) => {
-        m.classList.remove('is-active');
-        m.removeAttribute('aria-pressed');
-      });
-      month.classList.add('is-active');
-      month.setAttribute('aria-pressed', 'true');
-      onSelect(month);
-    });
-  });
-}
-
-// Mini-calendrier du Hero : le clic met juste le mois sélectionné en surbrillance.
-function initHeroCalendar() {
-  const months = document.querySelectorAll('.hc-month');
-  if (!months.length) return;
-  bindMonthGroup(months, () => {});
 }
 
 // Terminal interactif du Hero — commandes prédéfinies, "help" pour la liste.
@@ -477,7 +433,6 @@ function initBackgroundGrid() {
   let waveOffsetY = 0;
 
   const SPACING = 32;
-  const EXTRA_BOTTOM = 80; // déborde sous le hero pour couvrir la zone découverte par la vague abaissée
   const BASE_RADIUS = 1.2;
   const REACT_RADIUS = 140;
   const MAX_OFFSET = 10;
@@ -549,7 +504,7 @@ function initBackgroundGrid() {
   function resize() {
     const rect = container.getBoundingClientRect();
     width = rect.width;
-    height = Math.max(rect.height + EXTRA_BOTTOM, window.innerHeight);
+    height = rect.height;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
     canvas.style.width = `${width}px`;
