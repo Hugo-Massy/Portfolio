@@ -35,12 +35,51 @@
         </div>
       </div>
       <div class="term-output" id="term-output">
-        <div class="l"><span class="prompt">$</span> whoami --stack</div>
-        <div class="l"><span class="k">systèmes</span><span class="sep">:</span> AD, Entra ID, Windows Server, Debian</div>
-        <div class="l"><span class="k">réseau</span><span class="sep">:</span> VLAN/VLSM, pfSense, IPsec VPN</div>
-        <div class="l"><span class="k">cloud</span><span class="sep">:</span> Docker, GitHub Actions, OVH, Vault</div>
-        <div class="l"><span class="k">sécu</span><span class="sep">:</span> Wazuh, Suricata, T-Pot, CVE watch</div>
-        <div class="l ok"><span class="prompt">$</span> status → disponible sept. 2026 <svg class="ok-mark" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></div>
+        <div class="term-output-default" id="term-output-default">
+          <div class="l"><span class="prompt">$</span> whoami --stack</div>
+          <div class="l"><span class="k">systèmes</span><span class="sep">:</span> AD, Entra ID, Windows Server, Debian</div>
+          <div class="l"><span class="k">réseau</span><span class="sep">:</span> VLAN/VLSM, pfSense, IPsec VPN</div>
+          <div class="l"><span class="k">cloud</span><span class="sep">:</span> Docker, GitHub Actions, OVH, Vault</div>
+          <div class="l"><span class="k">sécu</span><span class="sep">:</span> Wazuh, Suricata, T-Pot, CVE watch</div>
+          <div class="l ok"><span class="prompt">$</span> status → disponible sept. 2026 <svg class="ok-mark" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg></div>
+        </div>
+        <div class="term-categories" id="term-categories" aria-hidden="true">
+          <div class="l"><span class="prompt">$</span> ls --next</div>
+          <div class="term-cat-list" id="term-cat-list">
+            <a class="term-cat-item" href="#about" data-cat="1"><pre class="term-cat-art">    .----.
+   / o  o \
+   |  __  |
+    \    /
+     '--'
+    __||__
+   /      \</pre><span class="term-cat-label"><span class="term-cat-num">01</span> À propos</span></a>
+            <a class="term-cat-item" href="#projects" data-cat="2"><pre class="term-cat-art">   __
+  /  \_______
+ |          |
+ |          |
+ |          |
+ |__________|</pre><span class="term-cat-label"><span class="term-cat-num">02</span> Projets</span></a>
+            <a class="term-cat-item" href="#xp" data-cat="3"><pre class="term-cat-art">    .----.
+    | || |
+  __|_||_|__
+ |  ______  |
+ | |      | |
+ |_|______|_|</pre><span class="term-cat-label"><span class="term-cat-num">03</span> Expérience</span></a>
+            <a class="term-cat-item" href="#availability" data-cat="4"><pre class="term-cat-art">  __ ___ __
+ |  |   |  |
+ |__|___|__|
+ | o | o | o|
+ | o | o | o|
+ |___|___|___|</pre><span class="term-cat-label"><span class="term-cat-num">04</span> Disponibilité</span></a>
+            <a class="term-cat-item" href="#contact" data-cat="5"><pre class="term-cat-art"> ____________
+ |\        /|
+ | \      / |
+ |  \    /  |
+ |   \  /   |
+ |____\/____|</pre><span class="term-cat-label"><span class="term-cat-num">05</span> Contact</span></a>
+          </div>
+        </div>
+        <div class="term-output-typed" id="term-output-typed"></div>
       </div>
       <div class="term-hint">Tape <span class="k">help</span> pour voir les commandes disponibles.</div>
       <div class="term-input-row">
@@ -54,4 +93,3 @@
     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg>
   </a>
 </header>
-<div class="term-landing" id="term-landing" aria-hidden="true"></div>

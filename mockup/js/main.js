@@ -14,94 +14,212 @@ async function loadSections() {
   initTerminal();
   initBackgroundGrid();
   initTabSpy();
-  initScrollDownHide();
   initHeroCycle();
   initHeroTermGrow();
 }
 
-// Au scroll dans le hero, la console grossit progressivement jusqu'à occuper 95% de
-// l'écran (overlay recentré) tandis que le texte du hero s'efface ; une fois pleinement
-// grossie, elle est déplacée dans #term-landing pour redevenir un élément de flux normal
-// qui défile avec la page.
+// La page ne fait jamais plus de 100vh (pas de vrai scroll de document) : la croissance
+// de la console est donc pilotée directement par la molette/le tactile (scroll-jacking),
+// avec un "progress" virtuel 0→1 qu'on anime à la main plutôt que de lire window.scrollY.
 function initHeroTermGrow() {
-  const hero = document.getElementById('hero');
   const card = document.getElementById('term-card');
   const copy = document.querySelector('.hero-copy');
-  const landing = document.getElementById('term-landing');
-  if (!hero || !card || !landing) return;
+  const scrollDownBtn = document.querySelector('.scroll-down');
+  const categories = document.getElementById('term-categories');
+  const outputDefault = document.getElementById('term-output-default');
+  if (!card) return;
 
   const grid = card.parentNode;
   let initRect = null;
-  let isLanded = false;
+  let progress = 0;
+  let targetProgress = 0;
+  // un ancêtre (.reveal.is-visible) porte un transform, qui re-ancre tout descendant
+  // position:fixed à sa propre boîte au lieu du viewport ; on échappe donc vers
+  // document.body pendant la croissance pour que le fixed reste bien collé à l'écran.
+  let inBody = false;
 
   function captureInitRect() {
     initRect = card.getBoundingClientRect();
   }
+  captureInitRect();
 
-  function update() {
-    const heroHeight = hero.offsetHeight;
-    const progress = Math.min(Math.max(window.scrollY / heroHeight, 0), 1);
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const targetW = vw * 0.95;
-    const targetH = vh * 0.95;
-    const targetTop = (vh - targetH) / 2;
-    const targetLeft = (vw - targetW) / 2;
+  // Efface le contenu par défaut comme une frappe inversée : on tronque chaque ligne à
+  // un nombre de caractères restants qui diminue avec le scroll, en partant de la fin.
+  const lines = outputDefault
+    ? Array.from(outputDefault.querySelectorAll('.l')).map((el) => ({
+        el, html: el.innerHTML, length: el.textContent.length,
+      }))
+    : [];
+  const totalChars = lines.reduce((sum, l) => sum + l.length, 0);
 
-    if (progress >= 1) {
-      if (!isLanded) {
-        landing.appendChild(card);
-        isLanded = true;
-      }
-      landing.style.height = `${vh}px`;
-      card.style.position = 'absolute';
-      card.style.top = `${targetTop}px`;
-      card.style.left = `${targetLeft}px`;
-      card.style.width = `${targetW}px`;
-      card.style.height = `${targetH}px`;
-    } else {
-      if (isLanded) {
-        grid.appendChild(card);
-        isLanded = false;
-      }
-      landing.style.height = '0px';
-
-      if (progress <= 0) {
-        card.style.position = '';
-        card.style.top = card.style.left = card.style.width = card.style.height = '';
-        captureInitRect();
-      } else {
-        if (!initRect) captureInitRect();
-        const r = initRect;
-        card.style.position = 'fixed';
-        card.style.top = `${r.top + (targetTop - r.top) * progress}px`;
-        card.style.left = `${r.left + (targetLeft - r.left) * progress}px`;
-        card.style.width = `${r.width + (targetW - r.width) * progress}px`;
-        card.style.height = `${r.height + (targetH - r.height) * progress}px`;
-      }
+  function truncateToChars(container, maxChars) {
+    let remaining = maxChars;
+    function walk(node) {
+      Array.from(node.childNodes).forEach((child) => {
+        if (remaining <= 0) { node.removeChild(child); return; }
+        if (child.nodeType === Node.TEXT_NODE) {
+          if (child.data.length > remaining) child.data = child.data.slice(0, remaining);
+          remaining -= Math.min(child.data.length, remaining);
+        } else if (child.nodeType === Node.ELEMENT_NODE) {
+          walk(child);
+        }
+      });
     }
+    walk(container);
+  }
 
-    if (copy) {
-      copy.style.opacity = String(1 - progress);
-      copy.style.pointerEvents = progress > 0.05 ? 'none' : 'auto';
+  function renderErase() {
+    if (!lines.length) return;
+    const visibleTotal = Math.round(totalChars * Math.min(Math.max(1 - progress / 0.7, 0), 1));
+    let cumulative = 0;
+    lines.forEach((line) => {
+      const lineVisible = Math.min(Math.max(visibleTotal - cumulative, 0), line.length);
+      if (lineVisible >= line.length) {
+        line.el.style.display = '';
+        if (line.el.innerHTML !== line.html) line.el.innerHTML = line.html;
+      } else if (lineVisible <= 0) {
+        line.el.style.display = 'none';
+      } else {
+        line.el.style.display = '';
+        line.el.innerHTML = line.html;
+        truncateToChars(line.el, lineVisible);
+      }
+      cumulative += line.length;
+    });
+  }
+
+  // Tape l'aperçu des catégories caractère par caractère entre 70% et 100% du scroll,
+  // comme si on le saisissait au clavier (avec un curseur clignotant pendant la frappe).
+  const catHTML = categories ? categories.innerHTML : '';
+  const catTotalChars = categories ? categories.textContent.length : 0;
+
+  function renderTypeCategories() {
+    if (!categories) return;
+    const t = Math.min(Math.max((progress - 0.7) / 0.3, 0), 1);
+    const visibleChars = Math.round(catTotalChars * t);
+    categories.innerHTML = catHTML;
+    truncateToChars(categories, visibleChars);
+    if (t > 0 && t < 1) {
+      const cursor = document.createElement('span');
+      cursor.className = 'cursor';
+      categories.appendChild(cursor);
     }
   }
 
-  captureInitRect();
+  function render() {
+    if (progress <= 0) {
+      if (inBody) { grid.appendChild(card); inBody = false; }
+      card.style.position = '';
+      card.style.top = card.style.left = card.style.width = card.style.height = '';
+      captureInitRect();
+    } else {
+      if (!inBody) { document.body.appendChild(card); inBody = true; }
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const targetW = vw * 0.80;
+      const targetH = vh * 0.7;
+      const targetTop = (vh - targetH) / 2;
+      const targetLeft = (vw - targetW) / 2;
+      const r = initRect;
+      card.style.position = 'fixed';
+      card.style.top = `${r.top + (targetTop - r.top) * progress}px`;
+      card.style.left = `${r.left + (targetLeft - r.left) * progress}px`;
+      card.style.width = `${r.width + (targetW - r.width) * progress}px`;
+      card.style.height = `${r.height + (targetH - r.height) * progress}px`;
+    }
 
-  let ticking = false;
-  window.addEventListener('scroll', () => {
-    if (ticking) return;
-    ticking = true;
-    requestAnimationFrame(() => { update(); ticking = false; });
-  }, { passive: true });
+    if (copy) {
+      copy.style.pointerEvents = progress > 0.05 ? 'none' : 'auto';
+    }
+    if (scrollDownBtn) scrollDownBtn.classList.toggle('is-hidden', progress > 0.05);
+    // le contenu par défaut s'efface entre 0 et 70% du scroll, puis l'ASCII des
+    // catégories se tape progressivement entre 70% et 100%.
+    renderErase();
+    renderTypeCategories();
+  }
+
+  const TRAVEL_PX = 700; // quantité de molette pour parcourir 0 → 1
+  const EASE = 0.35; // facteur de lissage : plus petit = plus fluide/inertiel
+  let looping = false;
+
+  function loop() {
+    const diff = targetProgress - progress;
+    if (Math.abs(diff) < 0.001) {
+      progress = targetProgress;
+      render();
+      looping = false;
+      return;
+    }
+    progress += diff * EASE;
+    render();
+    requestAnimationFrame(loop);
+  }
+
+  function setTargetProgress(next) {
+    targetProgress = Math.min(Math.max(next, 0), 1);
+    if (!looping) {
+      looping = true;
+      requestAnimationFrame(loop);
+    }
+  }
+
+  window.addEventListener('wheel', (e) => {
+    if (targetProgress <= 0 && e.deltaY < 0) return; // déjà au repos, on laisse remonter normalement
+    e.preventDefault();
+    setTargetProgress(targetProgress + e.deltaY / TRAVEL_PX);
+  }, { passive: false });
+
+  let touchY = null;
+  window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  window.addEventListener('touchmove', (e) => {
+    if (touchY === null) return;
+    const dy = touchY - e.touches[0].clientY;
+    if (targetProgress <= 0 && dy < 0) { touchY = e.touches[0].clientY; return; }
+    e.preventDefault();
+    setTargetProgress(targetProgress + dy / TRAVEL_PX);
+    touchY = e.touches[0].clientY;
+  }, { passive: false });
+
+  if (scrollDownBtn) {
+    scrollDownBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      setTargetProgress(1);
+    });
+  }
+
+  // Menu des catégories : cliquable directement, et sélectionnable en tapant son
+  // numéro (1-5) dans le champ de saisie du terminal — voir TERM_COMMANDS plus bas,
+  // qui relaie l'appel via window.HeroCategories.select(). Délégation sur le
+  // conteneur stable : renderTypeCategories() réécrit innerHTML à chaque frame pour
+  // la troncature, donc les <a> sont recréés en permanence et ne peuvent pas garder
+  // d'écouteur attaché directement.
+  function selectCategory(key) {
+    if (!categories) return false;
+    const item = categories.querySelector(`.term-cat-item[data-cat="${key}"]`);
+    if (!item) return false;
+    categories.querySelectorAll('.term-cat-item').forEach((el) => el.classList.remove('is-selected'));
+    item.classList.add('is-selected');
+    const href = item.getAttribute('href');
+    if (href) window.location.hash = href;
+    setTargetProgress(0);
+    return true;
+  }
+  if (categories) {
+    categories.addEventListener('click', (e) => {
+      const item = e.target.closest('.term-cat-item');
+      if (!item) return;
+      e.preventDefault();
+      selectCategory(item.dataset.cat);
+    });
+  }
+  window.HeroCategories = { select: selectCategory };
 
   window.addEventListener('resize', () => {
-    if (!isLanded && card.style.position !== 'fixed') captureInitRect();
-    update();
+    if (!inBody) captureInitRect();
+    render();
   });
 
-  update();
+  render();
 }
 
 // Fait défiler le mot-clé du titre du Hero, puis s'arrête définitivement sur "protège".
@@ -140,15 +258,6 @@ function initHeroCycle() {
 }
 
 // Cache le bouton de défilement dès qu'on clique dessus ou qu'on scrolle.
-function initScrollDownHide() {
-  const btn = document.querySelector('.scroll-down');
-  if (!btn) return;
-
-  btn.addEventListener('click', () => btn.classList.add('is-hidden'));
-  window.addEventListener('scroll', () => {
-    btn.classList.toggle('is-hidden', window.scrollY > 4);
-  }, { passive: true });
-}
 
 // Surligne le point du rail correspondant à la section actuellement visible, et fait
 // voyager l'indicateur le long du rail pour animer le passage d'une section à l'autre.
@@ -207,9 +316,9 @@ function initRevealObserver() {
 const TERM_COMMANDS = {
   help: {
     desc: 'liste des commandes disponibles',
-    run: () => Object.entries(TERM_COMMANDS).map(
-      ([name, cmd]) => `<span class="k">${name.padEnd(10, ' ')}</span>— ${cmd.desc}`
-    ),
+    run: () => Object.entries(TERM_COMMANDS)
+      .filter(([, cmd]) => cmd.desc)
+      .map(([name, cmd]) => `<span class="k">${name.padEnd(10, ' ')}</span>— ${cmd.desc}`),
   },
   clear: {
     desc: 'vide le terminal',
@@ -275,13 +384,41 @@ const TERM_COMMANDS = {
       'Réponse sous 24h — parlons de votre besoin.',
     ],
   },
+  banner: {
+    desc: 'petit dessin ASCII',
+    run: () => [
+      '      ╔═══╗',
+      '     ╔╝▓▓▓╚╗',
+      '     ║▓▓▓▓▓║',
+      '     ║▓ ✓ ▓║',
+      '     ╚╗▓▓▓╔╝',
+      '      ╚═╦═╝',
+      '        ║',
+      '  [ HM — SECURED ]',
+    ],
+  },
 };
+
+TERM_COMMANDS.banner.runClass = 'ascii';
+
+// Raccourcis numériques du menu ASCII des catégories (voir initHeroTermGrow) : tape
+// 1-5 dans le terminal pour sélectionner la même entrée qu'au clic. Exclus de "help".
+['1', '2', '3', '4', '5'].forEach((key) => {
+  TERM_COMMANDS[key] = {
+    desc: null,
+    run: () => {
+      const ok = window.HeroCategories && window.HeroCategories.select(key);
+      return ok ? [] : ['rien à sélectionner ici.'];
+    },
+  };
+});
 
 function initTerminal() {
   const card = document.getElementById('term-card');
-  const output = document.getElementById('term-output');
+  const scrollEl = document.getElementById('term-output');
+  const output = document.getElementById('term-output-typed');
   const input = document.getElementById('term-input');
-  if (!card || !output || !input) return;
+  if (!card || !scrollEl || !output || !input) return;
 
   const history = [];
   let historyIndex = -1;
@@ -291,7 +428,7 @@ function initTerminal() {
     line.className = extraClass ? `l ${extraClass}` : 'l';
     line.innerHTML = html;
     output.appendChild(line);
-    output.scrollTop = output.scrollHeight;
+    scrollEl.scrollTop = scrollEl.scrollHeight;
     return line;
   }
 
@@ -306,7 +443,7 @@ function initTerminal() {
     let i = 0;
     function step() {
       line.innerHTML = tokens.slice(0, i + 1).join('');
-      output.scrollTop = output.scrollHeight;
+      scrollEl.scrollTop = scrollEl.scrollHeight;
       i += 1;
       if (i < tokens.length) {
         setTimeout(step, speed);
@@ -356,7 +493,7 @@ function initTerminal() {
       typeLines([`commande introuvable : ${escapeHtml(cmd)} — tape <span class="k">help</span> pour la liste.`], 'error', 4);
       return;
     }
-    typeLines(entry.run(), null, 4);
+    typeLines(entry.run(), entry.runClass || null, 4);
   }
 
   const inputRow = input.closest('.term-input-row');

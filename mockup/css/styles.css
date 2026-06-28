@@ -24,6 +24,9 @@
   --shadow-card: 0 1px 2px rgba(20,20,15,0.04), 0 8px 24px rgba(20,20,15,0.03);
 }
 *{box-sizing:border-box; margin:0; padding:0;}
+/* page verrouillée à 100vh : la croissance de la console est pilotée à la molette/au
+   tactile (voir initHeroTermGrow dans js/main.js), pas par un vrai scroll de document */
+html, body{height:100%; overflow:hidden;}
 html{scroll-behavior:smooth;}
 body{
   background:var(--bg);
@@ -31,6 +34,7 @@ body{
   font-family:var(--sans);
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
+  overflow-anchor:none;
 }
 img{max-width:100%; display:block;}
 a{color:inherit; text-decoration:none;}
@@ -117,9 +121,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .hero .wrap{position:relative; z-index:1; width:100%;}
 .hero-copy{will-change:opacity;}
-/* réservé après le hero : reçoit la console une fois qu'elle a fini de grossir
-   au scroll (voir initHeroTermGrow dans js/main.js) ; vide et invisible au repos */
-.term-landing{position:relative; height:0;}
 .term-card{will-change:top, left, width, height;}
 /* hauteur de la zone de vague, réutilisée par #about (margin/padding) et les calques de vague */
 :root{ --wave-h: clamp(120px, 14vw, 320px); }
@@ -160,7 +161,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .hero-b-grid{display:grid; grid-template-columns:1.15fr 1fr; gap:28px; align-items:center;}
 @media(max-width:860px){.hero-b-grid{grid-template-columns:1fr; gap:40px;}}
 .term-card{
-  position:relative; display:flex; flex-direction:column;
+  position:relative; z-index:100; display:flex; flex-direction:column;
   background:var(--term-bg); border:1px solid var(--term-border); border-radius:var(--radius);
   font-family:var(--mono); font-size:14px; overflow:hidden;
   box-shadow:0 24px 60px -12px rgba(10,14,16,0.35), 0 0 0 1px rgba(77,111,203,0.06);
@@ -176,8 +177,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .term-dots{display:flex; gap:6px;}
 .term-dot{width:10px; height:10px; border-radius:50%;}
 .term-output{
-  padding:28px; color:var(--term-text); line-height:1.9;
-  min-height:340px; max-height:420px; overflow-y:auto; scrollbar-width:thin;
+  position:relative; flex:1; padding:28px; color:var(--term-text); line-height:1.9;
+  min-height:340px; overflow-y:auto; scrollbar-width:thin;
 }
 .term-output .l{word-break:break-word;}
 .term-output .prompt{color:#6f89d9;}
@@ -186,6 +187,51 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .term-output .ok{margin-top:14px;}
 .term-output .ok-mark{color:#7ee787; vertical-align:-2px; margin-left:2px;}
 .term-output .error{color:#d9a566;}
+.term-output .ascii{white-space:pre; word-break:normal; line-height:1.35; color:#6f89d9;}
+/* le contenu par défaut s'efface caractère par caractère au scroll (tronqué en JS),
+   pour laisser place à l'aperçu des catégories (voir initHeroTermGrow dans js/main.js) */
+.term-output-default{position:absolute; top:28px; left:28px; right:28px;}
+.term-output-typed{font-family:var(--mono);}
+/* le contenu est révélé caractère par caractère au scroll, comme une frappe au
+   clavier (voir renderTypeCategories dans js/main.js) ; la liste prend toute la
+   hauteur restante de la console et chaque ligne est un vrai lien cliquable */
+.term-categories{
+  display:flex; flex-direction:column; height:100%;
+  font-family:var(--mono); color:var(--term-text); line-height:1.6;
+}
+.term-categories .cursor{
+  display:inline-block; width:7px; height:14px; vertical-align:-2px;
+  background:#ffffff; animation:blink 1s step-end infinite;
+}
+/* sortie type `ls` : tout aligné à gauche, en colonnes monospace, sans cadre */
+.term-cat-list{
+  flex:1; display:flex; flex-wrap:wrap;
+  align-content:flex-start; gap:22px 36px; margin-top:16px;
+}
+.term-cat-item{
+  display:inline-flex; flex-direction:column; align-items:flex-start; gap:6px;
+  padding:4px 6px; color:var(--term-text); text-decoration:none; cursor:pointer;
+  transition:color .12s ease;
+}
+.term-cat-art{
+  margin:0; font-family:var(--mono); font-size:12.5px; line-height:1.1;
+  white-space:pre; color:#6f89d9; letter-spacing:0;
+  transition:color .12s ease;
+}
+.term-cat-label{font-family:var(--mono); font-size:13px;}
+.term-cat-num{color:#6f89d9; font-weight:600; margin-right:4px;}
+/* survol/sélection = surbrillance inversée, comme une sélection dans un terminal */
+.term-cat-item:hover, .term-cat-item:focus-visible, .term-cat-item.is-selected{
+  color:#ffffff;
+}
+.term-cat-item:hover .term-cat-art,
+.term-cat-item:focus-visible .term-cat-art,
+.term-cat-item.is-selected .term-cat-art{color:#cdd6f4;}
+.term-cat-item:hover .term-cat-label,
+.term-cat-item:focus-visible .term-cat-label,
+.term-cat-item.is-selected .term-cat-label{
+  background:#6f89d9; color:#14171a;
+}
 
 /* indication fixe juste au-dessus du champ de saisie, hors du défilement */
 .term-hint{
