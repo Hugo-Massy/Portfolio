@@ -404,55 +404,114 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .about-head h2{font-size:36px; margin-bottom:14px; color:#fff;}
 .about-head h2 .accent{color:#cfe0ff;}
 
-/* identité — pas de carte, juste du texte/icônes posés directement sur la vague bleue,
-   séparateur vertical fin entre le bloc nom/rôle et les infos pratiques */
-.about-person{display:flex; align-items:center; gap:20px; flex-wrap:wrap; margin-bottom:40px;}
+/* deux colonnes : contenu (lede, rythme, timeline) à gauche, carte identité à droite */
+.about-grid{
+  display:grid; grid-template-columns:minmax(0,1fr) 320px; gap:44px;
+  align-items:start; margin-bottom:48px;
+}
+.about-main{min-width:0;}
+.about-main .about-lede{margin-bottom:32px;}
+.about-main .about-timeline{margin-bottom:0;}
+
+/* carte identité — façon viseur de scanner : coin coupé, crochets d'angle (corner
+   brackets) et une ligne de balayage qui parcourt la carte en boucle */
+.about-card{
+  position:sticky; top:96px; overflow:hidden;
+  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.18);
+  padding:30px 28px 32px;
+  clip-path:polygon(56px 0, 100% 0, 100% 100%, 0 100%, 0 56px);
+  filter:drop-shadow(0 24px 48px rgba(15,23,55,.45));
+}
+/* crochets d'angle en SVG carrés à taille fixe (jamais étirés, même si la carte
+   n'est pas carrée) — un par coin restant, le coin haut-gauche étant déjà marqué par la coupe.
+   La bordure CSS classique suit le rectangle d'origine et s'arrête net sur la diagonale du
+   coin coupé : on redessine cette arête manquante en 4e calque, au même ton que la bordure. */
+.about-card::before{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background-repeat:no-repeat;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M8 2 L18 2 L18 12' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='1.6'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M18 8 L18 18 L8 18' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='1.6'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M12 18 L2 18 L2 8' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='1.6'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Cline x1='0' y1='56' x2='56' y2='0' stroke='rgba(255,255,255,0.18)' stroke-width='1'/%3E%3C/svg%3E");
+  background-position:top 12px right 12px, bottom 12px right 12px, bottom 12px left 12px, top -0.1px left -0.1px;
+  background-size:18px 18px, 18px 18px, 18px 18px, 56px 56px;
+}
+.about-card::after{
+  content:''; position:absolute; left:0; right:0; height:34%;
+  background:linear-gradient(180deg, transparent, rgba(255,255,255,.16), transparent);
+  pointer-events:none; animation:about-scan 5s ease-in-out infinite;
+}
+@keyframes about-scan{
+  0%{ top:-34%; }
+  60%{ top:100%; }
+  100%{ top:100%; }
+}
+.about-person{display:flex; align-items:center; gap:18px; margin-bottom:22px;}
 .about-avatar{
-  position:relative; width:56px; height:56px; border-radius:50%; flex-shrink:0;
+  position:relative; width:62px; height:62px; border-radius:50%; flex-shrink:0;
   background:#fff;
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--mono); font-weight:700; font-size:17px; color:var(--accent-dark);
+  font-family:var(--mono); font-weight:700; font-size:18px; color:var(--accent-dark);
   box-shadow:0 10px 24px -8px rgba(20,30,60,.4);
 }
 .about-avatar-status{
-  position:absolute; right:-2px; bottom:-2px; width:13px; height:13px;
+  position:absolute; right:-2px; bottom:-2px; width:14px; height:14px;
   border-radius:50%; background:#3ec25f; border:2.5px solid var(--accent);
   box-shadow:0 0 0 0 rgba(62,194,95,.5); animation:status-pulse 2s ease-out infinite;
 }
-.about-person-main{margin-right:4px;}
-.about-person h3{font-size:19px; margin-bottom:2px; color:#fff;}
-.about-role{font-size:13px; color:var(--accent-pale);}
+.about-person h3{font-size:20px; margin-bottom:2px; color:#fff;}
+.about-role{font-size:13.5px; color:var(--accent-pale);}
 .about-facts{
-  display:flex; flex-wrap:wrap; gap:8px 22px; list-style:none;
-  padding-left:22px; border-left:1px solid rgba(255,255,255,.3);
+  display:flex; flex-direction:column; gap:14px; list-style:none;
+  padding-top:20px; border-top:1px solid rgba(255,255,255,.18);
 }
 .about-facts li{
-  display:flex; align-items:center; gap:7px;
-  font-size:13px; color:#fff; white-space:nowrap;
+  display:flex; align-items:flex-start; gap:10px;
+  font-size:14px; color:#fff;
 }
-.about-facts li svg{flex-shrink:0; color:var(--accent-pale);}
-@media(max-width:760px){
-  .about-person-main{flex:1 1 100%; margin-right:0;}
-  .about-facts{padding-left:0; border-left:none; gap:8px 16px;}
+.about-facts li svg{flex-shrink:0; width:17px; height:17px; margin-top:2px; color:var(--accent-pale);}
+
+/* label discret au-dessus du contenu, même logique que les labels du pied de section
+   (Langues / Qualités…), pour annoncer chaque bloc de la carte */
+.about-card-label{
+  display:block; font-family:var(--mono); font-size:11px; color:var(--accent-pale);
+  margin-bottom:12px;
+}
+.about-card-rhythm{margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,.18);}
+.about-card-rhythm-row{display:flex; align-items:center; gap:12px;}
+.about-card-rhythm-row p{font-size:13px; color:rgba(255,255,255,.85); margin:0;}
+
+.about-card-actions{
+  display:flex; align-items:center; gap:16px;
+  margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,.18);
+}
+.about-card-actions a{
+  display:flex; align-items:center; gap:6px;
+  color:#fff; opacity:.85; transition:opacity .2s ease;
+}
+.about-card-actions a:hover{opacity:1;}
+.about-card-cv{
+  margin-left:auto; font-family:var(--mono); font-size:12px; font-weight:600;
+  padding:6px 12px;
+}
+.about-card-cv svg{width:14px; height:14px;}
+@media(max-width:860px){
+  .about-grid{grid-template-columns:1fr; gap:36px;}
+  .about-card{position:static; order:-1;}
+  .about-person{margin-bottom:18px;}
+  .about-facts{flex-flow:row wrap; gap:10px 22px; padding-top:16px;}
 }
 
 .about-lede{font-size:17px; color:rgba(255,255,255,.85); max-width:780px; margin-bottom:36px;}
 .about-lede strong{color:#fff; font-weight:600;}
 
-/* visualisation du rythme d'alternance : trois "semaines", deux pleines + une creuse,
-   simple ligne séparée par une bordure plutôt qu'un encart */
-.about-rhythm{
-  display:flex; align-items:center; gap:14px;
-  padding-bottom:28px; margin-bottom:28px; max-width:620px;
-  border-bottom:1px solid rgba(255,255,255,.18);
-}
-.about-rhythm-bar{display:flex; gap:4px; flex-shrink:0;}
+/* visualisation du rythme d'alternance : trois "semaines", deux pleines + une creuse */
+.about-rhythm-bar{display:flex; flex-direction:column; gap:3px; flex-shrink:0;}
 .about-rhythm-bar span{
-  width:14px; height:14px; border-radius:4px; border:1.5px solid rgba(255,255,255,.4);
+  width:11px; height:11px; border-radius:3px; border:1.5px solid rgba(255,255,255,.4);
 }
 .about-rhythm-bar span.is-on{background:#fff; border-color:#fff;}
-.about-rhythm p{font-size:13.5px; color:rgba(255,255,255,.8);}
-.about-rhythm strong{color:#fff; font-weight:600;}
 
 /* timeline — ligne verticale continue, points pleins, l'étape en cours pulse comme le
    statut "online" du hero pour rester cohérent visuellement */
