@@ -63,10 +63,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   transform:translateY(-50%);
   display:flex; flex-direction:column; align-items:flex-end; gap:18px;
 }
-.dot-rail::before{
-  content:''; position:absolute; right:8px; top:8px; bottom:8px; width:1px;
-  background:var(--text-faint); z-index:-1;
-}
 .dot-rail a{
   position:relative;
   display:flex; align-items:center;
@@ -177,60 +173,94 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .term-dots{display:flex; gap:6px;}
 .term-dot{width:10px; height:10px; border-radius:50%;}
 .term-output{
-  position:relative; flex:1; padding:28px; color:var(--term-text); line-height:1.9;
-  min-height:340px; overflow-y:auto; scrollbar-width:thin;
+  position:relative; flex:1 1 340px; padding:14px 28px 28px; color:var(--term-text); line-height:1.9;
+  overflow-y:auto; scrollbar-width:thin; scrollbar-color:#3a3f47 transparent;
 }
+.term-output::-webkit-scrollbar{width:8px;}
+.term-output::-webkit-scrollbar-track{background:transparent;}
+.term-output::-webkit-scrollbar-thumb{background:#3a3f47; border-radius:4px;}
+.term-output::-webkit-scrollbar-thumb:hover{background:#4b515b;}
+.term-output::-webkit-scrollbar-button,
+.term-output::-webkit-scrollbar-button:single-button,
+.term-output::-webkit-scrollbar-button:vertical:start,
+.term-output::-webkit-scrollbar-button:vertical:end,
+.term-output::-webkit-scrollbar-button:vertical:start:decrement,
+.term-output::-webkit-scrollbar-button:vertical:end:increment,
+.term-output::-webkit-scrollbar-button:start:decrement,
+.term-output::-webkit-scrollbar-button:end:increment{
+  display:none !important; width:0 !important; height:0 !important;
+  background:transparent !important;
+}
+.term-output::-webkit-scrollbar-corner{display:none !important;}
 .term-output .l{word-break:break-word;}
 .term-output .prompt{color:#6f89d9;}
+.term-output .prompt-path{color:#566070; margin-right:2px;}
 .term-output .k{color:#7f8a99;}
 .term-output .sep{color:#4b5563; margin-right:2px;}
-.term-output .ok{margin-top:14px;}
+.term-output .cmd{margin-top:3px;}
 .term-output .ok-mark{color:#7ee787; vertical-align:-2px; margin-left:2px;}
 .term-output .error{color:#d9a566;}
 .term-output .ascii{white-space:pre; word-break:normal; line-height:1.35; color:#6f89d9;}
+/* easter egg `matrix` : enchaîne plusieurs patterns visuels en surimpression de la sortie,
+   changement net entre chacun, sans transition (voir runMatrixEasterEgg dans js/main.js) */
+.term-matrix-overlay{position:absolute; inset:0; z-index:5; background:#0d1110;}
+/* bloc `neofetch` : carte d'identité système, juste du texte aligné */
+.term-output .nf{line-height:1.45; word-break:normal; white-space:nowrap;}
+.nf-k{display:inline-block; min-width:8ch; color:#7ee787; font-weight:600;}
+.nf-ok{color:#7ee787;}
+.nf-dot{
+  display:inline-block; width:7px; height:7px; border-radius:50%;
+  background:#7ee787; margin-right:6px; vertical-align:1px;
+  box-shadow:0 0 0 0 rgba(126,231,135,.5); animation:status-pulse 2s ease-out infinite;
+}
 /* le contenu par défaut s'efface caractère par caractère au scroll (tronqué en JS),
    pour laisser place à l'aperçu des catégories (voir initHeroTermGrow dans js/main.js) */
-.term-output-default{position:absolute; top:28px; left:28px; right:28px;}
 .term-output-typed{font-family:var(--mono);}
 /* le contenu est révélé caractère par caractère au scroll, comme une frappe au
    clavier (voir renderTypeCategories dans js/main.js) ; la liste prend toute la
    hauteur restante de la console et chaque ligne est un vrai lien cliquable */
 .term-categories{
-  display:flex; flex-direction:column; height:100%;
+  display:flex; flex-direction:column;
   font-family:var(--mono); color:var(--term-text); line-height:1.6;
 }
 .term-categories .cursor{
   display:inline-block; width:7px; height:14px; vertical-align:-2px;
   background:#ffffff; animation:blink 1s step-end infinite;
 }
-/* sortie type `ls` : tout aligné à gauche, en colonnes monospace, sans cadre */
+/* sortie type `ls -l` : un vrai listing détaillé, une entrée par ligne, colonnes
+   alignées en unités `ch` (monospace) — permissions, owner, nom, taille, commentaire */
+.term-cat-total{color:#4b5563; margin-top:2px;}
 .term-cat-list{
-  flex:1; display:flex; flex-wrap:wrap;
-  align-content:flex-start; gap:22px 36px; margin-top:16px;
+  flex:1; display:flex; flex-direction:column;
+  align-content:flex-start; gap:0; margin-top:6px;
 }
 .term-cat-item{
-  display:inline-flex; flex-direction:column; align-items:flex-start; gap:6px;
-  padding:4px 6px; color:var(--term-text); text-decoration:none; cursor:pointer;
-  transition:color .12s ease;
+  display:grid; grid-template-columns:11ch 5ch 16ch 3ch 1fr;
+  gap:0 10px; align-items:baseline;
+  padding:1px 6px; border-radius:4px;
+  color:var(--term-text); text-decoration:none; cursor:pointer;
+  transition:background .12s ease, color .12s ease;
 }
-.term-cat-art{
-  margin:0; font-family:var(--mono); font-size:12.5px; line-height:1.1;
-  white-space:pre; color:#6f89d9; letter-spacing:0;
-  transition:color .12s ease;
-}
-.term-cat-label{font-family:var(--mono); font-size:13px;}
-.term-cat-num{color:#6f89d9; font-weight:600; margin-right:4px;}
-/* survol/sélection = surbrillance inversée, comme une sélection dans un terminal */
+.term-cat-perm{color:#4b5563; letter-spacing:.5px;}
+.term-cat-owner{color:#7f8a99;}
+.term-cat-name{color:var(--term-text); white-space:nowrap;}
+.term-cat-num{color:#6f89d9; font-weight:600;}
+.term-cat-size{color:#6f89d9; text-align:right;}
+.term-cat-comment{color:#566070; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+.term-cat-ok{color:#7ee787;}
+/* survol/sélection = ligne surlignée + chevron, comme une sélection dans un listing */
 .term-cat-item:hover, .term-cat-item:focus-visible, .term-cat-item.is-selected{
-  color:#ffffff;
+  background:rgba(111,137,217,.14); color:#ffffff;
 }
-.term-cat-item:hover .term-cat-art,
-.term-cat-item:focus-visible .term-cat-art,
-.term-cat-item.is-selected .term-cat-art{color:#cdd6f4;}
-.term-cat-item:hover .term-cat-label,
-.term-cat-item:focus-visible .term-cat-label,
-.term-cat-item.is-selected .term-cat-label{
-  background:#6f89d9; color:#14171a;
+.term-cat-item:hover .term-cat-name,
+.term-cat-item:focus-visible .term-cat-name,
+.term-cat-item.is-selected .term-cat-name{color:#ffffff;}
+.term-cat-item:hover .term-cat-comment,
+.term-cat-item:focus-visible .term-cat-comment,
+.term-cat-item.is-selected .term-cat-comment{color:#8a93a3;}
+@media(max-width:860px){
+  .term-cat-item{grid-template-columns:15ch 3ch 1fr; gap:0 10px;}
+  .term-cat-perm, .term-cat-owner{display:none;}
 }
 
 /* indication fixe juste au-dessus du champ de saisie, hors du défilement */
@@ -246,9 +276,15 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   padding:16px 28px; border-top:1px solid var(--term-border);
 }
 .term-input-row .prompt{color:#6f89d9;}
+.term-prompt-wrap{display:flex; align-items:center; flex-shrink:0;}
+.term-input-row .prompt-path{color:#566070; margin-right:2px;}
 .term-input{
   flex:1; min-width:0; background:transparent; border:none; outline:none;
   color:var(--term-text); font-family:var(--mono); font-size:14px; caret-color:var(--term-text);
+}
+.term-idle-text{
+  color:var(--term-text); font-family:var(--mono); font-size:14px;
+  white-space:pre; flex-shrink:0;
 }
 .term-input::placeholder{color:#3a3f46;}
 .term-input-row .cursor{
@@ -257,7 +293,35 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .term-input-row:focus-within .cursor,
 .term-input-row.has-value .cursor{display:none;}
+.term-input-row.is-idle .cursor{display:inline-block;}
 @keyframes blink{ 50%{ opacity:0; } }
+
+/* status bar façon tmux/vim — collée tout en bas de la fenêtre, segments monospace */
+.term-statusbar{
+  display:flex; align-items:stretch; flex-shrink:0;
+  background:var(--term-bg-2); border-top:1px solid var(--term-border);
+  font-family:var(--mono); font-size:11px; line-height:1; overflow:hidden;
+}
+.term-status-seg{
+  display:flex; align-items:center; gap:6px;
+  padding:7px 12px; color:#7f8a99; white-space:nowrap;
+  border-right:1px solid var(--term-border);
+}
+.term-status-online{color:#7ee787; background:rgba(126,231,135,.08);}
+.term-status-dot{
+  width:6px; height:6px; border-radius:50%; background:#7ee787;
+  box-shadow:0 0 0 0 rgba(126,231,135,.5); animation:status-pulse 2s ease-out infinite;
+}
+.term-status-push{margin-left:auto; color:#566070; border-left:1px solid var(--term-border);}
+.term-status-key{color:#6f89d9; border-right:none;}
+@keyframes status-pulse{
+  0%{ box-shadow:0 0 0 0 rgba(126,231,135,.5); }
+  70%{ box-shadow:0 0 0 5px rgba(126,231,135,0); }
+  100%{ box-shadow:0 0 0 0 rgba(126,231,135,0); }
+}
+@media(max-width:860px){
+  .term-status-seg:nth-child(2), .term-status-seg:nth-child(5){display:none;}
+}
 
 /* RESPONSIVE — l'espacement généreux se resserre sur petit écran pour rester lisible */
 @media(max-width:760px){

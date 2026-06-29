@@ -33,6 +33,10 @@ function initHeroTermGrow() {
   let initRect = null;
   let progress = 0;
   let targetProgress = 0;
+  // neofetch s'affiche tout seul une fois le terminal arrivé à sa taille max et resté
+  // stable 1 s ; le timer est annulé si l'utilisateur ressort du plein écran avant.
+  let neofetchShown = false;
+  let neofetchTimer = null;
   // un ancêtre (.reveal.is-visible) porte un transform, qui re-ancre tout descendant
   // position:fixed à sa propre boîte au lieu du viewport ; on échappe donc vers
   // document.body pendant la croissance pour que le fixed reste bien collé à l'écran.
@@ -136,6 +140,34 @@ function initHeroTermGrow() {
     // catégories se tape progressivement entre 70% et 100%.
     renderErase();
     renderTypeCategories();
+
+    // arrivé en plein écran : on lance un compte à rebours de 1 s avant d'afficher
+    // neofetch ; toute sortie de l'état plein écran annule le timer.
+    if (progress > 0.995) {
+      if (!neofetchShown && !neofetchTimer) {
+        neofetchTimer = setTimeout(() => {
+          neofetchTimer = null;
+          neofetchShown = true;
+          if (window.HeroTerminal && window.HeroTerminal.isEmpty()) {
+            window.HeroTerminal.runAutoSequence(['cd ~/hugo', 'cat neofetch']);
+          }
+        }, 500);
+      }
+    } else {
+      if (neofetchTimer) {
+        clearTimeout(neofetchTimer);
+        neofetchTimer = null;
+      }
+      // on quitte le plein écran : on efface neofetch (s'il s'agit bien de lui, et pas
+      // d'une commande tapée entre-temps par l'utilisateur) pour qu'il puisse se
+      // réafficher proprement la prochaine fois qu'on revient en plein écran.
+      if (neofetchShown) {
+        neofetchShown = false;
+        if (window.HeroTerminal && window.HeroTerminal.isAutoOutput()) {
+          window.HeroTerminal.cancelAuto();
+        }
+      }
+    }
   }
 
   const TRAVEL_PX = 700; // quantité de molette pour parcourir 0 → 1
@@ -384,6 +416,19 @@ const TERM_COMMANDS = {
       'Réponse sous 24h — parlons de votre besoin.',
     ],
   },
+  neofetch: {
+    desc: 'carte d\'identité système',
+    run: () => [
+      '<span class="nf-k">OS:</span> Mastère Cybersécurité &amp; Ethical Hacking',
+      '<span class="nf-k">Host:</span> EFREI · Panthéon-Assas',
+      '<span class="nf-k">Role:</span> Alternant DSI — Mairie de Massy',
+      '<span class="nf-k">Uptime:</span> 2 ans en production',
+      '<span class="nf-k">Stack:</span> AD · Entra ID · pfSense · Docker · Wazuh',
+      '<span class="nf-k">Locale:</span> fr_FR · en_US · Île-de-France',
+      '<span class="nf-k">Focus:</span> SOC / Blue Team · IAM · souveraineté num.',
+      '<span class="nf-k">Status:</span> dispo alternance — sept. 2026',
+    ],
+  },
   banner: {
     desc: 'petit dessin ASCII',
     run: () => [
@@ -400,6 +445,66 @@ const TERM_COMMANDS = {
 };
 
 TERM_COMMANDS.banner.runClass = 'ascii';
+TERM_COMMANDS.neofetch.runClass = 'nf';
+TERM_COMMANDS.neofetch.speed = 1;
+
+// Easter eggs : sans `desc`, donc invisibles dans `help` (et dans le cycle Tab tant qu'on n'a
+// pas déjà tapé leur début) — à découvrir en tapant la commande, comme un vrai easter egg.
+TERM_COMMANDS.matrix = { desc: null, special: 'matrix' };
+TERM_COMMANDS.crack = {
+  desc: null,
+  special: 'crack-start',
+  run: () => [
+    'lancement de <span class="k">crack-fw.sh</span> — bypass du portail captif pfSense...',
+    'code d\'accès à 4 chiffres uniques détecté sur l\'interface WAN.',
+    'tape une combinaison de 4 chiffres pour tenter ta chance — <span class="k">exit</span> pour abandonner.',
+  ],
+};
+TERM_COMMANDS.hack = TERM_COMMANDS.crack; // alias caché, même mini-jeu
+
+// Motifs de commandes "piégées" : pas de clé exacte dans TERM_COMMANDS (l'argument varie),
+// on les teste donc par regex juste avant d'afficher "commande introuvable".
+const TERM_EASTER_PATTERNS = [
+  {
+    re: /^sudo\b/i,
+    run: () => [
+      '<span class="error">[sudo] mot de passe pour hugo :</span> ********',
+      'Permission denied (publickey,password). Ce terminal n\'a pas de root —',
+      'tape <span class="k">contact</span> si tu veux les vraies clés d\'accès.',
+    ],
+  },
+  {
+    re: /^rm\s+-rf\s+\/?$/i,
+    run: () => [
+      'nice try.',
+      'aucune action effectuée — ce terminal n\'a pas de vrai shell, et moi je fais des sauvegardes.',
+    ],
+  },
+  {
+    re: /^su(\s|$)/i,
+    run: () => ['tu es déjà l\'utilisateur le plus permissif possible ici : invité.'],
+  },
+  {
+    re: /^(ssh|nc|netcat)\b/i,
+    run: () => ['connexion refusée — il n\'y a pas de serveur à pirater ici, juste un site web.'],
+  },
+];
+
+// Vraie commande, sans sortie : sert juste à "envoyer" `cd ~/hugo` au terminal dès que
+// sa frappe simulée se termine (voir runAutoSequence), avant d'enchaîner sur la suite.
+TERM_COMMANDS['cd ~/hugo'] = { desc: null, run: () => [] };
+
+// Alias : "cat neofetch", comme si neofetch était un fichier d'identité posé dans le
+// dossier ~/hugo (voir runAutoSequence) — même rendu, mais affiché depuis ce dossier
+// (cwd) plutôt que depuis la racine. Pas de desc : reste caché du `help`, accessible
+// seulement en le tapant ou via Tab.
+TERM_COMMANDS['cat neofetch'] = {
+  desc: null,
+  cwd: '~/hugo',
+  run: TERM_COMMANDS.neofetch.run,
+  runClass: 'nf',
+  speed: 1,
+};
 
 // Raccourcis numériques du menu ASCII des catégories (voir initHeroTermGrow) : tape
 // 1-5 dans le terminal pour sélectionner la même entrée qu'au clic. Exclus de "help".
@@ -418,10 +523,213 @@ function initTerminal() {
   const scrollEl = document.getElementById('term-output');
   const output = document.getElementById('term-output-typed');
   const input = document.getElementById('term-input');
+  const cwdEl = document.getElementById('term-cwd');
+  const hintEl = card.querySelector('.term-hint');
+  const outputDefault = document.getElementById('term-output-default');
   if (!card || !scrollEl || !output || !input) return;
 
   const history = [];
   let historyIndex = -1;
+  // état du mini-jeu caché "crack"/"hack" : tant qu'il est actif, toute saisie qui n'est pas
+  // exit/quit est interprétée comme une tentative de code plutôt que comme une commande.
+  let crackState = null;
+  const CRACK_CWD = '~/pfsense';
+
+  function generateCrackCode() {
+    const digits = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+    for (let i = digits.length - 1; i > 0; i -= 1) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [digits[i], digits[j]] = [digits[j], digits[i]];
+    }
+    return digits.slice(0, 4);
+  }
+
+  // Mastermind simplifié (digits uniques) : compte les chiffres bien placés ("bulls") et
+  // ceux présents mais mal placés ("cows"), pour guider le joueur tentative après tentative.
+  function handleCrackGuess(raw) {
+    const guess = raw.trim();
+    if (!/^\d{4}$/.test(guess) || new Set(guess).size !== 4) {
+      return ['format invalide — attends 4 chiffres uniques (ex: 1709).'];
+    }
+    const guessDigits = guess.split('').map(Number);
+    crackState.attempts += 1;
+    let bulls = 0;
+    let cows = 0;
+    guessDigits.forEach((d, i) => {
+      if (d === crackState.code[i]) bulls += 1;
+      else if (crackState.code.includes(d)) cows += 1;
+    });
+    if (bulls === 4) {
+      const { attempts } = crackState;
+      crackState = null;
+      setCwd('~');
+      return [
+        `accès au pare-feu accordé en ${attempts} tentative${attempts > 1 ? 's' : ''}. <span class="ok-mark">✓</span>`,
+        'bypass réussi — un code à 4 chiffres se devine toujours, en vrai vie comme ici.',
+        'change tes mots de passe par défaut, n\'en réutilise jamais un d\'un service à l\'autre,',
+        'et préfère une phrase de passe longue et unique (ou un gestionnaire de mots de passe).',
+      ];
+    }
+    const lines = [`${bulls} bien placé(s), ${cows} présent(s) mais mal placé(s) — tentative #${crackState.attempts}.`];
+    // toutes les 3 tentatives ratées, on révèle un chiffre supplémentaire du code (dans
+    // l'ordre des positions) pour éviter que le brute-force pur ne devienne décourageant.
+    if (crackState.attempts % 3 === 0 && crackState.revealed.size < crackState.code.length) {
+      let idx = 0;
+      while (crackState.revealed.has(idx)) idx += 1;
+      crackState.revealed.add(idx);
+      lines.push(`indice : le chiffre en position ${idx + 1} est <span class="k">${crackState.code[idx]}</span>.`);
+    }
+    return lines;
+  }
+
+  // Pluie de caractères en surimpression de la sortie, qui passe par chacun des patterns
+  // les uns après les autres, sans effet de transition entre eux (juste un changement net) —
+  // annulée proprement si une autre commande arrive (voir `gen`).
+  function runMatrixEasterEgg(gen) {
+    const PATTERNS = ['rain', 'diagonal', 'pulse', 'tunnel', 'scan'];
+    const chars = 'アイウエオカキクケコサシスセソタチツテト0123456789';
+    const fontSize = 14;
+    const PATTERN_DURATION = 1400;
+
+    if (hintEl) hintEl.style.display = 'none';
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'term-matrix-overlay';
+    scrollEl.appendChild(canvas);
+    canvas.width = scrollEl.clientWidth;
+    canvas.height = scrollEl.clientHeight;
+    const ctx = canvas.getContext('2d');
+
+    const columns = Math.max(1, Math.floor(canvas.width / fontSize));
+    const rows = Math.ceil(canvas.height / fontSize);
+    const drops = new Array(columns).fill(0).map(() => Math.random() * -20);
+    const diagDrops = new Array(columns).fill(0).map(() => Math.random() * -20);
+    const pulsePhases = Array.from({ length: rows }, () => new Array(columns).fill(0).map(() => Math.random()));
+
+    function drawRain() {
+      ctx.fillStyle = 'rgba(13,17,15,0.18)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#7ee787';
+      ctx.font = `${fontSize}px monospace`;
+      drops.forEach((y, i) => {
+        ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, y * fontSize);
+        if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+        drops[i] += 1;
+      });
+    }
+
+    function drawDiagonal() {
+      ctx.fillStyle = 'rgba(13,17,15,0.18)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#7ee787';
+      ctx.font = `${fontSize}px monospace`;
+      diagDrops.forEach((y, i) => {
+        const x = (i * fontSize + y * fontSize * 0.4) % canvas.width;
+        ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, y * fontSize);
+        if (y * fontSize > canvas.height && Math.random() > 0.97) diagDrops[i] = 0;
+        diagDrops[i] += 1;
+      });
+    }
+
+    function drawPulse() {
+      ctx.fillStyle = '#0d1110';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = `${fontSize}px monospace`;
+      pulsePhases.forEach((row, r) => {
+        row.forEach((phase, c) => {
+          const intensity = 0.15 + 0.55 * Math.abs(Math.sin(performance.now() / 400 + phase * 10));
+          ctx.fillStyle = `rgba(126,231,135,${intensity})`;
+          ctx.fillText(Math.random() > 0.5 ? '1' : '0', c * fontSize, r * fontSize);
+        });
+      });
+    }
+
+    // anneau de glyphes qui s'étend depuis le centre, comme un sonar qui plonge dans le code.
+    function drawTunnel(patternStart) {
+      ctx.fillStyle = '#0d1110';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = `${fontSize}px monospace`;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const maxR = Math.hypot(cx, cy);
+      const t = ((performance.now() - patternStart) % 1400) / 1400;
+      const ringR = t * maxR;
+      for (let r = 0; r < rows; r += 1) {
+        for (let c = 0; c < columns; c += 1) {
+          const x = c * fontSize;
+          const y = r * fontSize;
+          const diff = Math.abs(Math.hypot(x - cx, y - cy) - ringR);
+          if (diff < fontSize * 2) {
+            const intensity = 1 - diff / (fontSize * 2);
+            ctx.fillStyle = `rgba(126,231,135,${0.2 + 0.7 * intensity})`;
+            ctx.fillText(chars[Math.floor(Math.random() * chars.length)], x, y);
+          }
+        }
+      }
+    }
+
+    // ligne de scan qui balaye le bloc de haut en bas, façon analyse de code en cours.
+    function drawScan(patternStart) {
+      ctx.fillStyle = '#0d1110';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = `${fontSize}px monospace`;
+      const cycle = 1300;
+      const t = ((performance.now() - patternStart) % cycle) / cycle;
+      const scanY = t * canvas.height;
+      for (let r = 0; r < rows; r += 1) {
+        const y = r * fontSize;
+        const intensity = Math.max(0.1, 1 - Math.abs(y - scanY) / 36);
+        ctx.fillStyle = `rgba(126,231,135,${intensity})`;
+        for (let c = 0; c < columns; c += 1) {
+          if (Math.random() > 0.55) ctx.fillText(chars[Math.floor(Math.random() * chars.length)], c * fontSize, y);
+        }
+      }
+    }
+
+    const drawers = {
+      rain: drawRain, diagonal: drawDiagonal, pulse: drawPulse, tunnel: drawTunnel, scan: drawScan,
+    };
+
+    function finish() {
+      canvas.remove();
+      if (hintEl) hintEl.style.display = '';
+    }
+
+    function playPattern(index) {
+      if (gen !== typingGen) { finish(); return; }
+      if (index >= PATTERNS.length) { finish(); return; }
+
+      const draw = drawers[PATTERNS[index]] || drawRain;
+      const patternStart = performance.now();
+
+      function loop() {
+        if (gen !== typingGen) { finish(); return; }
+        draw(patternStart);
+        if (performance.now() - patternStart < PATTERN_DURATION) {
+          requestAnimationFrame(loop);
+        } else {
+          playPattern(index + 1);
+        }
+      }
+      loop();
+    }
+    playPattern(0);
+  }
+  // dossier courant affiché devant le champ de saisie, persiste tant qu'on ne "ressort"
+  // pas du plein écran (voir cancelAuto) — mis à jour quand `cd ~/hugo` est envoyé.
+  function setCwd(dir) {
+    if (cwdEl) cwdEl.textContent = dir;
+  }
+  // jeton de génération : incrémenté à chaque nouvelle commande (y compris `clear`) pour
+  // pouvoir interrompre une frappe en cours — sinon les setTimeout d'un neofetch encore en
+  // train de s'écrire continueraient à réinjecter des lignes après un clear déclenché entre-temps.
+  let typingGen = 0;
+
+  // Prompt façon shell : affiche le dossier courant avant le "$", pour les commandes
+  // (comme `cat neofetch`) qui ont un `cwd` distinct de la racine ~ (voir TERM_COMMANDS).
+  function promptHtml(cwd) {
+    return `<span class="prompt-path">${cwd}</span><span class="prompt">$</span>`;
+  }
 
   function printLine(html, extraClass) {
     const line = document.createElement('div');
@@ -438,10 +746,11 @@ function initTerminal() {
     return html.match(/<[^>]+>|[^<]/g) || [];
   }
 
-  function typeLine(line, html, speed, onDone) {
+  function typeLine(line, html, speed, gen, onDone) {
     const tokens = tokenizeHtml(html);
     let i = 0;
     function step() {
+      if (gen !== typingGen) return; // une commande plus récente a pris le relais
       line.innerHTML = tokens.slice(0, i + 1).join('');
       scrollEl.scrollTop = scrollEl.scrollHeight;
       i += 1;
@@ -455,12 +764,12 @@ function initTerminal() {
   }
 
   // Tape une suite de lignes les unes après les autres, chacune attendant que la précédente soit finie.
-  function typeLines(lines, extraClass, speed) {
+  function typeLines(lines, extraClass, speed, gen) {
     let i = 0;
     function next() {
-      if (i >= lines.length) return;
+      if (gen !== typingGen || i >= lines.length) return;
       const line = printLine('', extraClass);
-      typeLine(line, lines[i], speed, () => {
+      typeLine(line, lines[i], speed, gen, () => {
         i += 1;
         next();
       });
@@ -474,26 +783,72 @@ function initTerminal() {
     return div.innerHTML;
   }
 
-  function runCommand(raw) {
+  // `append` garde la sortie précédente au lieu de l'effacer — utilisé par
+  // runAutoSequence pour que "cd ~/hugo" reste affiché quand la commande suivante s'exécute.
+  function runCommand(raw, append) {
     const cmd = raw.trim();
     if (!cmd) return;
 
-    output.innerHTML = '';
+    typingGen += 1; // invalide toute frappe en cours d'une commande précédente
+    const gen = typingGen;
     if (cmd.toLowerCase() === 'clear') {
+      output.innerHTML = '';
       history.push(cmd);
       historyIndex = history.length;
       return;
     }
-    printLine(`<span class="prompt">$</span> ${escapeHtml(cmd)}`);
+    if (!append) {
+      output.innerHTML = '';
+      if (outputDefault) outputDefault.remove();
+    }
+
+    // mini-jeu "crack"/"hack" en cours : toute saisie hors exit/quit est une tentative de code.
+    if (crackState) {
+      printLine(`${promptHtml(CRACK_CWD)} ${escapeHtml(cmd)}`, 'cmd');
+      history.push(cmd);
+      historyIndex = history.length;
+      if (['exit', 'quit'].includes(cmd.toLowerCase())) {
+        crackState = null;
+        setCwd('~');
+        typeLines(['abandon. le pare-feu reste debout (pour l\'instant).'], null, 4, gen);
+      } else {
+        typeLines(handleCrackGuess(cmd), null, 4, gen);
+      }
+      return;
+    }
+
+    const entry = TERM_COMMANDS[cmd.toLowerCase()];
+    const cwd = entry && entry.cwd ? entry.cwd : '~';
+    printLine(`${promptHtml(cwd)} ${escapeHtml(cmd)}`, 'cmd');
     history.push(cmd);
     historyIndex = history.length;
 
-    const entry = TERM_COMMANDS[cmd.toLowerCase()];
+    // "cd ..." déplace le dossier affiché devant le champ de saisie pour la suite.
+    if (entry && cmd.toLowerCase().startsWith('cd ')) {
+      setCwd(cmd.slice(3).trim() || '~');
+    }
+
     if (!entry) {
-      typeLines([`commande introuvable : ${escapeHtml(cmd)} — tape <span class="k">help</span> pour la liste.`], 'error', 4);
+      const easter = TERM_EASTER_PATTERNS.find((p) => p.re.test(cmd));
+      if (easter) {
+        typeLines(easter.run(), 'error', 4, gen);
+        return;
+      }
+      typeLines([`commande introuvable : ${escapeHtml(cmd)} — tape <span class="k">help</span> pour la liste.`], 'error', 4, gen);
       return;
     }
-    typeLines(entry.run(), entry.runClass || null, 4);
+
+    if (entry.special === 'matrix') {
+      runMatrixEasterEgg(gen);
+      return;
+    }
+    if (entry.special === 'crack-start') {
+      crackState = { code: generateCrackCode(), attempts: 0, revealed: new Set() };
+      setCwd(CRACK_CWD);
+      typeLines(entry.run(), null, 4, gen);
+      return;
+    }
+    typeLines(entry.run(), entry.runClass || null, entry.speed || 4, gen);
   }
 
   const inputRow = input.closest('.term-input-row');
@@ -510,7 +865,135 @@ function initTerminal() {
     tabIndex = -1;
   }
 
-  card.addEventListener('click', () => input.focus());
+  // Simule une frappe humaine dans le champ : caractère par caractère, à un rythme
+  // irrégulier (pas un débit de robot), avec une petite pause avant le "Entrée" final.
+  function typeIntoInput(text, gen, onDone) {
+    let i = 0;
+    function step() {
+      if (gen !== typingGen) return; // une commande plus récente (ou une annulation) a pris le relais
+      i += 1;
+      input.value = text.slice(0, i);
+      updateHasValue();
+      if (i < text.length) {
+        setTimeout(step, 55 + Math.random() * 70);
+      } else {
+        setTimeout(() => { if (gen === typingGen) onDone(); }, 280);
+      }
+    }
+    step();
+  }
+
+  // Permet de piloter le terminal depuis l'extérieur (auto-démo neofetch quand le
+  // terminal atteint sa taille max — voir initHeroTermGrow). `isAutoOutput` marque
+  // cette séquence comme automatique, pour pouvoir l'annuler/l'effacer sans toucher
+  // à une commande que l'utilisateur aurait tapée lui-même par-dessus.
+  let isAutoOutput = false;
+  // jeton dédié à la séquence (distinct de typingGen, que runCommand incrémente à
+  // chaque commande) : permet d'enchaîner plusieurs runCommand sans que l'un invalide
+  // la suite de la chaîne de setTimeout qui pilote la frappe simulée.
+  let autoSeqId = 0;
+  window.HeroTerminal = {
+    isEmpty: () => output.children.length === 0,
+    isAutoOutput: () => isAutoOutput,
+    // Tape chaque commande de `commands` dans le champ comme le ferait une vraie
+    // personne, puis l'envoie réellement (echo immédiat) dès la frappe finie — chaque
+    // commande s'ajoute à la suite de la précédente, sans effacer l'écran entre les deux.
+    runAutoSequence: (commands) => {
+      isAutoOutput = true;
+      autoSeqId += 1;
+      const seqId = autoSeqId;
+      function typeAt(idx) {
+        if (seqId !== autoSeqId) return;
+        typingGen += 1;
+        const charGen = typingGen;
+        typeIntoInput(commands[idx], charGen, () => {
+          if (seqId !== autoSeqId) return;
+          input.value = '';
+          updateHasValue();
+          runCommand(commands[idx], idx > 0);
+          if (idx < commands.length - 1) {
+            setTimeout(() => { if (seqId === autoSeqId) typeAt(idx + 1); }, 450);
+          }
+        });
+      }
+      typeAt(0);
+    },
+    // Coupe net une séquence auto en cours (frappe ou sortie déjà affichée) et nettoie.
+    cancelAuto: () => {
+      autoSeqId += 1;
+      typingGen += 1;
+      isAutoOutput = false;
+      crackState = null;
+      input.value = '';
+      updateHasValue();
+      output.innerHTML = '';
+      setCwd('~');
+    },
+  };
+
+  // Démo passive dans le champ de saisie : tape "neofetch" lettre par lettre puis
+  // l'efface, en boucle, tant que l'utilisateur n'a pas cliqué sur la console —
+  // simple incitation visuelle, ne déclenche jamais la commande réellement.
+  let idleActive = true;
+  let idleGen = 0;
+  const idleTextEl = document.getElementById('term-idle-text');
+
+  function idleTypeText(text, gen, onDone) {
+    let i = 0;
+    function step() {
+      if (gen !== idleGen) return;
+      i += 1;
+      if (idleTextEl) idleTextEl.textContent = text.slice(0, i);
+      if (i < text.length) {
+        setTimeout(step, 70 + Math.random() * 80);
+      } else {
+        onDone();
+      }
+    }
+    step();
+  }
+
+  function idleEraseText(gen, onDone) {
+    function step() {
+      if (gen !== idleGen || !idleTextEl) return;
+      idleTextEl.textContent = idleTextEl.textContent.slice(0, -1);
+      if (idleTextEl.textContent.length > 0) {
+        setTimeout(step, 35 + Math.random() * 35);
+      } else {
+        onDone();
+      }
+    }
+    step();
+  }
+
+  function idleLoop() {
+    if (!idleActive) return;
+    const gen = idleGen;
+    idleTypeText('neofetch', gen, () => {
+      if (gen !== idleGen) return;
+      setTimeout(() => {
+        if (gen !== idleGen) return;
+        idleEraseText(gen, () => {
+          if (gen !== idleGen) return;
+          setTimeout(() => { if (gen === idleGen) idleLoop(); }, 2200);
+        });
+      }, 900);
+    });
+  }
+
+  function stopIdleTease() {
+    if (!idleActive) return;
+    idleActive = false;
+    idleGen += 1;
+    if (idleTextEl) idleTextEl.textContent = '';
+    inputRow.classList.remove('is-idle');
+  }
+
+  inputRow.classList.add('is-idle');
+  setTimeout(idleLoop, 1000);
+
+  card.addEventListener('click', () => { stopIdleTease(); input.focus(); });
+  input.addEventListener('focus', stopIdleTease);
   input.addEventListener('input', () => {
     resetTabCycle();
     updateHasValue();
@@ -519,6 +1002,7 @@ function initTerminal() {
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       resetTabCycle();
+      isAutoOutput = false;
       runCommand(input.value);
       input.value = '';
     } else if (e.key === 'ArrowUp') {
