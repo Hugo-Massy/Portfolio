@@ -1,6 +1,30 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
 const SECTIONS = ['nav', 'hero', 'about'];
 
+// Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
+// la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).
+let CURRENT_LANG = 'fr';
+
+// Parcourt le DOM et remplace le contenu de chaque élément [data-i18n]/[data-i18n-attr]
+// par la traduction correspondante, puis prévient le reste de l'appli (hero cycle,
+// contenu par défaut du terminal...) via l'évènement "langchange".
+function applyTranslations(lang) {
+  const dict = I18N[lang] || I18N.fr;
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const val = dict[el.dataset.i18n];
+    if (val !== undefined) el.innerHTML = val;
+  });
+  document.querySelectorAll('[data-i18n-attr]').forEach((el) => {
+    el.dataset.i18nAttr.split(';').forEach((pair) => {
+      const [attr, key] = pair.split(':').map((s) => s.trim());
+      const val = dict[key];
+      if (attr && val !== undefined) el.setAttribute(attr, val);
+    });
+  });
+  document.documentElement.lang = lang;
+  document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
+}
+
 async function loadSections() {
   const root = document.getElementById('app');
   for (const name of SECTIONS) {
@@ -21,8 +45,9 @@ async function loadSections() {
   initLangSwitch();
 }
 
-// Bascule FR/EN/ES du bouton drapeau en haut à droite — purement visuel pour l'instant
-// (pas encore de contenu traduit). Toujours en français au chargement de la page.
+// Bascule FR/EN/ES du bouton drapeau en haut à droite — traduit tout le contenu
+// statique du site (voir applyTranslations) ainsi que le terminal interactif.
+// Toujours en français au chargement de la page.
 function initLangSwitch() {
   const btn = document.querySelector('.lang-switch');
   if (!btn) return;
@@ -37,7 +62,8 @@ function initLangSwitch() {
   function apply(lang) {
     btn.dataset.lang = lang;
     LANGS.forEach((l) => { flags[l].classList.toggle('is-active', l === lang); });
-    document.documentElement.lang = lang;
+    CURRENT_LANG = lang;
+    applyTranslations(lang);
   }
 
   apply('fr');
@@ -93,7 +119,7 @@ function initHeroTermGrow() {
         el, html: el.innerHTML, length: el.textContent.length,
       }))
     : [];
-  const totalChars = lines.reduce((sum, l) => sum + l.length, 0);
+  let totalChars = lines.reduce((sum, l) => sum + l.length, 0);
 
   function truncateToChars(container, maxChars) {
     let remaining = maxChars;
@@ -133,8 +159,24 @@ function initHeroTermGrow() {
 
   // Tape l'aperçu des catégories caractère par caractère entre 70% et 100% du scroll,
   // comme si on le saisissait au clavier (avec un curseur clignotant pendant la frappe).
-  const catHTML = categories ? categories.innerHTML : '';
-  const catTotalChars = categories ? categories.textContent.length : 0;
+  let catHTML = categories ? categories.innerHTML : '';
+  let catTotalChars = categories ? categories.textContent.length : 0;
+
+  // Le contenu par défaut et l'aperçu des catégories sont retraduits en place par
+  // applyTranslations (data-i18n) ; on recapture donc leur HTML "source" juste après,
+  // sinon renderErase()/renderTypeCategories() réécriraient l'ancienne langue par-dessus.
+  document.addEventListener('langchange', () => {
+    lines.forEach((line) => {
+      line.html = line.el.innerHTML;
+      line.length = line.el.textContent.length;
+    });
+    totalChars = lines.reduce((sum, l) => sum + l.length, 0);
+    if (categories) {
+      catHTML = categories.innerHTML;
+      catTotalChars = categories.textContent.length;
+    }
+    render();
+  });
 
   function renderTypeCategories() {
     if (!categories) return;
@@ -364,28 +406,32 @@ function initHeroCycle() {
   const suffix = document.getElementById('cycle-suffix');
   if (!el) return;
 
-  const PHRASES = [
-    'consolide',
-    'assure',
-    'enrichie',
-    'renforce',
-    'solidifie',
-    'muscle',
-    'raffermit',
-    'protège',
-  ];
   const HOLD_MS = 2200;
   const SWAP_MS = 350;
   let i = 0;
+  let isFinal = false;
+
+  function phrases() {
+    return HERO_PHRASES[CURRENT_LANG] || HERO_PHRASES.fr;
+  }
+
+  el.textContent = phrases()[0];
+
+  // Si la langue change en cours de cycle, on retraduit juste le mot actuellement
+  // affiché (à la même position dans la nouvelle liste) sans relancer le minuteur.
+  document.addEventListener('langchange', () => {
+    el.textContent = isFinal ? phrases()[phrases().length - 1] : phrases()[i];
+  });
 
   const timer = setInterval(() => {
     i += 1;
     el.classList.add('is-swapping');
     setTimeout(() => {
-      el.textContent = PHRASES[i];
+      el.textContent = phrases()[i];
       el.classList.remove('is-swapping');
-      if (i === PHRASES.length - 1) {
+      if (i === phrases().length - 1) {
         clearInterval(timer);
+        isFinal = true;
         el.classList.add('is-final');
         if (suffix) suffix.remove();
       }
@@ -510,103 +556,58 @@ function initRevealObserver() {
   targets.forEach((el) => observer.observe(el));
 }
 
-// Terminal interactif du Hero — commandes prédéfinies, "help" pour la liste.
+// Donne accès au dictionnaire de la langue courante (voir i18n.js) pour le contenu
+// généré par le terminal, qui n'est jamais dans le DOM tant qu'on ne tape pas la commande
+// et ne peut donc pas être retraduit via applyTranslations comme le reste du site.
+function termDict() {
+  return TERM_I18N[CURRENT_LANG] || TERM_I18N.fr;
+}
+
+// Terminal interactif du Hero — commandes prédéfinies, "help" pour la liste. `desc` est un
+// getter pour rester traduit même si la langue change après le chargement de la page ;
+// `run` relit toujours termDict() au moment de l'exécution, pour la même raison.
 const TERM_COMMANDS = {
   help: {
-    desc: 'liste des commandes disponibles',
+    get desc() { return termDict().help.desc; },
     run: () => Object.entries(TERM_COMMANDS)
       .filter(([, cmd]) => cmd.desc)
       .map(([name, cmd]) => `<span class="k">${name.padEnd(10, ' ')}</span>— ${cmd.desc}`),
   },
   clear: {
-    desc: 'vide le terminal',
+    get desc() { return termDict().clear.desc; },
     run: () => [],
   },
   whoami: {
-    desc: 'stack technique actuelle',
-    run: () => [
-      '<span class="k">systèmes</span><span class="sep">:</span> Active Directory, Entra ID, Windows Server, Debian, GPO',
-      '<span class="k">réseau</span><span class="sep">:</span> VLAN/VLSM, pfSense, IPsec VPN, routage',
-      '<span class="k">cloud</span><span class="sep">:</span> Docker, GitHub Actions, OVH VPS, Vault, CI/CD',
-      '<span class="k">sécu</span><span class="sep">:</span> SOC/Blue Team, Wazuh, Suricata, T-Pot, CERT-FR/CVE, IAM/RBAC',
-      '<span class="k">dev</span><span class="sep">:</span> FastAPI, React/TypeScript, PostgreSQL, Redis, Python',
-    ],
+    get desc() { return termDict().whoami.desc; },
+    run: () => termDict().whoami.lines,
   },
   status: {
-    desc: 'disponibilité pour une alternance',
-    run: () => [
-      '→ disponible pour une alternance Mastère (2 ans) dès sept. 2026 <svg class="ok-mark" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>',
-      'Poste recherché : Administrateur Systèmes &amp; Réseaux / Cloud.',
-    ],
+    get desc() { return termDict().status.desc; },
+    run: () => termDict().status.lines,
   },
   about: {
-    desc: 'qui je suis, en une ligne',
-    run: () => [
-      'Hugo Menu — Mastère Cybersécurité &amp; Ethical Hacking (EFREI Panthéon-Assas).',
-      'Alternant DSI Mairie de Massy : AD/Entra ID, parc de 130+ applications, veille CVE quotidienne.',
-      'À la croisée de l\'infra, du cloud et de la sécurité — avec une vraie culture du logiciel libre',
-      'et de la souveraineté numérique (OVH, Mistral AI), forgée dans les contraintes du secteur public.',
-    ],
+    get desc() { return termDict().about.desc; },
+    run: () => termDict().about.lines,
   },
   skills: {
-    desc: 'compétences clés',
-    run: () => [
-      '<span class="k">systèmes</span><span class="sep">:</span> AD, Entra ID, Windows Server, Debian/Linux, GPO',
-      '<span class="k">réseau</span><span class="sep">:</span> VLAN/VLSM, pfSense, IPsec VPN, pare-feu',
-      '<span class="k">cloud</span><span class="sep">:</span> Docker, GitHub Actions, OVH VPS, HashiCorp Vault, CI/CD',
-      '<span class="k">sécurité</span><span class="sep">:</span> SOC/Blue Team, Wazuh, Suricata, T-Pot, CERT-FR/CVE, IAM/RBAC',
-      '<span class="k">dev</span><span class="sep">:</span> FastAPI, React/TypeScript, PostgreSQL, Redis, Python',
-      'Détail complet et preuves à l\'appui dans la section <span class="k">#skills</span>.',
-    ],
+    get desc() { return termDict().skills.desc; },
+    run: () => termDict().skills.lines,
   },
   projects: {
-    desc: 'projets phares',
-    run: () => [
-      '<span class="k">Massy Innove</span> — plateforme IA interne 100% souveraine (FastAPI/React, Argon2id,',
-      '  rate limiting, IDS Suricata, routage multi-modèles Mistral AI).',
-      '<span class="k">Fil Rouge SOC</span> — SOC complet (Wazuh 4.7, Suricata, T-Pot) avec DAT, plan de',
-      '  sauvegarde et analyse d\'amélioration, pour la certification RNCP.',
-      '<span class="k">Homelab perso</span> — Debian 12, Nextcloud via Cloudflare Tunnel, supervision',
-      '  Zabbix 7.2, zéro port ouvert sur le LAN.',
-      '<span class="k">Plugins GLPI</span> — Pretaporter (signature électronique) &amp; Import SIM,',
-      '  process papier supprimé à la DSI de Massy.',
-      'Repos, démos et détails dans la section <span class="k">#projects</span>.',
-    ],
+    get desc() { return termDict().projects.desc; },
+    run: () => termDict().projects.lines,
   },
   contact: {
-    desc: 'comment me contacter',
-    run: () => [
-      '<span class="k">email</span><span class="sep">:</span> contact@hugomenu.dev',
-      '<span class="k">linkedin</span><span class="sep">:</span> linkedin.com/in/hugo-menu',
-      '<span class="k">github</span><span class="sep">:</span> github.com/Cody91430',
-      'Réponse sous 24h — parlons de votre besoin.',
-    ],
+    get desc() { return termDict().contact.desc; },
+    run: () => termDict().contact.lines,
   },
   neofetch: {
-    desc: 'carte d\'identité système',
-    run: () => [
-      '<span class="nf-k">OS:</span> Mastère Cybersécurité &amp; Ethical Hacking',
-      '<span class="nf-k">Host:</span> EFREI · Panthéon-Assas',
-      '<span class="nf-k">Role:</span> Alternant DSI — Mairie de Massy',
-      '<span class="nf-k">Uptime:</span> 2 ans en production',
-      '<span class="nf-k">Stack:</span> AD · Entra ID · pfSense · Docker · Wazuh',
-      '<span class="nf-k">Locale:</span> fr_FR · en_US · Île-de-France',
-      '<span class="nf-k">Focus:</span> SOC / Blue Team · IAM · souveraineté num.',
-      '<span class="nf-k">Status:</span> dispo alternance — sept. 2026',
-    ],
+    get desc() { return termDict().neofetch.desc; },
+    run: () => termDict().neofetch.lines,
   },
   banner: {
-    desc: 'petit dessin ASCII',
-    run: () => [
-      '      ╔═══╗',
-      '     ╔╝▓▓▓╚╗',
-      '     ║▓▓▓▓▓║',
-      '     ║▓ ✓ ▓║',
-      '     ╚╗▓▓▓╔╝',
-      '      ╚═╦═╝',
-      '        ║',
-      '  [ HM — SECURED ]',
-    ],
+    get desc() { return termDict().banner.desc; },
+    run: () => termDict().banner.lines,
   },
 };
 
@@ -620,40 +621,17 @@ TERM_COMMANDS.matrix = { desc: null, special: 'matrix' };
 TERM_COMMANDS.crack = {
   desc: null,
   special: 'crack-start',
-  run: () => [
-    'lancement de <span class="k">crack-fw.sh</span> — bypass du portail captif pfSense...',
-    'code d\'accès à 4 chiffres uniques détecté sur l\'interface WAN.',
-    'tape une combinaison de 4 chiffres pour tenter ta chance — <span class="k">exit</span> pour abandonner.',
-  ],
+  run: () => termDict().crackIntro,
 };
 TERM_COMMANDS.hack = TERM_COMMANDS.crack; // alias caché, même mini-jeu
 
 // Motifs de commandes "piégées" : pas de clé exacte dans TERM_COMMANDS (l'argument varie),
 // on les teste donc par regex juste avant d'afficher "commande introuvable".
 const TERM_EASTER_PATTERNS = [
-  {
-    re: /^sudo\b/i,
-    run: () => [
-      '<span class="error">[sudo] mot de passe pour hugo :</span> ********',
-      'Permission denied (publickey,password). Ce terminal n\'a pas de root —',
-      'tape <span class="k">contact</span> si tu veux les vraies clés d\'accès.',
-    ],
-  },
-  {
-    re: /^rm\s+-rf\s+\/?$/i,
-    run: () => [
-      'nice try.',
-      'aucune action effectuée — ce terminal n\'a pas de vrai shell, et moi je fais des sauvegardes.',
-    ],
-  },
-  {
-    re: /^su(\s|$)/i,
-    run: () => ['tu es déjà l\'utilisateur le plus permissif possible ici : invité.'],
-  },
-  {
-    re: /^(ssh|nc|netcat)\b/i,
-    run: () => ['connexion refusée — il n\'y a pas de serveur à pirater ici, juste un site web.'],
-  },
+  { re: /^sudo\b/i, run: () => termDict().easterSudo },
+  { re: /^rm\s+-rf\s+\/?$/i, run: () => termDict().easterRm },
+  { re: /^su(\s|$)/i, run: () => termDict().easterSu },
+  { re: /^(ssh|nc|netcat)\b/i, run: () => termDict().easterSsh },
 ];
 
 // Vraie commande, sans sortie : sert juste à "envoyer" `cd ~/hugo` au terminal dès que
@@ -715,7 +693,7 @@ function initTerminal() {
   function handleCrackGuess(raw) {
     const guess = raw.trim();
     if (!/^\d{4}$/.test(guess) || new Set(guess).size !== 4) {
-      return ['format invalide — attends 4 chiffres uniques (ex: 1709).'];
+      return [termDict().crackInvalid];
     }
     const guessDigits = guess.split('').map(Number);
     crackState.attempts += 1;
@@ -729,21 +707,16 @@ function initTerminal() {
       const { attempts } = crackState;
       crackState = null;
       setCwd('~');
-      return [
-        `accès au pare-feu accordé en ${attempts} tentative${attempts > 1 ? 's' : ''}. <span class="ok-mark">✓</span>`,
-        'bypass réussi — un code à 4 chiffres se devine toujours, en vrai vie comme ici.',
-        'change tes mots de passe par défaut, n\'en réutilise jamais un d\'un service à l\'autre,',
-        'et préfère une phrase de passe longue et unique (ou un gestionnaire de mots de passe).',
-      ];
+      return termDict().crackSuccess(attempts);
     }
-    const lines = [`${bulls} bien placé(s), ${cows} présent(s) mais mal placé(s) — tentative #${crackState.attempts}.`];
+    const lines = [termDict().crackProgress(bulls, cows, crackState.attempts)];
     // toutes les 3 tentatives ratées, on révèle un chiffre supplémentaire du code (dans
     // l'ordre des positions) pour éviter que le brute-force pur ne devienne décourageant.
     if (crackState.attempts % 3 === 0 && crackState.revealed.size < crackState.code.length) {
       let idx = 0;
       while (crackState.revealed.has(idx)) idx += 1;
       crackState.revealed.add(idx);
-      lines.push(`indice : le chiffre en position ${idx + 1} est <span class="k">${crackState.code[idx]}</span>.`);
+      lines.push(termDict().crackHint(idx + 1, crackState.code[idx]));
     }
     return lines;
   }
@@ -976,7 +949,7 @@ function initTerminal() {
       if (['exit', 'quit'].includes(cmd.toLowerCase())) {
         crackState = null;
         setCwd('~');
-        typeLines(['abandon. le pare-feu reste debout (pour l\'instant).'], null, 4, gen);
+        typeLines(termDict().crackAbandon, null, 4, gen);
       } else {
         typeLines(handleCrackGuess(cmd), null, 4, gen);
       }
@@ -1000,7 +973,7 @@ function initTerminal() {
         typeLines(easter.run(), 'error', 4, gen);
         return;
       }
-      typeLines([`commande introuvable : ${escapeHtml(cmd)} — tape <span class="k">help</span> pour la liste.`], 'error', 4, gen);
+      typeLines([termDict().notFound(escapeHtml(cmd))], 'error', 4, gen);
       return;
     }
 
