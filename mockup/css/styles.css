@@ -171,7 +171,11 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   background:var(--term-bg-2); border-bottom:1px solid var(--term-border); flex-shrink:0;
 }
 .term-dots{display:flex; gap:6px;}
-.term-dot{width:10px; height:10px; border-radius:50%;}
+.term-dot{
+  width:10px; height:10px; border-radius:50%; cursor:pointer; transition:filter .15s ease;
+  box-sizing:content-box; background-clip:content-box; padding:5px; margin:-5px;
+}
+.term-dot:hover{filter:brightness(1.2);}
 .term-output{
   position:relative; flex:1 1 340px; padding:14px 28px 28px; color:var(--term-text); line-height:1.9;
   overflow-y:auto; scrollbar-width:thin; scrollbar-color:#3a3f47 transparent;

@@ -37,6 +37,9 @@ function initHeroTermGrow() {
   // stable 1 s ; le timer est annulé si l'utilisateur ressort du plein écran avant.
   let neofetchShown = false;
   let neofetchTimer = null;
+  // une fois joué, ne se rejoue plus automatiquement les fois suivantes où la
+  // console repasse en plein écran (seule la toute première fois compte).
+  let neofetchPlayedOnce = false;
   // un ancêtre (.reveal.is-visible) porte un transform, qui re-ancre tout descendant
   // position:fixed à sa propre boîte au lieu du viewport ; on échappe donc vers
   // document.body pendant la croissance pour que le fixed reste bien collé à l'écran.
@@ -142,12 +145,14 @@ function initHeroTermGrow() {
     renderTypeCategories();
 
     // arrivé en plein écran : on lance un compte à rebours de 1 s avant d'afficher
-    // neofetch ; toute sortie de l'état plein écran annule le timer.
+    // neofetch ; toute sortie de l'état plein écran annule le timer. Ne se déclenche
+    // que la toute première fois que la console atteint son plein écran.
     if (progress > 0.995) {
-      if (!neofetchShown && !neofetchTimer) {
+      if (!neofetchPlayedOnce && !neofetchShown && !neofetchTimer) {
         neofetchTimer = setTimeout(() => {
           neofetchTimer = null;
           neofetchShown = true;
+          neofetchPlayedOnce = true;
           if (window.HeroTerminal && window.HeroTerminal.isEmpty()) {
             window.HeroTerminal.runAutoSequence(['cd ~/hugo', 'cat neofetch']);
           }
@@ -158,15 +163,10 @@ function initHeroTermGrow() {
         clearTimeout(neofetchTimer);
         neofetchTimer = null;
       }
-      // on quitte le plein écran : on efface neofetch (s'il s'agit bien de lui, et pas
-      // d'une commande tapée entre-temps par l'utilisateur) pour qu'il puisse se
-      // réafficher proprement la prochaine fois qu'on revient en plein écran.
-      if (neofetchShown) {
-        neofetchShown = false;
-        if (window.HeroTerminal && window.HeroTerminal.isAutoOutput()) {
-          window.HeroTerminal.cancelAuto();
-        }
-      }
+      // on quitte le plein écran : le contenu (neofetch ou autre) reste affiché tel
+      // quel, en grand comme en petit, tant que l'utilisateur n'a pas tapé une
+      // nouvelle commande par-dessus (voir runCommand, qui efface alors la sortie).
+      neofetchShown = false;
     }
   }
 
@@ -195,19 +195,23 @@ function initHeroTermGrow() {
     }
   }
 
-  window.addEventListener('wheel', (e) => {
+  // La console ne grossit/rétrécit au scroll que si le curseur (ou le doigt) est
+  // au-dessus d'elle — écouteurs posés sur `card`, pas sur `window`.
+  card.addEventListener('wheel', (e) => {
     if (targetProgress <= 0 && e.deltaY < 0) return; // déjà au repos, on laisse remonter normalement
     e.preventDefault();
+    if (window.HeroTerminal && window.HeroTerminal.stopIdleTease) window.HeroTerminal.stopIdleTease();
     setTargetProgress(targetProgress + e.deltaY / TRAVEL_PX);
   }, { passive: false });
 
   let touchY = null;
-  window.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
-  window.addEventListener('touchmove', (e) => {
+  card.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+  card.addEventListener('touchmove', (e) => {
     if (touchY === null) return;
     const dy = touchY - e.touches[0].clientY;
     if (targetProgress <= 0 && dy < 0) { touchY = e.touches[0].clientY; return; }
     e.preventDefault();
+    if (window.HeroTerminal && window.HeroTerminal.stopIdleTease) window.HeroTerminal.stopIdleTease();
     setTargetProgress(targetProgress + dy / TRAVEL_PX);
     touchY = e.touches[0].clientY;
   }, { passive: false });
@@ -216,6 +220,31 @@ function initHeroTermGrow() {
     scrollDownBtn.addEventListener('click', (e) => {
       e.preventDefault();
       setTargetProgress(1);
+    });
+  }
+
+  // Ronds façon macOS dans la barre du terminal : vert = plein écran, jaune =
+  // repos, rouge = clear (délégué à window.HeroTerminal, posé par initTerminal).
+  const dotMax = document.getElementById('term-dot-max');
+  const dotMin = document.getElementById('term-dot-min');
+  const dotClose = document.getElementById('term-dot-close');
+  if (dotMax) {
+    dotMax.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (window.HeroTerminal && window.HeroTerminal.stopIdleTease) window.HeroTerminal.stopIdleTease();
+      setTargetProgress(1);
+    });
+  }
+  if (dotMin) {
+    dotMin.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setTargetProgress(0);
+    });
+  }
+  if (dotClose) {
+    dotClose.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (window.HeroTerminal && window.HeroTerminal.clear) window.HeroTerminal.clear();
     });
   }
 
@@ -895,6 +924,8 @@ function initTerminal() {
   window.HeroTerminal = {
     isEmpty: () => output.children.length === 0,
     isAutoOutput: () => isAutoOutput,
+    // Rond rouge de la barre du terminal : vide la sortie tapée, comme `clear`.
+    clear: () => runCommand('clear'),
     // Tape chaque commande de `commands` dans le champ comme le ferait une vraie
     // personne, puis l'envoie réellement (echo immédiat) dès la frappe finie — chaque
     // commande s'ajoute à la suite de la précédente, sans effacer l'écran entre les deux.
@@ -991,6 +1022,7 @@ function initTerminal() {
 
   inputRow.classList.add('is-idle');
   setTimeout(idleLoop, 1000);
+  window.HeroTerminal.stopIdleTease = stopIdleTease;
 
   card.addEventListener('click', () => { stopIdleTease(); input.focus(); });
   input.addEventListener('focus', stopIdleTease);
