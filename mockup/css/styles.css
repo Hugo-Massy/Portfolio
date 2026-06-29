@@ -164,6 +164,27 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   50%{transform:translate(-50%, 6px);}
 }
 
+/* bouton "remonter en haut" — n'apparaît que pendant le scroll sur la section "à propos" ;
+   fond accent/icône blanche par défaut, inversé (fond blanc/icône accent) quand il se
+   trouve sur la vague bleue, pour rester lisible dans les deux cas (cf. is-on-dark du rail) */
+.back-to-top{
+  position:fixed; right:22px; bottom:22px; z-index:50;
+  width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--accent); color:#fff;
+  opacity:0; pointer-events:none;
+  transition:opacity .25s ease, background .2s ease, color .2s ease;
+}
+.back-to-top.is-visible{
+  opacity:1; pointer-events:auto;
+  animation:back-to-top-bounce 2.2s ease-in-out infinite;
+}
+.back-to-top.is-on-dark{background:#fff; color:var(--accent);}
+@keyframes back-to-top-bounce{
+  0%, 100%{transform:translateY(0);}
+  50%{transform:translateY(-6px);}
+}
+
 /* HERO terminal layout — la fenêtre reste sombre pour trancher sur le thème clair, et s'aligne sur la hauteur de la colonne de gauche */
 .hero-b-grid{display:grid; grid-template-columns:1.15fr 1fr; gap:28px; align-items:center;}
 @media(max-width:860px){.hero-b-grid{grid-template-columns:1fr; gap:40px;}}

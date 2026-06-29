@@ -15,6 +15,7 @@ async function loadSections() {
   initBackgroundGrid();
   initTabSpy();
   initRailOnDark();
+  initBackToTop();
   initHeroCycle();
   initHeroTermGrow();
 }
@@ -399,10 +400,22 @@ function initTabSpy() {
   moveIndicatorTo(tabs[0]);
 }
 
-// Bascule chaque point du rail sur des teintes claires quand la vague bleue de
-// .section-divider-bar passe sous lui, pour qu'il reste lisible (sinon ses points/labels
-// gris se fondent dans le bleu). Chaque point est testé indépendamment : selon sa hauteur
-// sur le rail, certains peuvent être sur la vague bleue pendant que d'autres n'y sont pas.
+// Vrai si le point d'ordonnée y (proche du bord droit, là où vivent le rail et le bouton
+// "remonter en haut") tombe sur la vague bleue de .section-divider-bar plutôt que sur le
+// fond clair — cf. son clip-path : la vague va de 117px sous le haut de la section à
+// (hauteur - 0.4*waveH).
+function isOverAboutWave(about, y) {
+  const rect = about.getBoundingClientRect();
+  const waveH = parseFloat(getComputedStyle(about).paddingBottom) || 0;
+  const top = rect.top + 117;
+  const bottom = rect.top + rect.height - waveH * 0.4;
+  return y > top && y < bottom;
+}
+
+// Bascule chaque point du rail sur des teintes claires quand la vague bleue passe sous lui,
+// pour qu'il reste lisible (sinon ses points/labels gris se fondent dans le bleu). Chaque
+// point est testé indépendamment : selon sa hauteur sur le rail, certains peuvent être sur
+// la vague bleue pendant que d'autres n'y sont pas.
 function initRailOnDark() {
   const rail = document.querySelector('.dot-rail');
   const indicator = document.querySelector('.dot-rail-indicator');
@@ -410,25 +423,38 @@ function initRailOnDark() {
   const about = document.getElementById('about');
   if (!rail || !about || !dots.length) return;
 
-  function isOverWave(y) {
-    const rect = about.getBoundingClientRect();
-    const waveH = parseFloat(getComputedStyle(about).paddingBottom) || 0;
-    // à l'aplomb du rail (bord droit), la vague bleue va de 117px sous le haut de la
-    // section à (hauteur - 0.4*waveH) — cf. le clip-path de .section-divider-bar.
-    const top = rect.top + 117;
-    const bottom = rect.top + rect.height - waveH * 0.4;
-    return y > top && y < bottom;
-  }
-
   function update() {
     dots.forEach((dot) => {
       const r = dot.getBoundingClientRect();
-      dot.classList.toggle('is-on-dark', isOverWave(r.top + r.height / 2));
+      dot.classList.toggle('is-on-dark', isOverAboutWave(about, r.top + r.height / 2));
     });
     if (indicator) {
       const r = indicator.getBoundingClientRect();
-      indicator.classList.toggle('is-on-dark', isOverWave(r.top + r.height / 2));
+      indicator.classList.toggle('is-on-dark', isOverAboutWave(about, r.top + r.height / 2));
     }
+  }
+
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+}
+
+// Affiche le bouton "remonter en haut" uniquement tant que la section "à propos" est à l'écran,
+// et inverse ses couleurs (fond blanc/icône bleue) quand il se trouve sur la vague bleue, pour
+// rester lisible dans les deux cas.
+function initBackToTop() {
+  const btn = document.querySelector('.back-to-top');
+  const about = document.getElementById('about');
+  if (!btn || !about) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => btn.classList.toggle('is-visible', entry.isIntersecting));
+  }, { threshold: 0.15 });
+  observer.observe(about);
+
+  function update() {
+    const r = btn.getBoundingClientRect();
+    btn.classList.toggle('is-on-dark', isOverAboutWave(about, r.top + r.height / 2));
   }
 
   update();
@@ -1149,6 +1175,7 @@ function initBackgroundGrid() {
   const canvas = document.getElementById('bg-grid');
   const container = canvas ? canvas.closest('.hero') : null;
   const copy = container ? container.querySelector('.hero-copy') : null;
+  const navRail = document.querySelector('.dot-rail');
   if (!canvas || !container) return;
   const ctx = canvas.getContext('2d');
 
@@ -1207,20 +1234,34 @@ function initBackgroundGrid() {
 
   function updateExclusionRect() {
     exclusionRects = [];
-    if (!copy) return;
     const containerRect = container.getBoundingClientRect();
     const pad = 3;
-    copy.querySelectorAll(EXCLUSION_SELECTOR).forEach((el) => {
-      getLineRects(el).forEach((r) => {
-        if (r.width < 1 || r.height < 1) return;
+    if (copy) {
+      copy.querySelectorAll(EXCLUSION_SELECTOR).forEach((el) => {
+        getLineRects(el).forEach((r) => {
+          if (r.width < 1 || r.height < 1) return;
+          exclusionRects.push({
+            left: r.left - containerRect.left - pad,
+            top: r.top - containerRect.top - pad,
+            right: r.right - containerRect.left + pad,
+            bottom: r.bottom - containerRect.top + pad,
+          });
+        });
+      });
+    }
+    // le rail de nav est fixed (sa position relative au hero bouge au scroll) : on
+    // l'exclut en plus du texte, pour qu'il bénéficie du même halo feathered que le h1.
+    if (navRail) {
+      const r = navRail.getBoundingClientRect();
+      if (r.width >= 1 && r.height >= 1) {
         exclusionRects.push({
           left: r.left - containerRect.left - pad,
           top: r.top - containerRect.top - pad,
           right: r.right - containerRect.left + pad,
           bottom: r.bottom - containerRect.top + pad,
         });
-      });
-    });
+      }
+    }
   }
 
   function buildPoints() {
@@ -1314,6 +1355,7 @@ function initBackgroundGrid() {
   });
   window.addEventListener('scroll', () => {
     if (mouse.active) updateMouseFromClient();
+    if (navRail) updateExclusionRect();
   }, { passive: true });
   window.addEventListener('resize', resize);
   if (document.fonts && document.fonts.ready) {
