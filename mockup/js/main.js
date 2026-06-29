@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero'];
+const SECTIONS = ['nav', 'hero', 'about'];
 
 async function loadSections() {
   const root = document.getElementById('app');
@@ -1106,16 +1106,6 @@ function initBackgroundGrid() {
   if (!canvas || !container) return;
   const ctx = canvas.getContext('2d');
 
-  // Canvas secondaire qui prolonge la même grille de points dans la zone creusée de la vague (dans
-  // #about, qui remonte par-dessus le bas du hero). Il partage la grille et la réactivité souris du
-  // canvas du hero : on dessine les MÊMES points, simplement décalés de waveOffsetY (distance
-  // verticale entre le haut de ce canvas et le haut du hero) — donc rendu rigoureusement identique.
-  const waveCanvas = document.getElementById('bg-grid-wave');
-  const waveCtx = waveCanvas ? waveCanvas.getContext('2d') : null;
-  let waveW = 0;
-  let waveH = 0;
-  let waveOffsetY = 0;
-
   const SPACING = 32;
   const BASE_RADIUS = 1.2;
   const REACT_RADIUS = 140;
@@ -1196,23 +1186,10 @@ function initBackgroundGrid() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     buildPoints();
     updateExclusionRect();
-
-    if (waveCanvas) {
-      const wrect = waveCanvas.getBoundingClientRect();
-      waveW = wrect.width;
-      waveH = wrect.height;
-      // décalage vertical entre le haut du canvas de vague et le haut du hero : permet de réutiliser
-      // les mêmes points (coordonnées locales au hero) en les translatant pour ce canvas.
-      waveOffsetY = wrect.top - rect.top;
-      waveCanvas.width = waveW * dpr;
-      waveCanvas.height = waveH * dpr;
-      waveCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
   }
 
   function draw() {
     ctx.clearRect(0, 0, width, height);
-    if (waveCtx) waveCtx.clearRect(0, 0, waveW, waveH);
 
     for (const p of points) {
       let alpha = 1;
@@ -1250,18 +1227,6 @@ function initBackgroundGrid() {
       ctx.arc(p.x + dx, p.y + dy, r, 0, Math.PI * 2);
       ctx.fillStyle = fill;
       ctx.fill();
-
-      // même point reporté dans le canvas de la vague (coords locales = coords hero - waveOffsetY) ;
-      // on ne dessine que ce qui tombe dans sa boîte (le clip-path CSS masque ensuite sous la courbe).
-      if (waveCtx) {
-        const wy = p.y + dy - waveOffsetY;
-        if (wy > -2 && wy < waveH + 2) {
-          waveCtx.beginPath();
-          waveCtx.arc(p.x + dx, wy, r, 0, Math.PI * 2);
-          waveCtx.fillStyle = fill;
-          waveCtx.fill();
-        }
-      }
     }
 
     requestAnimationFrame(draw);
@@ -1276,10 +1241,8 @@ function initBackgroundGrid() {
     mouse.y = lastClientY - rect.top;
   }
 
-  // Écoute sur window (et non sur .hero) : la zone de la vague est visuellement #about, posée
-  // par-dessus le bas du hero, donc un listener sur .hero ne se déclencherait pas quand le curseur
-  // y passe. Les coords restent locales au hero (via updateMouseFromClient) pour que les deux canvas
-  // partagent le même repère.
+  // Écoute sur window (et non sur .hero) pour rester réactif même quand le curseur quitte
+  // brièvement la zone ; les coords sont reconverties en repère local via updateMouseFromClient.
   window.addEventListener('mousemove', (e) => {
     lastClientX = e.clientX;
     lastClientY = e.clientY;

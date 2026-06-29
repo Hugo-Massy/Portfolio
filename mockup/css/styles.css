@@ -24,9 +24,9 @@
   --shadow-card: 0 1px 2px rgba(20,20,15,0.04), 0 8px 24px rgba(20,20,15,0.03);
 }
 *{box-sizing:border-box; margin:0; padding:0;}
-/* page verrouillée à 100vh : la croissance de la console est pilotée à la molette/au
-   tactile (voir initHeroTermGrow dans js/main.js), pas par un vrai scroll de document */
-html, body{height:100%; overflow:hidden;}
+/* le hero reste verrouillé à 100vh et sa console grossit à la molette tant que le
+   curseur est au-dessus d'elle (voir initHeroTermGrow dans js/main.js) ; partout
+   ailleurs le document défile normalement pour atteindre les sections suivantes */
 html{scroll-behavior:smooth;}
 body{
   background:var(--bg);
@@ -34,6 +34,7 @@ body{
   font-family:var(--sans);
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
   overflow-anchor:none;
 }
 img{max-width:100%; display:block;}
@@ -338,4 +339,146 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .hero .lede{font-size:16px; margin-bottom:32px;}
   .hero-cta{margin-bottom:32px;}
   .social-row{gap:20px; flex-wrap:wrap;}
+}
+
+/* ABOUT — étiquette façon entrée de listing terminal ("01_à-propos/"), reprise du
+   vocabulaire visuel posé dans le menu du hero, pour fil conducteur entre les sections */
+.section-tag{
+  display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--mono); font-size:13px; font-weight:500;
+  color:var(--text-faint); letter-spacing:.02em; margin-bottom:18px;
+}
+.section-tag-num{color:var(--accent); font-weight:700;}
+
+.about{position:relative; background:var(--bg-elev-2);}
+/* bandeau de séparation entre hero et about : bande bleue épaisse inclinée, clippée en
+   polygone d'un bord à l'autre pour garantir qu'elle couvre toute la largeur du viewport */
+/* comble en blanc (couleur du hero) la zone entre le bas du hero et le bord proche du bandeau, avec
+   le même quadrillage de points que le hero (en CSS pur — ce bloc vit dans #about, jamais dans #bg-grid,
+   pour ne jamais interférer avec l'empilement du hero/terminal) */
+.section-divider-backdrop{
+  position:absolute; top:0; left:0; right:0; height:130px;
+  transform:translateY(-10%); overflow:hidden; pointer-events:none;
+  background:
+    radial-gradient(circle, rgba(77,111,203,.45) 1.2px, transparent 1.3px) 16px 16px/32px 32px,
+    var(--bg);
+  clip-path:polygon(0 0, 100% 0, 100% 55%, 0 15%);
+}
+.section-divider{
+  position:absolute; top:0; left:0; right:0; height:130px;
+  transform:translateY(-10%); overflow:hidden; z-index:2; pointer-events:none;
+}
+.section-divider-bar{
+  position:absolute; inset:0;
+  background:linear-gradient(100deg, var(--accent-dark), var(--accent));
+  clip-path:polygon(0 15%, 100% 55%, 100% 95%, 0 55%);
+  filter:drop-shadow(0 12px 20px var(--accent-glow));
+}
+.about-wrap{position:relative; z-index:1;}
+.about-head{max-width:620px; margin-bottom:56px;}
+.about-head h2{font-size:36px; margin-bottom:14px;}
+.about-head h2 .accent{color:var(--accent);}
+.about-subtitle{font-size:17px; color:var(--text-dim);}
+
+.about-grid{display:grid; grid-template-columns:300px 1fr; gap:40px; align-items:start;}
+@media(max-width:900px){.about-grid{grid-template-columns:1fr; gap:32px;}}
+
+/* carte d'identité — écho du term-card du hero, mais posée dans la lumière du thème clair */
+.about-card{
+  background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
+  padding:32px 28px; box-shadow:var(--shadow-card); position:sticky; top:120px;
+}
+@media(max-width:900px){.about-card{position:static;}}
+.about-avatar{
+  position:relative; width:88px; height:88px; border-radius:50%;
+  background:linear-gradient(135deg, var(--accent), var(--accent-dark));
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-weight:700; font-size:26px; color:#fff;
+  margin-bottom:18px; box-shadow:0 14px 30px -10px var(--accent-glow);
+}
+.about-avatar-status{
+  position:absolute; right:-3px; bottom:-3px; width:18px; height:18px;
+  border-radius:50%; background:#3ec25f; border:3px solid var(--bg-elev);
+  box-shadow:0 0 0 0 rgba(62,194,95,.5); animation:status-pulse 2s ease-out infinite;
+}
+.about-card h3{font-size:20px; margin-bottom:2px;}
+.about-role{font-size:13px; color:var(--text-dim); margin-bottom:22px;}
+.about-facts{display:flex; flex-direction:column; gap:11px; list-style:none;}
+.about-facts li{
+  display:flex; align-items:center; gap:9px;
+  font-size:13.5px; color:var(--text-dim);
+}
+.about-facts li svg{flex-shrink:0; color:var(--accent);}
+.about-divider{height:1px; background:var(--border-soft); margin:22px 0;}
+.about-langs{display:flex; flex-direction:column; gap:12px;}
+.about-lang{display:grid; grid-template-columns:64px 1fr 30px; align-items:center; gap:10px;}
+.about-lang-name{font-size:12.5px; color:var(--text-dim);}
+.about-lang-bar{height:5px; border-radius:3px; background:var(--bg-elev-2); overflow:hidden;}
+.about-lang-bar span{display:block; height:100%; background:var(--accent); border-radius:3px;}
+.about-lang-lvl{font-family:var(--mono); font-size:11px; color:var(--text-faint); text-align:right;}
+
+.about-lede{font-size:17px; color:var(--text-dim); max-width:620px; margin-bottom:28px;}
+.about-lede strong{color:var(--text); font-weight:600;}
+
+/* visualisation du rythme d'alternance : trois "semaines", deux pleines + une creuse */
+.about-rhythm{
+  display:flex; align-items:center; gap:14px;
+  background:var(--accent-soft); border:1px solid var(--accent-pale);
+  border-radius:10px; padding:14px 18px; margin-bottom:40px; max-width:620px;
+}
+.about-rhythm-bar{display:flex; gap:4px; flex-shrink:0;}
+.about-rhythm-bar span{
+  width:14px; height:14px; border-radius:4px; border:1.5px solid var(--accent-tint);
+}
+.about-rhythm-bar span.is-on{background:var(--accent); border-color:var(--accent);}
+.about-rhythm p{font-size:13.5px; color:var(--text-dim);}
+.about-rhythm strong{color:var(--text); font-weight:600;}
+
+/* timeline — ligne verticale continue, points pleins, l'étape en cours pulse comme le
+   statut "online" du hero pour rester cohérent visuellement */
+.about-timeline{list-style:none; position:relative; margin-bottom:40px;}
+.about-timeline::before{
+  content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1.5px;
+  background:var(--border);
+}
+.about-timeline li{position:relative; padding-left:30px; padding-bottom:26px;}
+.about-timeline li:last-child{padding-bottom:0;}
+.about-timeline-dot{
+  position:absolute; left:0; top:4px; width:12px; height:12px; border-radius:50%;
+  background:var(--bg-elev-2); border:2px solid var(--text-faint);
+}
+.about-timeline li.is-current .about-timeline-dot{
+  background:var(--accent); border-color:var(--accent);
+  box-shadow:0 0 0 0 var(--accent-glow); animation:status-pulse 2s ease-out infinite;
+}
+.about-timeline-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;}
+.about-timeline-date{font-family:var(--mono); font-size:12px; color:var(--text-faint);}
+.about-timeline-badge{
+  font-family:var(--mono); font-size:11px; color:var(--accent-dark);
+  background:var(--accent-pale); border-radius:5px; padding:2px 8px;
+}
+.about-timeline-body h4{font-size:16px; margin-bottom:5px;}
+.about-timeline-body p{font-size:14px; color:var(--text-dim); max-width:560px;}
+
+.about-row{display:flex; gap:48px; flex-wrap:wrap;}
+.about-block-label{
+  display:block; font-family:var(--mono); font-size:12px; color:var(--text-faint);
+  margin-bottom:12px;
+}
+.about-tags{display:flex; gap:8px; flex-wrap:wrap;}
+.about-tag{
+  font-size:13px; font-weight:500; color:var(--accent-dark);
+  background:var(--accent-soft); border:1px solid var(--accent-pale);
+  border-radius:20px; padding:6px 14px;
+}
+.about-interests{display:flex; gap:18px; flex-wrap:wrap;}
+.about-interests span{
+  display:flex; align-items:center; gap:7px;
+  font-size:13.5px; color:var(--text-dim);
+}
+.about-interests svg{color:var(--accent); flex-shrink:0;}
+
+@media(max-width:760px){
+  .about-head h2{font-size:28px;}
+  .about-row{gap:28px;}
 }
