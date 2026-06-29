@@ -254,13 +254,6 @@ function initHeroTermGrow() {
     touchY = e.touches[0].clientY;
   }, { passive: false });
 
-  if (scrollDownBtn) {
-    scrollDownBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      animateToProgress(1);
-    });
-  }
-
   // Ronds façon macOS dans la barre du terminal : vert = plein écran, jaune =
   // repos, rouge = clear (délégué à window.HeroTerminal, posé par initTerminal).
   const dotMax = document.getElementById('term-dot-max');
