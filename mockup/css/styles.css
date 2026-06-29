@@ -73,7 +73,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   font-family:var(--mono); font-size:12px; color:var(--text-dim);
   white-space:nowrap; margin-right:10px;
   max-width:0; opacity:0; overflow:hidden;
-  transition:max-width .25s ease, opacity .2s ease;
+  transition:max-width .25s ease, opacity .2s ease, color .2s ease;
 }
 /* piste de largeur fixe pour le rond : sa position horizontale ne dépend jamais
    de la largeur du label, donc elle reste alignée avec la ligne du rail */
@@ -83,13 +83,13 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .dot-rail .dot::before{
   content:''; width:8px; height:8px; border-radius:50%;
-  background:var(--text-faint);
+  background:rgba(77,111,203,0.45);
   box-shadow:0 0 0 0 var(--accent-glow);
   transform:translateX(-0.5px);
   transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .dot-rail a:hover .dot-label{max-width:140px; opacity:1;}
-.dot-rail a:hover .dot::before{transform:translateX(-2px) scale(1.3); background:var(--text-dim);}
+.dot-rail a:hover .dot::before{transform:translateX(-2px) scale(1.3); background:var(--accent);}
 .dot-rail a.is-active .dot::before{background:transparent;}
 .dot-rail a.is-active .dot-label{max-width:140px; opacity:1; color:var(--text); font-weight:500;}
 /* petit point qui voyage le long du rail quand on passe d'une section à l'autre */
@@ -99,6 +99,16 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   transform:translateY(-50%); z-index:1; pointer-events:none;
   transition:top .45s cubic-bezier(.65,0,.35,1);
 }
+/* sur la vague bleue (.section-divider-bar), chaque point bascule indépendamment sur
+   des teintes claires pour rester lisible — basculé via JS (initRailOnDark), point par point */
+.dot-rail a.is-on-dark .dot-label{color:rgba(255,255,255,.85);}
+.dot-rail a.is-on-dark:hover .dot-label{color:#fff;}
+.dot-rail a.is-on-dark .dot::before{background:#fff; box-shadow:0 0 0 0 rgba(255,255,255,.3);}
+.dot-rail a.is-on-dark:hover .dot::before{background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.3);}
+.dot-rail a.is-on-dark.is-active .dot::before{background:transparent;}
+.dot-rail a.is-on-dark.is-active .dot-label{color:#fff;}
+.dot-rail-indicator.is-on-dark{background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.3);}
+.dot-rail.is-on-dark .dot-rail-indicator{background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.3);}
 .btn{
   font-family:var(--sans); font-weight:600; font-size:14px;
   padding:13px 24px; border-radius:9px; display:inline-flex; align-items:center; gap:8px;
@@ -350,29 +360,19 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .section-tag-num{color:var(--accent); font-weight:700;}
 
-.about{position:relative; background:var(--bg-elev-2);}
+.about{position:relative; background:transparent; margin-bottom:20vh; padding-bottom:var(--wave-h);}
 /* bandeau de séparation entre hero et about : bande bleue épaisse inclinée, clippée en
    polygone d'un bord à l'autre pour garantir qu'elle couvre toute la largeur du viewport */
-/* comble en blanc (couleur du hero) la zone entre le bas du hero et le bord proche du bandeau, avec
-   le même quadrillage de points que le hero (en CSS pur — ce bloc vit dans #about, jamais dans #bg-grid,
-   pour ne jamais interférer avec l'empilement du hero/terminal) */
-.section-divider-backdrop{
-  position:absolute; top:0; left:0; right:0; height:130px;
-  transform:translateY(-10%); overflow:hidden; pointer-events:none;
-  background:
-    radial-gradient(circle, rgba(77,111,203,.45) 1.2px, transparent 1.3px) 16px 16px/32px 32px,
-    var(--bg);
-  clip-path:polygon(0 0, 100% 0, 100% 55%, 0 15%);
-}
 .section-divider{
-  position:absolute; top:0; left:0; right:0; height:130px;
-  transform:translateY(-10%); overflow:hidden; z-index:2; pointer-events:none;
+  position:absolute; inset:0; z-index:0; pointer-events:none;
 }
 .section-divider-bar{
   position:absolute; inset:0;
-  background:linear-gradient(100deg, var(--accent-dark), var(--accent));
-  clip-path:polygon(0 15%, 100% 55%, 100% 95%, 0 55%);
-  filter:drop-shadow(0 12px 20px var(--accent-glow));
+  background:var(--accent);
+  clip-path:polygon(0 13px, 100% 117px, 100% calc(100% - var(--wave-h) * 0.4), 82% 100%, 0 calc(100% - var(--wave-h) * 0.4));
+  filter:
+    drop-shadow(0 16px 18px rgba(20,30,60,.35))
+    drop-shadow(0 36px 32px rgba(20,30,60,.28));
 }
 .about-wrap{position:relative; z-index:1;}
 .about-head{max-width:620px; margin-bottom:56px;}
@@ -482,3 +482,33 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .about-head h2{font-size:28px;}
   .about-row{gap:28px;}
 }
+
+/* le fond bleu de .section-divider-bar remonte derrière tout .about-wrap (sauf .about-card,
+   qui reste une carte opaque claire) : on repasse en clair le texte qui repose dessus */
+.about-head .section-tag{color:rgba(255,255,255,.75);}
+.about-head .section-tag-num{color:#fff;}
+.about-head h2{color:#fff;}
+.about-head h2 .accent{color:#cfe0ff;}
+.about-subtitle{color:rgba(255,255,255,.85);}
+
+.about-main .about-lede{color:rgba(255,255,255,.85);}
+.about-main .about-lede strong{color:#fff;}
+
+.about-main .about-rhythm{background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.25);}
+.about-main .about-rhythm-bar span{border-color:rgba(255,255,255,.4);}
+.about-main .about-rhythm-bar span.is-on{background:#fff; border-color:#fff;}
+.about-main .about-rhythm p{color:rgba(255,255,255,.85);}
+.about-main .about-rhythm strong{color:#fff;}
+
+.about-main .about-timeline::before{background:rgba(255,255,255,.3);}
+.about-main .about-timeline-dot{background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.5);}
+.about-main .about-timeline li.is-current .about-timeline-dot{background:#fff; border-color:#fff;}
+.about-main .about-timeline-date{color:rgba(255,255,255,.65);}
+.about-main .about-timeline-badge{background:rgba(255,255,255,.18); color:#fff;}
+.about-main .about-timeline-body h4{color:#fff;}
+.about-main .about-timeline-body p{color:rgba(255,255,255,.8);}
+
+.about-main .about-block-label{color:rgba(255,255,255,.6);}
+.about-main .about-tag{background:rgba(255,255,255,.15); border-color:rgba(255,255,255,.3); color:#fff;}
+.about-main .about-interests span{color:rgba(255,255,255,.85);}
+.about-main .about-interests svg{color:#fff;}

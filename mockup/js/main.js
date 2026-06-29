@@ -14,6 +14,7 @@ async function loadSections() {
   initTerminal();
   initBackgroundGrid();
   initTabSpy();
+  initRailOnDark();
   initHeroCycle();
   initHeroTermGrow();
 }
@@ -388,6 +389,43 @@ function initTabSpy() {
 
   sectionToTab.forEach((tab, section) => observer.observe(section));
   moveIndicatorTo(tabs[0]);
+}
+
+// Bascule chaque point du rail sur des teintes claires quand la vague bleue de
+// .section-divider-bar passe sous lui, pour qu'il reste lisible (sinon ses points/labels
+// gris se fondent dans le bleu). Chaque point est testé indépendamment : selon sa hauteur
+// sur le rail, certains peuvent être sur la vague bleue pendant que d'autres n'y sont pas.
+function initRailOnDark() {
+  const rail = document.querySelector('.dot-rail');
+  const indicator = document.querySelector('.dot-rail-indicator');
+  const dots = document.querySelectorAll('.dot-rail a');
+  const about = document.getElementById('about');
+  if (!rail || !about || !dots.length) return;
+
+  function isOverWave(y) {
+    const rect = about.getBoundingClientRect();
+    const waveH = parseFloat(getComputedStyle(about).paddingBottom) || 0;
+    // à l'aplomb du rail (bord droit), la vague bleue va de 117px sous le haut de la
+    // section à (hauteur - 0.4*waveH) — cf. le clip-path de .section-divider-bar.
+    const top = rect.top + 117;
+    const bottom = rect.top + rect.height - waveH * 0.4;
+    return y > top && y < bottom;
+  }
+
+  function update() {
+    dots.forEach((dot) => {
+      const r = dot.getBoundingClientRect();
+      dot.classList.toggle('is-on-dark', isOverWave(r.top + r.height / 2));
+    });
+    if (indicator) {
+      const r = indicator.getBoundingClientRect();
+      indicator.classList.toggle('is-on-dark', isOverWave(r.top + r.height / 2));
+    }
+  }
+
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
 }
 
 // Anime les blocs .reveal lorsqu'ils entrent dans le viewport (motion discret, pas au chargement).
@@ -1116,6 +1154,9 @@ function initBackgroundGrid() {
   const MIN_ALPHA = 0.04;
   const ROUND_RADIUS = 10;
   const EXCLUSION_SELECTOR = 'h1, .lede, .btn, .social-row a';
+  // déborde sous le hero pour que la grille continue derrière le bord diagonal de la section
+  // "about" (.section-divider-bar), au lieu de s'arrêter pile au bas du hero.
+  const EXTRA_BELOW = 140;
 
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let width = 0;
@@ -1178,7 +1219,7 @@ function initBackgroundGrid() {
   function resize() {
     const rect = container.getBoundingClientRect();
     width = rect.width;
-    height = rect.height;
+    height = rect.height + EXTRA_BELOW;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
     canvas.style.width = `${width}px`;
