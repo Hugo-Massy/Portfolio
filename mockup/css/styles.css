@@ -164,6 +164,30 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   50%{transform:translate(-50%, 6px);}
 }
 
+/* bouton de changement de langue, en haut à droite ; reprend le même langage visuel
+   (pastille blanche, halo accent au survol) que le rail de nav et back-to-top */
+.lang-switch{
+  position:fixed; top:22px; right:22px; z-index:60;
+  display:flex; align-items:center; justify-content:center;
+  background:none; border:none; padding:0;
+  cursor:pointer; opacity:.45; transition:transform .2s ease, opacity .2s ease;
+}
+.lang-switch:hover, .lang-switch:focus-visible, .lang-switch.is-at-top{opacity:1;}
+.lang-switch:active{transform:translateY(1px);}
+.lang-switch .lang-flag{position:relative; width:27px; height:18px;}
+.lang-switch .lang-flag > svg{
+  position:absolute; inset:0; width:100%; height:100%; display:block;
+  border-radius:3px; box-shadow:0 0 0 1px rgba(10,14,16,0.18);
+  opacity:0; transform:translateY(8px) scale(.82); pointer-events:none;
+  transition:opacity .3s ease, transform .38s cubic-bezier(.34,1.56,.64,1);
+}
+.lang-switch .lang-flag > svg.is-active{
+  opacity:1; transform:translateY(0) scale(1); pointer-events:auto;
+}
+@media(max-width:600px){
+  .lang-switch{top:14px; right:14px;}
+}
+
 /* bouton "remonter en haut" — n'apparaît que pendant le scroll sur la section "à propos" ;
    fond accent/icône blanche par défaut, inversé (fond blanc/icône accent) quand il se
    trouve sur la vague bleue, pour rester lisible dans les deux cas (cf. is-on-dark du rail) */
@@ -413,82 +437,73 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .about-main .about-lede{margin-bottom:32px;}
 .about-main .about-timeline{margin-bottom:0;}
 
-/* carte identité — façon viseur de scanner : coin coupé, crochets d'angle (corner
-   brackets) et une ligne de balayage qui parcourt la carte en boucle */
+/* carte identité — badge d'accès opaque : plastique mat, encoche de lanière en haut,
+   ombre nette (pas de flou "verre"), bande code-barres en pied de carte */
 .about-card{
-  position:sticky; top:96px; overflow:hidden;
-  background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.18);
-  padding:30px 28px 32px;
-  clip-path:polygon(56px 0, 100% 0, 100% 100%, 0 100%, 0 56px);
-  filter:drop-shadow(0 24px 48px rgba(15,23,55,.45));
+  position:sticky; top:96px; margin-top:-70px;
+  background:#fdfdfc; border-radius:14px;
+  padding:38px 28px 24px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.6) inset,
+    0 2px 0 rgba(15,23,55,.12),
+    0 18px 30px -10px rgba(15,23,55,.5);
 }
-/* crochets d'angle en SVG carrés à taille fixe (jamais étirés, même si la carte
-   n'est pas carrée) — un par coin restant, le coin haut-gauche étant déjà marqué par la coupe.
-   La bordure CSS classique suit le rectangle d'origine et s'arrête net sur la diagonale du
-   coin coupé : on redessine cette arête manquante en 4e calque, au même ton que la bordure. */
+/* encoche de lanière : un petit slot percé, la couleur du fond bleu de la section
+   apparaît dedans pour simuler un vrai trou découpé dans le plastique */
 .about-card::before{
-  content:''; position:absolute; inset:0; pointer-events:none;
-  background-repeat:no-repeat;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M8 2 L18 2 L18 12' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='1.6'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M18 8 L18 18 L8 18' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='1.6'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M12 18 L2 18 L2 8' fill='none' stroke='rgba(255,255,255,0.55)' stroke-width='1.6'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 56'%3E%3Cline x1='0' y1='56' x2='56' y2='0' stroke='rgba(255,255,255,0.18)' stroke-width='1'/%3E%3C/svg%3E");
-  background-position:top 12px right 12px, bottom 12px right 12px, bottom 12px left 12px, top -0.1px left -0.1px;
-  background-size:18px 18px, 18px 18px, 18px 18px, 56px 56px;
-}
-.about-card::after{
-  content:''; position:absolute; left:0; right:0; height:34%;
-  background:linear-gradient(180deg, transparent, rgba(255,255,255,.16), transparent);
-  pointer-events:none; animation:about-scan 5s ease-in-out infinite;
-}
-@keyframes about-scan{
-  0%{ top:-34%; }
-  60%{ top:100%; }
-  100%{ top:100%; }
+  content:''; position:absolute; top:16px; left:50%; transform:translateX(-50%);
+  width:46px; height:9px; border-radius:5px;
+  background:var(--accent);
+  box-shadow:
+    inset 0 2px 3px rgba(15,23,55,.5),
+    inset 0 -1px 0 rgba(255,255,255,.15),
+    0 1px 0 rgba(255,255,255,.4);
+  z-index:1;
 }
 .about-person{display:flex; align-items:center; gap:18px; margin-bottom:22px;}
 .about-avatar{
   position:relative; width:62px; height:62px; border-radius:50%; flex-shrink:0;
-  background:#fff;
+  background:var(--accent);
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--mono); font-weight:700; font-size:18px; color:var(--accent-dark);
-  box-shadow:0 10px 24px -8px rgba(20,30,60,.4);
+  font-family:var(--mono); font-weight:700; font-size:18px; color:#fff;
+  box-shadow:0 8px 18px -8px rgba(20,30,60,.5);
 }
 .about-avatar-status{
   position:absolute; right:-2px; bottom:-2px; width:14px; height:14px;
-  border-radius:50%; background:#3ec25f; border:2.5px solid var(--accent);
+  border-radius:50%; background:#3ec25f; border:2.5px solid #fdfdfc;
   box-shadow:0 0 0 0 rgba(62,194,95,.5); animation:status-pulse 2s ease-out infinite;
 }
-.about-person h3{font-size:20px; margin-bottom:2px; color:#fff;}
-.about-role{font-size:13.5px; color:var(--accent-pale);}
+.about-person h3{font-size:20px; margin-bottom:2px; color:var(--text);}
+.about-role{font-size:13.5px; color:var(--accent);}
 .about-facts{
   display:flex; flex-direction:column; gap:14px; list-style:none;
-  padding-top:20px; border-top:1px solid rgba(255,255,255,.18);
+  padding-top:20px; border-top:1px dashed rgba(20,30,60,.18);
 }
 .about-facts li{
   display:flex; align-items:flex-start; gap:10px;
-  font-size:14px; color:#fff;
+  font-size:14px; color:var(--text);
 }
-.about-facts li svg{flex-shrink:0; width:17px; height:17px; margin-top:2px; color:var(--accent-pale);}
+.about-facts li svg{flex-shrink:0; width:17px; height:17px; margin-top:2px; color:var(--accent);}
 
 /* label discret au-dessus du contenu, même logique que les labels du pied de section
    (Langues / Qualités…), pour annoncer chaque bloc de la carte */
 .about-card-label{
-  display:block; font-family:var(--mono); font-size:11px; color:var(--accent-pale);
+  display:block; font-family:var(--mono); font-size:11px; color:var(--text-dim);
   margin-bottom:12px;
 }
-.about-card-rhythm{margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,.18);}
+.about-card-rhythm{margin-top:20px; padding-top:20px; border-top:1px dashed rgba(20,30,60,.18);}
 .about-card-rhythm-row{display:flex; align-items:center; gap:12px;}
-.about-card-rhythm-row p{font-size:13px; color:rgba(255,255,255,.85); margin:0;}
+.about-card-rhythm-row p{font-size:13px; color:var(--text-dim); margin:0;}
+.about-rhythm-bar span{border-color:rgba(20,30,60,.3);}
+.about-rhythm-bar span.is-on{background:var(--accent); border-color:var(--accent);}
 
 .about-card-actions{
   display:flex; align-items:center; gap:16px;
-  margin-top:20px; padding-top:20px; border-top:1px solid rgba(255,255,255,.18);
+  margin-top:20px; padding-top:20px; border-top:1px dashed rgba(20,30,60,.18);
 }
 .about-card-actions a{
   display:flex; align-items:center; gap:6px;
-  color:#fff; opacity:.85; transition:opacity .2s ease;
+  color:var(--accent); opacity:.85; transition:opacity .2s ease;
 }
 .about-card-actions a:hover{opacity:1;}
 .about-card-cv{
@@ -496,78 +511,130 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   padding:6px 12px;
 }
 .about-card-cv svg{width:14px; height:14px;}
+
+/* bande code-barres décorative en pied de badge, façon carte d'accès scannable */
+.about-card-barcode{
+  margin-top:20px; padding-top:18px; border-top:1px dashed rgba(20,30,60,.18);
+}
+.about-card-barcode-bars{
+  height:24px;
+  background:repeating-linear-gradient(90deg,
+    var(--text) 0 2px, transparent 2px 3px,
+    var(--text) 3px 4px, transparent 4px 7px,
+    var(--text) 7px 10px, transparent 10px 12px,
+    var(--text) 12px 13px, transparent 13px 17px,
+    var(--text) 17px 19px, transparent 19px 21px
+  );
+  opacity:.78;
+}
+.about-card-barcode-id{
+  display:block; margin-top:6px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
+  color:var(--text-dim); text-align:center;
+}
 @media(max-width:860px){
   .about-grid{grid-template-columns:1fr; gap:36px;}
-  .about-card{position:static; order:-1;}
+  .about-card{position:static; order:-1; margin-top:0;}
   .about-person{margin-bottom:18px;}
   .about-facts{flex-flow:row wrap; gap:10px 22px; padding-top:16px;}
 }
 
-.about-lede{font-size:17px; color:rgba(255,255,255,.85); max-width:780px; margin-bottom:36px;}
+.about-lede{font-size:17px; color:rgba(255,255,255,.72); max-width:780px; margin-bottom:36px;}
 .about-lede strong{color:#fff; font-weight:600;}
 
 /* visualisation du rythme d'alternance : trois "semaines", deux pleines + une creuse */
 .about-rhythm-bar{display:flex; flex-direction:column; gap:3px; flex-shrink:0;}
 .about-rhythm-bar span{
-  width:11px; height:11px; border-radius:3px; border:1.5px solid rgba(255,255,255,.4);
+  width:11px; height:11px; border-radius:3px; border:1.5px solid rgba(20,30,60,.3);
 }
-.about-rhythm-bar span.is-on{background:#fff; border-color:#fff;}
 
 /* timeline — ligne verticale continue, points pleins, l'étape en cours pulse comme le
    statut "online" du hero pour rester cohérent visuellement */
 .about-timeline{list-style:none; position:relative; margin-bottom:48px;}
-.about-timeline::before{
-  content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1.5px;
-  background:rgba(255,255,255,.3);
-}
 .about-timeline li{position:relative; padding-left:30px; padding-bottom:26px;}
 .about-timeline li:last-child{padding-bottom:0;}
+.about-timeline li:not(:last-child)::before{
+  content:''; position:absolute; left:5px; top:36px; bottom:-36px; width:1.5px;
+  background:rgba(255,255,255,.3);
+}
 .about-timeline-dot{
-  position:absolute; left:0; top:4px; width:12px; height:12px; border-radius:50%;
-  background:rgba(255,255,255,.15); border:2px solid rgba(255,255,255,.55);
+  position:absolute; left:0; top:30px; width:12px; height:12px; border-radius:50%;
+  background:var(--accent-tint); border:2px solid rgba(255,255,255,.55);
 }
 .about-timeline li.is-current .about-timeline-dot{
   background:#fff; border-color:#fff;
   box-shadow:0 0 0 0 rgba(255,255,255,.5); animation:status-pulse 2s ease-out infinite;
 }
-.about-timeline-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:4px;}
-.about-timeline-date{font-family:var(--mono); font-size:12px; color:var(--accent-pale);}
+.about-timeline-head{display:flex; align-items:center; gap:10px; flex-wrap:wrap; min-height:20px; margin-bottom:4px;}
+.about-timeline-date{font-family:var(--mono); font-size:12px; color:var(--accent-pale); display:inline-block; line-height:20px;}
+.about-timeline li>.about-timeline-date{margin-bottom:4px;}
 .about-timeline-badge{
-  font-family:var(--mono); font-size:11px; font-weight:600; color:var(--accent-dark);
+  display:inline-block; font-family:var(--mono); font-size:11px; font-weight:600;
+  color:var(--accent-dark); text-decoration:none;
   background:#fff; border-radius:5px; padding:2px 8px;
 }
-.about-timeline-body h4{font-size:16px; margin-bottom:5px; color:#fff;}
-.about-timeline-body p{font-size:14px; color:rgba(255,255,255,.85); max-width:560px;}
+/* badge RNCP : reprend la palette du terminal pour rester cohérent avec le hero,
+   et révèle l'intitulé officiel en infobulle au survol/focus. */
+.about-timeline-title-row{display:flex; align-items:flex-start; justify-content:flex-start; gap:14px;}
+.about-timeline-title-row h4{margin-bottom:0;}
+.about-timeline-badge-rncp{
+  position:relative; cursor:pointer; flex-shrink:0; margin-left:-60px; top:25px;
+  transform:rotate(-5deg);
+  box-shadow:0 4px 10px -4px rgba(0,0,0,.4);
+}
+.about-timeline-badge-rncp::after{
+  content:attr(data-tooltip);
+  position:absolute; left:50%; bottom:calc(100% + 10px);
+  transform:translateX(-50%) translateY(4px);
+  width:max-content; max-width:230px;
+  background:#11162b; color:#fff; font-family:var(--mono); font-size:11px; line-height:1.4;
+  font-weight:400; text-align:left; white-space:normal;
+  padding:8px 10px; border-radius:6px;
+  opacity:0; pointer-events:none;
+  box-shadow:0 10px 20px -8px rgba(0,0,0,.5);
+  transition:opacity .2s ease, transform .2s ease;
+  z-index:6;
+}
+.about-timeline-badge-rncp:hover::after,
+.about-timeline-badge-rncp:focus-visible::after{
+  opacity:1; transform:translateX(-50%) translateY(0);
+}
+.about-timeline-body h4{font-size:16px; line-height:1.2; margin-bottom:5px; color:#fff;}
+.about-timeline-body p{font-size:14px; color:rgba(255,255,255,.7); max-width:560px;}
 
 /* pied de section — langues / qualités / centres d'intérêt en trois colonnes posées
    directement sur la vague, séparées par une bordure plutôt qu'encadrées */
 .about-footer{display:flex; gap:48px; flex-wrap:wrap; padding-top:32px; border-top:1px solid rgba(255,255,255,.18);}
-.about-block{flex:1 1 200px; min-width:160px;}
+.about-block{display:flex; flex-direction:column; flex:0 0 auto; min-width:160px;}
+.about-block:first-child{flex:1 1 320px;}
 .about-block-label{
   display:block; font-family:var(--mono); font-size:12px; color:var(--accent-pale);
   margin-bottom:14px;
 }
-.about-langs{display:flex; flex-direction:column; gap:12px;}
-.about-lang{display:grid; grid-template-columns:64px 1fr 30px; align-items:center; gap:10px;}
-.about-lang-name{font-size:12.5px; color:#fff;}
+.about-langs{display:flex; flex-direction:column; gap:18px;}
+.about-lang{display:grid; grid-template-columns:64px 1fr 30px; align-items:center; gap:10px; height:18px; line-height:18px;}
+.about-lang-name{font-size:12.5px; color:rgba(255,255,255,.85);}
 .about-lang-bar{height:5px; border-radius:3px; background:rgba(255,255,255,.22); overflow:hidden;}
 .about-lang-bar span{display:block; height:100%; background:#fff; border-radius:3px;}
 .about-lang-lvl{font-family:var(--mono); font-size:11px; color:var(--accent-pale); text-align:right;}
 
-.about-tags{display:flex; gap:8px; flex-wrap:wrap;}
+.about-tags{display:flex; flex-direction:column; gap:18px;}
 .about-tag{
-  font-size:13px; font-weight:600; color:var(--accent-dark);
-  background:#fff; border:none;
-  border-radius:20px; padding:6px 14px;
+  display:flex; align-items:center; gap:10px; height:18px; line-height:18px;
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.02em;
+  color:rgba(255,255,255,.85);
 }
-.about-interests{display:flex; flex-direction:column; gap:12px;}
+.about-tag::before{
+  content:""; flex-shrink:0; width:6px; height:6px; border-radius:50%;
+  background:var(--accent-pale);
+}
+.about-interests{display:flex; flex-direction:column; gap:18px;}
 .about-interests span{
-  display:flex; align-items:center; gap:10px;
-  font-size:13.5px; color:#fff;
+  display:flex; align-items:center; gap:10px; height:18px; line-height:18px;
+  font-size:13.5px; color:rgba(255,255,255,.85);
 }
 .about-interests svg{
-  flex-shrink:0; width:15px; height:15px; padding:6px; box-sizing:content-box;
-  border-radius:50%; background:#fff; color:var(--accent-dark);
+  flex-shrink:0; width:15px; height:15px; color:var(--accent-pale);
 }
 
 @media(max-width:760px){

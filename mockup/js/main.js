@@ -18,6 +18,40 @@ async function loadSections() {
   initBackToTop();
   initHeroCycle();
   initHeroTermGrow();
+  initLangSwitch();
+}
+
+// Bascule FR/EN/ES du bouton drapeau en haut à droite — purement visuel pour l'instant
+// (pas encore de contenu traduit). Toujours en français au chargement de la page.
+function initLangSwitch() {
+  const btn = document.querySelector('.lang-switch');
+  if (!btn) return;
+
+  const LANGS = ['fr', 'en', 'es'];
+  const flags = {
+    fr: btn.querySelector('.flag-fr'),
+    en: btn.querySelector('.flag-en'),
+    es: btn.querySelector('.flag-es'),
+  };
+
+  function apply(lang) {
+    btn.dataset.lang = lang;
+    LANGS.forEach((l) => { flags[l].classList.toggle('is-active', l === lang); });
+    document.documentElement.lang = lang;
+  }
+
+  apply('fr');
+
+  function updateAtTop() {
+    btn.classList.toggle('is-at-top', window.scrollY <= 10);
+  }
+  updateAtTop();
+  window.addEventListener('scroll', updateAtTop, { passive: true });
+
+  btn.addEventListener('click', () => {
+    const next = LANGS[(LANGS.indexOf(btn.dataset.lang) + 1) % LANGS.length];
+    apply(next);
+  });
 }
 
 // La page ne fait jamais plus de 100vh (pas de vrai scroll de document) : la croissance
