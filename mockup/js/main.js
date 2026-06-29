@@ -440,8 +440,8 @@ const TERM_COMMANDS = {
     desc: 'comment me contacter',
     run: () => [
       '<span class="k">email</span><span class="sep">:</span> contact@hugomenu.dev',
-      '<span class="k">linkedin</span><span class="sep">:</span> linkedin.com/in/hugomenu',
-      '<span class="k">github</span><span class="sep">:</span> github.com/hugomenu',
+      '<span class="k">linkedin</span><span class="sep">:</span> linkedin.com/in/hugo-menu',
+      '<span class="k">github</span><span class="sep">:</span> github.com/Cody91430',
       'Réponse sous 24h — parlons de votre besoin.',
     ],
   },
