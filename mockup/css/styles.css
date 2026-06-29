@@ -110,7 +110,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 /* HERO — occupe tout le viewport, contenu centré verticalement */
 .hero{
   position:relative;
-  min-height:98vh;
+  min-height:100vh;
   display:flex; align-items:center;
   padding:clamp(18px, 3.5vh, 50px) 0;
   background:var(--bg);

@@ -173,6 +173,13 @@ function initHeroTermGrow() {
   const TRAVEL_PX = 700; // quantité de molette pour parcourir 0 → 1
   const EASE = 0.35; // facteur de lissage : plus petit = plus fluide/inertiel
   let looping = false;
+  let rafId = null;
+
+  function stopAnyAnimation() {
+    if (rafId !== null) cancelAnimationFrame(rafId);
+    rafId = null;
+    looping = false;
+  }
 
   function loop() {
     const diff = targetProgress - progress;
@@ -180,19 +187,50 @@ function initHeroTermGrow() {
       progress = targetProgress;
       render();
       looping = false;
+      rafId = null;
       return;
     }
     progress += diff * EASE;
     render();
-    requestAnimationFrame(loop);
+    rafId = requestAnimationFrame(loop);
   }
 
   function setTargetProgress(next) {
     targetProgress = Math.min(Math.max(next, 0), 1);
     if (!looping) {
+      stopAnyAnimation();
       looping = true;
-      requestAnimationFrame(loop);
+      rafId = requestAnimationFrame(loop);
     }
+  }
+
+  // Animation à durée fixe (ease-in-out), utilisée pour les clics sur les boutons
+  // macOS : un tween exponentiel part trop vite puis traîne en fin de course, alors
+  // qu'un clic veut un mouvement complet et régulier du début à la fin.
+  function easeInOutCubic(t) {
+    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+  }
+
+  function animateToProgress(target, duration = 520) {
+    stopAnyAnimation();
+    targetProgress = target;
+    const start = progress;
+    const delta = target - start;
+    if (Math.abs(delta) < 0.001) { progress = target; render(); return; }
+    const t0 = performance.now();
+    function step(now) {
+      const t = Math.min((now - t0) / duration, 1);
+      progress = start + delta * easeInOutCubic(t);
+      render();
+      if (t < 1) {
+        rafId = requestAnimationFrame(step);
+      } else {
+        progress = target;
+        render();
+        rafId = null;
+      }
+    }
+    rafId = requestAnimationFrame(step);
   }
 
   // La console ne grossit/rétrécit au scroll que si le curseur (ou le doigt) est
@@ -219,7 +257,7 @@ function initHeroTermGrow() {
   if (scrollDownBtn) {
     scrollDownBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      setTargetProgress(1);
+      animateToProgress(1);
     });
   }
 
@@ -232,13 +270,13 @@ function initHeroTermGrow() {
     dotMax.addEventListener('click', (e) => {
       e.stopPropagation();
       if (window.HeroTerminal && window.HeroTerminal.stopIdleTease) window.HeroTerminal.stopIdleTease();
-      setTargetProgress(1);
+      animateToProgress(1);
     });
   }
   if (dotMin) {
     dotMin.addEventListener('click', (e) => {
       e.stopPropagation();
-      setTargetProgress(0);
+      animateToProgress(0);
     });
   }
   if (dotClose) {
@@ -262,7 +300,7 @@ function initHeroTermGrow() {
     item.classList.add('is-selected');
     const href = item.getAttribute('href');
     if (href) window.location.hash = href;
-    setTargetProgress(0);
+    animateToProgress(0);
     return true;
   }
   if (categories) {
