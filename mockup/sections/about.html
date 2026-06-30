@@ -60,56 +60,84 @@
     </ul>
      </div>
 
-      <aside class="about-card reveal d2">
-        <div class="about-person">
-          <div class="about-avatar">
-            <span>HM</span>
-          </div>
-          <div class="about-person-main">
-            <h3>Hugo Menu</h3>
-            <p class="about-role" data-i18n="about-role">Cybersécurité &amp; Administration Réseaux</p>
-          </div>
-        </div>
-        <ul class="about-facts">
-          <li>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span data-i18n="about-fact-location">Igny, Île-de-France</span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
-            <span data-i18n="about-fact-availability">Disponible — sept. 2026</span>
-          </li>
-          <li>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
-            <span data-i18n="about-fact-license">Permis B</span>
-          </li>
-        </ul>
-
-        <div class="about-card-rhythm">
-          <div class="about-card-rhythm-row">
-            <div class="about-rhythm-bar" aria-hidden="true">
-              <span class="is-on"></span><span class="is-on"></span><span></span>
+      <aside class="about-card reveal d2" role="button" tabindex="0" data-i18n-attr="aria-label:about-card-flip-aria" aria-label="Retourner le badge">
+        <div class="about-card-inner">
+          <div class="about-card-face about-card-face-front">
+            <div class="about-person">
+              <div class="about-avatar">
+                <img src="assets/perso.png" alt="Hugo Menu">
+              </div>
+              <div class="about-person-main">
+                <h3>Hugo Menu</h3>
+                <p class="about-role" data-i18n="about-role">Cybersécurité &amp; Administration Réseaux</p>
+              </div>
             </div>
-            <p data-i18n="about-rhythm">2 semaines en entreprise / <br>1 semaine en formation.</p>
+            <ul class="about-facts">
+              <li>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span data-i18n="about-fact-location">Igny, Île-de-France</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/><path d="M9 16l2 2 4-4"/></svg>
+                <span data-i18n="about-fact-availability">Disponible — sept. 2026</span>
+              </li>
+              <li>
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 16H9m10 0h3v-3.15a1 1 0 0 0-.84-.99L16 11l-2.7-3.6a1 1 0 0 0-.8-.4H5.24a2 2 0 0 0-1.8 1.1l-.8 1.63A6 6 0 0 0 2 12.42V16h2"/><circle cx="6.5" cy="16.5" r="2.5"/><circle cx="16.5" cy="16.5" r="2.5"/></svg>
+                <span data-i18n="about-fact-license">Permis B</span>
+              </li>
+            </ul>
+
+            <div class="about-card-rhythm">
+              <div class="about-card-rhythm-row">
+                <div class="about-rhythm-bar" aria-hidden="true">
+                  <span class="is-on"></span><span class="is-on"></span><span></span>
+                </div>
+                <p data-i18n="about-rhythm">2 semaines en entreprise / <br>1 semaine en formation.</p>
+              </div>
+            </div>
+
+            <div class="about-card-actions">
+              <a href="https://github.com/Cody91430" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.9.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.78 1.2 1.78 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.74.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 5.83 0c2.22-1.49 3.2-1.18 3.2-1.18.63 1.59.23 2.76.11 3.05.75.81 1.2 1.84 1.2 3.1 0 4.43-2.69 5.41-5.25 5.7.41.36.78 1.08.78 2.17v3.21c0 .3.2.66.79.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
+              </a>
+              <a href="https://www.linkedin.com/in/hugo-menu/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>
+              </a>
+              <a class="about-card-cv" href="assets/CV-Hugo-Menu.pdf" target="_blank" rel="noopener noreferrer" download>
+                <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+                CV
+              </a>
+            </div>
+
+            <div class="about-card-barcode">
+              <div class="about-card-barcode-bars" aria-hidden="true"></div>
+              <span class="about-card-barcode-id" data-i18n="about-barcode-id">HM-2026 · ACCÈS</span>
+            </div>
           </div>
-        </div>
 
-        <div class="about-card-actions">
-          <a href="https://github.com/Cody91430" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.9.57.1.78-.25.78-.55v-2.1c-3.2.7-3.87-1.36-3.87-1.36-.53-1.33-1.29-1.69-1.29-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.78 1.2 1.78 1.2 1.03 1.77 2.7 1.26 3.36.96.1-.74.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.7 0-1.26.45-2.29 1.2-3.1-.12-.29-.52-1.46.11-3.05 0 0 .98-.31 3.2 1.18a11.1 11.1 0 0 1 5.83 0c2.22-1.49 3.2-1.18 3.2-1.18.63 1.59.23 2.76.11 3.05.75.81 1.2 1.84 1.2 3.1 0 4.43-2.69 5.41-5.25 5.7.41.36.78 1.08.78 2.17v3.21c0 .3.2.66.79.55A11.5 11.5 0 0 0 23.5 12c0-6.35-5.15-11.5-11.5-11.5Z"/></svg>
-          </a>
-          <a href="https://www.linkedin.com/in/hugo-menu/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-            <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12ZM7.12 20.45H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0Z"/></svg>
-          </a>
-          <a class="about-card-cv" href="assets/CV-Hugo-Menu.pdf" target="_blank" rel="noopener noreferrer" download>
-            <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6Z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
-            CV
-          </a>
-        </div>
+          <div class="about-card-face about-card-face-back">
+            <div class="about-card-stripe" aria-hidden="true"></div>
 
-        <div class="about-card-barcode">
-          <div class="about-card-barcode-bars" aria-hidden="true"></div>
-          <span class="about-card-barcode-id" data-i18n="about-barcode-id">HM-2026 · ACCÈS</span>
+            <div class="about-card-signature">
+              <span class="about-card-back-label" data-i18n="about-card-back-signature">Signature</span>
+              <svg class="about-card-signature-svg" viewBox="0 0 220 40" aria-hidden="true"><path d="M4 28c10-18 18-18 24-4 4 10 8 10 12-2 3-9 7-9 10 1 3 9 6 9 9-1 3-9 7-9 10 1s6 10 9 1c2-7 5-7 8 0 3 8 6 5 9-3 3-7 6-7 9 1 2 6 5 6 8-1 3-8 7-8 10 0 2 6 5 5 8-3 2-7 5-7 8 0 2 5 5 4 8-3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+
+            <div class="about-card-back-note">
+              <span class="about-card-back-label" data-i18n="about-card-back-note-title">En cas de perte</span>
+              <p data-i18n="about-card-back-note-body">Merci de me contacter directement —</p>
+              <a href="mailto:contact@hugomenu.dev">contact@hugomenu.dev</a>
+            </div>
+
+            <div class="about-card-qr" aria-hidden="true">
+              <div class="about-card-qr-pattern"></div>
+            </div>
+
+            <div class="about-card-barcode">
+              <div class="about-card-barcode-bars" aria-hidden="true"></div>
+              <span class="about-card-barcode-id" data-i18n="about-barcode-id">HM-2026 · ACCÈS</span>
+            </div>
+          </div>
         </div>
       </aside>
     </div>

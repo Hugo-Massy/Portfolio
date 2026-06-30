@@ -67,6 +67,10 @@ const I18N = {
     'about-fact-license': 'Permis B',
     'about-rhythm': '2 semaines en entreprise / <br>1 semaine en formation.',
     'about-barcode-id': 'HM-2026 · ACCÈS',
+    'about-card-flip-aria': 'Retourner le badge',
+    'about-card-back-signature': 'Signature',
+    'about-card-back-note-title': 'En cas de perte',
+    'about-card-back-note-body': 'Merci de me contacter directement —',
 
     'about-label-langs': 'Langues',
     'about-lang-fr': 'Français',
@@ -145,6 +149,10 @@ const I18N = {
     'about-fact-license': 'Driver\'s license (B)',
     'about-rhythm': '2 weeks at the company / <br>1 week in training.',
     'about-barcode-id': 'HM-2026 · ACCESS',
+    'about-card-flip-aria': 'Flip the badge',
+    'about-card-back-signature': 'Signature',
+    'about-card-back-note-title': 'If found',
+    'about-card-back-note-body': 'Please contact me directly —',
 
     'about-label-langs': 'Languages',
     'about-lang-fr': 'French',
@@ -223,6 +231,10 @@ const I18N = {
     'about-fact-license': 'Carné de conducir B',
     'about-rhythm': '2 semanas en la empresa / <br>1 semana en formación.',
     'about-barcode-id': 'HM-2026 · ACCESO',
+    'about-card-flip-aria': 'Girar la credencial',
+    'about-card-back-signature': 'Firma',
+    'about-card-back-note-title': 'En caso de pérdida',
+    'about-card-back-note-body': 'Por favor, contáctame directamente —',
 
     'about-label-langs': 'Idiomas',
     'about-lang-fr': 'Francés',

@@ -43,6 +43,38 @@ async function loadSections() {
   initHeroCycle();
   initHeroTermGrow();
   initLangSwitch();
+  initIdBadgeFlip();
+}
+
+// Carte d'identité façon badge d'accès : cliquer n'importe où sur la carte (recto ou
+// verso) bascule la classe is-flipped, qui pilote la rotation 3D en CSS — sauf sur les
+// liens internes (GitHub, LinkedIn, CV, mailto), qui doivent garder leur comportement normal.
+// is-flipping ne reste posée que le temps de la rotation, pour jouer l'ombre qui s'amplifie
+// au milieu du mouvement (voir @keyframes about-card-flip-shadow) sans rester active après.
+function initIdBadgeFlip() {
+  const card = document.querySelector('.about-card');
+  if (!card) return;
+  const FLIP_DURATION = 700;
+  let flipTimer = null;
+
+  function flip() {
+    card.classList.toggle('is-flipped');
+    card.classList.remove('is-flipping');
+    void card.offsetWidth; // force le redémarrage de l'animation si on enchaîne deux flips rapprochés
+    card.classList.add('is-flipping');
+    clearTimeout(flipTimer);
+    flipTimer = setTimeout(() => card.classList.remove('is-flipping'), FLIP_DURATION);
+  }
+
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('a')) return;
+    flip();
+  });
+  card.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    flip();
+  });
 }
 
 // Bascule FR/EN/ES du bouton drapeau en haut à droite — traduit tout le contenu

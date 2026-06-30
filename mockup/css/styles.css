@@ -441,16 +441,34 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    ombre nette (pas de flou "verre"), bande code-barres en pied de carte */
 .about-card{
   position:sticky; top:96px; margin-top:-70px;
+  border-radius:14px;
+  perspective:1800px;
+  cursor:pointer;
+}
+.about-card:focus-visible{outline:2px solid var(--accent); outline-offset:4px;}
+/* conteneur 3D qui tourne sur lui-même au clic (voir initIdBadgeFlip) — la face avant
+   reste en flux normal pour fixer la hauteur de la carte, la face arrière se cale
+   dessus en absolute, pré-tournée à 180° pour apparaître à l'endroit une fois la
+   carte retournée. */
+.about-card-inner{
+  position:relative; transform-style:preserve-3d;
+  transition:transform .7s cubic-bezier(.4,.15,.2,1);
+}
+.about-card.is-flipped .about-card-inner{transform:rotateY(180deg);}
+.about-card-face{
+  position:relative;
   background:#fdfdfc; border-radius:14px;
   padding:38px 28px 24px;
+  backface-visibility:hidden;
   box-shadow:
     0 1px 0 rgba(255,255,255,.6) inset,
     0 2px 0 rgba(15,23,55,.12),
     0 18px 30px -10px rgba(15,23,55,.5);
 }
 /* encoche de lanière : un petit slot percé, la couleur du fond bleu de la section
-   apparaît dedans pour simuler un vrai trou découpé dans le plastique */
-.about-card::before{
+   apparaît dedans pour simuler un vrai trou découpé dans le plastique — posée sur
+   chaque face (et non le conteneur fixe) pour tourner avec la carte pendant le flip. */
+.about-card-face::before{
   content:''; position:absolute; top:16px; left:50%; transform:translateX(-50%);
   width:46px; height:9px; border-radius:5px;
   background:var(--accent);
@@ -458,15 +476,49 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
     inset 0 2px 3px rgba(15,23,55,.5),
     inset 0 -1px 0 rgba(255,255,255,.15),
     0 1px 0 rgba(255,255,255,.4);
-  z-index:1;
+  z-index:2;
 }
+.about-card-face-back{
+  position:absolute; inset:0;
+  transform:rotateY(180deg);
+  display:flex; flex-direction:column;
+}
+/* ombre qui s'amplifie au milieu du flip, comme si le badge se soulevait de la
+   table avant de retomber — jouée sur les deux faces via .is-flipping (voir
+   initIdBadgeFlip), synchronisée avec la durée de la rotation .7s. */
+@keyframes about-card-flip-shadow{
+  0%, 100%{
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.6) inset,
+      0 2px 0 rgba(15,23,55,.12),
+      0 18px 30px -10px rgba(15,23,55,.5);
+  }
+  50%{
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.6) inset,
+      0 2px 0 rgba(15,23,55,.12),
+      0 50px 70px -15px rgba(15,23,55,.55),
+      0 18px 28px -10px rgba(15,23,55,.3);
+  }
+}
+.about-card.is-flipping .about-card-face{
+  animation:about-card-flip-shadow .7s cubic-bezier(.4,.15,.2,1);
+}
+/* liens/boutons internes (GitHub, LinkedIn, CV, mailto) restent cliquables normalement
+   sans déclencher le retournement de la carte — voir initIdBadgeFlip qui les ignore. */
+.about-card-face a, .about-card-face button{cursor:pointer;}
 .about-person{display:flex; align-items:center; gap:18px; margin-bottom:22px;}
 .about-avatar{
-  position:relative; width:62px; height:62px; border-radius:50%; flex-shrink:0;
+  position:relative; width:88px; height:88px; border-radius:12px; flex-shrink:0;
   background:var(--accent);
   display:flex; align-items:center; justify-content:center;
-  font-family:var(--mono); font-weight:700; font-size:18px; color:#fff;
+  font-family:var(--mono); font-weight:700; font-size:21px; color:#fff;
   box-shadow:0 8px 18px -8px rgba(20,30,60,.5);
+  overflow:hidden;
+}
+.about-avatar img{
+  width:100%; height:100%; object-fit:cover; object-position:center top;
+  image-rendering:auto;
 }
 .about-avatar-status{
   position:absolute; right:-2px; bottom:-2px; width:14px; height:14px;
@@ -531,6 +583,42 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   display:block; margin-top:6px;
   font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
   color:var(--text-dim); text-align:center;
+}
+.about-card-face-back .about-card-barcode{margin-top:auto;}
+
+/* verso du badge : bande magnétique, signature, encart "en cas de perte" et QR factice */
+.about-card-stripe{
+  margin:30px -28px 22px; height:34px;
+  background:repeating-linear-gradient(135deg,
+    rgba(20,30,60,.92) 0 6px, rgba(20,30,60,.78) 6px 12px);
+}
+.about-card-back-label{
+  display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
+  text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;
+}
+.about-card-signature{
+  padding-bottom:18px; border-bottom:1px dashed rgba(20,30,60,.18);
+}
+.about-card-signature-svg{width:100%; height:36px; color:var(--accent); opacity:.85;}
+.about-card-back-note{
+  margin-top:18px; padding-bottom:18px; border-bottom:1px dashed rgba(20,30,60,.18);
+}
+.about-card-back-note p{font-size:13px; color:var(--text); margin:0 0 2px;}
+.about-card-back-note a{font-family:var(--mono); font-size:12.5px; color:var(--accent);}
+.about-card-qr{
+  margin-top:18px; display:flex; justify-content:center;
+}
+.about-card-qr-pattern{
+  width:64px; height:64px; border-radius:6px;
+  background:
+    radial-gradient(circle at 12px 12px, var(--text) 0 7px, transparent 7.5px),
+    radial-gradient(circle at 52px 12px, var(--text) 0 7px, transparent 7.5px),
+    radial-gradient(circle at 12px 52px, var(--text) 0 7px, transparent 7.5px),
+    repeating-linear-gradient(90deg, var(--text) 0 3px, transparent 3px 6px),
+    repeating-linear-gradient(0deg, var(--text) 0 3px, transparent 3px 6px);
+  background-blend-mode:multiply;
+  background-color:#fdfdfc;
+  opacity:.85;
 }
 @media(max-width:860px){
   .about-grid{grid-template-columns:1fr; gap:36px;}
