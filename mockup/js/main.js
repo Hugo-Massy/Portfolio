@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about', 'projects', 'skills'];
+const SECTIONS = ['nav', 'hero', 'about', 'skills'];
 
 // Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
 // la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).
@@ -57,9 +57,20 @@ async function loadSections() {
 function initAboutParallax() {
   const about = document.getElementById('about');
   if (!about) return;
-  const projects = document.getElementById('projects');
-
+  // Les sections situées sous "à propos" suivent le même décalage, sinon le lift
+  // creuserait un trou entre #about (qui remonte) et la section suivante (immobile).
+  const followers = [];
+  for (let el = about.nextElementSibling; el; el = el.nextElementSibling) {
+    if (el.tagName === 'SECTION' || el.querySelector('section')) followers.push(el);
+  }
   const MAX_LIFT = 220; // px
+  // La dernière section remontée laisserait sinon apparaître le fond du body en bas de
+  // page : on l'allonge d'autant pour que son bas reste collé à la fin du document.
+  const last = followers[followers.length - 1];
+  if (last) {
+    const base = parseFloat(getComputedStyle(last).paddingBottom) || 0;
+    last.style.paddingBottom = `${base + MAX_LIFT}px`;
+  }
   let ticking = false;
 
   function naturalTop(el) {
@@ -76,11 +87,9 @@ function initAboutParallax() {
     const viewportTop = naturalTop(about) - window.scrollY;
     const progress = Math.min(Math.max(1 - viewportTop / window.innerHeight, 0), 1);
     const lift = -progress * MAX_LIFT;
-    about.style.transform = `translateY(${lift}px)`;
-    // #about remonte via transform, qui ne touche pas au flow : sans ce compensateur, la
-    // section suivante resterait plantée à sa position d'origine et un vide se creuserait
-    // sous #about au fur et à mesure de la remontée. #projects suit donc le même lift.
-    if (projects) projects.style.transform = `translateY(${lift}px)`;
+    const transform = `translateY(${lift}px)`;
+    about.style.transform = transform;
+    followers.forEach((el) => { el.style.transform = transform; });
     ticking = false;
   }
 
@@ -524,10 +533,6 @@ const TERM_COMMANDS = {
   skills: {
     get desc() { return termDict().skills.desc; },
     run: () => termDict().skills.lines,
-  },
-  projects: {
-    get desc() { return termDict().projects.desc; },
-    run: () => termDict().projects.lines,
   },
   contact: {
     get desc() { return termDict().contact.desc; },

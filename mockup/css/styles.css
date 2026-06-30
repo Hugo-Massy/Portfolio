@@ -1,5 +1,5 @@
 :root{
-  --bg: #fbfbfa;
+  --bg: #ffffff;
   --bg-elev: #ffffff;
   --bg-elev-2: #f3f4f2;
   --border: #e4e6e2;
@@ -403,7 +403,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .section-tag-num{color:var(--accent); font-weight:700;}
 
-.about{position:relative; background:transparent; padding-bottom:calc(var(--wave-h) * 0.75); will-change:transform;}
+.about{position:relative; background:transparent; will-change:transform;}
 /* bandeau de séparation entre hero et about : bande bleue épaisse inclinée, clippée en
    polygone d'un bord à l'autre pour garantir qu'elle couvre toute la largeur du viewport */
 .section-divider{
@@ -413,9 +413,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:absolute; inset:0;
   background:var(--accent);
   clip-path:polygon(0 13px, 100% 117px, 100% calc(100% - var(--wave-h) * 0.4), 82% 100%, 0 calc(100% - var(--wave-h) * 0.4));
-  filter:
-    drop-shadow(0 16px 18px rgba(20,30,60,.35))
-    drop-shadow(0 36px 32px rgba(20,30,60,.28));
+  filter: drop-shadow(0 8px 16px rgba(20,30,60,.22));
 }
 .about-wrap{position:relative; z-index:1;}
 .about-head{max-width:620px; margin-bottom:48px;}
@@ -745,7 +743,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    présenté comme une "tuile de déploiement" façon tableau de supervision (Grafana/Zabbix),
    pour coller au profil SOC / admin réseau. Réutilise le vocabulaire posé ailleurs :
    .section-tag, point vert qui pulse (status-pulse), bordures en pointillés, prompt $. */
-.projects{position:relative; background:var(--bg);}
+.projects{position:relative; background:var(--bg); padding:0;}
 .projects-wrap{position:relative; z-index:1;}
 .projects-head{max-width:640px; margin-bottom:38px;}
 .projects-head .section-tag{margin-bottom:2px;}
@@ -945,8 +943,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .skill-item{
   position:relative;
   display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
-  padding:28px 24px 36px;
-  min-height:380px;
+  padding:36px 24px 44px;
+  min-height:800px;
   border-radius:var(--radius);
   background:transparent;
   box-shadow:none;
@@ -956,7 +954,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .skill-pillar-bg{
   position:absolute; top:50%; left:50%;
   transform:translate(-50%, -50%);
-  height:105%; width:auto;
+  height:100%; width:85%;
   fill:var(--accent-pale); stroke:var(--accent); stroke-width:0.8;
   stroke-linecap:round; stroke-linejoin:round;
   opacity:.07; pointer-events:none;
