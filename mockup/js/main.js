@@ -1199,14 +1199,7 @@ function initBackgroundGrid() {
   // déborde sous le hero pour que la grille continue derrière le bord diagonal de la section
   // "about" (.section-divider-bar), au lieu de s'arrêter pile au bas du hero.
   const EXTRA_BELOW = 140;
-  // quelques points de la grille piochent une couleur vive plutôt que le bleu accent ;
-  // COLOR_RATIO = proportion de points concernés.
-  const BASE_COLOR = '77,111,203';
-  const SPOT_COLORS = [
-    '210,80,80', '230,150,60', '210,200,70', '80,180,110',
-    '70,170,190', '120,110,220', '200,90,170', '230,200,90',
-  ];
-  const COLOR_RATIO = 0.025;
+  const BASE_COLOR = '37,70,200';
 
   let dpr = Math.min(window.devicePixelRatio || 1, 2);
   let width = 0;
@@ -1275,10 +1268,7 @@ function initBackgroundGrid() {
     points = [];
     for (let y = SPACING / 2; y < height; y += SPACING) {
       for (let x = SPACING / 2; x < width; x += SPACING) {
-        const rgb = Math.random() < COLOR_RATIO
-          ? SPOT_COLORS[Math.floor(Math.random() * SPOT_COLORS.length)]
-          : BASE_COLOR;
-        points.push({ x, y, rgb });
+        points.push({ x, y, rgb: BASE_COLOR });
       }
     }
   }
@@ -1329,7 +1319,7 @@ function initBackgroundGrid() {
       }
 
       const r = BASE_RADIUS * scale;
-      const fill = `rgba(${p.rgb},${0.45 * alpha})`;
+      const fill = `rgba(${p.rgb},${0.6 * alpha})`;
 
       ctx.beginPath();
       ctx.arc(p.x + dx, p.y + dy, r, 0, Math.PI * 2);

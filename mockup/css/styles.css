@@ -604,9 +604,10 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 
 /* pied de section — langues / qualités / centres d'intérêt en trois colonnes posées
    directement sur la vague, séparées par une bordure plutôt qu'encadrées */
-.about-footer{display:flex; gap:48px; flex-wrap:wrap; padding-top:32px; border-top:1px solid rgba(255,255,255,.18);}
+.about-footer{display:flex; gap:140px; flex-wrap:wrap; padding-top:32px; border-top:1px solid rgba(255,255,255,.18);}
 .about-block{display:flex; flex-direction:column; flex:0 0 auto; min-width:160px;}
 .about-block:first-child{flex:1 1 320px;}
+.about-block:last-child{margin-left:-70px;}
 .about-block-label{
   display:block; font-family:var(--mono); font-size:12px; color:var(--accent-pale);
   margin-bottom:14px;

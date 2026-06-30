@@ -63,7 +63,7 @@ const I18N = {
     'about-fact-location': 'Igny, Île-de-France',
     'about-fact-availability': 'Disponible — sept. 2026',
     'about-fact-license': 'Permis B',
-    'about-rhythm': '2 semaines en entreprise / 1 semaine en formation.',
+    'about-rhythm': '2 semaines en entreprise / <br>1 semaine en formation.',
     'about-barcode-id': 'HM-2026 · ACCÈS',
 
     'about-label-langs': 'Langues',
@@ -139,7 +139,7 @@ const I18N = {
     'about-fact-location': 'Igny, Île-de-France',
     'about-fact-availability': 'Available — Sept. 2026',
     'about-fact-license': 'Driver\'s license (B)',
-    'about-rhythm': '2 weeks at the company / 1 week in training.',
+    'about-rhythm': '2 weeks at the company / <br>1 week in training.',
     'about-barcode-id': 'HM-2026 · ACCESS',
 
     'about-label-langs': 'Languages',
@@ -215,7 +215,7 @@ const I18N = {
     'about-fact-location': 'Igny, Île-de-France',
     'about-fact-availability': 'Disponible — sept. 2026',
     'about-fact-license': 'Carné de conducir B',
-    'about-rhythm': '2 semanas en la empresa / 1 semana en formación.',
+    'about-rhythm': '2 semanas en la empresa / <br>1 semana en formación.',
     'about-barcode-id': 'HM-2026 · ACCESO',
 
     'about-label-langs': 'Idiomas',
