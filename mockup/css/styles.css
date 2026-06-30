@@ -482,6 +482,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:absolute; inset:0;
   transform:rotateY(180deg);
   display:flex; flex-direction:column;
+  padding-bottom:14px;
 }
 /* ombre qui s'amplifie au milieu du flip, comme si le badge se soulevait de la
    table avant de retomber — jouée sur les deux faces via .is-flipping (voir
@@ -584,9 +585,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
   color:var(--text-dim); text-align:center;
 }
-.about-card-face-back .about-card-barcode{margin-top:auto;}
 
-/* verso du badge : bande magnétique, signature, encart "en cas de perte" et QR factice */
+/* verso du badge : bande magnétique, encart "en cas de perte" et coordonnées de contact */
 .about-card-stripe{
   margin:30px -28px 22px; height:34px;
   background:repeating-linear-gradient(135deg,
@@ -596,30 +596,37 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;
   text-transform:uppercase; color:var(--text-dim); margin-bottom:6px;
 }
-.about-card-signature{
+.about-card-back-note{
   padding-bottom:18px; border-bottom:1px dashed rgba(20,30,60,.18);
 }
-.about-card-signature-svg{width:100%; height:36px; color:var(--accent); opacity:.85;}
-.about-card-back-note{
-  margin-top:18px; padding-bottom:18px; border-bottom:1px dashed rgba(20,30,60,.18);
+.about-card-back-note p{font-size:13px; color:var(--text); margin:0;}
+.about-card-contact{
+  display:flex; flex-direction:column; gap:12px; list-style:none;
+  margin-top:18px;
 }
-.about-card-back-note p{font-size:13px; color:var(--text); margin:0 0 2px;}
-.about-card-back-note a{font-family:var(--mono); font-size:12.5px; color:var(--accent);}
+.about-card-contact li{
+  display:flex; align-items:center; gap:10px;
+  font-size:13px; color:var(--text);
+}
+.about-card-contact li svg{flex-shrink:0; color:var(--accent);}
+.about-card-contact li a{
+  font-family:var(--mono); font-size:12px; color:var(--text);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  transition:color .2s ease;
+}
+.about-card-contact li a:hover{color:var(--accent);}
+/* QR code vers le portfolio, sans fond (SVG transparent) — centré dans l'espace
+   restant entre les coordonnées de contact et le pied du verso. */
+.about-card-qr-wrap{
+  flex:1; display:flex; align-items:center; justify-content:center;
+  padding-top:24px;
+}
 .about-card-qr{
-  margin-top:18px; display:flex; justify-content:center;
+  display:inline-block; line-height:0;
+  transition:transform .2s ease;
 }
-.about-card-qr-pattern{
-  width:64px; height:64px; border-radius:6px;
-  background:
-    radial-gradient(circle at 12px 12px, var(--text) 0 7px, transparent 7.5px),
-    radial-gradient(circle at 52px 12px, var(--text) 0 7px, transparent 7.5px),
-    radial-gradient(circle at 12px 52px, var(--text) 0 7px, transparent 7.5px),
-    repeating-linear-gradient(90deg, var(--text) 0 3px, transparent 3px 6px),
-    repeating-linear-gradient(0deg, var(--text) 0 3px, transparent 3px 6px);
-  background-blend-mode:multiply;
-  background-color:#fdfdfc;
-  opacity:.85;
-}
+.about-card-qr:hover{transform:scale(1.04);}
+.about-card-qr img{display:block; width:92px; height:92px; border-radius:5px;}
 @media(max-width:860px){
   .about-grid{grid-template-columns:1fr; gap:36px;}
   .about-card{position:static; order:-1; margin-top:0;}

@@ -316,7 +316,7 @@ const TERM_I18N = {
     contact: {
       desc: 'comment me contacter',
       lines: [
-        '<span class="k">email</span><span class="sep">:</span> contact@hugomenu.dev',
+        '<span class="k">email</span><span class="sep">:</span> hugo@menu-family.fr',
         '<span class="k">linkedin</span><span class="sep">:</span> linkedin.com/in/hugo-menu',
         '<span class="k">github</span><span class="sep">:</span> github.com/Cody91430',
         'Réponse sous 24h — parlons de votre besoin.',
@@ -433,7 +433,7 @@ const TERM_I18N = {
     contact: {
       desc: 'how to reach me',
       lines: [
-        '<span class="k">email</span><span class="sep">:</span> contact@hugomenu.dev',
+        '<span class="k">email</span><span class="sep">:</span> hugo@menu-family.fr',
         '<span class="k">linkedin</span><span class="sep">:</span> linkedin.com/in/hugo-menu',
         '<span class="k">github</span><span class="sep">:</span> github.com/Cody91430',
         'Reply within 24h — let\'s talk about your needs.',
@@ -550,7 +550,7 @@ const TERM_I18N = {
     contact: {
       desc: 'cómo contactarme',
       lines: [
-        '<span class="k">email</span><span class="sep">:</span> contact@hugomenu.dev',
+        '<span class="k">email</span><span class="sep">:</span> hugo@menu-family.fr',
         '<span class="k">linkedin</span><span class="sep">:</span> linkedin.com/in/hugo-menu',
         '<span class="k">github</span><span class="sep">:</span> github.com/Cody91430',
         'Respuesta en 24h — hablemos de tu necesidad.',

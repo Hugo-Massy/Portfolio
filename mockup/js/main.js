@@ -66,13 +66,52 @@ function initIdBadgeFlip() {
     flipTimer = setTimeout(() => card.classList.remove('is-flipping'), FLIP_DURATION);
   }
 
+  // Retournement automatique : une seule fois, pour signaler que la carte est
+  // cliquable. Dès qu'elle est visible à l'écran 5s sans interaction, elle se
+  // retourne (recto → verso) puis revient vite (verso → recto), et ne se
+  // déclenche plus jamais ensuite — ni en repassant dans le viewport, ni au clic.
+  const AUTO_FLIP_DELAY = 5000;
+  const AUTO_FLIP_RETURN_DELAY = 1200;
+  let autoFlipTimer = null;
+  let autoFlipActive = true;
+  let autoFlipDone = false;
+
+  function scheduleAutoFlip() {
+    if (!autoFlipActive || autoFlipDone) return;
+    clearTimeout(autoFlipTimer);
+    autoFlipTimer = setTimeout(() => {
+      if (!autoFlipActive || autoFlipDone) return;
+      flip();
+      autoFlipTimer = setTimeout(() => {
+        if (!autoFlipActive) return;
+        flip();
+        autoFlipDone = true;
+      }, AUTO_FLIP_RETURN_DELAY);
+    }, AUTO_FLIP_DELAY);
+  }
+
+  function stopAutoFlip() {
+    autoFlipActive = false;
+    clearTimeout(autoFlipTimer);
+  }
+
+  const visibilityObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) scheduleAutoFlip();
+      else clearTimeout(autoFlipTimer);
+    });
+  }, { threshold: .6 });
+  visibilityObserver.observe(card);
+
   card.addEventListener('click', (e) => {
     if (e.target.closest('a')) return;
+    stopAutoFlip();
     flip();
   });
   card.addEventListener('keydown', (e) => {
     if (e.key !== 'Enter' && e.key !== ' ') return;
     e.preventDefault();
+    stopAutoFlip();
     flip();
   });
 }
