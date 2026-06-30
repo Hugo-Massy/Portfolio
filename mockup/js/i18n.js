@@ -20,7 +20,7 @@ const I18N = {
     'hero-h1-prefix': 'Sécuriser, administrer, déployer —',
     'hero-h1-mid': 'la cyber qui',
     'hero-h1-suffix': ' le réel',
-    'hero-lede': 'Hugo Menu, étudiant Mastère Cybersécurité &amp; Ethical Hacking, en alternance DSI Mairie de Massy. Systèmes, réseau, cloud et sécurité — projets déployés et documentés.',
+    'hero-lede': 'Hugo Menu, étudiant Mastère Spécialisé® Expert en cybersécurité, en alternance DSI Mairie de Massy. Systèmes, réseau, cloud et sécurité — projets déployés et documentés.',
     'hero-cta-contact': 'Me contacter',
     'hero-cta-projects': 'Voir mes projets',
     'hero-cv-label': 'CV PDF',
@@ -45,11 +45,13 @@ const I18N = {
 
     'about-tag-slug': '_à-propos/',
     'about-h2': 'Qui je suis, <span class="accent">en quelques lignes</span>.',
-    'about-lede': 'Étudiant en <strong>Mastère Cybersécurité &amp; Ethical Hacking</strong>, je recherche une alternance en <strong>cybersécurité et administration réseaux</strong> pour septembre 2026. Sécuriser les systèmes d\'information, administrer les infrastructures, automatiser ce qui peut l\'être — voilà ce qui me fait avancer.',
+    'about-lede': 'Étudiant en <strong>Mastère Spécialisé® Expert en cybersécurité</strong>, je recherche une alternance en <strong>cybersécurité et administration réseaux</strong> pour septembre 2026. Sécuriser les systèmes d\'information, administrer les infrastructures, automatiser ce qui peut l\'être — voilà ce qui me fait avancer.',
 
     'about-tl-1-date': '2026 — présent',
-    'about-tl-1-title': 'Mastère Cybersécurité &amp; Ethical Hacking',
+    'about-tl-1-title': 'Mastère Spécialisé® Expert en cybersécurité',
     'about-tl-1-body': 'EFREI Panthéon-Assas — en alternance, dans la continuité du Bachelor.',
+    'about-tl-1-badge': 'Titre RNCP Niveau 7 (39781)',
+    'about-tl-1-badge-tooltip': '« Expert réseaux infrastructures et sécurité » · délivré par 3IL · Fiche RNCP 39781 (31-10-2024, pour 5 ans)',
     'about-tl-2-date': 'oct. 2025 — août 2026',
     'about-tl-2-title': 'Alternant Système d\'Information',
     'about-tl-2-body': 'Mairie de Massy — Direction des Systèmes d\'Information, à la suite de deux stages au sein du service.',
@@ -96,7 +98,7 @@ const I18N = {
     'hero-h1-prefix': 'Secure, administer, deploy —',
     'hero-h1-mid': 'the cyber that',
     'hero-h1-suffix': ' reality',
-    'hero-lede': 'Hugo Menu, Cybersecurity &amp; Ethical Hacking Master\'s student, on a work-study program with the Massy City IT department. Systems, networking, cloud and security — deployed and documented projects.',
+    'hero-lede': 'Hugo Menu, Mastère Spécialisé® Expert en cybersécurité student, on a work-study program with the Massy City IT department. Systems, networking, cloud and security — deployed and documented projects.',
     'hero-cta-contact': 'Contact me',
     'hero-cta-projects': 'View my projects',
     'hero-cv-label': 'Resume (PDF)',
@@ -121,11 +123,13 @@ const I18N = {
 
     'about-tag-slug': '_about/',
     'about-h2': 'Who I am, <span class="accent">in a few lines</span>.',
-    'about-lede': 'A <strong>Cybersecurity &amp; Ethical Hacking Master\'s</strong> student, I\'m looking for a work-study program in <strong>cybersecurity and network administration</strong> starting September 2026. Securing information systems, administering infrastructure, automating what can be automated — that\'s what drives me.',
+    'about-lede': 'A <strong>Mastère Spécialisé® Expert en cybersécurité</strong> student, I\'m looking for a work-study program in <strong>cybersecurity and network administration</strong> starting September 2026. Securing information systems, administering infrastructure, automating what can be automated — that\'s what drives me.',
 
     'about-tl-1-date': '2026 — present',
-    'about-tl-1-title': 'Cybersecurity &amp; Ethical Hacking Master\'s',
+    'about-tl-1-title': 'Mastère Spécialisé® Expert en cybersécurité',
     'about-tl-1-body': 'EFREI Panthéon-Assas — work-study program, continuing on from the Bachelor\'s.',
+    'about-tl-1-badge': 'RNCP Level 7 Certification (39781)',
+    'about-tl-1-badge-tooltip': '"Expert réseaux infrastructures et sécurité" · awarded by 3IL · RNCP record 39781 (31-10-2024, valid 5 years)',
     'about-tl-2-date': 'Oct. 2025 — Aug. 2026',
     'about-tl-2-title': 'IT Department Work-Study Trainee',
     'about-tl-2-body': 'City of Massy — IT Department, following two internships within the team.',
@@ -172,7 +176,7 @@ const I18N = {
     'hero-h1-prefix': 'Asegurar, administrar, desplegar —',
     'hero-h1-mid': 'la ciber que',
     'hero-h1-suffix': ' la realidad',
-    'hero-lede': 'Hugo Menu, estudiante de Máster en Ciberseguridad y Ethical Hacking, en formación dual con el departamento de TI del Ayuntamiento de Massy. Sistemas, redes, nube y seguridad — proyectos desplegados y documentados.',
+    'hero-lede': 'Hugo Menu, estudiante de Mastère Spécialisé® Expert en cybersécurité, en formación dual con el departamento de TI del Ayuntamiento de Massy. Sistemas, redes, nube y seguridad — proyectos desplegados y documentados.',
     'hero-cta-contact': 'Contáctame',
     'hero-cta-projects': 'Ver mis proyectos',
     'hero-cv-label': 'CV (PDF)',
@@ -197,11 +201,13 @@ const I18N = {
 
     'about-tag-slug': '_acerca-de/',
     'about-h2': 'Quién soy, <span class="accent">en pocas líneas</span>.',
-    'about-lede': 'Estudiante de <strong>Máster en Ciberseguridad y Ethical Hacking</strong>, busco una formación dual en <strong>ciberseguridad y administración de redes</strong> a partir de septiembre de 2026. Asegurar los sistemas de información, administrar las infraestructuras, automatizar lo que se pueda — eso es lo que me motiva.',
+    'about-lede': 'Estudiante de <strong>Mastère Spécialisé® Expert en cybersécurité</strong>, busco una formación dual en <strong>ciberseguridad y administración de redes</strong> a partir de septiembre de 2026. Asegurar los sistemas de información, administrar las infraestructuras, automatizar lo que se pueda — eso es lo que me motiva.',
 
     'about-tl-1-date': '2026 — presente',
-    'about-tl-1-title': 'Máster en Ciberseguridad y Ethical Hacking',
+    'about-tl-1-title': 'Mastère Spécialisé® Expert en cybersécurité',
     'about-tl-1-body': 'EFREI Panthéon-Assas — en formación dual, en continuidad con el Bachelor.',
+    'about-tl-1-badge': 'Título RNCP Nivel 7 (39781)',
+    'about-tl-1-badge-tooltip': '« Expert réseaux infrastructures et sécurité » · expedido por 3IL · Ficha RNCP 39781 (31-10-2024, válida 5 años)',
     'about-tl-2-date': 'oct. 2025 — ago. 2026',
     'about-tl-2-title': 'Aprendiz en el Departamento de TI',
     'about-tl-2-body': 'Ayuntamiento de Massy — Departamento de TI, tras dos prácticas en el mismo equipo.',
@@ -264,7 +270,7 @@ const TERM_I18N = {
     about: {
       desc: 'qui je suis, en une ligne',
       lines: [
-        'Hugo Menu — Mastère Cybersécurité &amp; Ethical Hacking (EFREI Panthéon-Assas).',
+        'Hugo Menu — Mastère Spécialisé® Expert en cybersécurité (EFREI Panthéon-Assas).',
         'Alternant DSI Mairie de Massy : AD/Entra ID, parc de 130+ applications, veille CVE quotidienne.',
         'À la croisée de l\'infra, du cloud et de la sécurité — avec une vraie culture du logiciel libre',
         'et de la souveraineté numérique (OVH, Mistral AI), forgée dans les contraintes du secteur public.',
@@ -307,7 +313,7 @@ const TERM_I18N = {
     neofetch: {
       desc: 'carte d\'identité système',
       lines: [
-        '<span class="nf-k">OS:</span> Mastère Cybersécurité &amp; Ethical Hacking',
+        '<span class="nf-k">OS:</span> Mastère Spécialisé® Expert en cybersécurité',
         '<span class="nf-k">Host:</span> EFREI · Panthéon-Assas',
         '<span class="nf-k">Role:</span> Alternant DSI — Mairie de Massy',
         '<span class="nf-k">Uptime:</span> 2 ans en production',
@@ -381,7 +387,7 @@ const TERM_I18N = {
     about: {
       desc: 'who I am, in one line',
       lines: [
-        'Hugo Menu — Cybersecurity &amp; Ethical Hacking Master\'s (EFREI Panthéon-Assas).',
+        'Hugo Menu — Mastère Spécialisé® Expert en cybersécurité (EFREI Panthéon-Assas).',
         'Work-study trainee at Massy City IT dept: AD/Entra ID, 130+ application portfolio, daily CVE watch.',
         'At the crossroads of infrastructure, cloud and security — with a real culture of open source',
         'and digital sovereignty (OVH, Mistral AI), forged in the constraints of the public sector.',
@@ -424,7 +430,7 @@ const TERM_I18N = {
     neofetch: {
       desc: 'system ID card',
       lines: [
-        '<span class="nf-k">OS:</span> Cybersecurity &amp; Ethical Hacking Master\'s',
+        '<span class="nf-k">OS:</span> Mastère Spécialisé® Expert en cybersécurité',
         '<span class="nf-k">Host:</span> EFREI · Panthéon-Assas',
         '<span class="nf-k">Role:</span> Work-study trainee — Massy City IT dept',
         '<span class="nf-k">Uptime:</span> 2 years in production',
@@ -498,7 +504,7 @@ const TERM_I18N = {
     about: {
       desc: 'quién soy, en una línea',
       lines: [
-        'Hugo Menu — Máster en Ciberseguridad y Ethical Hacking (EFREI Panthéon-Assas).',
+        'Hugo Menu — Mastère Spécialisé® Expert en cybersécurité (EFREI Panthéon-Assas).',
         'Aprendiz en el Ayuntamiento de Massy: AD/Entra ID, parque de más de 130 aplicaciones, vigilancia diaria de CVE.',
         'En la encrucijada de la infraestructura, la nube y la seguridad — con una verdadera cultura del software libre',
         'y la soberanía digital (OVH, Mistral AI), forjada en las limitaciones del sector público.',
@@ -541,7 +547,7 @@ const TERM_I18N = {
     neofetch: {
       desc: 'carta de identidad del sistema',
       lines: [
-        '<span class="nf-k">OS:</span> Máster en Ciberseguridad y Ethical Hacking',
+        '<span class="nf-k">OS:</span> Mastère Spécialisé® Expert en cybersécurité',
         '<span class="nf-k">Host:</span> EFREI · Panthéon-Assas',
         '<span class="nf-k">Role:</span> Aprendiz — TI Ayuntamiento de Massy',
         '<span class="nf-k">Uptime:</span> 2 años en producción',
