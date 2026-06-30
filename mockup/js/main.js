@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about'];
+const SECTIONS = ['nav', 'hero', 'about', 'projects', 'skills'];
 
 // Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
 // la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).
@@ -48,6 +48,7 @@ async function loadSections() {
   initScrollDownButton();
 }
 
+
 // Effet de parallax marqué : toute la section "à propos" (fond, vague, contenu) part de
 // sa position normale (transform nul) puis remonte de plus en plus au fur et à mesure
 // qu'elle traverse le viewport, en plus du scroll classique — purement visuel (transform),
@@ -56,6 +57,7 @@ async function loadSections() {
 function initAboutParallax() {
   const about = document.getElementById('about');
   if (!about) return;
+  const projects = document.getElementById('projects');
 
   const MAX_LIFT = 220; // px
   let ticking = false;
@@ -73,7 +75,12 @@ function initAboutParallax() {
   function update() {
     const viewportTop = naturalTop(about) - window.scrollY;
     const progress = Math.min(Math.max(1 - viewportTop / window.innerHeight, 0), 1);
-    about.style.transform = `translateY(${-progress * MAX_LIFT}px)`;
+    const lift = -progress * MAX_LIFT;
+    about.style.transform = `translateY(${lift}px)`;
+    // #about remonte via transform, qui ne touche pas au flow : sans ce compensateur, la
+    // section suivante resterait plantée à sa position d'origine et un vide se creuserait
+    // sous #about au fur et à mesure de la remontée. #projects suit donc le même lift.
+    if (projects) projects.style.transform = `translateY(${lift}px)`;
     ticking = false;
   }
 
@@ -447,20 +454,17 @@ function initRailOnDark() {
   window.addEventListener('resize', update);
 }
 
-// Affiche le bouton "remonter en haut" uniquement tant que la section "à propos" est à l'écran,
-// et inverse ses couleurs (fond blanc/icône bleue) quand il se trouve sur la vague bleue, pour
-// rester lisible dans les deux cas.
+// Affiche le bouton "remonter en haut" dès qu'on a quitté le hero (et jusqu'en bas de page,
+// quelle que soit la section affichée), et inverse ses couleurs (fond blanc/icône bleue) quand
+// il se trouve sur la vague bleue, pour rester lisible dans les deux cas.
 function initBackToTop() {
   const btn = document.querySelector('.back-to-top');
   const about = document.getElementById('about');
-  if (!btn || !about) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => btn.classList.toggle('is-visible', entry.isIntersecting));
-  }, { threshold: 0.15 });
-  observer.observe(about);
+  const hero = document.getElementById('hero');
+  if (!btn || !about || !hero) return;
 
   function update() {
+    btn.classList.toggle('is-visible', window.scrollY > hero.offsetHeight * 0.5);
     const r = btn.getBoundingClientRect();
     btn.classList.toggle('is-on-dark', isOverAboutWave(about, r.top + r.height / 2));
   }
