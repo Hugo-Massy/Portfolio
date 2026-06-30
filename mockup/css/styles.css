@@ -128,7 +128,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .hero .wrap{position:relative; z-index:1; width:100%;}
 .hero-copy{will-change:opacity;}
-.term-card{will-change:top, left, width, height;}
 /* hauteur de la zone de vague, réutilisée par #about (margin/padding) et les calques de vague */
 :root{ --wave-h: clamp(120px, 14vw, 320px); }
 .hero h1{font-size:50px; line-height:1.15; margin:26px 0 22px; max-width:540px;}
@@ -297,14 +296,12 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   align-content:flex-start; gap:0; margin-top:6px;
 }
 .term-cat-item{
-  display:grid; grid-template-columns:11ch 5ch 16ch 3ch 1fr;
+  display:grid; grid-template-columns:16ch 3ch 1fr;
   gap:0 10px; align-items:baseline;
   padding:1px 6px; border-radius:4px;
   color:var(--term-text); text-decoration:none; cursor:pointer;
   transition:background .12s ease, color .12s ease;
 }
-.term-cat-perm{color:#4b5563; letter-spacing:.5px;}
-.term-cat-owner{color:#7f8a99;}
 .term-cat-name{color:var(--term-text); white-space:nowrap;}
 .term-cat-num{color:#6f89d9; font-weight:600;}
 .term-cat-size{color:#6f89d9; text-align:right;}
@@ -322,7 +319,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .term-cat-item.is-selected .term-cat-comment{color:#8a93a3;}
 @media(max-width:860px){
   .term-cat-item{grid-template-columns:15ch 3ch 1fr; gap:0 10px;}
-  .term-cat-perm, .term-cat-owner{display:none;}
 }
 
 /* indication fixe juste au-dessus du champ de saisie, hors du défilement */
@@ -407,7 +403,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .section-tag-num{color:var(--accent); font-weight:700;}
 
-.about{position:relative; background:transparent; padding-bottom:calc(var(--wave-h) * 0.75); margin-bottom:13vh;}
+.about{position:relative; background:transparent; padding-bottom:calc(var(--wave-h) * 0.75); margin-bottom:13vh; will-change:transform;}
 /* bandeau de séparation entre hero et about : bande bleue épaisse inclinée, clippée en
    polygone d'un bord à l'autre pour garantir qu'elle couvre toute la largeur du viewport */
 .section-divider{
@@ -590,7 +586,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .about-card-stripe{
   margin:30px -28px 22px; height:34px;
   background:repeating-linear-gradient(135deg,
-    rgba(20,30,60,.92) 0 6px, rgba(20,30,60,.78) 6px 12px);
+    var(--accent-dark) 0 6px, var(--accent) 6px 12px);
+  filter:brightness(.85);
 }
 .about-card-back-label{
   display:block; font-family:var(--mono); font-size:10.5px; letter-spacing:.06em;

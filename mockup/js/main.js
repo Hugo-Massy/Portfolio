@@ -44,6 +44,89 @@ async function loadSections() {
   initHeroTermGrow();
   initLangSwitch();
   initIdBadgeFlip();
+  initAboutParallax();
+  initScrollDownButton();
+}
+
+// Effet de parallax marqué : toute la section "à propos" (fond, vague, contenu) part de
+// sa position normale (transform nul) puis remonte de plus en plus au fur et à mesure
+// qu'elle traverse le viewport, en plus du scroll classique — purement visuel (transform),
+// ne touche pas au flow du document. La position "naturelle" (offsetTop) sert de référence
+// plutôt que getBoundingClientRect, qui inclurait déjà le transform qu'on est en train d'appliquer.
+function initAboutParallax() {
+  const about = document.getElementById('about');
+  if (!about) return;
+
+  const MAX_LIFT = 220; // px
+  let ticking = false;
+
+  function naturalTop(el) {
+    let top = 0;
+    let node = el;
+    while (node) {
+      top += node.offsetTop;
+      node = node.offsetParent;
+    }
+    return top;
+  }
+
+  function update() {
+    const viewportTop = naturalTop(about) - window.scrollY;
+    const progress = Math.min(Math.max(1 - viewportTop / window.innerHeight, 0), 1);
+    about.style.transform = `translateY(${-progress * MAX_LIFT}px)`;
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+  window.addEventListener('resize', update);
+  update();
+}
+
+// La flèche du hero ne peut pas se contenter d'un lien #about classique : #about remonte
+// au scroll (voir initAboutParallax), donc sa position réelle à l'écran change pendant
+// le défilement lui-même. On recale donc le scroll image par image sur la position
+// affichée (rect.top, qui inclut déjà le transform courant) jusqu'à ce qu'elle soit
+// alignée en haut du viewport — ça converge naturellement avec le lift.
+function initScrollDownButton() {
+  const btn = document.querySelector('.scroll-down');
+  const about = document.getElementById('about');
+  if (!btn || !about) return;
+
+  let rafId = null;
+  function cancel() {
+    if (rafId === null) return;
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+  // Si l'utilisateur reprend la main pendant l'animation (molette, tactile, clavier),
+  // on arrête tout de suite le recalage automatique pour ne pas lutter contre son geste.
+  ['wheel', 'touchstart', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, cancel, { passive: true });
+  });
+
+  const LANDING_OFFSET = 80; // px restants visibles du hero une fois arrivé
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    cancel();
+    function step() {
+      const remaining = about.getBoundingClientRect().top - LANDING_OFFSET;
+      if (Math.abs(remaining) < 1) { rafId = null; return; }
+      // On avance d'une fraction de la distance restante à chaque frame (vitesse de
+      // scroll normale, avec décélération en fin de course), tout en se recalant en
+      // continu sur la position affichée de #about. behavior:'instant' est obligatoire
+      // ici : html{scroll-behavior:smooth} ferait sinon répéter/écraser une animation
+      // CSS à chaque frame, ce qui rend le défilement très lent voire bloqué.
+      window.scrollTo({ top: window.scrollY + remaining * 0.18, left: 0, behavior: 'instant' });
+      rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+  });
 }
 
 // Carte d'identité façon badge d'accès : cliquer n'importe où sur la carte (recto ou
@@ -151,284 +234,26 @@ function initLangSwitch() {
   });
 }
 
-// La page ne fait jamais plus de 100vh (pas de vrai scroll de document) : la croissance
-// de la console est donc pilotée directement par la molette/le tactile (scroll-jacking),
-// avec un "progress" virtuel 0→1 qu'on anime à la main plutôt que de lire window.scrollY.
+// Le terminal du hero garde une taille fixe (plus de scroll-jacking ni de plein écran) :
+// le contenu par défaut et le menu des catégories sont affichés en permanence.
 function initHeroTermGrow() {
   const card = document.getElementById('term-card');
-  const copy = document.querySelector('.hero-copy');
   const scrollDownBtn = document.querySelector('.scroll-down');
   const categories = document.getElementById('term-categories');
-  const outputDefault = document.getElementById('term-output-default');
   if (!card) return;
 
-  const grid = card.parentNode;
-  let initRect = null;
-  let progress = 0;
-  let targetProgress = 0;
-  // neofetch s'affiche tout seul une fois le terminal arrivé à sa taille max et resté
-  // stable 1 s ; le timer est annulé si l'utilisateur ressort du plein écran avant.
-  let neofetchShown = false;
-  let neofetchTimer = null;
-  // une fois joué, ne se rejoue plus automatiquement les fois suivantes où la
-  // console repasse en plein écran (seule la toute première fois compte).
-  let neofetchPlayedOnce = false;
-  // un ancêtre (.reveal.is-visible) porte un transform, qui re-ancre tout descendant
-  // position:fixed à sa propre boîte au lieu du viewport ; on échappe donc vers
-  // document.body pendant la croissance pour que le fixed reste bien collé à l'écran.
-  let inBody = false;
+  if (categories) categories.removeAttribute('aria-hidden');
 
-  function captureInitRect() {
-    initRect = card.getBoundingClientRect();
-  }
-  captureInitRect();
-
-  // Efface le contenu par défaut comme une frappe inversée : on tronque chaque ligne à
-  // un nombre de caractères restants qui diminue avec le scroll, en partant de la fin.
-  const lines = outputDefault
-    ? Array.from(outputDefault.querySelectorAll('.l')).map((el) => ({
-        el, html: el.innerHTML, length: el.textContent.length,
-      }))
-    : [];
-  let totalChars = lines.reduce((sum, l) => sum + l.length, 0);
-
-  function truncateToChars(container, maxChars) {
-    let remaining = maxChars;
-    function walk(node) {
-      Array.from(node.childNodes).forEach((child) => {
-        if (remaining <= 0) { node.removeChild(child); return; }
-        if (child.nodeType === Node.TEXT_NODE) {
-          if (child.data.length > remaining) child.data = child.data.slice(0, remaining);
-          remaining -= Math.min(child.data.length, remaining);
-        } else if (child.nodeType === Node.ELEMENT_NODE) {
-          walk(child);
-        }
-      });
-    }
-    walk(container);
-  }
-
-  function renderErase() {
-    if (!lines.length) return;
-    const visibleTotal = Math.round(totalChars * Math.min(Math.max(1 - progress / 0.7, 0), 1));
-    let cumulative = 0;
-    lines.forEach((line) => {
-      const lineVisible = Math.min(Math.max(visibleTotal - cumulative, 0), line.length);
-      if (lineVisible >= line.length) {
-        line.el.style.display = '';
-        if (line.el.innerHTML !== line.html) line.el.innerHTML = line.html;
-      } else if (lineVisible <= 0) {
-        line.el.style.display = 'none';
-      } else {
-        line.el.style.display = '';
-        line.el.innerHTML = line.html;
-        truncateToChars(line.el, lineVisible);
-      }
-      cumulative += line.length;
-    });
-  }
-
-  // Tape l'aperçu des catégories caractère par caractère entre 70% et 100% du scroll,
-  // comme si on le saisissait au clavier (avec un curseur clignotant pendant la frappe).
-  let catHTML = categories ? categories.innerHTML : '';
-  let catTotalChars = categories ? categories.textContent.length : 0;
-
-  // Le contenu par défaut et l'aperçu des catégories sont retraduits en place par
-  // applyTranslations (data-i18n) ; on recapture donc leur HTML "source" juste après,
-  // sinon renderErase()/renderTypeCategories() réécriraient l'ancienne langue par-dessus.
-  document.addEventListener('langchange', () => {
-    lines.forEach((line) => {
-      line.html = line.el.innerHTML;
-      line.length = line.el.textContent.length;
-    });
-    totalChars = lines.reduce((sum, l) => sum + l.length, 0);
-    if (categories) {
-      catHTML = categories.innerHTML;
-      catTotalChars = categories.textContent.length;
-    }
-    render();
-  });
-
-  function renderTypeCategories() {
-    if (!categories) return;
-    const t = Math.min(Math.max((progress - 0.7) / 0.3, 0), 1);
-    const visibleChars = Math.round(catTotalChars * t);
-    categories.innerHTML = catHTML;
-    truncateToChars(categories, visibleChars);
-    if (t > 0 && t < 1) {
-      const cursor = document.createElement('span');
-      cursor.className = 'cursor';
-      categories.appendChild(cursor);
-    }
-  }
-
-  function render() {
-    if (progress <= 0) {
-      if (inBody) { grid.appendChild(card); inBody = false; }
-      card.style.position = '';
-      card.style.top = card.style.left = card.style.width = card.style.height = '';
-      captureInitRect();
-    } else {
-      if (!inBody) { document.body.appendChild(card); inBody = true; }
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const targetW = vw * 0.80;
-      const targetH = vh * 0.7;
-      const targetTop = (vh - targetH) / 2;
-      const targetLeft = (vw - targetW) / 2;
-      const r = initRect;
-      card.style.position = 'fixed';
-      card.style.top = `${r.top + (targetTop - r.top) * progress}px`;
-      card.style.left = `${r.left + (targetLeft - r.left) * progress}px`;
-      card.style.width = `${r.width + (targetW - r.width) * progress}px`;
-      card.style.height = `${r.height + (targetH - r.height) * progress}px`;
-    }
-
-    if (copy) {
-      copy.style.pointerEvents = progress > 0.05 ? 'none' : 'auto';
-    }
-    if (scrollDownBtn) scrollDownBtn.classList.toggle('is-hidden', progress > 0.05);
-    // le contenu par défaut s'efface entre 0 et 70% du scroll, puis l'ASCII des
-    // catégories se tape progressivement entre 70% et 100%.
-    renderErase();
-    renderTypeCategories();
-
-    // arrivé en plein écran : on lance un compte à rebours de 1 s avant d'afficher
-    // neofetch ; toute sortie de l'état plein écran annule le timer. Ne se déclenche
-    // que la toute première fois que la console atteint son plein écran.
-    if (progress > 0.995) {
-      if (!neofetchPlayedOnce && !neofetchShown && !neofetchTimer) {
-        neofetchTimer = setTimeout(() => {
-          neofetchTimer = null;
-          neofetchShown = true;
-          neofetchPlayedOnce = true;
-          if (window.HeroTerminal && window.HeroTerminal.isEmpty()) {
-            window.HeroTerminal.runAutoSequence(['cd ~/hugo', 'cat neofetch']);
-          }
-        }, 500);
-      }
-    } else {
-      if (neofetchTimer) {
-        clearTimeout(neofetchTimer);
-        neofetchTimer = null;
-      }
-      // on quitte le plein écran : le contenu (neofetch ou autre) reste affiché tel
-      // quel, en grand comme en petit, tant que l'utilisateur n'a pas tapé une
-      // nouvelle commande par-dessus (voir runCommand, qui efface alors la sortie).
-      neofetchShown = false;
-    }
-  }
-
-  const TRAVEL_PX = 700; // quantité de molette pour parcourir 0 → 1
-  const EASE = 0.35; // facteur de lissage : plus petit = plus fluide/inertiel
-  let looping = false;
-  let rafId = null;
-
-  function stopAnyAnimation() {
-    if (rafId !== null) cancelAnimationFrame(rafId);
-    rafId = null;
-    looping = false;
-  }
-
-  function loop() {
-    const diff = targetProgress - progress;
-    if (Math.abs(diff) < 0.001) {
-      progress = targetProgress;
-      render();
-      looping = false;
-      rafId = null;
-      return;
-    }
-    progress += diff * EASE;
-    render();
-    rafId = requestAnimationFrame(loop);
-  }
-
-  function setTargetProgress(next) {
-    targetProgress = Math.min(Math.max(next, 0), 1);
-    if (!looping) {
-      stopAnyAnimation();
-      looping = true;
-      rafId = requestAnimationFrame(loop);
-    }
-  }
-
-  // Animation à durée fixe (ease-in-out), utilisée pour les clics sur les boutons
-  // macOS : un tween exponentiel part trop vite puis traîne en fin de course, alors
-  // qu'un clic veut un mouvement complet et régulier du début à la fin.
-  function easeInOutCubic(t) {
-    return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-  }
-
-  function animateToProgress(target, duration = 520) {
-    stopAnyAnimation();
-    targetProgress = target;
-    const start = progress;
-    const delta = target - start;
-    if (Math.abs(delta) < 0.001) { progress = target; render(); return; }
-    const t0 = performance.now();
-    function step(now) {
-      const t = Math.min((now - t0) / duration, 1);
-      progress = start + delta * easeInOutCubic(t);
-      render();
-      if (t < 1) {
-        rafId = requestAnimationFrame(step);
-      } else {
-        progress = target;
-        render();
-        rafId = null;
-      }
-    }
-    rafId = requestAnimationFrame(step);
-  }
-
-  // La console ne grossit/rétrécit au scroll que si le curseur (ou le doigt) est
-  // au-dessus d'elle — écouteurs posés sur `card`, pas sur `window`.
-  card.addEventListener('wheel', (e) => {
-    if (targetProgress <= 0 && e.deltaY < 0) return; // déjà au repos, on laisse remonter normalement
-    e.preventDefault();
-    if (window.HeroTerminal && window.HeroTerminal.stopIdleTease) window.HeroTerminal.stopIdleTease();
-    setTargetProgress(targetProgress + e.deltaY / TRAVEL_PX);
-  }, { passive: false });
-
-  let touchY = null;
-  card.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
-  card.addEventListener('touchmove', (e) => {
-    if (touchY === null) return;
-    const dy = touchY - e.touches[0].clientY;
-    if (targetProgress <= 0 && dy < 0) { touchY = e.touches[0].clientY; return; }
-    e.preventDefault();
-    if (window.HeroTerminal && window.HeroTerminal.stopIdleTease) window.HeroTerminal.stopIdleTease();
-    setTargetProgress(targetProgress + dy / TRAVEL_PX);
-    touchY = e.touches[0].clientY;
-  }, { passive: false });
-
-  // En dehors de la console, c'est le scroll réel de la page qui défile : la flèche
-  // doit alors se cacher dès qu'on quitte le haut du hero, indépendamment du `progress`.
+  // La flèche se cache dès qu'on quitte le haut de page, comme un indicateur de
+  // scroll classique.
   if (scrollDownBtn) {
     window.addEventListener('scroll', () => {
-      scrollDownBtn.classList.toggle('is-hidden', window.scrollY > 10 || progress > 0.05);
+      scrollDownBtn.classList.toggle('is-hidden', window.scrollY > 10);
     }, { passive: true });
   }
 
-  // Ronds façon macOS dans la barre du terminal : vert = plein écran, jaune =
-  // repos, rouge = clear (délégué à window.HeroTerminal, posé par initTerminal).
-  const dotMax = document.getElementById('term-dot-max');
-  const dotMin = document.getElementById('term-dot-min');
+  // Rond rouge façon macOS : clear (délégué à window.HeroTerminal, posé par initTerminal).
   const dotClose = document.getElementById('term-dot-close');
-  if (dotMax) {
-    dotMax.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (window.HeroTerminal && window.HeroTerminal.stopIdleTease) window.HeroTerminal.stopIdleTease();
-      animateToProgress(1);
-    });
-  }
-  if (dotMin) {
-    dotMin.addEventListener('click', (e) => {
-      e.stopPropagation();
-      animateToProgress(0);
-    });
-  }
   if (dotClose) {
     dotClose.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -438,10 +263,7 @@ function initHeroTermGrow() {
 
   // Menu des catégories : cliquable directement, et sélectionnable en tapant son
   // numéro (1-5) dans le champ de saisie du terminal — voir TERM_COMMANDS plus bas,
-  // qui relaie l'appel via window.HeroCategories.select(). Délégation sur le
-  // conteneur stable : renderTypeCategories() réécrit innerHTML à chaque frame pour
-  // la troncature, donc les <a> sont recréés en permanence et ne peuvent pas garder
-  // d'écouteur attaché directement.
+  // qui relaie l'appel via window.HeroCategories.select().
   function selectCategory(key) {
     if (!categories) return false;
     const item = categories.querySelector(`.term-cat-item[data-cat="${key}"]`);
@@ -450,7 +272,6 @@ function initHeroTermGrow() {
     item.classList.add('is-selected');
     const href = item.getAttribute('href');
     if (href) window.location.hash = href;
-    animateToProgress(0);
     return true;
   }
   if (categories) {
@@ -461,14 +282,50 @@ function initHeroTermGrow() {
       selectCategory(item.dataset.cat);
     });
   }
-  window.HeroCategories = { select: selectCategory };
 
-  window.addEventListener('resize', () => {
-    if (!inBody) captureInitRect();
-    render();
-  });
+  function normalizeCatText(s) {
+    return s.trim().toLowerCase().replace(/\/+$/, '');
+  }
 
-  render();
+  // Permet de taper le nom complet d'une entrée ("01_à-propos/", "_projets" ou
+  // "projets") plutôt que son seul numéro — lu directement sur le DOM pour suivre
+  // la langue affichée (voir TERM_COMMANDS plus bas, qui relaie via runCommand).
+  function matchCategoryByText(raw) {
+    if (!categories) return null;
+    const needle = normalizeCatText(raw);
+    if (!needle) return null;
+    const items = categories.querySelectorAll('.term-cat-item');
+    for (const item of items) {
+      const numEl = item.querySelector('.term-cat-num');
+      const slugEl = item.querySelector('[data-i18n^="term-slug-"]');
+      const num = numEl ? numEl.textContent : '';
+      const slug = slugEl ? slugEl.textContent : '';
+      const candidates = [
+        normalizeCatText(num + slug),
+        normalizeCatText(slug),
+        normalizeCatText(slug.replace(/^_/, '')),
+      ];
+      if (candidates.includes(needle)) return item.dataset.cat;
+    }
+    return null;
+  }
+
+  // Noms complets affichés ("01_à-propos/"...), pour les proposer aussi via Tab
+  // dans le terminal (voir initTerminal plus bas).
+  function listCategoryNames() {
+    if (!categories) return [];
+    return Array.from(categories.querySelectorAll('.term-cat-item')).map((item) => {
+      const numEl = item.querySelector('.term-cat-num');
+      const slugEl = item.querySelector('[data-i18n^="term-slug-"]');
+      return `${numEl ? numEl.textContent : ''}${slugEl ? slugEl.textContent : ''}`.trim();
+    });
+  }
+
+  window.HeroCategories = {
+    select: selectCategory,
+    matchByText: matchCategoryByText,
+    list: listCategoryNames,
+  };
 }
 
 // Fait défiler le mot-clé du titre du Hero, puis s'arrête définitivement sur "protège".
@@ -741,6 +598,7 @@ function initTerminal() {
   const cwdEl = document.getElementById('term-cwd');
   const hintEl = card.querySelector('.term-hint');
   const outputDefault = document.getElementById('term-output-default');
+  const categoriesEl = document.getElementById('term-categories');
   if (!card || !scrollEl || !output || !input) return;
 
   const history = [];
@@ -1010,6 +868,7 @@ function initTerminal() {
     if (!append) {
       output.innerHTML = '';
       if (outputDefault) outputDefault.remove();
+      if (categoriesEl) categoriesEl.remove();
     }
 
     // mini-jeu "crack"/"hack" en cours : toute saisie hors exit/quit est une tentative de code.
@@ -1039,6 +898,12 @@ function initTerminal() {
     }
 
     if (!entry) {
+      const catKey = window.HeroCategories && window.HeroCategories.matchByText
+        && window.HeroCategories.matchByText(cmd);
+      if (catKey) {
+        window.HeroCategories.select(catKey);
+        return;
+      }
       const easter = TERM_EASTER_PATTERNS.find((p) => p.re.test(cmd));
       if (easter) {
         typeLines(easter.run(), 'error', 4, gen);
@@ -1232,9 +1097,13 @@ function initTerminal() {
       e.preventDefault();
       if (tabMatches.length === 0) {
         const base = input.value.trim().toLowerCase();
+        const catNames = (window.HeroCategories && window.HeroCategories.list) ? window.HeroCategories.list() : [];
+        // Tab à vide ne propose que les commandes "publiques" (avec desc) plus le
+        // sommaire des catégories : les raccourcis cachés (1-5, matrix, crack...)
+        // ne sortent que si on a déjà tapé le début de leur nom.
         tabMatches = base
-          ? Object.keys(TERM_COMMANDS).filter((name) => name.startsWith(base))
-          : Object.keys(TERM_COMMANDS);
+          ? Object.keys(TERM_COMMANDS).concat(catNames).filter((name) => name.toLowerCase().startsWith(base))
+          : Object.keys(TERM_COMMANDS).filter((name) => TERM_COMMANDS[name].desc != null).concat(catNames);
         if (tabMatches.length === 0) return;
         tabIndex = 0;
       } else {
