@@ -1099,10 +1099,10 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .contact{
   position:relative;
   isolation:isolate;
-  text-align:center;
+  text-align:right;
   color:#fff;
-  padding-top:calc(var(--contact-slope) + clamp(48px, 8vh, 96px));
-  padding-bottom:clamp(56px, 9vh, 104px);
+  padding-top:calc(var(--contact-slope) * 0.55 + clamp(16px, 3vh, 32px));
+  padding-bottom:clamp(20px, 3vh, 30px);
 }
 /* remplissage bleu repris de #about : diagonale en haut (remonte vers la droite),
    plein jusqu'en bas de la section — même ombre portée sous le bord incliné */
@@ -1119,22 +1119,31 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:absolute; pointer-events:none;
   left:clamp(16px, 6vw, 72px); top:0;
   width:var(--avatar-w); height:auto;
-  transform:translateY(calc(var(--contact-slope) - var(--avatar-w) * 1.28));
+  transform-origin:left bottom;
+  /* --avatar-scale est piloté en JS (initAboutParallax) : l'avatar part minuscule et
+     grandit jusqu'à sa taille normale au fur et à mesure que le contre-lift de #contact
+     se résorbe. Fallback à 1 si JS désactivé. */
+  transform:translateY(calc(var(--contact-slope) - var(--avatar-w) * 1.28)) scale(var(--avatar-scale, 1));
 }
 @media(max-width:640px){
   .contact-avatar{display:none;}
+  .contact{text-align:center;}
+  .contact-head{align-items:center; margin:0 auto 40px; text-align:center;}
+  .contact-head .section-tag{justify-content:center;}
+  .contact-lede{max-width:480px; white-space:normal;}
+  .contact-links{justify-content:center;}
 }
 .contact-wrap{position:relative; z-index:1;}
 
-.contact-head{max-width:560px; margin:0 auto 40px;}
-.contact-head .section-tag{justify-content:center; color:rgba(255,255,255,.7);}
+.contact-head{display:flex; flex-direction:column; align-items:flex-end; margin:0 0 40px auto; text-align:right;}
+.contact-head .section-tag{justify-content:flex-end; color:rgba(255,255,255,.7);}
 .contact-head .section-tag-num{color:#fff;}
 .contact-head h2{font-size:38px; line-height:1.15; margin-bottom:16px; color:#fff;}
-.contact-lede{font-size:17px; color:rgba(255,255,255,.82); max-width:480px; margin:0 auto;}
+.contact-lede{font-size:17px; color:rgba(255,255,255,.82); white-space:nowrap; margin:0;}
 
 .contact-email{
   display:inline-block; margin-bottom:26px;
-  font-size:clamp(26px, 5vw, 42px); font-weight:700; letter-spacing:-0.02em;
+  font-size:clamp(18px, 2.2vw, 25px); font-weight:600; letter-spacing:-0.01em;
   color:#fff;
   border-bottom:2px solid rgba(255,255,255,.4);
   transition:color .2s ease, border-color .2s ease;
@@ -1142,12 +1151,14 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .contact-email:hover{color:#fff; border-color:#fff;}
 
 .contact-links{
-  display:flex; justify-content:center; flex-wrap:wrap; gap:10px 28px;
+  display:flex; justify-content:flex-end; flex-wrap:wrap; gap:10px 28px;
 }
 .contact-links a{
+  display:inline-flex; align-items:center; gap:8px;
   font-family:var(--mono); font-size:14px; color:rgba(255,255,255,.72);
   transition:color .2s ease;
 }
+.contact-links a svg{flex:none;}
 .contact-links a:hover{color:#fff;}
 
 .site-footer{

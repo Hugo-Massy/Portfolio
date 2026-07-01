@@ -77,6 +77,12 @@ function initAboutParallax() {
   // MAX_LIFT px de scroll, pour qu'elle revienne pile à sa position naturelle (transform
   // nul) au moment où on atteint le bas réel du document — plus de trou à combler.
   const last = followers[followers.length - 1];
+  // L'avatar de #contact grandit en même temps que le contre-lift se résorbe : minuscule
+  // au début (avatarProgress 0), taille normale une fois le lift revenu à sa position
+  // naturelle (avatarProgress 1) — même timing que counterProgress, donc même sensation
+  // que le reste de la section "arrive" avec le scroll.
+  const avatarEls = last ? last.querySelectorAll('.contact-avatar') : [];
+  const AVATAR_MIN_SCALE = 0.15;
   const MAX_LIFT = 220; // px
   // Lissage du mouvement : au lieu de coller pile à la position de scroll, le lift
   // "rattrape" sa cible avec un peu d'inertie (lerp à chaque frame) — l'effet paraît
@@ -84,6 +90,7 @@ function initAboutParallax() {
   const EASE = 0.35;
   let currentAboutLift = 0;
   let currentLastLift = 0;
+  let currentAvatarProgress = 0;
   let rafId = null;
 
   function naturalTop(el) {
@@ -101,6 +108,7 @@ function initAboutParallax() {
     const progress = Math.min(Math.max(1 - viewportTop / window.innerHeight, 0), 1);
     const aboutLift = -progress * MAX_LIFT;
     let lastLift = aboutLift;
+    let avatarProgress = 1;
     if (last) {
       // Le contre-lift doit annuler pile MAX_LIFT au moment où on touche le bas réel du
       // document (sinon le trou revient), mais peut commencer à monter bien avant :
@@ -110,8 +118,9 @@ function initAboutParallax() {
       const revealStart = naturalTop(last) + last.offsetHeight - COUNTER_RANGE;
       const counterProgress = Math.min(Math.max((window.scrollY + window.innerHeight - revealStart) / COUNTER_RANGE, 0), 1);
       lastLift = aboutLift + counterProgress * MAX_LIFT;
+      avatarProgress = counterProgress;
     }
-    return { aboutLift, lastLift };
+    return { aboutLift, lastLift, avatarProgress };
   }
 
   function apply() {
@@ -122,17 +131,23 @@ function initAboutParallax() {
       el.style.transform = transform;
     });
     if (last) last.style.transform = `translateY(${currentLastLift}px)`;
+    const avatarScale = AVATAR_MIN_SCALE + currentAvatarProgress * (1 - AVATAR_MIN_SCALE);
+    avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', avatarScale.toFixed(3)));
   }
 
   function loop() {
-    const { aboutLift, lastLift } = targets();
+    const { aboutLift, lastLift, avatarProgress } = targets();
     currentAboutLift += (aboutLift - currentAboutLift) * EASE;
     currentLastLift += (lastLift - currentLastLift) * EASE;
+    currentAvatarProgress += (avatarProgress - currentAvatarProgress) * EASE;
     apply();
-    const settled = Math.abs(aboutLift - currentAboutLift) < 0.05 && Math.abs(lastLift - currentLastLift) < 0.05;
+    const settled = Math.abs(aboutLift - currentAboutLift) < 0.05
+      && Math.abs(lastLift - currentLastLift) < 0.05
+      && Math.abs(avatarProgress - currentAvatarProgress) < 0.001;
     if (settled) {
       currentAboutLift = aboutLift;
       currentLastLift = lastLift;
+      currentAvatarProgress = avatarProgress;
       apply();
       rafId = null;
       return;
@@ -151,6 +166,7 @@ function initAboutParallax() {
   const initial = targets();
   currentAboutLift = initial.aboutLift;
   currentLastLift = initial.lastLift;
+  currentAvatarProgress = initial.avatarProgress;
   apply();
 }
 

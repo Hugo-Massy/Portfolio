@@ -73,7 +73,7 @@ const I18N = {
     'contact-h2': 'Envie d\'échanger&nbsp;?',
     'contact-lede': 'Alternance, mission ou simple question — écris-moi, je réponds sous 24&nbsp;heures.',
     'contact-cv': 'CV',
-    'footer-back-to-top': 'Haut de page',
+    'footer-back-to-top': 'Merci de votre visite',
 
     'about-card-flip-aria': 'Retourner le badge',
     'about-card-back-signature': 'Signature',
@@ -221,7 +221,7 @@ const I18N = {
     'contact-h2': 'Want to chat?',
     'contact-lede': 'Apprenticeship, mission or just a question — drop me a line, I reply within 24 hours.',
     'contact-cv': 'Resume',
-    'footer-back-to-top': 'Back to top',
+    'footer-back-to-top': 'Thanks for visiting',
 
     'about-card-flip-aria': 'Flip the badge',
     'about-card-back-signature': 'Signature',
@@ -369,7 +369,7 @@ const I18N = {
     'contact-h2': '¿Hablamos?',
     'contact-lede': 'Alternancia, misión o simplemente una pregunta — escríbeme, respondo en menos de 24 horas.',
     'contact-cv': 'CV',
-    'footer-back-to-top': 'Volver arriba',
+    'footer-back-to-top': 'Gracias por su visita',
 
     'about-card-flip-aria': 'Girar la credencial',
     'about-card-back-signature': 'Firma',
