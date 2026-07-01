@@ -3,8 +3,8 @@
 
     <div class="avail-head reveal d1">
       <span class="section-tag"><span class="section-tag-num">04</span><span data-i18n="avail-tag-slug">_disponibilité/</span></span>
-      <h2 data-i18n="avail-h2">Ma <span class="accent">disponibilité</span>, en un coup d'œil.</h2>
-      <p class="avail-lede" data-i18n="avail-lede">Mon rythme d'alternance et mes prochaines échéances — pour savoir quand on peut travailler ensemble.</p>
+      <h2 data-i18n="avail-h2">Mes <span class="accent">disponibilités</span>, prêtes pour vous.</h2>
+      <p class="avail-lede" data-i18n="avail-lede">Bientôt diplômé et déjà prêt à embarquer sur de nouveaux projets — voici mon rythme et les dates clés pour caler notre prochaine collaboration.</p>
     </div>
 
     <div class="avail-grid">
@@ -44,6 +44,22 @@
           <li><span class="cal-key cal-key--event"></span><span data-i18n="avail-legend-event">Échéance clé</span></li>
           <li><span class="cal-key cal-key--unavailable"></span><span data-i18n="avail-legend-unavailable">Indisponible</span></li>
         </ul>
+      </div>
+
+      <!-- Prise de contact — mise à jour dynamiquement par initAvailability() (js/main.js)
+           quand une date du calendrier est sélectionnée ; sinon contenu par défaut ci-dessous. -->
+      <div class="avail-contact reveal d3">
+        <h3 id="avail-detail-title" data-i18n="avail-contact-title">On travaille ensemble&nbsp;?</h3>
+        <p id="avail-detail-text" data-i18n="avail-contact-text">Un poste, une mission ou juste une question sur mon planning — écrivez-moi, je réponds sous 48h.</p>
+        <div class="avail-slot" id="avail-slot" hidden>
+          <label class="avail-slot-label" for="avail-slot-select" data-i18n="avail-slot-label">Créneau proposé</label>
+          <select class="avail-slot-select" id="avail-slot-select"></select>
+          <p class="avail-slot-warning" id="avail-slot-warning" hidden></p>
+        </div>
+        <a class="btn btn-ghost avail-contact-btn" id="avail-contact-mail" href="#">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+          <span id="avail-contact-cta-label" data-i18n="avail-contact-cta">Proposer un contact</span>
+        </a>
       </div>
 
     </div>

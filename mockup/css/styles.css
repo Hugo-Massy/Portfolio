@@ -1112,7 +1112,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .avail-lede{font-size:17px; color:var(--text-dim); max-width:600px;}
 
 .avail-grid{
-  display:flex; justify-content:flex-start;
+  display:flex; align-items:flex-start; justify-content:flex-start; gap:clamp(28px, 5vw, 56px);
+  flex-wrap:wrap;
 }
 
 /* --- Fenêtre calendrier (sombre, chrome de terminal) --- */
@@ -1184,16 +1185,21 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums;
   color:var(--term-text);
 }
+.cal-day:not(.is-out){cursor:pointer;}
 .cal-num{position:relative; z-index:1; line-height:1; display:inline-block; transition:color .15s ease, transform .15s ease;}
 .cal-day:not(.is-out):hover .cal-num{color:#9db4f2; font-weight:600; transform:scale(1.15);}
-.cal-day.is-out{color:#3a3f47; opacity:.5;}
+.cal-day.is-out{color:#3a3f47; opacity:.5; cursor:default;}
 .cal-day.is-past:not(.is-today){opacity:.5;}
 /* aujourd'hui : seul le chiffre est mis en avant (blanc vif, gras, plus grand) —
    pas de cadre ni de halo, pour ne pas rivaliser avec les couleurs de rythme/échéance. */
 .cal-day.is-today{opacity:1;}
 .cal-day.is-today .cal-num{color:#6f89d9; font-weight:700;}
 /* échéance : pastille colorée en bas de la case */
-.cal-day.has-event{cursor:default; font-weight:600; color:#fff;}
+.cal-day.has-event{font-weight:600; color:#fff;}
+.cal-day:focus-visible{outline:2px solid var(--accent); outline-offset:1px;}
+/* jour sélectionné : cadre plein pour le distinguer du simple survol/aujourd'hui */
+.cal-day.is-selected{border-color:#6f89d9; background:rgba(111,137,217,.16); border-radius:8px;}
+.cal-day.is-selected .cal-num{color:#fff;}
 .cal-dot{
   position:absolute; bottom:4px; left:50%; transform:translateX(-50%);
   width:5px; height:5px; border-radius:50%; background:var(--cal-event);
@@ -1215,12 +1221,45 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .cal-key-icon{width:14px; height:14px; flex:none; color:#8a93a3;}
 .cal-key-icon svg{width:100%; height:100%; display:block;}
 
+/* --- Prise de contact, à droite du calendrier : pas de fond ni de cadre,
+   juste du texte et un lien, pour rester léger face à la fenêtre terminal. --- */
+.avail-contact{
+  flex:1 1 240px; max-width:320px;
+  padding-top:8px;
+}
+.avail-contact h3{font-size:20px; margin-bottom:10px; color:var(--text);}
+.avail-contact p{font-size:15px; line-height:1.55; color:var(--text-dim); margin-bottom:22px;}
+.avail-contact-btn{white-space:nowrap;}
+/* créneau proposé — n'apparaît qu'après sélection d'une date disponible sur le calendrier ;
+   le visiteur choisit lui-même l'heure parmi les options du <select>. */
+.avail-slot{
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin:-10px 0 22px; padding:10px 14px;
+  border:1px solid rgba(111,137,217,.35); border-radius:9px;
+  background:rgba(111,137,217,.08);
+  font-family:var(--mono); font-size:13px;
+}
+.avail-slot-label{color:#8a93a3; text-transform:uppercase; letter-spacing:.04em; font-size:10.5px;}
+.avail-slot-select{
+  font-family:var(--mono); font-size:13px; font-weight:600; color:#9db4f2;
+  background:rgba(111,137,217,.14); border:1px solid rgba(111,137,217,.4); border-radius:6px;
+  padding:4px 8px; cursor:pointer;
+}
+.avail-slot-select:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+/* avertissement : le créneau choisi tombe potentiellement pendant les heures de travail
+   habituelles (semaine entreprise/école) — occupe toute la largeur, sous label + select. */
+.avail-slot-warning{
+  flex:1 1 100%; margin:2px 0 0; font-family:var(--sans); font-size:12.5px; line-height:1.5;
+  color:#e0ac6a;
+}
+
 @media(max-width:760px){
   .avail-head h2{font-size:28px;}
   .cal-toolbar{padding:14px 16px 0;}
   .cal-weekdays, .cal-body{max-width:calc(100% - 32px);}
   .cal-legend{margin:16px 16px 18px;}
   .cal-day{font-size:12px;}
+  .avail-contact{max-width:none;}
 }
 
 /* ============================================================

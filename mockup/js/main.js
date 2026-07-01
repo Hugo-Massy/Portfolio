@@ -97,6 +97,13 @@ function initAvailability() {
   const prevBtn = document.getElementById('cal-prev');
   const nextBtn = document.getElementById('cal-next');
   const todayBtn = document.getElementById('cal-today');
+  const detailTitleEl = document.getElementById('avail-detail-title');
+  const detailTextEl = document.getElementById('avail-detail-text');
+  const slotWrapEl = document.getElementById('avail-slot');
+  const slotSelectEl = document.getElementById('avail-slot-select');
+  const slotWarningEl = document.getElementById('avail-slot-warning');
+  const mailLink = document.getElementById('avail-contact-mail');
+  const ctaLabelEl = document.getElementById('avail-contact-cta-label');
   if (!grid || !titleEl) return;
 
   const cfg = AVAILABILITY_CONFIG;
@@ -140,6 +147,28 @@ function initAvailability() {
   }
 
   let view = new Date(today.getFullYear(), today.getMonth(), 1);
+  // Date sélectionnée sur le calendrier (clé "YYYY-MM-DD"), null si aucune : pilote
+  // le panneau de droite (avail-detail) et le mailto pré-rempli.
+  let selectedKey = null;
+
+  // Fin d'alternance : au-delà, plus de rythme entreprise/école, disponibilité pleine.
+  const fullAvailFrom = cfg.events.find((ev) => ev.type === 'avail');
+  const fullAvailDate = fullAvailFrom ? parse(fullAvailFrom.date) : null;
+
+  // Détermine le statut d'un jour (passé, échéance, dispo pleine, week-end, ou
+  // "occupé" pendant le rythme d'alternance) et le créneau à proposer en conséquence.
+  function dayInfo(d) {
+    const isPast = d < today;
+    const ev = eventsByDate.get(keyOf(d));
+    const isWeekend = d.getDay() === 0 || d.getDay() === 6;
+    const isFullAvail = fullAvailDate && d >= fullAvailDate;
+
+    if (isPast) return { status: 'past', event: ev };
+    if (ev && ev.type === 'event') return { status: 'event', event: ev };
+    if (isFullAvail) return { status: 'full', event: ev, slotKey: 'day' };
+    if (isWeekend) return { status: 'weekend', event: ev, slotKey: 'day' };
+    return { status: 'busy', event: ev, slotKey: 'busy' };
+  }
 
   function renderWeekdays() {
     const ref = new Date(2024, 0, 1); // lundi 1er janv. 2024
@@ -206,9 +235,11 @@ function initAvailability() {
         if (isToday) classes.push('is-today');
         if (isPast) classes.push('is-past');
         if (ev) classes.push('has-event', `event-${ev.type}`);
+        if (keyOf(d) === selectedKey) classes.push('is-selected');
 
         const title = ev ? ` title="${labelOf(ev).replace(/"/g, '&quot;')}"` : '';
-        html += `<div class="${classes.join(' ')}"${title}>`
+        html += `<div class="${classes.join(' ')}" data-date="${keyOf(d)}" tabindex="0" role="button"`
+          + ` aria-pressed="${keyOf(d) === selectedKey}"${title}>`
           + `<span class="cal-num">${d.getDate()}</span>`
           + (ev ? '<span class="cal-dot" aria-hidden="true"></span>' : '')
           + '</div>';
@@ -218,10 +249,99 @@ function initAvailability() {
     if (railEl) railEl.innerHTML = railHtml;
   }
 
+  // État courant du panneau, relu par updateMailHref() quand l'utilisateur change
+  // l'heure choisie dans le <select> sans re-déclencher tout le rendu.
+  let panelDateLabel = '';
+  let panelShowSlot = false;
+
+  function updateMailHref() {
+    const dict = I18N[CURRENT_LANG] || I18N.fr;
+    const slotLabel = panelShowSlot && slotSelectEl ? slotSelectEl.value : '';
+    const subject = panelShowSlot
+      ? (dict['avail-contact-mail-subject-slot'] || '').replace('{date}', panelDateLabel)
+      : (dict['avail-contact-mail-subject'] || '');
+    const body = panelShowSlot
+      ? (dict['avail-contact-mail-body-slot'] || '').replace('{date}', panelDateLabel).replace('{slot}', slotLabel)
+      : (dict['avail-contact-mail-body'] || '');
+    mailLink.href = `mailto:${AVAILABILITY_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  // Panneau de droite (avait un contenu fixe) : reflète maintenant la date sélectionnée
+  // sur le calendrier — statut (disponible / occupé / échéance) + un choix d'heures parmi
+  // lesquelles piocher — et pré-remplit le mailto en conséquence. Sans sélection, retombe
+  // sur le texte par défaut.
+  function renderContactPanel() {
+    if (!mailLink || !detailTitleEl || !detailTextEl) return;
+    const dict = I18N[CURRENT_LANG] || I18N.fr;
+
+    if (!selectedKey) {
+      detailTitleEl.innerHTML = dict['avail-contact-title'] || '';
+      detailTextEl.innerHTML = dict['avail-contact-text'] || '';
+      if (slotWrapEl) slotWrapEl.hidden = true;
+      if (slotWarningEl) slotWarningEl.hidden = true;
+      if (ctaLabelEl) ctaLabelEl.textContent = dict['avail-contact-cta'] || '';
+      panelDateLabel = '';
+      panelShowSlot = false;
+      updateMailHref();
+      return;
+    }
+
+    const d = parse(selectedKey);
+    const info = dayInfo(d);
+    const fmt = new Intl.DateTimeFormat(locale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    const dateLabel = fmt.format(d).replace(/^./, (c) => c.toUpperCase());
+    detailTitleEl.textContent = dateLabel;
+
+    let statusMsg = dict[`avail-status-${info.status}`] || '';
+    if (info.status === 'event' && info.event) statusMsg = statusMsg.replace('{label}', labelOf(info.event));
+    if (info.event && info.status !== 'event') statusMsg += ` (${labelOf(info.event)})`;
+    detailTextEl.textContent = statusMsg;
+
+    const showSlot = !!info.slotKey;
+    if (slotWrapEl) slotWrapEl.hidden = !showSlot;
+    if (showSlot && slotSelectEl) {
+      const options = (dict[`avail-slot-options-${info.slotKey}`] || '').split('|').filter(Boolean);
+      slotSelectEl.innerHTML = options.map((opt) => `<option value="${opt}">${opt}</option>`).join('');
+    }
+    const isBusySlot = info.slotKey === 'busy';
+    if (slotWarningEl) {
+      slotWarningEl.hidden = !isBusySlot;
+      if (isBusySlot) slotWarningEl.textContent = dict['avail-slot-warning-busy'] || '';
+    }
+
+    if (ctaLabelEl) ctaLabelEl.textContent = dict[showSlot ? 'avail-contact-cta-slot' : 'avail-contact-cta'] || '';
+    panelDateLabel = dateLabel;
+    panelShowSlot = showSlot;
+    updateMailHref();
+  }
+
+  function selectDate(d) {
+    const key = keyOf(d);
+    selectedKey = selectedKey === key ? null : key;
+    renderGrid();
+    renderContactPanel();
+  }
+
+  slotSelectEl && slotSelectEl.addEventListener('change', updateMailHref);
+
+  grid.addEventListener('click', (e) => {
+    const cell = e.target.closest('.cal-day');
+    if (!cell || !cell.dataset.date) return;
+    selectDate(parse(cell.dataset.date));
+  });
+  grid.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' && e.key !== ' ') return;
+    const cell = e.target.closest('.cal-day');
+    if (!cell || !cell.dataset.date) return;
+    e.preventDefault();
+    selectDate(parse(cell.dataset.date));
+  });
+
   function renderAll() {
     renderWeekdays();
     renderTitle();
     renderGrid();
+    renderContactPanel();
   }
 
   prevBtn && prevBtn.addEventListener('click', () => {
@@ -244,6 +364,10 @@ function initAvailability() {
 
   renderAll();
 }
+
+// Email de contact utilisé par le mailto pré-rempli du panneau de droite (voir
+// renderContactPanel dans initAvailability) — un vrai formulaire nécessiterait un backend.
+const AVAILABILITY_CONTACT_EMAIL = 'hugo@menu-family.fr';
 
 // Effet de parallax marqué : toute la section "à propos" (fond, vague, contenu) part de
 // sa position normale (transform nul) puis remonte de plus en plus au fur et à mesure
