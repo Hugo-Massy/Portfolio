@@ -1125,6 +1125,10 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
      se résorbe. Fallback à 1 si JS désactivé. */
   transform:translateY(calc(var(--contact-slope) - var(--avatar-w) * 1.28)) scale(var(--avatar-scale, 1));
 }
+/* le crop du bras n'est calé sur la diagonale (fixe, non mise à l'échelle) qu'à la
+   taille normale : en dessous, sa découpe devient visible. On le garde masqué tant que
+   l'avatar est petit et on ne le révèle qu'en toute fin de croissance. */
+.contact-avatar-arm{ opacity:var(--avatar-arm-opacity, 1); }
 @media(max-width:640px){
   .contact-avatar{display:none;}
   .contact{text-align:center;}

@@ -82,7 +82,11 @@ function initAboutParallax() {
   // naturelle (avatarProgress 1) — même timing que counterProgress, donc même sensation
   // que le reste de la section "arrive" avec le scroll.
   const avatarEls = last ? last.querySelectorAll('.contact-avatar') : [];
+  const armEl = last ? last.querySelector('.contact-avatar-arm') : null;
   const AVATAR_MIN_SCALE = 0.15;
+  // Le bras (crop calé sur la diagonale fixe) ne doit apparaître que sur la toute fin de
+  // la croissance, sinon sa découpe se voit tant que l'avatar est encore petit.
+  const ARM_REVEAL_START = 0.75;
   const MAX_LIFT = 220; // px
   // Lissage du mouvement : au lieu de coller pile à la position de scroll, le lift
   // "rattrape" sa cible avec un peu d'inertie (lerp à chaque frame) — l'effet paraît
@@ -133,6 +137,10 @@ function initAboutParallax() {
     if (last) last.style.transform = `translateY(${currentLastLift}px)`;
     const avatarScale = AVATAR_MIN_SCALE + currentAvatarProgress * (1 - AVATAR_MIN_SCALE);
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', avatarScale.toFixed(3)));
+    if (armEl) {
+      const armOpacity = Math.min(Math.max((currentAvatarProgress - ARM_REVEAL_START) / (1 - ARM_REVEAL_START), 0), 1);
+      armEl.style.setProperty('--avatar-arm-opacity', armOpacity.toFixed(3));
+    }
   }
 
   function loop() {
