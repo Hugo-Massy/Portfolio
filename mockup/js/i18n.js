@@ -68,6 +68,13 @@ const I18N = {
     'about-fact-license': 'Permis B',
     'about-rhythm': '2 semaines en entreprise / <br>1 semaine en formation.',
     'about-barcode-id': 'HM-2026 · ACCÈS',
+
+    'contact-tag-slug': '_contact/',
+    'contact-h2': 'Envie d\'échanger&nbsp;?',
+    'contact-lede': 'Alternance, mission ou simple question — écris-moi, je réponds sous 24&nbsp;heures.',
+    'contact-cv': 'CV',
+    'footer-back-to-top': 'Haut de page',
+
     'about-card-flip-aria': 'Retourner le badge',
     'about-card-back-signature': 'Signature',
     'about-card-back-note-title': 'En cas de perte',
@@ -209,6 +216,13 @@ const I18N = {
     'about-fact-license': 'Driver\'s license (B)',
     'about-rhythm': '2 weeks at the company / <br>1 week in training.',
     'about-barcode-id': 'HM-2026 · ACCESS',
+
+    'contact-tag-slug': '_contact/',
+    'contact-h2': 'Want to chat?',
+    'contact-lede': 'Apprenticeship, mission or just a question — drop me a line, I reply within 24 hours.',
+    'contact-cv': 'Resume',
+    'footer-back-to-top': 'Back to top',
+
     'about-card-flip-aria': 'Flip the badge',
     'about-card-back-signature': 'Signature',
     'about-card-back-note-title': 'If found',
@@ -350,6 +364,13 @@ const I18N = {
     'about-fact-license': 'Carné de conducir B',
     'about-rhythm': '2 semanas en la empresa / <br>1 semana en formación.',
     'about-barcode-id': 'HM-2026 · ACCESO',
+
+    'contact-tag-slug': '_contacto/',
+    'contact-h2': '¿Hablamos?',
+    'contact-lede': 'Alternancia, misión o simplemente una pregunta — escríbeme, respondo en menos de 24 horas.',
+    'contact-cv': 'CV',
+    'footer-back-to-top': 'Volver arriba',
+
     'about-card-flip-aria': 'Girar la credencial',
     'about-card-back-signature': 'Firma',
     'about-card-back-note-title': 'En caso de pérdida',
@@ -452,7 +473,7 @@ const TERM_I18N = {
     status: {
       desc: 'disponibilité pour une alternance',
       lines: [
-        '→ disponible pour une alternance Mastère (2 ans) dès sept. 2026 <svg class="ok-mark" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>',
+        '→ disponible pour une alternance Mastère (2 ans) dès sept. 2026',
         'Poste recherché : Administrateur Systèmes &amp; Réseaux / Cloud.',
       ],
     },
@@ -544,7 +565,7 @@ const TERM_I18N = {
     ],
     crackInvalid: 'format invalide — attends 4 chiffres uniques (ex: 1709).',
     crackSuccess: (attempts) => [
-      `accès au pare-feu accordé en ${attempts} tentative${attempts > 1 ? 's' : ''}. <span class="ok-mark">✓</span>`,
+      `accès au pare-feu accordé en ${attempts} tentative${attempts > 1 ? 's' : ''}.`,
       'bypass réussi — un code à 4 chiffres se devine toujours, en vrai vie comme ici.',
       'change tes mots de passe par défaut, n\'en réutilise jamais un d\'un service à l\'autre,',
       'et préfère une phrase de passe longue et unique (ou un gestionnaire de mots de passe).',
@@ -569,7 +590,7 @@ const TERM_I18N = {
     status: {
       desc: 'availability for a work-study program',
       lines: [
-        '→ available for a Master\'s work-study program (2 years) starting Sept. 2026 <svg class="ok-mark" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>',
+        '→ available for a Master\'s work-study program (2 years) starting Sept. 2026',
         'Position sought: Systems &amp; Network / Cloud Administrator.',
       ],
     },
@@ -661,7 +682,7 @@ const TERM_I18N = {
     ],
     crackInvalid: 'invalid format — expecting 4 unique digits (e.g. 1709).',
     crackSuccess: (attempts) => [
-      `firewall access granted in ${attempts} attempt${attempts > 1 ? 's' : ''}. <span class="ok-mark">✓</span>`,
+      `firewall access granted in ${attempts} attempt${attempts > 1 ? 's' : ''}.`,
       'bypass successful — a 4-digit code can always be guessed, in real life as much as here.',
       'change your default passwords, never reuse one across services,',
       'and prefer a long, unique passphrase (or a password manager).',
@@ -686,7 +707,7 @@ const TERM_I18N = {
     status: {
       desc: 'disponibilidad para una formación dual',
       lines: [
-        '→ disponible para una formación dual de Máster (2 años) a partir de sept. 2026 <svg class="ok-mark" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>',
+        '→ disponible para una formación dual de Máster (2 años) a partir de sept. 2026',
         'Puesto buscado: Administrador de Sistemas y Redes / Cloud.',
       ],
     },
@@ -778,7 +799,7 @@ const TERM_I18N = {
     ],
     crackInvalid: 'formato inválido — se esperan 4 cifras únicas (ej: 1709).',
     crackSuccess: (attempts) => [
-      `acceso al cortafuegos concedido en ${attempts} intento${attempts > 1 ? 's' : ''}. <span class="ok-mark">✓</span>`,
+      `acceso al cortafuegos concedido en ${attempts} intento${attempts > 1 ? 's' : ''}.`,
       'bypass exitoso — un código de 4 cifras siempre se puede adivinar, tanto en la vida real como aquí.',
       'cambia tus contraseñas por defecto, nunca reutilices una entre servicios,',
       'y prefiere una frase de contraseña larga y única (o un gestor de contraseñas).',

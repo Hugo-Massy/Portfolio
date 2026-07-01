@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about', 'skills'];
+const SECTIONS = ['nav', 'hero', 'about', 'skills', 'contact'];
 
 // Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
 // la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).
@@ -47,6 +47,13 @@ async function loadSections() {
   initIdBadgeFlip();
   initAboutParallax();
   initScrollDownButton();
+  initFooterYear();
+}
+
+// Année courante dans le copyright du pied de page.
+function initFooterYear() {
+  const el = document.getElementById('footer-year');
+  if (el) el.textContent = new Date().getFullYear();
 }
 
 
@@ -64,15 +71,20 @@ function initAboutParallax() {
   for (let el = about.nextElementSibling; el; el = el.nextElementSibling) {
     if (el.tagName === 'SECTION' || el.querySelector('section')) followers.push(el);
   }
-  const MAX_LIFT = 220; // px
-  // La dernière section remontée laisserait sinon apparaître le fond du body en bas de
-  // page : on l'allonge d'autant pour que son bas reste collé à la fin du document.
+  // La dernière section (#contact) n'a rien après elle : si elle remontait comme les
+  // autres, ce lift resterait un trou vide en bas de page (le flow du document, lui,
+  // ne bouge pas). On lui applique donc un contre-lift qui grandit sur les derniers
+  // MAX_LIFT px de scroll, pour qu'elle revienne pile à sa position naturelle (transform
+  // nul) au moment où on atteint le bas réel du document — plus de trou à combler.
   const last = followers[followers.length - 1];
-  if (last) {
-    const base = parseFloat(getComputedStyle(last).paddingBottom) || 0;
-    last.style.paddingBottom = `${base + MAX_LIFT}px`;
-  }
-  let ticking = false;
+  const MAX_LIFT = 220; // px
+  // Lissage du mouvement : au lieu de coller pile à la position de scroll, le lift
+  // "rattrape" sa cible avec un peu d'inertie (lerp à chaque frame) — l'effet paraît
+  // fluide au lieu de suivre au pixel près, saccadé, le défilement de la souris/molette.
+  const EASE = 0.35;
+  let currentAboutLift = 0;
+  let currentLastLift = 0;
+  let rafId = null;
 
   function naturalTop(el) {
     let top = 0;
@@ -84,24 +96,62 @@ function initAboutParallax() {
     return top;
   }
 
-  function update() {
+  function targets() {
     const viewportTop = naturalTop(about) - window.scrollY;
     const progress = Math.min(Math.max(1 - viewportTop / window.innerHeight, 0), 1);
-    const lift = -progress * MAX_LIFT;
-    const transform = `translateY(${lift}px)`;
-    about.style.transform = transform;
-    followers.forEach((el) => { el.style.transform = transform; });
-    ticking = false;
+    const aboutLift = -progress * MAX_LIFT;
+    let lastLift = aboutLift;
+    if (last) {
+      // Le contre-lift doit annuler pile MAX_LIFT au moment où on touche le bas réel du
+      // document (sinon le trou revient), mais peut commencer à monter bien avant :
+      // COUNTER_RANGE contrôle sur quelle distance de scroll ça démarre, indépendamment
+      // du montant à annuler.
+      const COUNTER_RANGE = Math.max(MAX_LIFT, window.innerHeight * 0.9);
+      const revealStart = naturalTop(last) + last.offsetHeight - COUNTER_RANGE;
+      const counterProgress = Math.min(Math.max((window.scrollY + window.innerHeight - revealStart) / COUNTER_RANGE, 0), 1);
+      lastLift = aboutLift + counterProgress * MAX_LIFT;
+    }
+    return { aboutLift, lastLift };
   }
 
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      requestAnimationFrame(update);
-      ticking = true;
+  function apply() {
+    const transform = `translateY(${currentAboutLift}px)`;
+    about.style.transform = transform;
+    followers.forEach((el) => {
+      if (el === last) return;
+      el.style.transform = transform;
+    });
+    if (last) last.style.transform = `translateY(${currentLastLift}px)`;
+  }
+
+  function loop() {
+    const { aboutLift, lastLift } = targets();
+    currentAboutLift += (aboutLift - currentAboutLift) * EASE;
+    currentLastLift += (lastLift - currentLastLift) * EASE;
+    apply();
+    const settled = Math.abs(aboutLift - currentAboutLift) < 0.05 && Math.abs(lastLift - currentLastLift) < 0.05;
+    if (settled) {
+      currentAboutLift = aboutLift;
+      currentLastLift = lastLift;
+      apply();
+      rafId = null;
+      return;
     }
-  }, { passive: true });
-  window.addEventListener('resize', update);
-  update();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function requestLoop() {
+    if (rafId === null) rafId = requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('scroll', requestLoop, { passive: true });
+  window.addEventListener('resize', requestLoop);
+  // Positionne tout correctement dès le chargement (ex: retour sur la page avec un
+  // scroll déjà restauré par le navigateur), sans animation de rattrapage visible.
+  const initial = targets();
+  currentAboutLift = initial.aboutLift;
+  currentLastLift = initial.lastLift;
+  apply();
 }
 
 // La flèche du hero ne peut pas se contenter d'un lien #about classique : #about remonte
@@ -437,6 +487,20 @@ function isOverAboutWave(about, y) {
   return y > top && y < bottom;
 }
 
+// Vrai si le point d'ordonnée y (bord droit, là où vivent le rail et le bouton) tombe
+// sur le bloc bleu de #contact. Près du bord droit, la diagonale du haut touche 0 : le
+// bleu couvre donc toute la hauteur de la section, du haut jusqu'en bas.
+function isOverContactBlue(contact, y) {
+  const rect = contact.getBoundingClientRect();
+  return y > rect.top && y < rect.bottom;
+}
+
+// Regroupe les deux zones sombres du bas de page (vague #about + bloc #contact) : un
+// point en est "sur fond sombre" s'il tombe sur l'une ou l'autre.
+function isOverDarkZone(about, contact, y) {
+  return isOverAboutWave(about, y) || (contact && isOverContactBlue(contact, y));
+}
+
 // Bascule chaque point du rail sur des teintes claires quand la vague bleue passe sous lui,
 // pour qu'il reste lisible (sinon ses points/labels gris se fondent dans le bleu). Chaque
 // point est testé indépendamment : selon sa hauteur sur le rail, certains peuvent être sur
@@ -446,16 +510,17 @@ function initRailOnDark() {
   const indicator = document.querySelector('.dot-rail-indicator');
   const dots = document.querySelectorAll('.dot-rail a');
   const about = document.getElementById('about');
+  const contact = document.getElementById('contact');
   if (!rail || !about || !dots.length) return;
 
   function update() {
     dots.forEach((dot) => {
       const r = dot.getBoundingClientRect();
-      dot.classList.toggle('is-on-dark', isOverAboutWave(about, r.top + r.height / 2));
+      dot.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2));
     });
     if (indicator) {
       const r = indicator.getBoundingClientRect();
-      indicator.classList.toggle('is-on-dark', isOverAboutWave(about, r.top + r.height / 2));
+      indicator.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2));
     }
   }
 
@@ -470,13 +535,14 @@ function initRailOnDark() {
 function initBackToTop() {
   const btn = document.querySelector('.back-to-top');
   const about = document.getElementById('about');
+  const contact = document.getElementById('contact');
   const hero = document.getElementById('hero');
   if (!btn || !about || !hero) return;
 
   function update() {
     btn.classList.toggle('is-visible', window.scrollY > hero.offsetHeight * 0.5);
     const r = btn.getBoundingClientRect();
-    btn.classList.toggle('is-on-dark', isOverAboutWave(about, r.top + r.height / 2));
+    btn.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2));
   }
 
   update();

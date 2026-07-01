@@ -28,6 +28,15 @@
    curseur est au-dessus d'elle (voir initHeroTermGrow dans js/main.js) ; partout
    ailleurs le document défile normalement pour atteindre les sections suivantes */
 html{scroll-behavior:smooth;}
+/* Filet de sécurité : #contact revient pile à sa position naturelle en bas de page
+   (voir initAboutParallax dans js/main.js), donc ce bleu reste normalement caché sous
+   #contact — il n'apparaît qu'un instant si le lissage n'a pas encore rattrapé un
+   scroll très rapide jusqu'en bas. 220px doit rester ≥ MAX_LIFT (js/main.js). */
+#app{position:relative;}
+#app::after{
+  content:""; position:absolute; left:0; right:0; bottom:0; height:220px;
+  background:var(--accent); z-index:-1; pointer-events:none;
+}
 body{
   background:var(--bg);
   color:var(--text);
@@ -1078,4 +1087,78 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 @media(max-width:500px){
   .skills-grid{grid-template-columns:1fr;}
   .skills-head h2{font-size:28px;}
+}
+
+/* ============================================================
+   CONTACT + FOOTER — bloc de clôture minimaliste : un titre, l'email en
+   grand, quelques liens, et une fine barre de pied de page.
+   ============================================================ */
+/* hauteur du point bas de la diagonale (bord gauche) — sert au clip ET au padding
+   du contenu, pour qu'il reste toujours sous la diagonale */
+:root{ --contact-slope: clamp(160px, 22vw, 360px); }
+.contact{
+  position:relative;
+  isolation:isolate;
+  text-align:center;
+  color:#fff;
+  padding-top:calc(var(--contact-slope) + clamp(48px, 8vh, 96px));
+  padding-bottom:clamp(56px, 9vh, 104px);
+}
+/* remplissage bleu repris de #about : diagonale en haut (remonte vers la droite),
+   plein jusqu'en bas de la section — même ombre portée sous le bord incliné */
+.contact-fill{
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:var(--accent);
+  clip-path:polygon(0 var(--contact-slope), 100% 0, 100% 100%, 0 100%);
+  filter:drop-shadow(0 8px 16px rgba(20,30,60,.22));
+}
+/* avatar posé sur la diagonale, à gauche : les avant-bras "reposent" sur le bord
+   incliné (repère à 75% de la hauteur de l'image), le bras levé dépasse dans le blanc */
+.contact-avatar{
+  --avatar-w: clamp(320px, 42vw, 620px);
+  position:absolute; pointer-events:none;
+  left:clamp(16px, 6vw, 72px); top:0;
+  width:var(--avatar-w); height:auto;
+  transform:translateY(calc(var(--contact-slope) - var(--avatar-w) * 1.28));
+}
+@media(max-width:640px){
+  .contact-avatar{display:none;}
+}
+.contact-wrap{position:relative; z-index:1;}
+
+.contact-head{max-width:560px; margin:0 auto 40px;}
+.contact-head .section-tag{justify-content:center; color:rgba(255,255,255,.7);}
+.contact-head .section-tag-num{color:#fff;}
+.contact-head h2{font-size:38px; line-height:1.15; margin-bottom:16px; color:#fff;}
+.contact-lede{font-size:17px; color:rgba(255,255,255,.82); max-width:480px; margin:0 auto;}
+
+.contact-email{
+  display:inline-block; margin-bottom:26px;
+  font-size:clamp(26px, 5vw, 42px); font-weight:700; letter-spacing:-0.02em;
+  color:#fff;
+  border-bottom:2px solid rgba(255,255,255,.4);
+  transition:color .2s ease, border-color .2s ease;
+}
+.contact-email:hover{color:#fff; border-color:#fff;}
+
+.contact-links{
+  display:flex; justify-content:center; flex-wrap:wrap; gap:10px 28px;
+}
+.contact-links a{
+  font-family:var(--mono); font-size:14px; color:rgba(255,255,255,.72);
+  transition:color .2s ease;
+}
+.contact-links a:hover{color:#fff;}
+
+.site-footer{
+  max-width:var(--maxw); margin:clamp(64px, 10vh, 120px) auto 0;
+  padding:20px 16px 0; border-top:1px solid rgba(255,255,255,.2);
+  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;
+  font-family:var(--mono); font-size:12.5px; color:rgba(255,255,255,.6);
+}
+.site-footer-uptop{color:rgba(255,255,255,.75); transition:color .2s ease;}
+.site-footer-uptop:hover{color:#fff;}
+
+@media(max-width:500px){
+  .contact-head h2{font-size:28px;}
 }
