@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about', 'skills', 'contact'];
+const SECTIONS = ['nav', 'hero', 'about', 'skills', 'availability', 'contact'];
 
 // Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
 // la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).
@@ -47,6 +47,7 @@ async function loadSections() {
   initIdBadgeFlip();
   initAboutParallax();
   initScrollDownButton();
+  initAvailability();
   initFooterYear();
 }
 
@@ -56,6 +57,193 @@ function initFooterYear() {
   if (el) el.textContent = new Date().getFullYear();
 }
 
+// ============================================================
+// DISPONIBILITÉ — calendrier mensuel (fenêtre sombre façon terminal) + agenda
+// (section #availability). Tout le contenu "métier" vit dans AVAILABILITY_CONFIG :
+// c'est le seul bloc à éditer. Le calendrier est généré en JS pour rester localisé
+// (mois/jours via Intl) et pouvoir colorer chaque semaine selon le rythme
+// d'alternance sans HTML à la main.
+// ============================================================
+
+const AVAILABILITY_CONFIG = {
+  // Semaine de référence du rythme : un LUNDI de semaine "entreprise".
+  // (2025-09-01 est un lundi.) Tout le reste s'en déduit par cycles.
+  rhythmAnchor: '2025-09-01',
+  // Un élément = une semaine du cycle, répété à l'infini : 'ent' (entreprise) ou 'ecole'.
+  // Aligné sur la section "à propos" : 2 semaines entreprise / 1 semaine école.
+  rhythm: ['ent', 'ent', 'ecole'],
+  // Échéances ponctuelles. type: 'event' (échéance clé) | 'avail' (jalon de dispo) | 'ecole'.
+  events: [
+    { date: '2026-07-08', type: 'event', label: { fr: 'Soutenance — Mastère cybersécurité', en: 'Defense — Cybersecurity Master', es: 'Defensa — Máster ciberseguridad' } },
+    { date: '2026-07-17', type: 'ecole', label: { fr: 'Fin des cours', en: 'End of classes', es: 'Fin de las clases' } },
+    { date: '2026-08-31', type: 'event', label: { fr: 'Fin d\'alternance', en: 'End of apprenticeship', es: 'Fin de la alternancia' } },
+    { date: '2026-09-01', type: 'avail', label: { fr: 'Disponible temps plein — CDI / CDD', en: 'Available full-time — permanent / fixed-term', es: 'Disponible a tiempo completo' } },
+  ],
+};
+
+// Icône de la piste hebdomadaire (voir renderGrid) — même style que les icônes
+// utilisées ailleurs sur le site (trait, currentColor, coins arrondis). Seule la
+// semaine "école" (l'exception au rythme habituel) porte une icône ; les semaines
+// "entreprise" restent sans repère.
+const CAL_WEEK_ICONS = {
+  ecole: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 3 3 6 3s6-1.5 6-3v-5"/></svg>',
+};
+
+function initAvailability() {
+  const grid = document.getElementById('cal-grid');
+  const railEl = document.getElementById('cal-rail');
+  const weekdaysEl = document.getElementById('cal-weekdays');
+  const titleEl = document.getElementById('cal-title');
+  const prevBtn = document.getElementById('cal-prev');
+  const nextBtn = document.getElementById('cal-next');
+  const todayBtn = document.getElementById('cal-today');
+  if (!grid || !titleEl) return;
+
+  const cfg = AVAILABILITY_CONFIG;
+  const MS_DAY = 86400000;
+
+  function keyOf(d) {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+  function parse(str) {
+    const [y, m, d] = str.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+  function midnight(d) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  const today = midnight(new Date());
+  const anchor = parse(cfg.rhythmAnchor); // un lundi
+
+  const eventsByDate = new Map();
+  cfg.events.forEach((ev) => eventsByDate.set(ev.date, ev));
+
+  // Type de rythme d'un jour donné : on ramène au lundi de sa semaine, on compte
+  // les semaines écoulées depuis l'ancre, et on lit le cycle (modulo). Renvoie null
+  // le week-end (pas de rythme d'alternance à afficher).
+  function rhythmType(d) {
+    const day = d.getDay(); // 0=dim … 6=sam
+    if (day === 0 || day === 6) return null;
+    const monday = new Date(d);
+    monday.setDate(d.getDate() - ((day + 6) % 7));
+    const weeks = Math.floor((monday - anchor) / (MS_DAY * 7));
+    const idx = ((weeks % cfg.rhythm.length) + cfg.rhythm.length) % cfg.rhythm.length;
+    return cfg.rhythm[idx];
+  }
+
+  function locale() {
+    return { fr: 'fr-FR', en: 'en-GB', es: 'es-ES' }[CURRENT_LANG] || 'fr-FR';
+  }
+  function labelOf(ev) {
+    return ev.label[CURRENT_LANG] || ev.label.fr;
+  }
+
+  let view = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  function renderWeekdays() {
+    const ref = new Date(2024, 0, 1); // lundi 1er janv. 2024
+    const fmt = new Intl.DateTimeFormat(locale(), { weekday: 'short' });
+    let html = '';
+    for (let i = 0; i < 7; i += 1) {
+      const d = new Date(ref);
+      d.setDate(ref.getDate() + i);
+      html += `<span>${fmt.format(d).replace('.', '')}</span>`;
+    }
+    weekdaysEl.innerHTML = html;
+  }
+
+  function renderTitle() {
+    const fmt = new Intl.DateTimeFormat(locale(), { month: 'long', year: 'numeric' });
+    const label = fmt.format(view);
+    titleEl.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
+  function renderGrid() {
+    const first = new Date(view);
+    const offset = (first.getDay() + 6) % 7; // nb de jours depuis lundi
+    const start = new Date(first);
+    start.setDate(first.getDate() - offset);
+
+    // Nombre de semaines réellement nécessaires pour ce mois (4, 5 ou 6) : évite
+    // une rangée de fin entièrement vide quand le mois tient sur moins de 6 semaines.
+    const daysInMonth = new Date(view.getFullYear(), view.getMonth() + 1, 0).getDate();
+    const weeksNeeded = Math.ceil((offset + daysInMonth) / 7);
+
+    // Piste des pastilles : positionnée en absolu à côté de la grille (voir CSS
+    // .cal-rail), avec autant de rangées que de semaines affichées, pour rester
+    // alignée avec chaque ligne sans faire partie de la grille centrée elle-même.
+    if (railEl) railEl.style.gridTemplateRows = `repeat(${weeksNeeded}, 1fr)`;
+    let railHtml = '';
+
+    let html = '';
+    for (let w = 0; w < weeksNeeded; w += 1) {
+      // Rythme de la semaine : lu sur son lundi, qu'il soit dans le mois affiché ou non
+      // (une pastille reste affichée même si le lundi appartient au mois précédent/suivant).
+      const monday = new Date(start);
+      monday.setDate(start.getDate() + w * 7);
+      const weekType = rhythmType(monday);
+      railHtml += CAL_WEEK_ICONS[weekType]
+        ? `<span class="cal-week-icon cal-week-icon--${weekType}" aria-hidden="true">${CAL_WEEK_ICONS[weekType]}</span>`
+        : '<span class="cal-week-icon"></span>';
+
+      for (let i = 0; i < 7; i += 1) {
+        const d = new Date(start);
+        d.setDate(start.getDate() + w * 7 + i);
+        const inMonth = d.getMonth() === view.getMonth();
+
+        // Jours hors mois : case vide, juste pour garder l'alignement des colonnes.
+        if (!inMonth) {
+          html += '<div class="cal-day is-out"></div>';
+          continue;
+        }
+
+        const isToday = d.getTime() === today.getTime();
+        const isPast = d < today;
+        const ev = eventsByDate.get(keyOf(d));
+
+        const classes = ['cal-day'];
+        if (isToday) classes.push('is-today');
+        if (isPast) classes.push('is-past');
+        if (ev) classes.push('has-event', `event-${ev.type}`);
+
+        const title = ev ? ` title="${labelOf(ev).replace(/"/g, '&quot;')}"` : '';
+        html += `<div class="${classes.join(' ')}"${title}>`
+          + `<span class="cal-num">${d.getDate()}</span>`
+          + (ev ? '<span class="cal-dot" aria-hidden="true"></span>' : '')
+          + '</div>';
+      }
+    }
+    grid.innerHTML = html;
+    if (railEl) railEl.innerHTML = railHtml;
+  }
+
+  function renderAll() {
+    renderWeekdays();
+    renderTitle();
+    renderGrid();
+  }
+
+  prevBtn && prevBtn.addEventListener('click', () => {
+    view = new Date(view.getFullYear(), view.getMonth() - 1, 1);
+    renderTitle();
+    renderGrid();
+  });
+  nextBtn && nextBtn.addEventListener('click', () => {
+    view = new Date(view.getFullYear(), view.getMonth() + 1, 1);
+    renderTitle();
+    renderGrid();
+  });
+  todayBtn && todayBtn.addEventListener('click', () => {
+    view = new Date(today.getFullYear(), today.getMonth(), 1);
+    renderTitle();
+    renderGrid();
+  });
+
+  document.addEventListener('langchange', renderAll);
+
+  renderAll();
+}
 
 // Effet de parallax marqué : toute la section "à propos" (fond, vague, contenu) part de
 // sa position normale (transform nul) puis remonte de plus en plus au fur et à mesure

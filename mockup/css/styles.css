@@ -936,7 +936,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 
 /* SKILLS — 4 colonnes icône + titre + texte centré, style épuré */
-.skills{background:var(--bg-elev); padding-top:clamp(48px, 8vh, 80px); position:relative; overflow:hidden;}
+.skills{background:var(--bg-elev); padding-top:clamp(48px, 8vh, 80px); padding-bottom:clamp(48px, 8vh, 80px); position:relative; overflow:hidden;}
 .skills-wrap{position:relative; z-index:1;}
 .skills-head{max-width:640px; margin-bottom:16px;}
 .skills-head .section-tag{margin-bottom:2px;}
@@ -1087,6 +1087,140 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 @media(max-width:500px){
   .skills-grid{grid-template-columns:1fr;}
   .skills-head h2{font-size:28px;}
+}
+
+/* ============================================================
+   DISPONIBILITÉ — calendrier mensuel dans une fenêtre sombre façon terminal
+   (réutilise l'habillage .term-bar/.term-dot du hero) + carte statut/agenda
+   assorties, sur fond clair. Contenu généré par initAvailability() dans
+   js/main.js. Palette calendrier scopée à la section.
+   ============================================================ */
+.availability{
+  position:relative; background:var(--bg);
+  padding-top:clamp(48px, 8vh, 80px);
+  --cal-ent:#6f89d9;      /* entreprise → bleu de la console */
+  --cal-ecole:#9b8cff;    /* école → indigo, même famille froide que le bleu mais distinct */
+  --cal-event:#e0ac6a;    /* échéance clé → ambre (aligné sur .error du terminal) */
+  --cal-avail:#7ee787;    /* disponible → vert du statut/pulse */
+  --cal-unavailable:#e0575c; /* indisponible → rouge */
+}
+.avail-wrap{position:relative; z-index:1;}
+.avail-head{max-width:640px; margin-bottom:38px;}
+.avail-head .section-tag{margin-bottom:2px;}
+.avail-head h2{font-size:36px; margin-bottom:14px;}
+.avail-head h2 .accent{color:var(--accent);}
+.avail-lede{font-size:17px; color:var(--text-dim); max-width:600px;}
+
+.avail-grid{
+  display:flex; justify-content:flex-start;
+}
+
+/* --- Fenêtre calendrier (sombre, chrome de terminal) --- */
+.avail-calendar{
+  background:var(--term-bg); border:1px solid var(--term-border); border-radius:var(--radius);
+  overflow:hidden; box-shadow:0 20px 50px -14px rgba(10,14,16,0.32), 0 0 0 1px rgba(77,111,203,0.05);
+  min-width:min(560px, 100%); /* au moins aussi large que le terminal du hero */
+}
+.avail-calendar .term-bar-title{
+  flex:1; text-align:center; font-family:var(--mono); font-size:12px;
+  color:#566070; letter-spacing:.02em; user-select:none;
+  margin-right:34px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.cal-toolbar{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  padding:16px 22px 0;
+}
+.cal-nav-group{display:flex; align-items:center; gap:6px;}
+.cal-title{
+  font-family:var(--mono); font-size:14px; font-weight:600; color:#e6ebf2;
+  min-width:132px; text-align:center;
+}
+.cal-nav{
+  width:28px; height:28px; border-radius:7px; flex:none;
+  display:flex; align-items:center; justify-content:center;
+  background:none; border:1px solid var(--term-border); color:#8a93a3;
+  cursor:pointer; transition:color .18s ease, border-color .18s ease, background .18s ease;
+}
+.cal-nav:hover{color:#fff; border-color:#6f89d9; background:rgba(111,137,217,.12);}
+.cal-nav:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+.cal-today{
+  font-family:var(--mono); font-size:11.5px; color:#9db4f2;
+  padding:6px 12px; border-radius:7px; border:1px solid rgba(111,137,217,.4);
+  background:rgba(111,137,217,.1); cursor:pointer;
+  transition:box-shadow .18s ease, transform .18s ease;
+}
+.cal-today:hover{box-shadow:0 0 0 3px rgba(111,137,217,.22); transform:translateY(-1px);}
+.cal-today:focus-visible{outline:2px solid var(--accent); outline-offset:2px;}
+
+/* La grille des jours reste volontairement plus étroite que la fenêtre (qui, elle,
+   s'aligne sur la largeur du terminal du hero) : elle est plafonnée et centrée,
+   pour éviter des colonnes trop larges autour des chiffres. */
+.cal-weekdays{
+  display:grid; grid-template-columns:repeat(7,1fr); gap:2px;
+  max-width:460px; margin:28px auto 6px;
+}
+.cal-weekdays span{
+  text-align:center; font-family:var(--mono); font-size:10.5px; letter-spacing:.05em;
+  text-transform:uppercase; color:#566070;
+}
+/* .cal-body centre la grille des jours et porte la piste de pastilles juste à sa
+   gauche (négatif, hors de la grille elle-même) — les deux voyagent ensemble. */
+.cal-body{position:relative; max-width:460px; margin:0 auto;}
+.cal-rail{
+  position:absolute; left:-20px; top:0; bottom:0; width:15px;
+  display:grid; gap:6px; align-items:center; justify-items:center;
+}
+/* icône de rythme, une par semaine — remplace toute coloration au niveau du jour */
+.cal-week-icon{width:15px; height:15px; color:#566070;}
+.cal-week-icon svg{width:100%; height:100%; display:block;}
+.cal-grid{
+  display:grid; grid-template-columns:repeat(7,1fr); grid-auto-rows:min-content;
+  gap:4px; align-items:center;
+}
+.cal-day{
+  position:relative; aspect-ratio:1/0.9; min-width:38px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:2px; border:1px solid transparent;
+  font-family:var(--mono); font-size:13px; font-variant-numeric:tabular-nums;
+  color:var(--term-text);
+}
+.cal-num{position:relative; z-index:1; line-height:1; display:inline-block; transition:color .15s ease, transform .15s ease;}
+.cal-day:not(.is-out):hover .cal-num{color:#9db4f2; font-weight:600; transform:scale(1.15);}
+.cal-day.is-out{color:#3a3f47; opacity:.5;}
+.cal-day.is-past:not(.is-today){opacity:.5;}
+/* aujourd'hui : seul le chiffre est mis en avant (blanc vif, gras, plus grand) —
+   pas de cadre ni de halo, pour ne pas rivaliser avec les couleurs de rythme/échéance. */
+.cal-day.is-today{opacity:1;}
+.cal-day.is-today .cal-num{color:#6f89d9; font-weight:700;}
+/* échéance : pastille colorée en bas de la case */
+.cal-day.has-event{cursor:default; font-weight:600; color:#fff;}
+.cal-dot{
+  position:absolute; bottom:4px; left:50%; transform:translateX(-50%);
+  width:5px; height:5px; border-radius:50%; background:var(--cal-event);
+}
+.cal-day.event-avail .cal-dot{background:var(--cal-avail);}
+.cal-day.event-unavailable .cal-dot{background:var(--cal-unavailable);}
+.cal-day.event-event .cal-dot{background:var(--cal-event);}
+
+.cal-legend{
+  display:flex; flex-wrap:wrap; justify-content:center; gap:8px 18px; margin:18px 22px 20px;
+  padding-top:14px; border-top:1px solid var(--term-border);
+  font-family:var(--mono); font-size:11px; color:#8a93a3;
+}
+.cal-legend li{display:flex; align-items:center; gap:7px;}
+.cal-key{width:10px; height:10px; border-radius:50%; flex:none;}
+.cal-key--event{background:var(--cal-event);}
+.cal-key--avail{background:var(--cal-avail);}
+.cal-key--unavailable{background:var(--cal-unavailable);}
+.cal-key-icon{width:14px; height:14px; flex:none; color:#8a93a3;}
+.cal-key-icon svg{width:100%; height:100%; display:block;}
+
+@media(max-width:760px){
+  .avail-head h2{font-size:28px;}
+  .cal-toolbar{padding:14px 16px 0;}
+  .cal-weekdays, .cal-body{max-width:calc(100% - 32px);}
+  .cal-legend{margin:16px 16px 18px;}
+  .cal-day{font-size:12px;}
 }
 
 /* ============================================================
