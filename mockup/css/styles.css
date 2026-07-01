@@ -927,7 +927,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 
 /* SKILLS — 4 colonnes icône + titre + texte centré, style épuré */
-.skills{background:var(--bg-elev); padding-top:clamp(48px, 8vh, 80px);}
+.skills{background:var(--bg-elev); padding-top:clamp(48px, 8vh, 80px); position:relative; overflow:hidden;}
 .skills-wrap{position:relative; z-index:1;}
 .skills-head{max-width:640px; margin-bottom:16px;}
 .skills-head .section-tag{margin-bottom:2px;}
@@ -936,6 +936,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .skills-lede{ display:none; }
 
 .skills-grid{
+  position:relative;
   display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
   margin-top:48px;
 }
@@ -954,18 +955,73 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .skill-pillar-bg{
   position:absolute; top:50%; left:50%;
   transform:translate(-50%, -50%);
-  height:100%; width:85%;
-  fill:var(--accent-pale); stroke:var(--accent); stroke-width:0.8;
+  height:94%; width:82%;
+  fill:var(--pillar-pale, var(--accent-pale)); stroke:var(--pillar-accent, var(--accent)); stroke-width:0.8;
   stroke-linecap:round; stroke-linejoin:round;
-  opacity:.07; pointer-events:none;
-  transition:opacity .25s ease, fill .25s ease;
+  opacity:.11; pointer-events:none;
+  transition:opacity .25s ease, fill .25s ease, transform .3s ease;
 }
 .skill-item:hover .skill-pillar-bg{
-  opacity:.32;
-  fill:var(--accent-soft);
+  opacity:.36;
+  fill:var(--pillar-soft, var(--accent-soft));
+  transform:translate(-50%, -50%) scale(1.04);
 }
 
 .skill-pillar-num{ display:none; }
+
+/* small themed icons floating around each pillar */
+.skill-floaters{position:absolute; inset:0; z-index:0; pointer-events:none;}
+.floater{
+  position:absolute;
+  color:var(--pillar-accent, var(--accent));
+  opacity:0;
+  scale:.4;
+  animation:floaterCycle 6.4s ease-in-out infinite;
+  animation-delay:var(--fdelay, 0s);
+  animation-play-state:paused;
+}
+/* runs only while the pillar is on screen; loop keeps cycling appear -> disappear,
+   the wave sweeps left to right thanks to the increasing --fdelay per column/icon */
+.skill-item.icons-live .floater{animation-play-state:running;}
+
+.skill-item--security .floater.f1{top:21%;   left:7%;   width:24px; height:24px; --fdelay:0s;}
+.skill-item--security .floater.f2{top:30%;   right:9%;  width:15px; height:15px; --fdelay:.1s;}
+.skill-item--security .floater.f3{bottom:29%; left:10%; width:19px; height:19px; --fdelay:.2s;}
+
+.skill-item--sysadmin .floater.f1{top:23%;   right:7%;  width:17px; height:17px; --fdelay:.5s;}
+.skill-item--sysadmin .floater.f2{top:31%;   left:5%;   width:23px; height:23px; --fdelay:.6s;}
+.skill-item--sysadmin .floater.f3{bottom:22%; right:4%; width:14px; height:14px; --fdelay:.7s;}
+.skill-item--sysadmin .floater.f4{bottom:30%; left:8%;  width:21px; height:21px; --fdelay:.8s;}
+.skill-item--sysadmin .floater.f5{top:17%;   left:13%;  width:13px; height:13px; --fdelay:.9s;}
+
+.skill-item--infra .floater.f1{top:20%;    left:8%;   width:20px; height:20px; --fdelay:1s;}
+.skill-item--infra .floater.f2{top:28%;    right:5%;  width:26px; height:26px; --fdelay:1.1s;}
+.skill-item--infra .floater.f3{bottom:31%; left:5%;   width:15px; height:15px; --fdelay:1.2s;}
+.skill-item--infra .floater.f4{bottom:21%; right:9%;  width:22px; height:22px; --fdelay:1.3s;}
+
+.skill-item--dev .floater.f1{top:22%;    right:5%;  width:22px; height:22px; --fdelay:1.5s;}
+.skill-item--dev .floater.f2{top:31%;    left:4%;   width:16px; height:16px; --fdelay:1.6s;}
+.skill-item--dev .floater.f3{bottom:20%; right:7%;  width:19px; height:19px; --fdelay:1.7s;}
+
+/* one full cycle: pop in with slight overshoot, brief bob, fade out completely,
+   then stay fully invisible for the rest of the cycle before looping */
+@keyframes floaterCycle{
+  0%   { opacity:0;   scale:.4;   translate:0 8px;  rotate:0deg;}
+  8%   { opacity:1;   scale:1.15; translate:0 -2px; rotate:3deg;}
+  14%  { opacity:.34; scale:1;    translate:0 0;    rotate:0deg;}
+  32%  { opacity:.34; scale:1;    translate:0 -8px; rotate:3deg;}
+  46%  { opacity:.34; scale:1;    translate:0 0;    rotate:0deg;}
+  54%  { opacity:0;   scale:.5;   translate:0 -6px; rotate:-3deg;}
+  100% { opacity:0;   scale:.4;   translate:0 8px;  rotate:0deg;}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .floater{animation:none;}
+}
+
+@media(max-width:860px){
+  .floater{display:none;}
+}
 
 .skill-content{
   position:relative; z-index:1;
@@ -974,32 +1030,46 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   box-shadow:0 0 32px 24px var(--bg-elev);
   background:var(--bg-elev);
   border-radius:4px;
+  transition:transform .25s ease;
 }
+.skill-item:hover .skill-content{transform:translateY(-6px);}
 
 .skill-icon{
   position:relative; z-index:1;
   width:52px; height:52px; margin-bottom:20px;
   display:flex; align-items:center; justify-content:center;
-  color:var(--accent);
+  color:var(--pillar-accent, var(--accent));
   flex-shrink:0;
+  transition:transform .25s ease, filter .25s ease;
 }
 .skill-icon svg{width:44px; height:44px;}
+.skill-item:hover .skill-icon{
+  transform:translateY(-4px) scale(1.12);
+  color:var(--accent-dark);
+  filter:drop-shadow(0 6px 14px var(--pillar-soft, var(--accent-soft)));
+}
 
 .skill-item-title{
   position:relative; z-index:1;
   font-size:16px; font-weight:700; color:var(--text);
   margin-bottom:12px;
+  transition:color .25s ease;
 }
+.skill-item:hover .skill-item-title{color:var(--pillar-accent, var(--accent));}
 
 .skill-sep{ display:none; }
 
 .skill-item-desc{
   position:relative; z-index:1;
   font-size:13.5px; color:var(--text-dim); line-height:1.72; max-width:210px;
+  transition:color .25s ease;
 }
+.skill-item:hover .skill-item-desc{color:var(--text);}
 .skill-item-desc strong{
   color:var(--text); font-weight:600;
+  transition:color .25s ease;
 }
+.skill-item:hover .skill-item-desc strong{color:var(--accent-dark);}
 
 @media(max-width:860px){
   .skills-grid{grid-template-columns:repeat(2,1fr); gap:12px;}

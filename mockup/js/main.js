@@ -35,6 +35,7 @@ async function loadSections() {
     root.append(...slot.children);
   }
   initRevealObserver();
+  initSkillFloaterObserver();
   initTerminal();
   initBackgroundGrid();
   initTabSpy();
@@ -492,6 +493,18 @@ function initRevealObserver() {
         entry.target.classList.add('is-visible');
         observer.unobserve(entry.target);
       }
+    });
+  }, { threshold: 0.15 });
+  targets.forEach((el) => observer.observe(el));
+}
+
+// Contrairement à .reveal (qui ne joue qu'une fois), les icônes flottantes des piliers
+// doivent réapparaître/disparaître à chaque passage dans le viewport : pas d'unobserve ici.
+function initSkillFloaterObserver() {
+  const targets = document.querySelectorAll('.skill-item');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      entry.target.classList.toggle('icons-live', entry.isIntersecting);
     });
   }, { threshold: 0.15 });
   targets.forEach((el) => observer.observe(el));
