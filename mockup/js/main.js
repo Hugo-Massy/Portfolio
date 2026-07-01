@@ -138,9 +138,14 @@ function initAboutParallax() {
     const avatarScale = AVATAR_MIN_SCALE + currentAvatarProgress * (1 - AVATAR_MIN_SCALE);
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', avatarScale.toFixed(3)));
     if (armEl) {
-      const armOpacity = Math.min(Math.max((currentAvatarProgress - ARM_REVEAL_START) / (1 - ARM_REVEAL_START), 0), 1);
-      armEl.style.setProperty('--avatar-arm-opacity', armOpacity.toFixed(3));
+      const armOpacity = currentAvatarProgress >= ARM_REVEAL_START ? 1 : 0;
+      armEl.style.setProperty('--avatar-arm-opacity', armOpacity);
     }
+    // #contact continue de bouger (lissage EASE) pendant plusieurs frames après la fin
+    // du scroll : le bouton "remonter" et le rail, qui ne se recalculent que sur l'event
+    // scroll, resteraient sinon bloqués sur une couleur calculée à mi-course si on scrolle
+    // vite jusqu'en bas (plus aucun scroll event pour les rafraîchir une fois arrêtés).
+    window.dispatchEvent(new Event('parallax-tick'));
   }
 
   function loop() {
@@ -551,6 +556,7 @@ function initRailOnDark() {
   update();
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
+  window.addEventListener('parallax-tick', update);
 }
 
 // Affiche le bouton "remonter en haut" dès qu'on a quitté le hero (et jusqu'en bas de page,
@@ -572,6 +578,7 @@ function initBackToTop() {
   update();
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
+  window.addEventListener('parallax-tick', update);
 }
 
 // Anime les blocs .reveal lorsqu'ils entrent dans le viewport (motion discret, pas au chargement).
