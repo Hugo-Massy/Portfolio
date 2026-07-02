@@ -7,19 +7,138 @@
       <p class="xp-lede" data-i18n="xp-lede">Ce que j'ai conçu, déployé et sécurisé — en alternance à la DSI de Massy comme sur ma propre infrastructure.</p>
     </div>
 
-    <!-- Structure bento reproduite à l'identique de la capture : 6 blocs vides.
-         Placement via .xp-a-* (grid-template-areas), couleur via .xp-tile--*.
-         .xp-bento-track = piste de scroll : le bento reste figé (sticky) pendant
-         que la vague progresse au scroll (voir initXpBentoWave dans js/main.js). -->
+    <!-- Structure bento reproduite de la capture : 6 blocs remplis d'un visuel + une
+         légère description. Placement via .xp-a-* (grid-template-areas), couleur via
+         .xp-tile--*. Chaque .xp-mock est une maquette HTML/CSS légère qui déborde sous
+         l'overflow:hidden de la tuile (façon Givingli).
+         .xp-bento-track = piste de scroll : le bento reste figé (sticky) pendant que
+         la vague progresse au scroll (voir initXpBentoWave dans js/main.js). -->
     <div class="xp-bento-track">
       <div class="xp-bento-stick">
         <div class="xp-bento">
-          <article class="xp-tile xp-a-cust   xp-tile--b3"></article>
-          <article class="xp-tile xp-a-sched  xp-tile--b1"></article>
-          <article class="xp-tile xp-a-wallet xp-tile--b2"></article>
-          <article class="xp-tile xp-a-inbox  xp-tile--b3"></article>
-          <article class="xp-tile xp-a-send   xp-tile--b1"></article>
-          <article class="xp-tile xp-a-remind xp-tile--b2"></article>
+
+          <!-- 1 · Massy Innove — IA souveraine (vedette) -->
+          <article class="xp-tile xp-a-cust xp-tile--b3 xp-tile--feature">
+            <div class="xp-tile-body">
+              <p class="xp-type" data-i18n="projects-p1-type">// IA souveraine</p>
+              <h3 class="xp-name" data-i18n="projects-p1-name">Massy Innove</h3>
+              <p class="xp-desc" data-i18n="xp-t1-blurb">Plateforme d'IA interne 100 % souveraine — auth durcie Argon2id, IDS Suricata, routage multi-modèles vers Mistral AI.</p>
+            </div>
+            <!-- maquette : fenêtre de chat IA -->
+            <div class="xp-mock xp-mock--chat" aria-hidden="true">
+              <div class="xp-chat">
+                <div class="xp-chat-bar">
+                  <span class="xp-chat-dot"></span><span class="xp-chat-dot"></span><span class="xp-chat-dot"></span>
+                  <span class="xp-chat-host">assistant.massy.local</span>
+                </div>
+                <div class="xp-chat-body">
+                  <div class="xp-bubble xp-bubble--me"><span></span></div>
+                  <div class="xp-bubble xp-bubble--ai">
+                    <i></i><i></i><i class="short"></i>
+                  </div>
+                </div>
+                <div class="xp-chat-foot">
+                  <span class="xp-pill"><b>→</b> Mistral&nbsp;Large</span>
+                  <span class="xp-pill xp-pill--lock">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                    Argon2id
+                  </span>
+                </div>
+              </div>
+              <span class="xp-flag">🇫🇷 souverain</span>
+            </div>
+          </article>
+
+          <!-- 2 · Fil Rouge SOC — détection (large) -->
+          <article class="xp-tile xp-a-sched xp-tile--b1">
+            <div class="xp-tile-body">
+              <p class="xp-type" data-i18n="projects-p2-type">// SOC · Blue Team</p>
+              <h3 class="xp-name" data-i18n="projects-p2-name">Fil Rouge SOC</h3>
+              <p class="xp-desc" data-i18n="xp-t2-blurb">Détection Wazuh + IDS Suricata, honeypots T-Pot — livré avec DAT et plan de sauvegarde.</p>
+            </div>
+            <!-- maquette : flux de détections + sparkline -->
+            <div class="xp-mock xp-mock--feed" aria-hidden="true">
+              <div class="xp-feed">
+                <div class="xp-feed-head"><span>Détections</span><span class="xp-spark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+                <div class="xp-feed-row"><span class="xp-sev xp-sev--hi"></span><b>Suricata</b><em>ET SCAN nmap</em><time>12:04</time></div>
+                <div class="xp-feed-row"><span class="xp-sev xp-sev--mid"></span><b>Wazuh</b><em>brute-force ssh</em><time>12:01</time></div>
+                <div class="xp-feed-row"><span class="xp-sev xp-sev--low"></span><b>T-Pot</b><em>honeypot hit</em><time>11:58</time></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 3 · Homelab — infra auto-hébergée (pile de cartes) -->
+          <article class="xp-tile xp-a-wallet xp-tile--b2">
+            <div class="xp-tile-body">
+              <p class="xp-type" data-i18n="projects-p3-type">// Infra auto-hébergée</p>
+              <h3 class="xp-name" data-i18n="projects-p3-name">Homelab perso</h3>
+              <p class="xp-desc" data-i18n="xp-t3-blurb">Debian 12, Nextcloud via Cloudflare Tunnel, supervision Zabbix — zéro port ouvert.</p>
+            </div>
+            <!-- maquette : pile de cartes services -->
+            <div class="xp-mock xp-mock--stack" aria-hidden="true">
+              <div class="xp-svc xp-svc--3"><span class="xp-svc-dot"></span>Cloudflare Tunnel</div>
+              <div class="xp-svc xp-svc--2"><span class="xp-svc-dot"></span>Zabbix 7.2</div>
+              <div class="xp-svc xp-svc--1">
+                <div class="xp-svc-top"><span class="xp-svc-dot"></span>Nextcloud</div>
+                <div class="xp-svc-metric">0 <small>port ouvert LAN</small></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- 4 · Plugins GLPI — développement DSI (liste inbox) -->
+          <article class="xp-tile xp-a-inbox xp-tile--b3">
+            <div class="xp-tile-body">
+              <p class="xp-type" data-i18n="projects-p4-type">// Développement DSI</p>
+              <h3 class="xp-name" data-i18n="projects-p4-name">Plugins GLPI</h3>
+              <p class="xp-desc" data-i18n="xp-t4-blurb">Pretaporter (signature électronique) & Import SIM — un process papier entièrement supprimé.</p>
+            </div>
+            <!-- maquette : liste de "tickets" plugins -->
+            <div class="xp-mock xp-mock--list" aria-hidden="true">
+              <div class="xp-plug"><span class="xp-plug-ic">PP</span><span class="xp-plug-name">Pretaporter</span><span class="xp-plug-tag">e-signature</span></div>
+              <div class="xp-plug"><span class="xp-plug-ic xp-plug-ic--b">IS</span><span class="xp-plug-name">Import SIM</span><span class="xp-plug-tag">CSV → GLPI</span></div>
+            </div>
+          </article>
+
+          <!-- 5 · Stack technique — collage de technos (large) -->
+          <article class="xp-tile xp-a-send xp-tile--b1">
+            <div class="xp-tile-body">
+              <h3 class="xp-name" data-i18n="xp-t5-name">Stack technique</h3>
+              <p class="xp-desc" data-i18n="xp-t5-blurb">Les briques que je déploie, sécurise et supervise au quotidien.</p>
+            </div>
+            <!-- maquette : collage de pastilles techno -->
+            <div class="xp-mock xp-mock--chips" aria-hidden="true">
+              <span class="xp-chip">Debian</span>
+              <span class="xp-chip">Docker</span>
+              <span class="xp-chip">pfSense</span>
+              <span class="xp-chip">Wazuh</span>
+              <span class="xp-chip">Suricata</span>
+              <span class="xp-chip">Zabbix</span>
+              <span class="xp-chip">GLPI</span>
+              <span class="xp-chip">Nextcloud</span>
+              <span class="xp-chip">Cloudflare</span>
+              <span class="xp-chip">FastAPI</span>
+              <span class="xp-chip">Active Directory</span>
+            </div>
+          </article>
+
+          <!-- 6 · Supervision — monitoring 24/7 (téléphone) -->
+          <article class="xp-tile xp-a-remind xp-tile--b2">
+            <div class="xp-tile-body">
+              <h3 class="xp-name" data-i18n="xp-t6-name">Supervision</h3>
+              <p class="xp-desc" data-i18n="xp-t6-blurb">Zabbix veille 24/7 — alerte au moindre écart.</p>
+            </div>
+            <!-- maquette : téléphone + notification -->
+            <div class="xp-mock xp-mock--phone" aria-hidden="true">
+              <div class="xp-phone">
+                <div class="xp-phone-status"><span>9:41</span><span class="xp-phone-sig"></span></div>
+                <div class="xp-notif">
+                  <span class="xp-notif-ic"></span>
+                  <div class="xp-notif-body"><b>Zabbix</b><em>Tout est vert — uptime 99.9 %</em></div>
+                </div>
+              </div>
+            </div>
+          </article>
+
         </div>
       </div>
     </div>

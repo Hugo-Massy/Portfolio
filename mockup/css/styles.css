@@ -1123,7 +1123,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-bento{
   display:grid;
   grid-template-columns:1.35fr 1fr 1fr;
-  grid-auto-rows:272px;
+  grid-auto-rows:290px;
   gap:18px;
   grid-template-areas:
     "cust  sched  sched"
@@ -1137,33 +1137,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-a-send  {grid-area:send;}
 .xp-a-remind{grid-area:remind;}
 
-/* Coupes en biseau : coins ET tailles variés, et jusqu'à plusieurs coupes par
-   carte pour casser la régularité. corner-shape:bevel + rayon plus grand = coupe.
-   Sélecteur combiné (.xp-tile.xp-a-*) pour passer devant le border-radius:22px
-   de .xp-tile déclaré plus bas, sinon la taille de coupe retombe à 22px. */
-.xp-tile.xp-a-cust{
-  border-bottom-right-radius:80px; corner-bottom-right-shape:bevel;
-  border-top-left-radius:34px;     corner-top-left-shape:bevel;
-}
-.xp-tile.xp-a-sched{
-  border-bottom-left-radius:38px;  corner-bottom-left-shape:bevel;
-}
-.xp-tile.xp-a-wallet{
-  border-top-right-radius:30px;    corner-top-right-shape:bevel;
-  border-bottom-left-radius:48px;  corner-bottom-left-shape:bevel;
-}
-.xp-tile.xp-a-inbox{
-  border-top-left-radius:60px;     corner-top-left-shape:bevel;
-  border-bottom-right-radius:26px; corner-bottom-right-shape:bevel;
-}
-.xp-tile.xp-a-send{
-  border-top-right-radius:66px;    corner-top-right-shape:bevel;
-  border-bottom-left-radius:40px;  corner-bottom-left-shape:bevel;
-}
-.xp-tile.xp-a-remind{
-  border-bottom-left-radius:28px;  corner-bottom-left-shape:bevel;
-  border-top-right-radius:52px;    corner-top-right-shape:bevel;
-}
+/* Tous les coins simplement arrondis (border-radius:22px de .xp-tile plus bas) —
+   plus de coupes en biseau. */
 /* Chaque tuile est un aplat de couleur (façon Givingli) : pas de bordure, coins
    très arrondis, et une palette scopée via des variables --tile-* que les
    couleurs de thème (.xp-tile--purple, etc.) redéfinissent plus bas. */
@@ -1172,8 +1147,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   display:flex; flex-direction:column;
   padding:26px 28px;
   border:0;
-  /* coins arrondis par défaut ; chaque carte fait "couper" un coin différent en
-     biseau via .xp-a-* plus bas (navigateurs sans corner-shape → arrondi) */
+  /* tous les coins arrondis */
   border-radius:22px;
   background:var(--tile-bg, #ded7f4);
   color:var(--tile-text, #4f4270);
@@ -1209,7 +1183,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
      figement s'enclenche pile quand son centre atteint le centre de l'écran,
      au lieu de le laisser monter jusqu'au ras du haut avant de figer. */
   --xp-bento-pad:clamp(16px, 3vh, 32px);
-  --xp-bento-h:min(760px, 70vh);
+  --xp-bento-h:min(800px, 74vh);
 }
 /* Le figement se fait via un `top` centré (et non un bloc 100vh + centrage flex) :
    au repos le bento tombe juste sous le titre — pas de vide — et une fois épinglé
@@ -1380,6 +1354,150 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .xp-head h2{font-size:28px;}
   .xp-tile--feature .xp-name{font-size:26px;}
 }
+
+/* ============================================================
+   MAQUETTES VISUELLES DES TUILES BENTO
+   Chaque .xp-mock est une petite maquette HTML/CSS (chat IA, flux SOC, pile de
+   services, liste de plugins, collage de technos, téléphone) qui illustre la
+   tuile et déborde sous l'overflow:hidden de .xp-tile — comme les visuels de la
+   capture Givingli. Les surfaces reprennent les variables --tile-* du thème.
+   ============================================================ */
+.xp-mock{ position:relative; flex:1 1 auto; min-height:0; margin-top:14px; }
+
+/* 1 · Chat IA (Massy Innove, tuile vedette) */
+.xp-mock--chat{ display:flex; align-items:flex-end; }
+.xp-chat{
+  width:100%; align-self:stretch; display:flex; flex-direction:column;
+  background:#fff; border-radius:16px 16px 6px 16px; overflow:hidden;
+  box-shadow:0 16px 34px -16px var(--tile-shadow, rgba(0,0,0,.3));
+}
+.xp-chat-bar{ display:flex; align-items:center; gap:6px; padding:10px 14px; background:#f3f2f8; }
+.xp-chat-dot{ width:8px; height:8px; border-radius:50%; background:#d4d2e0; }
+.xp-chat-dot:nth-child(1){ background:#f0776b; }
+.xp-chat-dot:nth-child(2){ background:#f3c04a; }
+.xp-chat-dot:nth-child(3){ background:#5cc08a; }
+.xp-chat-host{ margin-left:8px; font-family:var(--mono); font-size:10.5px; color:#8b88a0; }
+.xp-chat-body{ flex:1; padding:16px 14px 10px; display:flex; flex-direction:column; gap:10px; justify-content:center; }
+.xp-bubble{ border-radius:12px; padding:9px 12px; max-width:80%; }
+.xp-bubble--me{ align-self:flex-end; background:var(--tile-accent); border-bottom-right-radius:4px; }
+.xp-bubble--me span{ display:block; width:92px; height:7px; border-radius:4px; background:rgba(255,255,255,.8); }
+.xp-bubble--ai{ align-self:flex-start; background:#f1f0f6; border-bottom-left-radius:4px; display:flex; flex-direction:column; gap:6px; }
+.xp-bubble--ai i{ display:block; height:7px; width:150px; border-radius:4px; background:#d9d7e6; }
+.xp-bubble--ai i.short{ width:96px; }
+.xp-chat-foot{ display:flex; gap:8px; padding:0 14px 14px; }
+.xp-pill{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--mono); font-size:10.5px; font-weight:600; color:var(--tile-name);
+  background:var(--tile-chip-bg); border-radius:100px; padding:5px 10px;
+}
+.xp-pill b{ color:var(--tile-accent); }
+.xp-pill--lock{ color:#3a6a4a; background:rgba(92,192,138,.18); }
+.xp-flag{
+  position:absolute; top:-6px; right:-2px; transform:rotate(4deg);
+  font-family:var(--mono); font-size:11px; font-weight:600; color:var(--tile-name);
+  background:#fff; padding:5px 10px; border-radius:100px;
+  box-shadow:0 8px 18px -8px rgba(0,0,0,.3);
+}
+
+/* 2 · Flux de détections SOC (Fil Rouge SOC) */
+.xp-mock--feed{ display:flex; align-items:flex-end; }
+.xp-feed{
+  width:100%; background:#fff; border-radius:14px; padding:10px 12px; overflow:hidden;
+  box-shadow:0 14px 28px -16px var(--tile-shadow, rgba(0,0,0,.3));
+}
+.xp-feed-head{
+  display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;
+  font-family:var(--mono); font-size:10.5px; font-weight:700; letter-spacing:.04em;
+  text-transform:uppercase; color:#8c2b5c;
+}
+.xp-spark{ display:flex; align-items:flex-end; gap:2px; height:16px; }
+.xp-spark i{ width:3px; border-radius:2px; background:#e6a9c4; }
+.xp-spark i:nth-child(1){ height:6px; }  .xp-spark i:nth-child(2){ height:11px; }
+.xp-spark i:nth-child(3){ height:8px; }  .xp-spark i:nth-child(4){ height:15px; background:#b03570; }
+.xp-spark i:nth-child(5){ height:9px; }  .xp-spark i:nth-child(6){ height:13px; }
+.xp-spark i:nth-child(7){ height:7px; }
+.xp-feed-row{
+  display:flex; align-items:center; gap:8px; padding:5px 0; border-top:1px solid #f2eaef;
+  font-size:12px; color:#5a4b53;
+}
+.xp-feed-row b{ min-width:56px; font-weight:700; font-size:12px; color:#3a2b32; }
+.xp-feed-row em{ flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  font-style:normal; font-family:var(--mono); font-size:11px; color:#8a7b83; }
+.xp-feed-row time{ font-family:var(--mono); font-size:10.5px; color:#b0a3aa; }
+.xp-sev{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.xp-sev--hi{ background:#e0574b; box-shadow:0 0 0 3px rgba(224,87,75,.18); }
+.xp-sev--mid{ background:#eaa53a; box-shadow:0 0 0 3px rgba(234,165,58,.18); }
+.xp-sev--low{ background:#5cc08a; box-shadow:0 0 0 3px rgba(92,192,138,.18); }
+
+/* 3 · Pile de cartes services (Homelab) */
+.xp-mock--stack{ min-height:104px; }
+.xp-svc{
+  position:absolute; left:0; right:8px;
+  display:flex; align-items:center; gap:8px;
+  border-radius:12px; padding:10px 12px;
+  font-family:var(--mono); font-size:12px; font-weight:600;
+  box-shadow:0 10px 22px -12px rgba(0,0,0,.4);
+}
+.xp-svc-dot{ width:9px; height:9px; border-radius:3px; flex-shrink:0; }
+.xp-svc--3{ top:0;    transform:rotate(-4deg); z-index:1; background:#eef5e3; color:#5a7040; }
+.xp-svc--3 .xp-svc-dot{ background:#f38020; }
+.xp-svc--2{ top:17px; transform:rotate(2.5deg); z-index:2; background:#dcecc4; color:#456a24; }
+.xp-svc--2 .xp-svc-dot{ background:#cf3939; }
+.xp-svc--1{ top:36px; right:0; z-index:3; background:#2f4022; color:#eaf3dc; flex-direction:column; align-items:stretch; gap:8px; }
+.xp-svc--1 .xp-svc-top{ display:flex; align-items:center; gap:8px; }
+.xp-svc--1 .xp-svc-dot{ background:#0a7cff; }
+.xp-svc-metric{ font-family:var(--mono); font-size:24px; font-weight:800; color:#fff; line-height:1; }
+.xp-svc-metric small{ display:block; margin-top:3px; font-size:10px; font-weight:500; color:#b9c9a5; }
+
+/* 4 · Liste de plugins « tickets » (Plugins GLPI) */
+.xp-mock--list{ display:flex; flex-direction:column; gap:8px; justify-content:flex-end; }
+.xp-plug{
+  display:flex; align-items:center; gap:10px;
+  background:#fff; border-radius:12px; padding:9px 11px;
+  box-shadow:0 10px 20px -14px rgba(0,0,0,.35);
+}
+.xp-plug-ic{
+  width:30px; height:30px; flex-shrink:0; border-radius:9px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:11px; font-weight:700; color:#fff; background:#8a6410;
+}
+.xp-plug-ic--b{ background:#3f5db0; }
+.xp-plug-name{ font-size:13px; font-weight:700; color:#2a2620; }
+.xp-plug-tag{ margin-left:auto; font-family:var(--mono); font-size:10px; color:#7a6a3a;
+  background:rgba(0,0,0,.05); padding:3px 8px; border-radius:100px; }
+
+/* 5 · Collage de pastilles technos (Stack technique) */
+.xp-mock--chips{ display:flex; flex-wrap:wrap; gap:8px; align-content:flex-end; overflow:hidden; }
+.xp-chip{
+  font-family:var(--mono); font-size:12px; font-weight:600; color:var(--tile-name);
+  background:#fff; border-radius:100px; padding:7px 13px; white-space:nowrap;
+  box-shadow:0 7px 16px -9px rgba(0,0,0,.3);
+}
+.xp-chip:nth-child(3n){ transform:rotate(-2deg); }
+.xp-chip:nth-child(3n+1){ transform:rotate(1.5deg); }
+
+/* 6 · Téléphone + notification (Supervision) */
+.xp-mock--phone{ display:flex; justify-content:center; align-items:flex-end; overflow:hidden; }
+.xp-phone{
+  width:82%; max-width:210px; padding:8px 8px 0;
+  background:#101b22; border:4px solid #1c2b34; border-bottom:0; border-radius:22px 22px 0 0;
+  box-shadow:0 -6px 30px -12px rgba(0,0,0,.45);
+}
+.xp-phone-status{
+  display:flex; justify-content:space-between; align-items:center; padding:2px 8px 8px;
+  font-family:var(--mono); font-size:11px; font-weight:600; color:#cdd9df;
+}
+.xp-phone-sig{ width:16px; height:9px; border-radius:2px; background:linear-gradient(90deg,#cdd9df 60%,#3a4a54 60%); }
+.xp-notif{
+  display:flex; align-items:center; gap:9px; margin-bottom:8px;
+  background:rgba(255,255,255,.96); border-radius:12px; padding:9px 10px;
+}
+.xp-notif-ic{ position:relative; width:26px; height:26px; flex-shrink:0; border-radius:8px; background:#c8172c; }
+.xp-notif-ic::after{ content:"Z"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-weight:800; font-size:14px; color:#fff; }
+.xp-notif-body{ display:flex; flex-direction:column; line-height:1.3; }
+.xp-notif-body b{ font-size:12px; color:#1b2228; }
+.xp-notif-body em{ font-style:normal; font-size:11px; color:#5a6870; }
 
 /* ============================================================
    DISPONIBILITÉ — calendrier mensuel dans une fenêtre sombre façon terminal
