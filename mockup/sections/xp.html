@@ -8,14 +8,20 @@
     </div>
 
     <!-- Structure bento reproduite à l'identique de la capture : 6 blocs vides.
-         Placement via .xp-a-* (grid-template-areas), couleur via .xp-tile--*. -->
-    <div class="xp-bento">
-      <article class="xp-tile xp-a-cust   xp-tile--purple reveal d1"></article>
-      <article class="xp-tile xp-a-sched  xp-tile--pink   reveal d2"></article>
-      <article class="xp-tile xp-a-wallet xp-tile--green  reveal d3"></article>
-      <article class="xp-tile xp-a-inbox  xp-tile--yellow reveal d4"></article>
-      <article class="xp-tile xp-a-send   xp-tile--orange reveal d1"></article>
-      <article class="xp-tile xp-a-remind xp-tile--blue   reveal d2"></article>
+         Placement via .xp-a-* (grid-template-areas), couleur via .xp-tile--*.
+         .xp-bento-track = piste de scroll : le bento reste figé (sticky) pendant
+         que la vague progresse au scroll (voir initXpBentoWave dans js/main.js). -->
+    <div class="xp-bento-track">
+      <div class="xp-bento-stick">
+        <div class="xp-bento">
+          <article class="xp-tile xp-a-cust   xp-tile--b3"></article>
+          <article class="xp-tile xp-a-sched  xp-tile--b1"></article>
+          <article class="xp-tile xp-a-wallet xp-tile--b2"></article>
+          <article class="xp-tile xp-a-inbox  xp-tile--b3"></article>
+          <article class="xp-tile xp-a-send   xp-tile--b1"></article>
+          <article class="xp-tile xp-a-remind xp-tile--b2"></article>
+        </div>
+      </div>
     </div>
 
   </div>

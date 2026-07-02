@@ -21,6 +21,10 @@
   --sans: 'Inter', system-ui, sans-serif;
   --radius: 12px;
   --maxw: 1280px;
+  /* Remontée (translateY) appliquée à #about et à toutes les sections qui suivent
+     par initAboutParallax (js/main.js). #xp en hérite : la position figée du bento
+     doit la compenser pour rester centrée. DOIT rester égal à MAX_LIFT côté JS. */
+  --about-lift: 220px;
   --shadow-card: 0 1px 2px rgba(20,20,15,0.04), 0 8px 24px rgba(20,20,15,0.03);
 }
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -43,7 +47,9 @@ body{
   font-family:var(--sans);
   line-height:1.65;
   -webkit-font-smoothing:antialiased;
-  overflow-x:hidden;
+  /* clip (et non hidden) : masque le débordement horizontal SANS faire de <body>
+     un conteneur de scroll, ce qui casserait le position:sticky du bento #xp. */
+  overflow-x:clip;
   overflow-anchor:none;
 }
 img{max-width:100%; display:block;}
@@ -1098,14 +1104,14 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    ============================================================ */
 .xp{
   background:var(--bg);   /* fond blanc */
-  padding-top:clamp(48px, 8vh, 80px);
+  padding-top:clamp(28px, 4vh, 48px);
   padding-bottom:clamp(48px, 8vh, 80px);
   --xp-alt:var(--accent);
   --xp-perso:#2ba676;   /* projet perso → vert, distinct du bleu accent */
   --xp-ecole:#c98a2e;   /* projet école → ambre, même famille que .cal-event */
 }
 .xp-wrap{position:relative; z-index:1;}
-.xp-head{max-width:640px; margin-bottom:38px;}
+.xp-head{max-width:640px; margin-bottom:22px;}
 .xp-head .section-tag{margin-bottom:2px;}
 .xp-head h2{font-size:36px; margin-bottom:14px;}
 .xp-head h2 .accent{color:var(--accent);}
@@ -1130,6 +1136,34 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-a-inbox {grid-area:inbox;}
 .xp-a-send  {grid-area:send;}
 .xp-a-remind{grid-area:remind;}
+
+/* Coupes en biseau : coins ET tailles variés, et jusqu'à plusieurs coupes par
+   carte pour casser la régularité. corner-shape:bevel + rayon plus grand = coupe.
+   Sélecteur combiné (.xp-tile.xp-a-*) pour passer devant le border-radius:22px
+   de .xp-tile déclaré plus bas, sinon la taille de coupe retombe à 22px. */
+.xp-tile.xp-a-cust{
+  border-bottom-right-radius:80px; corner-bottom-right-shape:bevel;
+  border-top-left-radius:34px;     corner-top-left-shape:bevel;
+}
+.xp-tile.xp-a-sched{
+  border-bottom-left-radius:38px;  corner-bottom-left-shape:bevel;
+}
+.xp-tile.xp-a-wallet{
+  border-top-right-radius:30px;    corner-top-right-shape:bevel;
+  border-bottom-left-radius:48px;  corner-bottom-left-shape:bevel;
+}
+.xp-tile.xp-a-inbox{
+  border-top-left-radius:60px;     corner-top-left-shape:bevel;
+  border-bottom-right-radius:26px; corner-bottom-right-shape:bevel;
+}
+.xp-tile.xp-a-send{
+  border-top-right-radius:66px;    corner-top-right-shape:bevel;
+  border-bottom-left-radius:40px;  corner-bottom-left-shape:bevel;
+}
+.xp-tile.xp-a-remind{
+  border-bottom-left-radius:28px;  corner-bottom-left-shape:bevel;
+  border-top-right-radius:52px;    corner-top-right-shape:bevel;
+}
 /* Chaque tuile est un aplat de couleur (façon Givingli) : pas de bordure, coins
    très arrondis, et une palette scopée via des variables --tile-* que les
    couleurs de thème (.xp-tile--purple, etc.) redéfinissent plus bas. */
@@ -1138,6 +1172,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   display:flex; flex-direction:column;
   padding:26px 28px;
   border:0;
+  /* coins arrondis par défaut ; chaque carte fait "couper" un coin différent en
+     biseau via .xp-a-* plus bas (navigateurs sans corner-shape → arrondi) */
   border-radius:22px;
   background:var(--tile-bg, #ded7f4);
   color:var(--tile-text, #4f4270);
@@ -1145,11 +1181,64 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   overflow:hidden;
   transition:transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s ease;
 }
+/* le survol reprend exactement l'état "avancé" de l'animation (même lift + zoom).
+   !important indispensable : l'animation xp-wave (même en pause) imposerait sinon
+   son transform et masquerait le survol */
 .xp-tile:hover{
-  transform:translateY(-6px);
-  box-shadow:0 18px 40px -14px var(--tile-shadow, rgba(70,50,120,.5));
+  transform:translateY(-6px) scale(1.012) !important;
+  box-shadow:0 1px 2px rgba(30,25,15,.04) !important;
+  z-index:6 !important;
 }
 /* le placement est désormais porté par les classes .xp-a-* (grid-template-areas) */
+
+/* Vague pilotée au scroll : le bento reste figé (sticky) au centre de l'écran
+   pendant que la page continue de défiler sur la hauteur de .xp-bento-track ;
+   la progression du scroll balaie les cartes une à une (lift + léger zoom),
+   piloté par initXpBentoWave() dans js/main.js qui pose le transform inline.
+   --xp-wave-scroll = distance de scroll figé pendant laquelle la vague se joue. */
+.xp-bento-track{
+  position:relative;
+  height:calc(100vh + var(--xp-wave-scroll, 120vh));
+  /* un peu d'air entre le titre et le bento au repos (n'affecte pas le centrage
+     une fois figé, porté par le `top` du sticky). Réduit pour que le bento
+     atteigne plus vite sa position figée. */
+  margin-top:clamp(48px, 8vh, 96px);
+  /* hauteur du bento : ~70% de l'écran, jamais > 760px. Le reste (≈15vh de
+     chaque côté) = le `top` centré du sticky. En restant nettement < plein
+     écran, le bento est VRAIMENT au milieu quand il se verrouille : le
+     figement s'enclenche pile quand son centre atteint le centre de l'écran,
+     au lieu de le laisser monter jusqu'au ras du haut avant de figer. */
+  --xp-bento-pad:clamp(16px, 3vh, 32px);
+  --xp-bento-h:min(760px, 70vh);
+}
+/* Le figement se fait via un `top` centré (et non un bloc 100vh + centrage flex) :
+   au repos le bento tombe juste sous le titre — pas de vide — et une fois épinglé
+   il s'immobilise centré verticalement dans l'écran, jamais coupé. */
+.xp-bento-stick{
+  position:sticky;
+  /* centré verticalement, PLUS le lift de #about : la section #xp est remontée de
+     --about-lift px par le parallax, donc on décale la position figée d'autant vers
+     le bas pour que, une fois le transform appliqué, le bento retombe pile au milieu. */
+  top:calc((100vh - var(--xp-bento-h)) / 2 + var(--about-lift));
+}
+.xp-bento-stick .xp-bento{
+  width:100%;
+  height:var(--xp-bento-h);
+  grid-auto-rows:minmax(0, 1fr);
+}
+/* le survol garde la priorité sur le transform inline de la vague (cf. !important
+   de .xp-tile:hover plus haut) : la carte survolée se fige en position avancée. */
+
+/* Mobile / tablette : le bento se réempile en colonne(s) et dépasse l'écran,
+   donc pas de figement au scroll — piste et sticky redeviennent du flux normal. */
+@media(max-width:900px){
+  .xp-bento-track{ height:auto; }
+  .xp-bento-stick{ position:static; min-height:0; display:block; }
+}
+@media(prefers-reduced-motion:reduce){
+  .xp-bento-track{ height:auto; }
+  .xp-bento-stick{ position:static; min-height:0; display:block; }
+}
 
 .xp-tile-top{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
 .xp-icon{
@@ -1243,6 +1332,24 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   --tile-bg:#bacdd5; --tile-name:#2f5566; --tile-accent:#37647a;
   --tile-text:#3d5560; --tile-chip-bg:rgba(255,255,255,.5);
   --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(60,100,120,.4);
+}
+
+/* Camaïeu de bleu — 3 nuances (clair / moyen / profond), même famille que
+   l'accent du site. Réparties pour que deux cartes voisines diffèrent. */
+.xp-tile--b1{              /* bleu clair */
+  --tile-bg:#dde7f9; --tile-name:#2a3f80; --tile-accent:#3f5db0;
+  --tile-text:#4b5678; --tile-chip-bg:rgba(255,255,255,.6);
+  --tile-icon-bg:rgba(255,255,255,.65); --tile-shadow:rgba(60,90,180,.35);
+}
+.xp-tile--b2{              /* bleu moyen */
+  --tile-bg:#b9ccf0; --tile-name:#233a72; --tile-accent:#35529c;
+  --tile-text:#3f4d74; --tile-chip-bg:rgba(255,255,255,.55);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(50,80,170,.4);
+}
+.xp-tile--b3{              /* bleu profond */
+  --tile-bg:#93b0e6; --tile-name:#1c2e5c; --tile-accent:#294a91;
+  --tile-text:#33436b; --tile-chip-bg:rgba(255,255,255,.5);
+  --tile-icon-bg:rgba(255,255,255,.55); --tile-shadow:rgba(40,70,150,.45);
 }
 
 @media(max-width:900px){

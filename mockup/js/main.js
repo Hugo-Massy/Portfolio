@@ -35,6 +35,7 @@ async function loadSections() {
     root.append(...slot.children);
   }
   initRevealObserver();
+  initXpBentoWave();
   initSkillFloaterObserver();
   initTerminal();
   initBackgroundGrid();
@@ -359,7 +360,9 @@ function initAboutParallax() {
   // Le bras (crop calé sur la diagonale fixe) ne doit apparaître que sur la toute fin de
   // la croissance, sinon sa découpe se voit tant que l'avatar est encore petit.
   const ARM_REVEAL_START = 0.75;
-  const MAX_LIFT = 220; // px
+  // Source unique partagée avec le CSS (--about-lift) : le figement du bento #xp
+  // compense ce lift pour rester centré (cf. .xp-bento-stick top).
+  const MAX_LIFT = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--about-lift')) || 220; // px
   // Lissage du mouvement : au lieu de coller pile à la position de scroll, le lift
   // "rattrape" sa cible avec un peu d'inertie (lerp à chaque frame) — l'effet paraît
   // fluide au lieu de suivre au pixel près, saccadé, le défilement de la souris/molette.
@@ -865,6 +868,92 @@ function initRevealObserver() {
     });
   }, { threshold: 0.15 });
   targets.forEach((el) => observer.observe(el));
+}
+
+// Vague du bento #xp pilotée au scroll : le bento reste figé (sticky, cf. CSS)
+// pendant que la page défile sur la hauteur de .xp-bento-track. La progression du
+// scroll (0 → 1) déplace un « pic » qui balaie les cartes une à une (lift + zoom).
+// Ainsi chaque carte s'anime de façon fiable, dans l'ordre, au rythme du scroll.
+function initXpBentoWave() {
+  const track = document.querySelector('.xp-bento-track');
+  const stick = track && track.querySelector('.xp-bento-stick');
+  const bento = stick && stick.querySelector('.xp-bento');
+  if (!track || !stick || !bento) return;
+  const tiles = Array.from(bento.querySelectorAll('.xp-tile'));
+  if (!tiles.length) return;
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const clamp = (v, a, b) => Math.min(Math.max(v, a), b);
+  const N = tiles.length;
+  const LIFT = 10;    // amplitude verticale du pic, en px
+  const SCALE = 0.03; // zoom au sommet du pic
+
+  let rafId = null;
+  // Passe à true une fois la vague entièrement parcourue : le figement est alors relâché
+  // pour de bon (cf. release), pour ne pas re-geler la vue en remontant dans la page.
+  let released = false;
+
+  function flatten() {
+    // Les cartes reviennent à plat en douceur (transition:transform .3s sur .xp-tile).
+    tiles.forEach((tile) => { tile.style.transform = ''; tile.style.zIndex = ''; });
+  }
+
+  // Supprime le figement définitivement : la piste reprend la hauteur naturelle du bento,
+  // de sorte qu'en REMONTANT (ou en repassant) on ne refait plus toute la fenêtre de
+  // scroll figé (« vue gelée » sur le bento / la vague). Retirer la course figée décale
+  // tout ce qui suit vers le haut ; pour que rien ne bouge à l'écran, on MESURE le saut
+  // réel du bento (avant → après le repli) et on l'annule par un scroll d'autant. Mesurer
+  // le déplacement rendu — plutôt que de le calculer — reste juste malgré le position:sticky
+  // et le translateY du parallax, qui fausseraient un calcul en coordonnées de scroll
+  // (overflow-anchor:none, donc pas de recalage automatique du navigateur).
+  function release() {
+    released = true;
+    const before = bento.getBoundingClientRect().top;
+    track.style.height = 'auto';
+    const after = bento.getBoundingClientRect().top;
+    flatten();
+    window.scrollBy({ top: after - before, left: 0, behavior: 'instant' });
+  }
+
+  function apply() {
+    rafId = null;
+    // Figement relâché après une première traversée complète : cartes à plat, plus de
+    // vague — on ne re-fige plus au retour vers le haut.
+    if (released) { flatten(); return; }
+    // Figement désactivé (mobile <=900px ou reduced-motion) : cartes à plat.
+    if (reduce.matches || track.offsetHeight <= window.innerHeight + 1) {
+      flatten();
+      return;
+    }
+    // La vague est calée sur la fenêtre de figement RÉELLE : elle démarre pile
+    // quand le bento se verrouille et finit quand il se relâche — pas de zone morte
+    // « figé mais rien ne bouge ». On mesure le décalage du bento DANS sa piste :
+    // 0 tant qu'il est en haut de la piste (pas figé), il grandit pendant le figement
+    // (le bento reste fixe, la piste défile) jusqu'à hauteur de piste − hauteur du
+    // bento. Comme les deux getBoundingClientRect subissent le même translateY (#about
+    // qui remonte, cf. initAboutParallax), le lift s'annule dans la soustraction :
+    // le calcul reste juste malgré le transform.
+    const offsetInTrack = stick.getBoundingClientRect().top - track.getBoundingClientRect().top;
+    const pinned = track.offsetHeight - stick.offsetHeight;   // course figée
+    // Vague entièrement parcourue (bento arrivé au bas de sa piste) → on relâche le
+    // figement pour de bon, à ce point précis où c'est invisible (cf. release).
+    if (offsetInTrack >= pinned - 0.5) { release(); return; }
+    const progress = clamp(offsetInTrack / pinned, 0, 1);
+    const head = progress * N;   // position du pic, en « unités carte »
+    tiles.forEach((tile, i) => {
+      const d = Math.abs(head - (i + 0.5));   // distance carte ↔ pic
+      const t = Math.max(0, 1 - d);           // fenêtre triangulaire d'1 carte
+      const e = t * t * (3 - 2 * t);          // smoothstep
+      tile.style.transform = `translateY(${(-LIFT * e).toFixed(2)}px) scale(${(1 + SCALE * e).toFixed(3)})`;
+      tile.style.zIndex = e > 0.15 ? 5 : 1;
+    });
+  }
+
+  function request() { if (rafId === null) rafId = requestAnimationFrame(apply); }
+  window.addEventListener('scroll', request, { passive: true });
+  window.addEventListener('resize', request);
+  if (reduce.addEventListener) reduce.addEventListener('change', request);
+  apply();
 }
 
 // Contrairement à .reveal (qui ne joue qu'une fois), les icônes flottantes des piliers
