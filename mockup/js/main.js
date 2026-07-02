@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about', 'skills', 'availability', 'contact'];
+const SECTIONS = ['nav', 'hero', 'about', 'skills', 'xp', 'availability', 'contact'];
 
 // Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
 // la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).

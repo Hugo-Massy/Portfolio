@@ -179,6 +179,13 @@ const I18N = {
     'skills-c3-desc': '<strong>Zéro port ouvert</strong> via <strong>Cloudflare Tunnel</strong>. Supervision <strong>Zabbix 7.2</strong>, approche <strong>security by design</strong>.',
     'skills-c4-title': 'Dev & Automatisation',
     'skills-c4-desc': '<strong>Plugins GLPI</strong> en prod (PHP), <strong>Python/Bash</strong>. Process papier <strong>entièrement supprimé</strong>.',
+
+    'xp-tag-slug': '_expérience/',
+    'xp-h2': 'Mes <span class="accent">projets</span>, en conditions réelles.',
+    'xp-lede': 'Ce que j\'ai conçu, déployé et sécurisé — en alternance à la DSI de Massy comme sur ma propre infrastructure.',
+    'xp-ctx-alt': 'Alternance · DSI Massy',
+    'xp-ctx-perso': 'Projet perso',
+    'xp-ctx-ecole': 'Projet école',
   },
   en: {
     'lang-switch-aria': 'Change language',
@@ -355,6 +362,13 @@ const I18N = {
     'skills-c3-desc': '<strong>Zero-open-port</strong> self-hosting via <strong>Cloudflare Tunnel</strong>. <strong>Zabbix 7.2</strong> monitoring & Nextcloud. <strong>Security by design</strong> approach.',
     'skills-c4-title': 'Development & Automation',
     'skills-c4-desc': 'Two <strong>GLPI plugins</strong> in production: e-signature & SIM import. Paper process <strong>fully eliminated</strong> through <strong>Python/Bash scripting</strong>.',
+
+    'xp-tag-slug': '_experience/',
+    'xp-h2': 'My <span class="accent">projects</span>, in real conditions.',
+    'xp-lede': 'What I\'ve designed, deployed and secured — during my apprenticeship at the Massy IT department and on my own infrastructure.',
+    'xp-ctx-alt': 'Apprenticeship · Massy IT',
+    'xp-ctx-perso': 'Personal project',
+    'xp-ctx-ecole': 'School project',
   },
   es: {
     'lang-switch-aria': 'Cambiar idioma',
@@ -531,6 +545,13 @@ const I18N = {
     'skills-c3-desc': 'Autoalojamiento <strong>cero puertos abiertos</strong> vía <strong>Cloudflare Tunnel</strong>. Supervisión <strong>Zabbix 7.2</strong> & Nextcloud. Enfoque <strong>security by design</strong>.',
     'skills-c4-title': 'Desarrollo y Automatización',
     'skills-c4-desc': 'Dos <strong>plugins GLPI</strong> en producción: firma electrónica & importación SIM. Proceso en papel <strong>completamente eliminado</strong> con <strong>scripting Python/Bash</strong>.',
+
+    'xp-tag-slug': '_experiencia/',
+    'xp-h2': 'Mis <span class="accent">proyectos</span>, en condiciones reales.',
+    'xp-lede': 'Lo que he diseñado, desplegado y asegurado — en mi alternancia en la TI de Massy y en mi propia infraestructura.',
+    'xp-ctx-alt': 'Alternancia · TI Massy',
+    'xp-ctx-perso': 'Proyecto personal',
+    'xp-ctx-ecole': 'Proyecto escolar',
   },
 };
 

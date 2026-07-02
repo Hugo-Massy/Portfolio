@@ -1090,6 +1090,191 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 
 /* ============================================================
+   EXPÉRIENCE — bento de projets (alternance + perso). Fond gris doux pour se
+   détacher de #skills (blanc) juste au-dessus. Le contenu réutilise les
+   descriptions déjà traduites projects-* (voir i18n.js) ; seuls les badges de
+   contexte (alternance / perso / école) et l'habillage bento sont propres à la
+   section. Vedette 2×2 + large 2×1 + deux tuiles 1×1 remplissent une grille 4×2.
+   ============================================================ */
+.xp{
+  background:var(--bg);   /* fond blanc */
+  padding-top:clamp(48px, 8vh, 80px);
+  padding-bottom:clamp(48px, 8vh, 80px);
+  --xp-alt:var(--accent);
+  --xp-perso:#2ba676;   /* projet perso → vert, distinct du bleu accent */
+  --xp-ecole:#c98a2e;   /* projet école → ambre, même famille que .cal-event */
+}
+.xp-wrap{position:relative; z-index:1;}
+.xp-head{max-width:640px; margin-bottom:38px;}
+.xp-head .section-tag{margin-bottom:2px;}
+.xp-head h2{font-size:36px; margin-bottom:14px;}
+.xp-head h2 .accent{color:var(--accent);}
+.xp-lede{font-size:17px; color:var(--text-dim); max-width:600px;}
+
+/* Grille bento calquée pièce par pièce sur la capture Givingli :
+   colonne gauche plus large (1.35fr), deux colonnes de droite égales (1fr).
+   6 blocs placés via grid-template-areas. */
+.xp-bento{
+  display:grid;
+  grid-template-columns:1.35fr 1fr 1fr;
+  grid-auto-rows:272px;
+  gap:18px;
+  grid-template-areas:
+    "cust  sched  sched"
+    "cust  wallet inbox"
+    "send  send   remind";
+}
+.xp-a-cust  {grid-area:cust;}
+.xp-a-sched {grid-area:sched;}
+.xp-a-wallet{grid-area:wallet;}
+.xp-a-inbox {grid-area:inbox;}
+.xp-a-send  {grid-area:send;}
+.xp-a-remind{grid-area:remind;}
+/* Chaque tuile est un aplat de couleur (façon Givingli) : pas de bordure, coins
+   très arrondis, et une palette scopée via des variables --tile-* que les
+   couleurs de thème (.xp-tile--purple, etc.) redéfinissent plus bas. */
+.xp-tile{
+  position:relative;
+  display:flex; flex-direction:column;
+  padding:26px 28px;
+  border:0;
+  border-radius:22px;
+  background:var(--tile-bg, #ded7f4);
+  color:var(--tile-text, #4f4270);
+  box-shadow:0 1px 2px rgba(30,25,15,.04);
+  overflow:hidden;
+  transition:transform .3s cubic-bezier(.2,.7,.3,1), box-shadow .3s ease;
+}
+.xp-tile:hover{
+  transform:translateY(-6px);
+  box-shadow:0 18px 40px -14px var(--tile-shadow, rgba(70,50,120,.5));
+}
+/* le placement est désormais porté par les classes .xp-a-* (grid-template-areas) */
+
+.xp-tile-top{display:flex; align-items:center; gap:10px; margin-bottom:18px;}
+.xp-icon{
+  width:38px; height:38px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:11px;
+  color:var(--tile-name, #452a80);
+  background:var(--tile-icon-bg, rgba(255,255,255,.55));
+  transition:transform .3s ease;
+}
+.xp-icon svg{width:20px; height:20px;}
+.xp-tile:hover .xp-icon{transform:translateY(-2px) rotate(-4deg) scale(1.06);}
+
+.xp-ctx{
+  font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.02em;
+  padding:4px 10px; border-radius:100px; line-height:1.5; white-space:nowrap;
+  color:var(--tile-name, #452a80);
+  background:var(--tile-chip-bg, rgba(255,255,255,.5));
+}
+/* les variantes de contexte ne pilotent plus la couleur : c'est le thème de la
+   tuile qui donne le ton, on garde les classes pour la sémantique/i18n */
+.xp-ctx--alt, .xp-ctx--perso, .xp-ctx--ecole{color:var(--tile-name); background:var(--tile-chip-bg, rgba(255,255,255,.5));}
+
+.xp-status{
+  margin-left:auto; display:inline-flex; align-items:center; gap:6px;
+  font-family:var(--mono); font-size:11px; font-weight:600;
+  color:var(--tile-name, #452a80); white-space:nowrap;
+}
+.xp-status::before{
+  content:""; width:7px; height:7px; border-radius:50%;
+  background:#2ba676; box-shadow:0 0 0 3px rgba(43,166,118,.22);
+}
+
+.xp-tile-body{flex:1 1 auto;}
+.xp-type{
+  font-family:var(--mono); font-size:12px; font-weight:600;
+  color:var(--tile-accent, #6338ab);
+}
+.xp-name{
+  font-size:22px; font-weight:800; letter-spacing:-.02em;
+  color:var(--tile-name, #452a80); margin:6px 0 10px;
+}
+.xp-desc{font-size:14px; color:var(--tile-text, #524a6b); line-height:1.65;}
+.xp-tile--feature .xp-name{font-size:34px;}
+.xp-tile--feature .xp-desc{font-size:15.5px; max-width:46ch;}
+
+.xp-tile-foot{margin-top:20px; display:flex; flex-direction:column; gap:14px;}
+.xp-metrics{list-style:none; display:flex; gap:26px;}
+.xp-metrics li{display:flex; flex-direction:column; line-height:1.2;}
+.xp-metric-val{
+  font-family:var(--mono); font-size:22px; font-weight:700;
+  color:var(--tile-name, #452a80);
+}
+.xp-metric-lbl{font-size:11px; color:var(--tile-text, #524a6b); opacity:.85; margin-top:2px;}
+.xp-tile--feature .xp-metric-val{font-size:28px;}
+.xp-tags{list-style:none; display:flex; flex-wrap:wrap; gap:7px;}
+.xp-tags li{
+  font-family:var(--mono); font-size:11px; font-weight:500;
+  color:var(--tile-name, #452a80);
+  padding:4px 9px; border-radius:8px;
+  background:var(--tile-chip-bg, rgba(255,255,255,.5));
+}
+
+/* ---- Thèmes de couleur, un par projet (mapping calqué sur la référence) ---- */
+.xp-tile--purple{           /* Massy Innove (vedette) → lavande */
+  --tile-bg:#ded7f4; --tile-name:#452a80; --tile-accent:#6338ab;
+  --tile-text:#544a71; --tile-chip-bg:rgba(255,255,255,.55);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(90,60,160,.45);
+}
+.xp-tile--pink{             /* Fil Rouge SOC (large) → rose */
+  --tile-bg:#f5c9dd; --tile-name:#8c2b5c; --tile-accent:#b03570;
+  --tile-text:#7a4a62; --tile-chip-bg:rgba(255,255,255,.55);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(170,50,110,.42);
+}
+.xp-tile--green{            /* Homelab → vert */
+  --tile-bg:#cfe4ac; --tile-name:#3a6821; --tile-accent:#4a7d24;
+  --tile-text:#4e5f3d; --tile-chip-bg:rgba(255,255,255,.5);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(80,130,40,.4);
+}
+.xp-tile--yellow{           /* jaune */
+  --tile-bg:#f7d94a; --tile-name:#1b1f1d; --tile-accent:#8a6410;
+  --tile-text:#4a4326; --tile-chip-bg:rgba(255,255,255,.5);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(180,150,20,.4);
+}
+.xp-tile--orange{           /* orange */
+  --tile-bg:#efa563; --tile-name:#2b2320; --tile-accent:#8a4a12;
+  --tile-text:#4a382a; --tile-chip-bg:rgba(255,255,255,.5);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(190,110,40,.4);
+}
+.xp-tile--blue{             /* bleu-gris */
+  --tile-bg:#bacdd5; --tile-name:#2f5566; --tile-accent:#37647a;
+  --tile-text:#3d5560; --tile-chip-bg:rgba(255,255,255,.5);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(60,100,120,.4);
+}
+
+@media(max-width:900px){
+  /* la vedette + les blocs larges passent pleine largeur, le reste en 2 colonnes */
+  .xp-bento{
+    grid-template-columns:1fr 1fr;
+    grid-auto-rows:230px;
+    grid-template-areas:
+      "cust   cust"
+      "sched  sched"
+      "wallet inbox"
+      "send   send"
+      "remind remind";
+  }
+  .xp-tile--feature .xp-name{font-size:30px;}
+}
+@media(max-width:560px){
+  .xp-bento{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "cust"
+      "sched"
+      "wallet"
+      "inbox"
+      "send"
+      "remind";
+  }
+  .xp-head h2{font-size:28px;}
+  .xp-tile--feature .xp-name{font-size:26px;}
+}
+
+/* ============================================================
    DISPONIBILITÉ — calendrier mensuel dans une fenêtre sombre façon terminal
    (réutilise l'habillage .term-bar/.term-dot du hero) + carte statut/agenda
    assorties, sur fond clair. Contenu généré par initAvailability() dans
