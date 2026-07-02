@@ -1096,6 +1096,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    js/main.js. Palette calendrier scopée à la section.
    ============================================================ */
 .availability{
+  display:none;
   position:relative; background:var(--bg);
   padding-top:clamp(48px, 8vh, 80px);
   --cal-ent:#6f89d9;      /* entreprise → bleu de la console */
@@ -1112,7 +1113,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .avail-lede{font-size:17px; color:var(--text-dim); max-width:600px;}
 
 .avail-grid{
-  display:flex; align-items:flex-start; justify-content:flex-start; gap:clamp(28px, 5vw, 56px);
+  display:flex; align-items:stretch; justify-content:flex-start; gap:clamp(28px, 5vw, 56px);
   flex-wrap:wrap;
 }
 
@@ -1221,17 +1222,47 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .cal-key-icon{width:14px; height:14px; flex:none; color:#8a93a3;}
 .cal-key-icon svg{width:100%; height:100%; display:block;}
 
-/* --- Prise de contact, à droite du calendrier : pas de fond ni de cadre,
-   juste du texte et un lien, pour rester léger face à la fenêtre terminal. --- */
+/* --- Bulle de dialogue avatar, à droite du calendrier --- */
 .avail-contact{
-  flex:1 1 240px; max-width:320px;
+  flex:1 1 260px; max-width:360px;
   padding-top:8px;
+  display:flex; flex-direction:column; gap:20px;
 }
-.avail-contact h3{font-size:20px; margin-bottom:10px; color:var(--text);}
-.avail-contact p{font-size:15px; line-height:1.55; color:var(--text-dim); margin-bottom:22px;}
-.avail-contact-btn{white-space:nowrap;}
+.avail-bubble-zone{
+  display:flex; align-items:flex-start; gap:14px;
+  flex:1;
+}
+.avail-bubble-avatar{
+  width:64px; height:64px; border-radius:50%; object-fit:cover; flex-shrink:0;
+  border:2px solid var(--accent-pale);
+  box-shadow:0 0 0 4px var(--accent-soft);
+}
+.avail-bubble{
+  position:relative;
+  background:var(--bg-elev-2); border:1px solid var(--border); border-radius:16px;
+  border-top-left-radius:4px;
+  padding:16px 18px;
+  min-height:110px;
+  display:flex; align-items:center;
+  flex:1;
+}
+.avail-bubble::before{
+  content:''; position:absolute; top:18px; left:-10px;
+  width:0; height:0; border-style:solid;
+  border-width:9px 10px 9px 0;
+  border-color:transparent var(--border) transparent transparent;
+}
+.avail-bubble::after{
+  content:''; position:absolute; top:19px; left:-8px;
+  width:0; height:0; border-style:solid;
+  border-width:8px 9px 8px 0;
+  border-color:transparent var(--bg-elev-2) transparent transparent;
+}
+.avail-bubble p{margin:0; font-size:15px; line-height:1.6; color:var(--text);}
+.avail-contact-btn{white-space:nowrap; align-self:flex-end; margin-top:auto;}
 /* créneau proposé — n'apparaît qu'après sélection d'une date disponible sur le calendrier ;
    le visiteur choisit lui-même l'heure parmi les options du <select>. */
+.avail-slot[hidden]{display:none;}
 .avail-slot{
   display:flex; align-items:center; gap:10px; flex-wrap:wrap;
   margin:-10px 0 22px; padding:10px 14px;
@@ -1260,6 +1291,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .cal-legend{margin:16px 16px 18px;}
   .cal-day{font-size:12px;}
   .avail-contact{max-width:none;}
+  .avail-bubble-zone{align-items:center;}
+  .avail-bubble-avatar{width:52px; height:52px;}
 }
 
 /* ============================================================

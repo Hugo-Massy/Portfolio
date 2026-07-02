@@ -79,6 +79,11 @@ const AVAILABILITY_CONFIG = {
     { date: '2026-08-31', type: 'event', label: { fr: 'Fin d\'alternance', en: 'End of apprenticeship', es: 'Fin de la alternancia' } },
     { date: '2026-09-01', type: 'avail', label: { fr: 'Disponible temps plein — CDI / CDD', en: 'Available full-time — permanent / fixed-term', es: 'Disponible a tiempo completo' } },
   ],
+  // Plages d'indisponibilité. Les jours compris entre `from` et `to` (inclus) sont marqués en rouge.
+  unavailableRanges: [
+    { from: '2026-07-04', to: '2026-07-05', label: { fr: 'Indisponible ce week-end', en: 'Unavailable this weekend', es: 'No disponible este fin de semana' } },
+    { from: '2026-07-13', to: '2026-07-31', label: { fr: 'Indisponible', en: 'Unavailable', es: 'No disponible' } },
+  ],
 };
 
 // Icône de la piste hebdomadaire (voir renderGrid) — même style que les icônes
@@ -97,11 +102,6 @@ function initAvailability() {
   const prevBtn = document.getElementById('cal-prev');
   const nextBtn = document.getElementById('cal-next');
   const todayBtn = document.getElementById('cal-today');
-  const detailTitleEl = document.getElementById('avail-detail-title');
-  const detailTextEl = document.getElementById('avail-detail-text');
-  const slotWrapEl = document.getElementById('avail-slot');
-  const slotSelectEl = document.getElementById('avail-slot-select');
-  const slotWarningEl = document.getElementById('avail-slot-warning');
   const mailLink = document.getElementById('avail-contact-mail');
   const ctaLabelEl = document.getElementById('avail-contact-cta-label');
   if (!grid || !titleEl) return;
@@ -125,6 +125,11 @@ function initAvailability() {
 
   const eventsByDate = new Map();
   cfg.events.forEach((ev) => eventsByDate.set(ev.date, ev));
+
+  function unavailRangeOf(d) {
+    const key = keyOf(d);
+    return (cfg.unavailableRanges || []).find((r) => key >= r.from && key <= r.to) || null;
+  }
 
   // Type de rythme d'un jour donné : on ramène au lundi de sa semaine, on compte
   // les semaines écoulées depuis l'ancre, et on lit le cycle (modulo). Renvoie null
@@ -162,9 +167,11 @@ function initAvailability() {
     const ev = eventsByDate.get(keyOf(d));
     const isWeekend = d.getDay() === 0 || d.getDay() === 6;
     const isFullAvail = fullAvailDate && d >= fullAvailDate;
+    const unavail = unavailRangeOf(d);
 
     if (isPast) return { status: 'past', event: ev };
     if (ev && ev.type === 'event') return { status: 'event', event: ev };
+    if (unavail) return { status: 'unavailable', event: ev, unavailLabel: unavail.label };
     if (isFullAvail) return { status: 'full', event: ev, slotKey: 'day' };
     if (isWeekend) return { status: 'weekend', event: ev, slotKey: 'day' };
     return { status: 'busy', event: ev, slotKey: 'busy' };
@@ -230,18 +237,21 @@ function initAvailability() {
         const isToday = d.getTime() === today.getTime();
         const isPast = d < today;
         const ev = eventsByDate.get(keyOf(d));
+        const unavail = unavailRangeOf(d);
 
         const classes = ['cal-day'];
         if (isToday) classes.push('is-today');
         if (isPast) classes.push('is-past');
         if (ev) classes.push('has-event', `event-${ev.type}`);
+        else if (unavail) classes.push('has-event', 'event-unavailable');
         if (keyOf(d) === selectedKey) classes.push('is-selected');
 
-        const title = ev ? ` title="${labelOf(ev).replace(/"/g, '&quot;')}"` : '';
+        const unavailTitle = unavail ? (unavail.label[CURRENT_LANG] || unavail.label.fr) : '';
+        const title = ev ? ` title="${labelOf(ev).replace(/"/g, '&quot;')}"` : (unavail ? ` title="${unavailTitle.replace(/"/g, '&quot;')}"` : '');
         html += `<div class="${classes.join(' ')}" data-date="${keyOf(d)}" tabindex="0" role="button"`
           + ` aria-pressed="${keyOf(d) === selectedKey}"${title}>`
           + `<span class="cal-num">${d.getDate()}</span>`
-          + (ev ? '<span class="cal-dot" aria-hidden="true"></span>' : '')
+          + (ev || unavail ? '<span class="cal-dot" aria-hidden="true"></span>' : '')
           + '</div>';
       }
     }
@@ -251,67 +261,18 @@ function initAvailability() {
 
   // État courant du panneau, relu par updateMailHref() quand l'utilisateur change
   // l'heure choisie dans le <select> sans re-déclencher tout le rendu.
-  let panelDateLabel = '';
-  let panelShowSlot = false;
-
   function updateMailHref() {
     const dict = I18N[CURRENT_LANG] || I18N.fr;
-    const slotLabel = panelShowSlot && slotSelectEl ? slotSelectEl.value : '';
-    const subject = panelShowSlot
-      ? (dict['avail-contact-mail-subject-slot'] || '').replace('{date}', panelDateLabel)
-      : (dict['avail-contact-mail-subject'] || '');
-    const body = panelShowSlot
-      ? (dict['avail-contact-mail-body-slot'] || '').replace('{date}', panelDateLabel).replace('{slot}', slotLabel)
-      : (dict['avail-contact-mail-body'] || '');
+    const subject = dict['avail-contact-mail-subject'] || '';
+    const body = dict['avail-contact-mail-body'] || '';
     mailLink.href = `mailto:${AVAILABILITY_CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
-  // Panneau de droite (avait un contenu fixe) : reflète maintenant la date sélectionnée
-  // sur le calendrier — statut (disponible / occupé / échéance) + un choix d'heures parmi
-  // lesquelles piocher — et pré-remplit le mailto en conséquence. Sans sélection, retombe
-  // sur le texte par défaut.
   function renderContactPanel() {
-    if (!mailLink || !detailTitleEl || !detailTextEl) return;
+    if (!mailLink) return;
     const dict = I18N[CURRENT_LANG] || I18N.fr;
 
-    if (!selectedKey) {
-      detailTitleEl.innerHTML = dict['avail-contact-title'] || '';
-      detailTextEl.innerHTML = dict['avail-contact-text'] || '';
-      if (slotWrapEl) slotWrapEl.hidden = true;
-      if (slotWarningEl) slotWarningEl.hidden = true;
-      if (ctaLabelEl) ctaLabelEl.textContent = dict['avail-contact-cta'] || '';
-      panelDateLabel = '';
-      panelShowSlot = false;
-      updateMailHref();
-      return;
-    }
-
-    const d = parse(selectedKey);
-    const info = dayInfo(d);
-    const fmt = new Intl.DateTimeFormat(locale(), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-    const dateLabel = fmt.format(d).replace(/^./, (c) => c.toUpperCase());
-    detailTitleEl.textContent = dateLabel;
-
-    let statusMsg = dict[`avail-status-${info.status}`] || '';
-    if (info.status === 'event' && info.event) statusMsg = statusMsg.replace('{label}', labelOf(info.event));
-    if (info.event && info.status !== 'event') statusMsg += ` (${labelOf(info.event)})`;
-    detailTextEl.textContent = statusMsg;
-
-    const showSlot = !!info.slotKey;
-    if (slotWrapEl) slotWrapEl.hidden = !showSlot;
-    if (showSlot && slotSelectEl) {
-      const options = (dict[`avail-slot-options-${info.slotKey}`] || '').split('|').filter(Boolean);
-      slotSelectEl.innerHTML = options.map((opt) => `<option value="${opt}">${opt}</option>`).join('');
-    }
-    const isBusySlot = info.slotKey === 'busy';
-    if (slotWarningEl) {
-      slotWarningEl.hidden = !isBusySlot;
-      if (isBusySlot) slotWarningEl.textContent = dict['avail-slot-warning-busy'] || '';
-    }
-
-    if (ctaLabelEl) ctaLabelEl.textContent = dict[showSlot ? 'avail-contact-cta-slot' : 'avail-contact-cta'] || '';
-    panelDateLabel = dateLabel;
-    panelShowSlot = showSlot;
+    if (ctaLabelEl) ctaLabelEl.textContent = dict['avail-contact-cta'] || '';
     updateMailHref();
   }
 
@@ -322,7 +283,6 @@ function initAvailability() {
     renderContactPanel();
   }
 
-  slotSelectEl && slotSelectEl.addEventListener('change', updateMailHref);
 
   grid.addEventListener('click', (e) => {
     const cell = e.target.closest('.cal-day');

@@ -46,18 +46,9 @@
         </ul>
       </div>
 
-      <!-- Prise de contact — mise à jour dynamiquement par initAvailability() (js/main.js)
-           quand une date du calendrier est sélectionnée ; sinon contenu par défaut ci-dessous. -->
       <div class="avail-contact reveal d3">
-        <h3 id="avail-detail-title" data-i18n="avail-contact-title">On travaille ensemble&nbsp;?</h3>
-        <p id="avail-detail-text" data-i18n="avail-contact-text">Un poste, une mission ou juste une question sur mon planning — écrivez-moi, je réponds sous 48h.</p>
-        <div class="avail-slot" id="avail-slot" hidden>
-          <label class="avail-slot-label" for="avail-slot-select" data-i18n="avail-slot-label">Créneau proposé</label>
-          <select class="avail-slot-select" id="avail-slot-select"></select>
-          <p class="avail-slot-warning" id="avail-slot-warning" hidden></p>
-        </div>
-        <a class="btn btn-ghost avail-contact-btn" id="avail-contact-mail" href="#">
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16v16H4z"/><path d="m4 6 8 7 8-7"/></svg>
+        <a class="btn btn-primary avail-contact-btn" id="avail-contact-mail" href="#">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" stroke="none" aria-hidden="true"><path d="M3.478 2.405a.75.75 0 0 0-.926.94l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.405z"/></svg>
           <span id="avail-contact-cta-label" data-i18n="avail-contact-cta">Proposer un contact</span>
         </a>
       </div>
