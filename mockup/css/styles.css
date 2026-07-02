@@ -1394,9 +1394,14 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-pill--lock{ color:#3a6a4a; background:rgba(92,192,138,.18); }
 .xp-flag{
   position:absolute; top:-6px; right:-2px; transform:rotate(4deg);
+  display:inline-flex; align-items:center; gap:6px;
   font-family:var(--mono); font-size:11px; font-weight:600; color:var(--tile-name);
   background:#fff; padding:5px 10px; border-radius:100px;
   box-shadow:0 8px 18px -8px rgba(0,0,0,.3);
+}
+.xp-flag-svg{
+  width:15px; height:10px; border-radius:2px; flex:none;
+  box-shadow:0 0 0 1px rgba(0,0,0,.08);
 }
 
 /* 2 · Flux de détections SOC (Fil Rouge SOC) */
@@ -1466,15 +1471,40 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-plug-tag{ margin-left:auto; font-family:var(--mono); font-size:10px; color:#7a6a3a;
   background:rgba(0,0,0,.05); padding:3px 8px; border-radius:100px; }
 
-/* 5 · Collage de pastilles technos (Stack technique) */
-.xp-mock--chips{ display:flex; flex-wrap:wrap; gap:8px; align-content:flex-end; overflow:hidden; }
-.xp-chip{
-  font-family:var(--mono); font-size:12px; font-weight:600; color:var(--tile-name);
-  background:#fff; border-radius:100px; padding:7px 13px; white-space:nowrap;
-  box-shadow:0 7px 16px -9px rgba(0,0,0,.3);
+/* 5 · Collage de cartes technos (Stack technique) — mise en page « Send Gifts » :
+   texte en bas à gauche, grille de cartes inclinée en diagonale à droite. Couleur
+   (--c) et texte (--t) de chaque carte posés en style inline. */
+.xp-tile--diag .xp-tile-body{
+  position:absolute; left:28px; bottom:26px; z-index:3; max-width:42%; margin:0;
 }
-.xp-chip:nth-child(3n){ transform:rotate(-2deg); }
-.xp-chip:nth-child(3n+1){ transform:rotate(1.5deg); }
+.xp-a-send .xp-desc{
+  max-width:26ch;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
+  overflow:hidden;
+}
+.xp-tile--diag .xp-mock--cards{
+  position:absolute; top:0; right:0; bottom:0; left:34%;
+  margin:0; overflow:hidden; z-index:1;
+}
+.xp-cards-grid{
+  position:absolute; top:50%; left:54%;
+  transform:translate(-50%, -50%) rotate(-14deg);
+  display:grid; grid-template-columns:repeat(3, 116px); gap:14px;
+}
+.xp-card{
+  width:116px; height:72px; padding:8px;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  border-radius:11px;
+  background:var(--c, #333); color:var(--t, #fff);
+  font-family:var(--mono); font-size:13px; font-weight:700; line-height:1.15;
+  letter-spacing:.01em;
+  box-shadow:0 11px 24px -10px rgba(0,0,0,.5);
+  /* chaque colonne démarre plus ou moins haut (cf. nth-child) */
+  transform:translateY(var(--coloff, 0));
+}
+.xp-card:nth-child(3n+1){ --coloff:-20px; }  /* colonne 1 → plus haute */
+.xp-card:nth-child(3n+2){ --coloff:16px; }   /* colonne 2 → plus basse */
+.xp-card:nth-child(3n)  { --coloff:-6px; }   /* colonne 3 → légèrement haute */
 
 /* 6 · Téléphone + notification (Supervision) */
 .xp-mock--phone{ display:flex; justify-content:center; align-items:flex-end; overflow:hidden; }
