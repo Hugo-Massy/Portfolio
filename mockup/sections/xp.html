@@ -104,21 +104,21 @@
             <!-- collage de cartes technos en diagonale, à droite (façon « Send Gifts ») -->
             <div class="xp-mock xp-mock--cards" aria-hidden="true">
               <div class="xp-cards-grid">
-                <span class="xp-card" style="--c:#a80030;">debian</span>
-                <span class="xp-card" style="--c:#2496ed;">docker</span>
+                <span class="xp-card xp-card--light" style="--c:#1b1f2b;"><img class="xp-card-logo" src="assets/logo/debian.svg" alt="Debian" loading="lazy"></span>
+                <span class="xp-card xp-card--light" style="--c:#eaf4ff;"><img class="xp-card-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker" loading="lazy"></span>
                 <span class="xp-card" style="--c:#e2510f;">Suricata</span>
 
-                <span class="xp-card" style="--c:#3796d6;">wazuh</span>
-                <span class="xp-card" style="--c:#d40000;">ZABBIX</span>
-                <span class="xp-card" style="--c:#0082c9;">Nextcloud</span>
+                <span class="xp-card xp-card--photo" style="--c:#fff;"><img class="xp-card-logo xp-card-logo--fill" src="assets/logo/WAZUH.png" alt="Wazuh" loading="lazy"></span>
+                <span class="xp-card xp-card--photo" style="--c:#d40000;"><img class="xp-card-logo xp-card-logo--fill" src="assets/logo/Zabbix_logo.png" alt="Zabbix" loading="lazy"></span>
+                <span class="xp-card" style="--c:#0082c9;"><img class="xp-card-logo" src="assets/logo/nextcloud logo.svg" alt="Nextcloud" loading="lazy"></span>
 
-                <span class="xp-card" style="--c:#f38020;">CLOUDFLARE</span>
-                <span class="xp-card" style="--c:#1a6ea8;">GLPI</span>
-                <span class="xp-card" style="--c:#1c1c1c; --t:#ffd814;">Vault</span>
+                <span class="xp-card xp-card--light" style="--c:#fff3e8;"><img class="xp-card-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare" loading="lazy"></span>
+                <span class="xp-card xp-card--light" style="--c:#eef2f6;"><img class="xp-card-logo" src="assets/logo/glpi.svg" alt="GLPI" loading="lazy"></span>
+                <span class="xp-card xp-card--light" style="--c:#f6f1fb;"><img class="xp-card-logo" src="assets/logo/Microsoft_365_(2022).svg" alt="Microsoft 365" loading="lazy"></span>
 
                 <span class="xp-card" style="--c:#05998b;">FastAPI</span>
                 <span class="xp-card" style="--c:#e57000;">Proxmox</span>
-                <span class="xp-card" style="--c:#3776ab; --t:#ffd43b;">Python</span>
+                <span class="xp-card xp-card--light" style="--c:#16213a;"><img class="xp-card-logo" src="assets/logo/python-logo.svg" alt="Python" loading="lazy"></span>
               </div>
             </div>
             <div class="xp-tile-body">
@@ -133,14 +133,19 @@
               <h3 class="xp-name" data-i18n="xp-t6-name">Supervision</h3>
               <p class="xp-desc" data-i18n="xp-t6-blurb">Zabbix veille 24/7 — alerte au moindre écart.</p>
             </div>
-            <!-- maquette : téléphone + notification -->
+            <!-- maquette : téléphone (vraie maquette iPhone) + notification -->
             <div class="xp-mock xp-mock--phone" aria-hidden="true">
-              <div class="xp-phone">
-                <div class="xp-phone-status"><span>9:41</span><span class="xp-phone-sig"></span></div>
-                <div class="xp-notif">
-                  <span class="xp-notif-ic"></span>
-                  <div class="xp-notif-body"><b>Zabbix</b><em>Tout est vert — uptime 99.9 %</em></div>
+              <div class="xp-phone-shell">
+                <div class="xp-phone-screen">
+                  <div class="xp-notif">
+                    <span class="xp-notif-ic"></span>
+                    <div class="xp-notif-body">
+                      <div class="xp-notif-top"><b>Zabbix</b><time>maintenant</time></div>
+                      <em>Tout est vert — uptime 99.9 %</em>
+                    </div>
+                  </div>
                 </div>
+                <img class="xp-phone-frame" src="assets/iphone-frame.png" alt="" loading="lazy">
               </div>
             </div>
           </article>

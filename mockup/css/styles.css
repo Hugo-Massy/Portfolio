@@ -1475,15 +1475,15 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    texte en bas à gauche, grille de cartes inclinée en diagonale à droite. Couleur
    (--c) et texte (--t) de chaque carte posés en style inline. */
 .xp-tile--diag .xp-tile-body{
-  position:absolute; left:28px; bottom:26px; z-index:3; max-width:42%; margin:0;
+  position:absolute; left:28px; bottom:26px; z-index:3; max-width:52%; margin:0;
 }
 .xp-a-send .xp-desc{
-  max-width:26ch;
-  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2;
+  max-width:34ch;
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3;
   overflow:hidden;
 }
 .xp-tile--diag .xp-mock--cards{
-  position:absolute; top:0; right:0; bottom:0; left:34%;
+  position:absolute; top:0; right:0; bottom:0; left:42%;
   margin:0; overflow:hidden; z-index:1;
 }
 .xp-cards-grid{
@@ -1502,32 +1502,95 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   /* chaque colonne démarre plus ou moins haut (cf. nth-child) */
   transform:translateY(var(--coloff, 0));
 }
-.xp-card:nth-child(3n+1){ --coloff:-20px; }  /* colonne 1 → plus haute */
-.xp-card:nth-child(3n+2){ --coloff:16px; }   /* colonne 2 → plus basse */
+.xp-card:nth-child(3n+1){ --coloff:0px; }    /* colonne 1 → abaissée */
+.xp-card:nth-child(3n+2){ --coloff:32px; }   /* colonne 2 → plus basse */
 .xp-card:nth-child(3n)  { --coloff:-6px; }   /* colonne 3 → légèrement haute */
+.xp-card-logo{
+  max-width:64%; max-height:56%;
+  width:auto; height:auto;
+  object-fit:contain;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.25));
+}
+/* logos monochromes ou multicolores calés sur leur couleur de marque :
+   fond blanc neutre pour garantir le contraste, quelle que soit la teinte du logo */
+.xp-card--light{
+  border:1px solid rgba(20,30,50,.08);
+  box-shadow:0 11px 24px -10px rgba(0,0,0,.28);
+}
+.xp-card--light .xp-card-logo{
+  filter:none;
+}
+/* logos raster déjà livrés avec leur propre fond (wazuh, zabbix) :
+   l'image occupe toute la tuile, pas de recadrage superflu */
+.xp-card--photo{ padding:0; overflow:hidden; }
+.xp-card-logo--fill{
+  max-width:100%; max-height:100%;
+  width:100%; height:100%;
+  object-fit:contain;
+  filter:none;
+}
 
-/* 6 · Téléphone + notification (Supervision) */
-.xp-mock--phone{ display:flex; justify-content:center; align-items:flex-end; overflow:hidden; }
-.xp-phone{
-  width:82%; max-width:210px; padding:8px 8px 0;
-  background:#101b22; border:4px solid #1c2b34; border-bottom:0; border-radius:22px 22px 0 0;
-  box-shadow:0 -6px 30px -12px rgba(0,0,0,.45);
+/* 6 · Téléphone + notification (Supervision) — vraie maquette iPhone (assets/iphone-frame.png,
+   recadrée sur son contour opaque) : le cadre flotte au-dessus, l'écran est repositionné en %
+   sur ce même contour (mesuré une fois sur l'image source, cf. script de recadrage). */
+.xp-mock--phone{ display:flex; justify-content:flex-end; align-items:flex-start; }
+.xp-phone-shell{
+  position:relative; width:130%; max-width:400px;
+  aspect-ratio:474/906;
+  margin-top:3%; margin-right:-20%;
+  container-type:inline-size;   /* réf. pour les unités cqw de la barre de statut */
+  filter:drop-shadow(0 18px 34px rgba(0,0,0,.35));
 }
-.xp-phone-status{
-  display:flex; justify-content:space-between; align-items:center; padding:2px 8px 8px;
-  font-family:var(--mono); font-size:11px; font-weight:600; color:#cdd9df;
+.xp-phone-frame{
+  position:absolute; inset:0; width:100%; height:100%;
+  z-index:2; pointer-events:none;
 }
-.xp-phone-sig{ width:16px; height:9px; border-radius:2px; background:linear-gradient(90deg,#cdd9df 60%,#3a4a54 60%); }
+/* écran calé au pixel sur le trou transparent du PNG (mesuré : 474×906) */
+.xp-phone-screen{
+  position:absolute;
+  left:4.6%; right:5.1%; top:1.8%; bottom:1.9%;
+  border-radius:12% / 6%;
+  overflow:hidden;
+  z-index:1;
+  /* fond d'écran : dégradé « mesh » bleu façon wallpaper iOS
+     (plusieurs halos radiaux superposés sur une base bleu nuit) */
+  background:
+    radial-gradient(120% 80% at 15% 0%,  rgba(88,150,255,.55) 0%, transparent 55%),
+    radial-gradient(110% 70% at 100% 12%, rgba(56,214,214,.35) 0%, transparent 50%),
+    radial-gradient(120% 90% at 85% 100%, rgba(120,86,255,.45) 0%, transparent 55%),
+    radial-gradient(120% 80% at 0% 100%,  rgba(38,90,190,.55) 0%, transparent 55%),
+    linear-gradient(155deg, #143a7a 0%, #0e2350 55%, #0a1838 100%);
+  /* police système Apple (San Francisco) — repli propre hors macOS/iOS */
+  font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+              "SF Pro", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+/* grain léger + voile pour adoucir les transitions du mesh */
+.xp-phone-screen::before{
+  content:""; position:absolute; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(60% 45% at 50% 30%, rgba(150,190,255,.22), transparent 70%);
+  mix-blend-mode:screen;
+}
 .xp-notif{
-  display:flex; align-items:center; gap:9px; margin-bottom:8px;
-  background:rgba(255,255,255,.96); border-radius:12px; padding:9px 10px;
+  position:absolute; left:4.5%; right:4.5%; top:7%; z-index:2;
+  display:flex; align-items:flex-start; gap:9px;
+  /* effet verre dépoli iOS : fond translucide clair + flou de l'arrière-plan */
+  background:rgba(255,255,255,.82);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.6);
+  border-radius:16px; padding:10px 11px;
+  box-shadow:0 6px 16px -8px rgba(0,0,0,.45);
 }
-.xp-notif-ic{ position:relative; width:26px; height:26px; flex-shrink:0; border-radius:8px; background:#c8172c; }
+.xp-notif-ic{ position:relative; width:32px; height:32px; flex-shrink:0; border-radius:9px; background:#c8172c; }
 .xp-notif-ic::after{ content:"Z"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
-  font-family:var(--mono); font-weight:800; font-size:14px; color:#fff; }
-.xp-notif-body{ display:flex; flex-direction:column; line-height:1.3; }
-.xp-notif-body b{ font-size:12px; color:#1b2228; }
-.xp-notif-body em{ font-style:normal; font-size:11px; color:#5a6870; }
+  font-family:var(--mono); font-weight:800; font-size:17px; color:#fff; }
+.xp-notif-body{ display:flex; flex-direction:column; line-height:1.32; flex:1; min-width:0; }
+.xp-notif-top{ display:flex; justify-content:space-between; align-items:baseline; gap:8px; }
+.xp-notif-body b{ font-size:13px; font-weight:700; color:#1b2228; }
+.xp-notif-top time{ font-size:10.5px; color:#8a97a0; font-style:normal; flex-shrink:0; }
+.xp-notif-body em{ font-style:normal; font-size:12px; color:#4a565e; }
 
 /* ============================================================
    DISPONIBILITÉ — calendrier mensuel dans une fenêtre sombre façon terminal
