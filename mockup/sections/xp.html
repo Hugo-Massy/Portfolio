@@ -20,7 +20,6 @@
           <!-- 1 · Massy Innove — IA souveraine (vedette) -->
           <article class="xp-tile xp-a-cust xp-tile--b3 xp-tile--feature">
             <div class="xp-tile-body">
-              <p class="xp-type" data-i18n="projects-p1-type">// IA souveraine</p>
               <h3 class="xp-name" data-i18n="projects-p1-name">Massy Innove</h3>
               <p class="xp-desc" data-i18n="xp-t1-blurb">Plateforme d'IA interne 100 % souveraine — auth durcie Argon2id, IDS Suricata, routage multi-modèles vers Mistral AI.</p>
             </div>
@@ -49,10 +48,9 @@
             </div>
           </article>
 
-          <!-- 2 · Fil Rouge SOC — détection (large) -->
-          <article class="xp-tile xp-a-sched xp-tile--b1">
+          <!-- 2 · Fil Rouge SOC — détection (cellule) -->
+          <article class="xp-tile xp-a-wallet xp-tile--b2">
             <div class="xp-tile-body">
-              <p class="xp-type" data-i18n="projects-p2-type">// SOC · Blue Team</p>
               <h3 class="xp-name" data-i18n="projects-p2-name">Fil Rouge SOC</h3>
               <p class="xp-desc" data-i18n="xp-t2-blurb">Détection Wazuh + IDS Suricata, honeypots T-Pot — livré avec DAT et plan de sauvegarde.</p>
             </div>
@@ -67,20 +65,44 @@
             </div>
           </article>
 
-          <!-- 3 · Homelab — infra auto-hébergée (pile de cartes) -->
-          <article class="xp-tile xp-a-wallet xp-tile--b2">
+          <!-- 3 · Homelab — infra auto-hébergée (large, façon « Scheduling ») -->
+          <article class="xp-tile xp-a-sched xp-tile--b1 xp-tile--home">
             <div class="xp-tile-body">
-              <p class="xp-type" data-i18n="projects-p3-type">// Infra auto-hébergée</p>
               <h3 class="xp-name" data-i18n="projects-p3-name">Homelab perso</h3>
               <p class="xp-desc" data-i18n="xp-t3-blurb">Debian 12, Nextcloud via Cloudflare Tunnel, supervision Zabbix — zéro port ouvert.</p>
             </div>
-            <!-- maquette : pile de cartes services -->
-            <div class="xp-mock xp-mock--stack" aria-hidden="true">
-              <div class="xp-svc xp-svc--3"><span class="xp-svc-dot"></span>Cloudflare Tunnel</div>
-              <div class="xp-svc xp-svc--2"><span class="xp-svc-dot"></span>Zabbix 7.2</div>
-              <div class="xp-svc xp-svc--1">
-                <div class="xp-svc-top"><span class="xp-svc-dot"></span>Nextcloud</div>
-                <div class="xp-svc-metric">0 <small>port ouvert LAN</small></div>
+            <!-- maquette : mini-carte appli inclinée derrière + panneau « picker » sombre devant -->
+            <div class="xp-mock xp-mock--home" aria-hidden="true">
+              <div class="xp-home-scene">
+                <!-- carte appli auto-hébergée, inclinée derrière -->
+                <div class="xp-home-card">
+                  <div class="xp-home-card-bar"><span></span><span></span><span></span></div>
+                  <div class="xp-home-card-body">
+                    <img class="xp-home-card-logo" src="assets/logo/nextcloud logo.svg" alt="" loading="lazy">
+                    <i></i><i class="short"></i><i></i>
+                  </div>
+                </div>
+                <!-- panneau de supervision (sombre), au-dessus -->
+                <div class="xp-home-panel">
+                  <div class="xp-home-panel-head">
+                    <span>Supervision</span>
+                    <span class="xp-home-live"><i></i>live</span>
+                  </div>
+                  <div class="xp-home-graph">
+                    <i style="--h:45%"></i><i style="--h:62%"></i><i style="--h:50%"></i>
+                    <i style="--h:74%"></i><i style="--h:56%"></i><i style="--h:68%"></i>
+                    <i style="--h:44%"></i><i style="--h:82%"></i><i style="--h:64%"></i><i style="--h:92%"></i>
+                  </div>
+                  <div class="xp-home-rows">
+                    <div class="xp-home-row"><span class="xp-home-dot"></span>Nextcloud<em>en ligne</em></div>
+                    <div class="xp-home-row"><span class="xp-home-dot"></span>Cloudflare<em>tunnel</em></div>
+                    <div class="xp-home-row"><span class="xp-home-dot"></span>Zabbix<em>OK</em></div>
+                  </div>
+                  <div class="xp-home-btn">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+                    0 port ouvert
+                  </div>
+                </div>
               </div>
             </div>
           </article>
@@ -88,7 +110,6 @@
           <!-- 4 · Plugins GLPI — développement DSI (liste inbox) -->
           <article class="xp-tile xp-a-inbox xp-tile--b3">
             <div class="xp-tile-body">
-              <p class="xp-type" data-i18n="projects-p4-type">// Développement DSI</p>
               <h3 class="xp-name" data-i18n="projects-p4-name">Plugins GLPI</h3>
               <p class="xp-desc" data-i18n="xp-t4-blurb">Pretaporter (signature électronique) & Import SIM — un process papier entièrement supprimé.</p>
             </div>

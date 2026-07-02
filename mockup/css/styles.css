@@ -1434,25 +1434,92 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-sev--mid{ background:#eaa53a; box-shadow:0 0 0 3px rgba(234,165,58,.18); }
 .xp-sev--low{ background:#5cc08a; box-shadow:0 0 0 3px rgba(92,192,138,.18); }
 
-/* 3 · Pile de cartes services (Homelab) */
-.xp-mock--stack{ min-height:104px; }
-.xp-svc{
-  position:absolute; left:0; right:8px;
-  display:flex; align-items:center; gap:8px;
-  border-radius:12px; padding:10px 12px;
-  font-family:var(--mono); font-size:12px; font-weight:600;
-  box-shadow:0 10px 22px -12px rgba(0,0,0,.4);
+/* 3 · Homelab — mise en page « Scheduling » : texte en bas à gauche, mini-carte
+   appli inclinée derrière + panneau « picker » sombre de supervision au-dessus. */
+/* cette tuile laisse volontairement la carte + le panneau déborder du cadre :
+   overflow visible (au lieu du hidden global de .xp-tile) et z-index relevé pour
+   passer au-dessus des tuiles voisines. */
+.xp-tile--home{ overflow:visible; z-index:5; }
+.xp-tile--home .xp-tile-body{
+  position:absolute; left:28px; bottom:26px; z-index:4; max-width:46%; margin:0;
 }
-.xp-svc-dot{ width:9px; height:9px; border-radius:3px; flex-shrink:0; }
-.xp-svc--3{ top:0;    transform:rotate(-4deg); z-index:1; background:#eef5e3; color:#5a7040; }
-.xp-svc--3 .xp-svc-dot{ background:#f38020; }
-.xp-svc--2{ top:17px; transform:rotate(2.5deg); z-index:2; background:#dcecc4; color:#456a24; }
-.xp-svc--2 .xp-svc-dot{ background:#cf3939; }
-.xp-svc--1{ top:36px; right:0; z-index:3; background:#2f4022; color:#eaf3dc; flex-direction:column; align-items:stretch; gap:8px; }
-.xp-svc--1 .xp-svc-top{ display:flex; align-items:center; gap:8px; }
-.xp-svc--1 .xp-svc-dot{ background:#0a7cff; }
-.xp-svc-metric{ font-family:var(--mono); font-size:24px; font-weight:800; color:#fff; line-height:1; }
-.xp-svc-metric small{ display:block; margin-top:3px; font-size:10px; font-weight:500; color:#b9c9a5; }
+.xp-tile--home .xp-mock--home{
+  position:absolute; inset:0; margin:0; overflow:visible; z-index:1;
+  /* ancrée en bas → le débordement se fait vers le haut (et la droite), jamais en bas */
+  display:flex; align-items:flex-end; justify-content:flex-end;
+}
+/* scène volontairement plus haute que la tuile → la carte et le panneau débordent
+   du cadre vers le haut (façon réf. « Scheduling »). Décalée à droite pour mordre
+   le bord droit de la tuile. */
+.xp-home-scene{
+  position:relative; width:420px; height:340px; margin-right:-20px; flex:none;
+}
+
+/* carte appli auto-hébergée, inclinée derrière (façon carte d'anniversaire du réf.) */
+.xp-home-card{
+  position:absolute; top:48px; left:0; width:196px; height:276px; z-index:1;
+  transform:rotate(-9deg);
+  background:#fff; border-radius:18px; overflow:hidden;
+  box-shadow:0 26px 50px -16px rgba(20,40,90,.55);
+}
+.xp-home-card-bar{
+  display:flex; align-items:center; gap:6px; padding:12px 14px;
+  background:linear-gradient(90deg,#0082c9,#37a3e6);
+}
+.xp-home-card-bar span{ width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.7); }
+.xp-home-card-body{
+  padding:20px 18px; display:flex; flex-direction:column; gap:12px; align-items:flex-start;
+}
+.xp-home-card-logo{ width:44px; height:44px; margin-bottom:6px; object-fit:contain; }
+.xp-home-card-body i{ display:block; height:10px; width:100%; border-radius:6px; background:#e7ecf3; }
+.xp-home-card-body i.short{ width:62%; }
+
+/* panneau « picker » sombre de supervision, au-dessus */
+.xp-home-panel{
+  position:absolute; top:52px; right:44px; width:250px; z-index:2;
+  transform:rotate(3deg);
+  background:#1b2231; border-radius:20px; padding:17px 17px 18px;
+  box-shadow:0 30px 54px -18px rgba(0,0,0,.62);
+}
+.xp-home-panel-head{
+  display:flex; align-items:center; justify-content:space-between;
+  font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
+  color:#8a93a8; margin-bottom:13px;
+}
+.xp-home-live{
+  display:inline-flex; align-items:center; gap:6px;
+  letter-spacing:0; text-transform:none; color:#63d3a0; font-weight:600;
+}
+.xp-home-live i{
+  width:6px; height:6px; border-radius:50%; background:#63d3a0;
+  box-shadow:0 0 0 3px rgba(99,211,160,.2);
+}
+/* mini-graphe de supervision (barres) */
+.xp-home-graph{ display:flex; align-items:flex-end; gap:5px; height:46px; margin-bottom:15px; }
+.xp-home-graph i{
+  flex:1; height:var(--h,50%); border-radius:4px 4px 2px 2px;
+  background:linear-gradient(#3f5db0,#26305a);
+}
+.xp-home-graph i:nth-child(n+8){ background:linear-gradient(#63d3a0,#2f8f68); }
+/* lignes de services */
+.xp-home-rows{ display:flex; flex-direction:column; gap:10px; margin-bottom:15px; }
+.xp-home-row{
+  display:flex; align-items:center; gap:9px;
+  font-family:var(--mono); font-size:13px; color:#dfe4ef;
+}
+.xp-home-row em{ margin-left:auto; font-style:normal; font-size:12px; color:#63d3a0; }
+.xp-home-dot{
+  width:8px; height:8px; border-radius:50%; background:#63d3a0;
+  box-shadow:0 0 0 3px rgba(99,211,160,.16);
+}
+/* bandeau bas « 0 port ouvert » */
+.xp-home-btn{
+  width:100%; border:0; border-radius:13px; padding:13px;
+  display:flex; align-items:center; justify-content:center; gap:7px;
+  background:#0a1120; color:#eaf0ff;
+  font-family:var(--mono); font-size:13px; font-weight:700;
+}
+.xp-home-btn svg{ color:#63d3a0; width:14px; height:14px; }
 
 /* 4 · Liste de plugins « tickets » (Plugins GLPI) */
 .xp-mock--list{ display:flex; flex-direction:column; gap:8px; justify-content:flex-end; }
