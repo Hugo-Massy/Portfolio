@@ -21,7 +21,7 @@
           <article class="xp-tile xp-a-cust xp-tile--b3 xp-tile--feature">
             <div class="xp-tile-body">
               <h3 class="xp-name" data-i18n="projects-p1-name">Massy Innove</h3>
-              <p class="xp-desc" data-i18n="xp-t1-blurb">Plateforme d'IA interne 100 % souveraine — auth durcie Argon2id, IDS Suricata, routage multi-modèles vers Mistral AI.</p>
+              <p class="xp-desc" data-i18n="xp-t1-blurb">Plateforme d'IA interne 100 % souveraine — auth durcie Argon2id, IDS Claude, routage multi-modèles vers Mistral AI.</p>
             </div>
             <!-- maquette : fenêtre de chat IA -->
             <div class="xp-mock xp-mock--chat" aria-hidden="true">
@@ -29,11 +29,15 @@
                 <div class="xp-chat-bar">
                   <span class="xp-chat-dot"></span><span class="xp-chat-dot"></span><span class="xp-chat-dot"></span>
                   <span class="xp-chat-host">assistant.massy.local</span>
+                  <span class="xp-chat-live" aria-hidden="true"></span>
                 </div>
                 <div class="xp-chat-body">
                   <div class="xp-bubble xp-bubble--me"><span></span></div>
-                  <div class="xp-bubble xp-bubble--ai">
-                    <i></i><i></i><i class="short"></i>
+                  <div class="xp-chat-row">
+                    <span class="xp-avatar" aria-hidden="true"></span>
+                    <div class="xp-bubble xp-bubble--ai">
+                      <i></i><i></i><i class="short"></i>
+                    </div>
                   </div>
                 </div>
                 <div class="xp-chat-foot">
@@ -42,28 +46,20 @@
                     <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
                     Argon2id
                   </span>
+                  <span class="xp-pill">
+                    <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/><circle cx="7" cy="7" r=".6" fill="currentColor" stroke="none"/><circle cx="7" cy="17" r=".6" fill="currentColor" stroke="none"/></svg>
+                    OVH&nbsp;VPS
+                  </span>
                 </div>
               </div>
               <span class="xp-flag"><svg class="xp-flag-svg" viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" x="0" fill="#0055A4"/><rect width="1" height="2" x="1" fill="#fff"/><rect width="1" height="2" x="2" fill="#EF4135"/></svg> souverain</span>
             </div>
           </article>
 
-          <!-- 2 · Fil Rouge SOC — détection (cellule) -->
-          <article class="xp-tile xp-a-wallet xp-tile--b2">
-            <div class="xp-tile-body">
-              <h3 class="xp-name" data-i18n="projects-p2-name">Fil Rouge SOC</h3>
-              <p class="xp-desc" data-i18n="xp-t2-blurb">Détection Wazuh + IDS Suricata, honeypots T-Pot — livré avec DAT et plan de sauvegarde.</p>
-            </div>
-            <!-- maquette : flux de détections + sparkline -->
-            <div class="xp-mock xp-mock--feed" aria-hidden="true">
-              <div class="xp-feed">
-                <div class="xp-feed-head"><span>Détections</span><span class="xp-spark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
-                <div class="xp-feed-row"><span class="xp-sev xp-sev--hi"></span><b>Suricata</b><em>ET SCAN nmap</em><time>12:04</time></div>
-                <div class="xp-feed-row"><span class="xp-sev xp-sev--mid"></span><b>Wazuh</b><em>brute-force ssh</em><time>12:01</time></div>
-                <div class="xp-feed-row"><span class="xp-sev xp-sev--low"></span><b>T-Pot</b><em>honeypot hit</em><time>11:58</time></div>
-              </div>
-            </div>
-          </article>
+          <!-- 2 · Avatar — posé dans l'espace vide du bento, adossé à Massy Innove -->
+          <div class="xp-a-avatar xp-avatar-cell" aria-hidden="true">
+            <img src="assets/Avatar pc assis.png" alt="" loading="lazy">
+          </div>
 
           <!-- 3 · Homelab — infra auto-hébergée (large, façon « Scheduling ») -->
           <article class="xp-tile xp-a-sched xp-tile--b1 xp-tile--home">
@@ -74,72 +70,118 @@
             <!-- maquette : mini-carte appli inclinée derrière + panneau « picker » sombre devant -->
             <div class="xp-mock xp-mock--home" aria-hidden="true">
               <div class="xp-home-scene">
-                <!-- carte appli auto-hébergée, inclinée derrière -->
+                <!-- carte "interface de supervision", inclinée derrière (façon Zabbix, sans logo) -->
                 <div class="xp-home-card">
                   <div class="xp-home-card-bar"><span></span><span></span><span></span></div>
                   <div class="xp-home-card-body">
-                    <img class="xp-home-card-logo" src="assets/logo/nextcloud logo.svg" alt="" loading="lazy">
-                    <i></i><i class="short"></i><i></i>
+                    <div class="xp-home-sev">
+                      <i style="--c:#97aab3"></i><i style="--c:#7499ff"></i><i style="--c:#ffc859"></i>
+                      <i style="--c:#ffa059"></i><i style="--c:#e97659"></i><i style="--c:#e45959"></i>
+                    </div>
+                    <div class="xp-home-hs">
+                      <div class="xp-home-hs-row"><span class="xp-home-hs-dot"></span><span class="xp-home-hs-bar"></span></div>
+                      <div class="xp-home-hs-row"><span class="xp-home-hs-dot"></span><span class="xp-home-hs-bar xp-home-hs-bar--short"></span></div>
+                      <div class="xp-home-hs-row"><span class="xp-home-hs-dot"></span><span class="xp-home-hs-bar"></span></div>
+                    </div>
+                    <div class="xp-home-mini-graph">
+                      <svg viewBox="0 0 130 34" preserveAspectRatio="none">
+                        <polyline points="0,26 15,22 30,24 45,14 60,18 75,8 90,12 105,6 120,10 130,4"></polyline>
+                      </svg>
+                    </div>
                   </div>
                 </div>
-                <!-- panneau de supervision (sombre), au-dessus -->
-                <div class="xp-home-panel">
-                  <div class="xp-home-panel-head">
-                    <span>Supervision</span>
-                    <span class="xp-home-live"><i></i>live</span>
+                <!-- panneau de supervision, façon terminal (comme le hero) -->
+                <div class="xp-home-panel xp-home-term">
+                  <div class="xp-home-term-bar">
+                    <div class="xp-home-term-dots">
+                      <span style="background:#ff5f57"></span>
+                      <span style="background:#febc2e"></span>
+                      <span style="background:#28c840"></span>
+                    </div>
+                    <span class="xp-home-term-title">~supervision</span>
                   </div>
-                  <div class="xp-home-graph">
-                    <i style="--h:45%"></i><i style="--h:62%"></i><i style="--h:50%"></i>
-                    <i style="--h:74%"></i><i style="--h:56%"></i><i style="--h:68%"></i>
-                    <i style="--h:44%"></i><i style="--h:82%"></i><i style="--h:64%"></i><i style="--h:92%"></i>
-                  </div>
-                  <div class="xp-home-rows">
-                    <div class="xp-home-row"><span class="xp-home-dot"></span>Nextcloud<em>en ligne</em></div>
-                    <div class="xp-home-row"><span class="xp-home-dot"></span>Cloudflare<em>tunnel</em></div>
-                    <div class="xp-home-row"><span class="xp-home-dot"></span>Zabbix<em>OK</em></div>
-                  </div>
-                  <div class="xp-home-btn">
-                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
-                    0 port ouvert
+                  <div class="xp-home-term-body">
+                    <div class="xp-home-cmd"><span class="xp-home-path">~</span><span class="xp-home-dollar">$</span> systemctl status</div>
+                    <div class="xp-home-rows">
+                      <div class="xp-home-row">nextcloud<em>en ligne</em></div>
+                      <div class="xp-home-row">cloudflared<em>tunnel</em></div>
+                      <div class="xp-home-row">zabbix-agent<em>OK</em></div>
+                    </div>
+                    <div class="xp-home-cmd"><span class="xp-home-path">~</span><span class="xp-home-dollar">$</span> nmap -p- localhost</div>
+                    <div class="xp-home-result">
+                      <span class="xp-home-result-num">0</span> port ouvert
+                    </div>
+                    <div class="xp-home-cmd xp-home-idle"><span class="xp-home-path">~</span><span class="xp-home-dollar">$</span> <span class="xp-home-cursor"></span></div>
                   </div>
                 </div>
               </div>
             </div>
           </article>
 
-          <!-- 4 · Plugins GLPI — développement DSI (liste inbox) -->
-          <article class="xp-tile xp-a-inbox xp-tile--b3">
-            <div class="xp-tile-body">
-              <h3 class="xp-name" data-i18n="projects-p4-name">Plugins GLPI</h3>
-              <p class="xp-desc" data-i18n="xp-t4-blurb">Pretaporter (signature électronique) & Import SIM — un process papier entièrement supprimé.</p>
-            </div>
-            <!-- maquette : liste de "tickets" plugins -->
-            <div class="xp-mock xp-mock--list" aria-hidden="true">
-              <div class="xp-plug"><span class="xp-plug-ic">PP</span><span class="xp-plug-name">Pretaporter</span><span class="xp-plug-tag">e-signature</span></div>
-              <div class="xp-plug"><span class="xp-plug-ic xp-plug-ic--b">IS</span><span class="xp-plug-name">Import SIM</span><span class="xp-plug-tag">CSV → GLPI</span></div>
-            </div>
-          </article>
-
           <!-- 5 · Stack technique — collage de technos (large) -->
           <article class="xp-tile xp-a-send xp-tile--b1 xp-tile--diag">
-            <!-- collage de cartes technos en diagonale, à droite (façon « Send Gifts ») -->
+            <!-- collage de cartes technos en diagonale, à droite (façon « Send Gifts ») —
+                 défilement infini : 3 colonnes, chacune dupliquée une fois (mêmes cartes,
+                 même ordre) pour boucler sans à-coup via translateY(-516px) = hauteur
+                 exacte d'un jeu de 6 cartes (72px + 14px de gap). Vitesse et sens
+                 diffèrent par colonne (cf. .xp-cards-col:nth-child dans styles.css). -->
             <div class="xp-mock xp-mock--cards" aria-hidden="true">
-              <div class="xp-cards-grid">
-                <span class="xp-card xp-card--light" style="--c:#1b1f2b;"><img class="xp-card-logo" src="assets/logo/debian.svg" alt="Debian" loading="lazy"></span>
-                <span class="xp-card xp-card--light" style="--c:#eaf4ff;"><img class="xp-card-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker" loading="lazy"></span>
-                <span class="xp-card" style="--c:#e2510f;">Suricata</span>
+              <div class="xp-cards-track">
 
-                <span class="xp-card xp-card--photo" style="--c:#fff;"><img class="xp-card-logo xp-card-logo--fill" src="assets/logo/WAZUH.png" alt="Wazuh" loading="lazy"></span>
-                <span class="xp-card xp-card--photo" style="--c:#d40000;"><img class="xp-card-logo xp-card-logo--fill" src="assets/logo/Zabbix_logo.png" alt="Zabbix" loading="lazy"></span>
-                <span class="xp-card" style="--c:#0082c9;"><img class="xp-card-logo" src="assets/logo/nextcloud logo.svg" alt="Nextcloud" loading="lazy"></span>
+                <div class="xp-cards-col">
+                  <div class="xp-cards-col-inner">
+                    <span class="xp-card xp-card--light" style="--c:#1b1f2b;"><img class="xp-card-logo" src="assets/logo/debian.svg" alt="Debian" loading="lazy"></span>
+                    <span class="xp-card xp-card--photo" style="--c:#fff;"><img class="xp-card-logo xp-card-logo--fill" src="assets/logo/WAZUH.png" alt="Wazuh" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#fff3e8;"><img class="xp-card-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eaf3ff;"><img class="xp-card-logo" src="assets/logo/Windows_logo_-_2021.svg" alt="Windows Server" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#efe9df;"><img class="xp-card-logo xp-card-logo--tall" src="assets/logo/Ansible_logo.svg" alt="Ansible" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#f4f4f4;"><img class="xp-card-logo" src="assets/logo/github_PNG40.png" alt="GitHub" loading="lazy"></span>
+                    <!-- doublon (boucle) -->
+                    <span class="xp-card xp-card--light" style="--c:#1b1f2b;"><img class="xp-card-logo" src="assets/logo/debian.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--photo" style="--c:#fff;"><img class="xp-card-logo xp-card-logo--fill" src="assets/logo/WAZUH.png" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#fff3e8;"><img class="xp-card-logo" src="assets/logo/Cloudflare_Logo.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eaf3ff;"><img class="xp-card-logo" src="assets/logo/Windows_logo_-_2021.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#efe9df;"><img class="xp-card-logo xp-card-logo--tall" src="assets/logo/Ansible_logo.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#f4f4f4;"><img class="xp-card-logo" src="assets/logo/github_PNG40.png" alt="" loading="lazy"></span>
+                  </div>
+                </div>
 
-                <span class="xp-card xp-card--light" style="--c:#fff3e8;"><img class="xp-card-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare" loading="lazy"></span>
-                <span class="xp-card xp-card--light" style="--c:#eef2f6;"><img class="xp-card-logo" src="assets/logo/glpi.svg" alt="GLPI" loading="lazy"></span>
-                <span class="xp-card xp-card--light" style="--c:#f6f1fb;"><img class="xp-card-logo" src="assets/logo/Microsoft_365_(2022).svg" alt="Microsoft 365" loading="lazy"></span>
+                <div class="xp-cards-col">
+                  <div class="xp-cards-col-inner">
+                    <span class="xp-card xp-card--light" style="--c:#eaf4ff;"><img class="xp-card-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker" loading="lazy"></span>
+                    <span class="xp-card" style="--c:#d40000;"><img class="xp-card-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eef2f6;"><img class="xp-card-logo" src="assets/logo/glpi.svg" alt="GLPI" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#ffffff;"><img class="xp-card-logo" src="assets/logo/vmware-workstation.svg" alt="VMware Workstation" loading="lazy"></span>
+                    <span class="xp-card" style="--c:#1b1f2b;"><img class="xp-card-logo" src="assets/logo/Grafana_icon.svg" alt="Grafana" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eef2fb;"><img class="xp-card-logo" src="assets/logo/Powershell_128.svg" alt="PowerShell" loading="lazy"></span>
+                    <!-- doublon (boucle) -->
+                    <span class="xp-card xp-card--light" style="--c:#eaf4ff;"><img class="xp-card-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card" style="--c:#d40000;"><img class="xp-card-logo" src="assets/logo/Zabbix_logo.png" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eef2f6;"><img class="xp-card-logo" src="assets/logo/glpi.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#ffffff;"><img class="xp-card-logo" src="assets/logo/vmware-workstation.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card" style="--c:#1b1f2b;"><img class="xp-card-logo" src="assets/logo/Grafana_icon.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eef2fb;"><img class="xp-card-logo" src="assets/logo/Powershell_128.svg" alt="" loading="lazy"></span>
+                  </div>
+                </div>
 
-                <span class="xp-card" style="--c:#05998b;">FastAPI</span>
-                <span class="xp-card" style="--c:#e57000;">Proxmox</span>
-                <span class="xp-card xp-card--light" style="--c:#16213a;"><img class="xp-card-logo" src="assets/logo/python-logo.svg" alt="Python" loading="lazy"></span>
+                <div class="xp-cards-col">
+                  <div class="xp-cards-col-inner">
+                    <span class="xp-card xp-card--light xp-card--claude" style="--c:#fdf3ef;"><img class="xp-card-logo xp-card-logo--xl" src="assets/logo/claude-color.svg" alt="Claude" loading="lazy"></span>
+                    <span class="xp-card" style="--c:#0082c9;"><img class="xp-card-logo" src="assets/logo/nextcloud logo.svg" alt="Nextcloud" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#f6f1fb;"><img class="xp-card-logo" src="assets/logo/Microsoft_365_(2022).svg" alt="Microsoft 365" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#16213a;"><img class="xp-card-logo" src="assets/logo/python-logo.svg" alt="Python" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eef4fb;"><img class="xp-card-logo" src="assets/logo/Visual_Studio_Code_1.35_icon.svg" alt="VS Code" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#ffffff;"><img class="xp-card-logo xp-card-logo--tall" src="assets/logo/Tux.svg" alt="Linux" loading="lazy"></span>
+                    <!-- doublon (boucle) -->
+                    <span class="xp-card xp-card--light xp-card--claude" style="--c:#fdf3ef;"><img class="xp-card-logo xp-card-logo--xl" src="assets/logo/claude-color.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card" style="--c:#0082c9;"><img class="xp-card-logo" src="assets/logo/nextcloud logo.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#f6f1fb;"><img class="xp-card-logo" src="assets/logo/Microsoft_365_(2022).svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#16213a;"><img class="xp-card-logo" src="assets/logo/python-logo.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#eef4fb;"><img class="xp-card-logo" src="assets/logo/Visual_Studio_Code_1.35_icon.svg" alt="" loading="lazy"></span>
+                    <span class="xp-card xp-card--light" style="--c:#ffffff;"><img class="xp-card-logo xp-card-logo--tall" src="assets/logo/Tux.svg" alt="" loading="lazy"></span>
+                  </div>
+                </div>
+
               </div>
             </div>
             <div class="xp-tile-body">

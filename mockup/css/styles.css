@@ -1127,15 +1127,50 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   gap:18px;
   grid-template-areas:
     "cust  sched  sched"
-    "cust  wallet inbox"
+    "cust  avatar avatar"
     "send  send   remind";
 }
 .xp-a-cust  {grid-area:cust;}
 .xp-a-sched {grid-area:sched;}
-.xp-a-wallet{grid-area:wallet;}
-.xp-a-inbox {grid-area:inbox;}
+.xp-a-avatar{grid-area:avatar;}
 .xp-a-send  {grid-area:send;}
 .xp-a-remind{grid-area:remind;}
+
+/* Avatar posé dans l'espace vide du bento, adossé à la tuile Massy Innove :
+   pas de fond ni d'ombre, juste le PNG détouré aligné sur le bord gauche/bas
+   de sa cellule. Le gap normal de .xp-bento (18px) reste intact entre la
+   tuile et l'avatar — pas de débordement dans la marge. Le débordement se
+   fait uniquement vers le haut : la tête dépasse par-dessus la tuile Homelab
+   (z-index supérieur à .xp-tile--home, et surtout à .xp-tile:hover qui monte
+   lui-même à z-index:6 !important au survol) tandis que le titre/description
+   de celle-ci sont remontés en haut de leur tuile pour rester dégagés.*/
+.xp-avatar-cell{
+  position:relative;
+  z-index:7;
+  display:flex; align-items:flex-end; justify-content:flex-start;
+  pointer-events:none;
+}
+/* ombre portée au sol, sous les pieds (ellipse floutée) — l'avatar n'a pas
+   de fond mais garde un contact visuel avec la page. */
+.xp-avatar-cell::before{
+  content:'';
+  position:absolute;
+  left:-40px; bottom:2px;
+  width:460px; height:26px;
+  background:rgba(30,45,95,.22);
+  border-radius:50%;
+  filter:blur(9px);
+  z-index:-1;
+}
+.xp-avatar-cell img{
+  position:absolute;
+  left:20px; bottom:0;
+  height:150%;
+  width:auto;
+  max-width:none;
+  object-fit:contain;
+  object-position:left bottom;
+}
 
 /* Tous les coins simplement arrondis (border-radius:22px de .xp-tile plus bas) —
    plus de coupes en biseau. */
@@ -1176,7 +1211,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   /* un peu d'air entre le titre et le bento au repos (n'affecte pas le centrage
      une fois figé, porté par le `top` du sticky). Réduit pour que le bento
      atteigne plus vite sa position figée. */
-  margin-top:clamp(48px, 8vh, 96px);
+  margin-top:clamp(32px, 6vh, 72px);
   /* hauteur du bento : ~70% de l'écran, jamais > 760px. Le reste (≈15vh de
      chaque côté) = le `top` centré du sticky. En restant nettement < plein
      écran, le bento est VRAIMENT au milieu quand il se verrouille : le
@@ -1334,7 +1369,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
     grid-template-areas:
       "cust   cust"
       "sched  sched"
-      "wallet inbox"
+      "avatar avatar"
       "send   send"
       "remind remind";
   }
@@ -1346,8 +1381,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
     grid-template-areas:
       "cust"
       "sched"
-      "wallet"
-      "inbox"
+      "avatar"
       "send"
       "remind";
   }
@@ -1377,14 +1411,22 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-chat-dot:nth-child(2){ background:#f3c04a; }
 .xp-chat-dot:nth-child(3){ background:#5cc08a; }
 .xp-chat-host{ margin-left:8px; font-family:var(--mono); font-size:10.5px; color:#8b88a0; }
+.xp-chat-live{
+  margin-left:auto; width:7px; height:7px; border-radius:50%; flex:none;
+  background:#2ba676; box-shadow:0 0 0 3px rgba(43,166,118,.22);
+  animation:xp-chat-pulse 2.4s ease-in-out infinite;
+}
+@keyframes xp-chat-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
 .xp-chat-body{ flex:1; padding:16px 14px 10px; display:flex; flex-direction:column; gap:10px; justify-content:center; }
 .xp-bubble{ border-radius:12px; padding:9px 12px; max-width:80%; }
 .xp-bubble--me{ align-self:flex-end; background:var(--tile-accent); border-bottom-right-radius:4px; }
 .xp-bubble--me span{ display:block; width:92px; height:7px; border-radius:4px; background:rgba(255,255,255,.8); }
-.xp-bubble--ai{ align-self:flex-start; background:#f1f0f6; border-bottom-left-radius:4px; display:flex; flex-direction:column; gap:6px; }
+.xp-chat-row{ display:flex; align-items:flex-end; gap:8px; align-self:flex-start; max-width:82%; }
+.xp-avatar{ width:20px; height:20px; border-radius:50%; flex:none; background:var(--tile-accent); opacity:.85; }
+.xp-bubble--ai{ background:#f1f0f6; border-bottom-left-radius:4px; display:flex; flex-direction:column; gap:6px; }
 .xp-bubble--ai i{ display:block; height:7px; width:150px; border-radius:4px; background:#d9d7e6; }
 .xp-bubble--ai i.short{ width:96px; }
-.xp-chat-foot{ display:flex; gap:8px; padding:0 14px 14px; }
+.xp-chat-foot{ display:flex; flex-wrap:wrap; gap:8px; padding:0 14px 14px; }
 .xp-pill{
   display:inline-flex; align-items:center; gap:5px;
   font-family:var(--mono); font-size:10.5px; font-weight:600; color:var(--tile-name);
@@ -1440,8 +1482,18 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    overflow visible (au lieu du hidden global de .xp-tile) et z-index relevé pour
    passer au-dessus des tuiles voisines. */
 .xp-tile--home{ overflow:visible; z-index:5; }
+/* pattern de points en fond, façon grille de fond (derrière les cartes flottantes) */
+.xp-tile--home::before{
+  content:''; position:absolute; inset:0; z-index:0; border-radius:inherit;
+  background-image:radial-gradient(var(--tile-name) 1.5px, transparent 1.5px);
+  background-size:20px 20px; opacity:.12;
+  /* contre-scale : le survol zoome .xp-tile (scale 1.012), on annule cet effet
+     ici pour que les points gardent une taille fixe au lieu de grossir avec la carte */
+  transition:transform .3s cubic-bezier(.2,.7,.3,1);
+}
+.xp-tile--home:hover::before{ transform:scale(calc(1 / 1.012)); }
 .xp-tile--home .xp-tile-body{
-  position:absolute; left:28px; bottom:26px; z-index:4; max-width:46%; margin:0;
+  position:absolute; left:28px; top:26px; z-index:4; max-width:46%; margin:0;
 }
 .xp-tile--home .xp-mock--home{
   position:absolute; inset:0; margin:0; overflow:visible; z-index:1;
@@ -1464,62 +1516,86 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .xp-home-card-bar{
   display:flex; align-items:center; gap:6px; padding:12px 14px;
-  background:linear-gradient(90deg,#0082c9,#37a3e6);
+  background:linear-gradient(90deg,#2b333f,#3b4656);
 }
 .xp-home-card-bar span{ width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.7); }
 .xp-home-card-body{
-  padding:20px 18px; display:flex; flex-direction:column; gap:12px; align-items:flex-start;
+  padding:18px 18px 20px; display:flex; flex-direction:column; gap:14px;
 }
-.xp-home-card-logo{ width:44px; height:44px; margin-bottom:6px; object-fit:contain; }
-.xp-home-card-body i{ display:block; height:10px; width:100%; border-radius:6px; background:#e7ecf3; }
-.xp-home-card-body i.short{ width:62%; }
+/* légende de sévérité (palette Zabbix), pour évoquer l'interface sans le logo */
+.xp-home-sev{ display:flex; gap:5px; }
+.xp-home-sev i{ flex:1; height:7px; border-radius:3px; background:var(--c); }
+/* liste d'hôtes/statuts */
+.xp-home-hs{ display:flex; flex-direction:column; gap:9px; }
+.xp-home-hs-row{ display:flex; align-items:center; gap:8px; }
+.xp-home-hs-dot{
+  width:7px; height:7px; border-radius:50%; background:#34c38f; flex-shrink:0;
+  box-shadow:0 0 0 3px rgba(52,195,143,.16);
+}
+.xp-home-hs-bar{ flex:1; height:9px; border-radius:5px; background:#e7ecf3; }
+.xp-home-hs-bar--short{ flex:0 0 62%; }
+/* mini-graphe (façon graphe Zabbix) */
+.xp-home-mini-graph svg{ width:100%; height:34px; display:block; }
+.xp-home-mini-graph polyline{ fill:none; stroke:var(--accent); stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 
-/* panneau « picker » sombre de supervision, au-dessus */
+/* panneau de supervision, façon terminal (réutilise l'habillage du hero) */
 .xp-home-panel{
   position:absolute; top:52px; right:44px; width:250px; z-index:2;
   transform:rotate(3deg);
-  background:#1b2231; border-radius:20px; padding:17px 17px 18px;
-  box-shadow:0 30px 54px -18px rgba(0,0,0,.62);
+  background:var(--term-bg); border:1px solid var(--term-border); border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 30px 54px -18px rgba(0,0,0,.62), 0 0 0 1px rgba(77,111,203,0.06);
 }
-.xp-home-panel-head{
-  display:flex; align-items:center; justify-content:space-between;
-  font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase;
-  color:#8a93a8; margin-bottom:13px;
+/* liseré accent en haut, comme .term-card::before du hero */
+.xp-home-panel::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:2px; z-index:3;
+  background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:.5;
 }
-.xp-home-live{
-  display:inline-flex; align-items:center; gap:6px;
-  letter-spacing:0; text-transform:none; color:#63d3a0; font-weight:600;
+/* barre de fenêtre : 3 pastilles macOS + titre */
+.xp-home-term-bar{
+  position:relative; display:flex; align-items:center; gap:8px; padding:10px 13px;
+  background:var(--term-bg-2); border-bottom:1px solid var(--term-border);
 }
-.xp-home-live i{
-  width:6px; height:6px; border-radius:50%; background:#63d3a0;
-  box-shadow:0 0 0 3px rgba(99,211,160,.2);
+.xp-home-term-dots{ display:flex; gap:6px; }
+.xp-home-term-dots span{ width:9px; height:9px; border-radius:50%; }
+.xp-home-term-title{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  font-family:var(--mono); font-size:11px; color:#566070; letter-spacing:.03em;
 }
-/* mini-graphe de supervision (barres) */
-.xp-home-graph{ display:flex; align-items:flex-end; gap:5px; height:46px; margin-bottom:15px; }
-.xp-home-graph i{
-  flex:1; height:var(--h,50%); border-radius:4px 4px 2px 2px;
-  background:linear-gradient(#3f5db0,#26305a);
+.xp-home-term-body{ padding:13px 14px 16px; }
+/* lignes de commande « ~$ » */
+.xp-home-cmd{
+  font-family:var(--mono); font-size:12.5px; color:var(--term-text); margin-bottom:10px;
 }
-.xp-home-graph i:nth-child(n+8){ background:linear-gradient(#63d3a0,#2f8f68); }
-/* lignes de services */
-.xp-home-rows{ display:flex; flex-direction:column; gap:10px; margin-bottom:15px; }
+.xp-home-path{ color:#566070; margin-right:2px; }
+.xp-home-dollar{ color:#6f89d9; margin-right:6px; }
+/* ligne de prompt vide en bas, avec curseur clignotant (comme le hero) */
+.xp-home-idle{
+  margin-top:8px; margin-bottom:0; padding-top:10px; line-height:1;
+  border-top:1px solid var(--term-border);
+}
+.xp-home-cursor{
+  display:inline-block; width:7px; height:13px; vertical-align:-2px;
+  background:#ffffff; animation:blink 1s step-end infinite;
+}
+/* lignes de services (sortie « systemctl status ») */
+.xp-home-rows{ display:flex; flex-direction:column; gap:8px; margin:0 0 16px 14px; }
 .xp-home-row{
-  display:flex; align-items:center; gap:9px;
-  font-family:var(--mono); font-size:13px; color:#dfe4ef;
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--mono); font-size:12.5px; color:var(--term-text);
 }
-.xp-home-row em{ margin-left:auto; font-style:normal; font-size:12px; color:#63d3a0; }
+.xp-home-row em{ margin-left:auto; font-style:normal; font-size:12px; color:#7ee787; }
 .xp-home-dot{
-  width:8px; height:8px; border-radius:50%; background:#63d3a0;
-  box-shadow:0 0 0 3px rgba(99,211,160,.16);
+  display:inline-block; width:7px; height:7px; border-radius:50%; background:#7ee787;
+  box-shadow:0 0 0 0 rgba(126,231,135,.5); animation:status-pulse 2s ease-out infinite;
 }
-/* bandeau bas « 0 port ouvert » */
-.xp-home-btn{
-  width:100%; border:0; border-radius:13px; padding:13px;
-  display:flex; align-items:center; justify-content:center; gap:7px;
-  background:#0a1120; color:#eaf0ff;
-  font-family:var(--mono); font-size:13px; font-weight:700;
+/* résultat « 0 port ouvert » */
+.xp-home-result{
+  display:flex; align-items:center; gap:7px; margin-left:14px;
+  font-family:var(--mono); font-size:12.5px; font-weight:600; color:var(--term-text);
 }
-.xp-home-btn svg{ color:#63d3a0; width:14px; height:14px; }
+.xp-home-result svg{ width:13px; height:13px; flex-shrink:0; }
+.xp-home-result-num{ color:#7ee787; }
 
 /* 4 · Liste de plugins « tickets » (Plugins GLPI) */
 .xp-mock--list{ display:flex; flex-direction:column; gap:8px; justify-content:flex-end; }
@@ -1553,25 +1629,45 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:absolute; top:0; right:0; bottom:0; left:42%;
   margin:0; overflow:hidden; z-index:1;
 }
-.xp-cards-grid{
+/* piste de défilement : 3 colonnes figées dans un viewport masqué. Le fondu est resserré
+   sur les tout bords (6%/94%) : son rôle n'est pas un effet visuel mais de cacher la carte
+   à moitié coupée qui entre/sort en haut et en bas de chaque colonne — sans lui, cette
+   découpe nette devient très visible une fois la piste pivotée à -14deg (coins haut-gauche
+   et bas-droite de la tuile). */
+.xp-cards-track{
   position:absolute; top:50%; left:54%;
   transform:translate(-50%, -50%) rotate(-14deg);
   display:grid; grid-template-columns:repeat(3, 116px); gap:14px;
+  height:330px;
+  overflow:hidden;
+  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+          mask-image:linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
+}
+.xp-cards-col{ position:relative; height:100%; overflow:hidden; }
+.xp-cards-col-inner{
+  display:flex; flex-direction:column; gap:14px;
+  /* liste dupliquée une fois : 516px = 6 cartes × (72px + 14px de gap),
+     la carte n°7 (doublon de la n°1) reprend donc exactement sa position de départ */
+  animation:xp-cards-scroll 26s linear infinite;
+}
+.xp-cards-col:nth-child(2) .xp-cards-col-inner{ animation-duration:32s; animation-direction:reverse; }
+.xp-cards-col:nth-child(3) .xp-cards-col-inner{ animation-duration:29s; }
+@keyframes xp-cards-scroll{
+  from{ transform:translateY(0); }
+  to  { transform:translateY(-516px); }
+}
+@media(prefers-reduced-motion:reduce){
+  .xp-cards-col-inner{ animation:none; }
 }
 .xp-card{
-  width:116px; height:72px; padding:8px;
+  width:116px; height:72px; padding:8px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center; text-align:center;
   border-radius:11px;
   background:var(--c, #333); color:var(--t, #fff);
   font-family:var(--mono); font-size:13px; font-weight:700; line-height:1.15;
   letter-spacing:.01em;
   box-shadow:0 11px 24px -10px rgba(0,0,0,.5);
-  /* chaque colonne démarre plus ou moins haut (cf. nth-child) */
-  transform:translateY(var(--coloff, 0));
 }
-.xp-card:nth-child(3n+1){ --coloff:0px; }    /* colonne 1 → abaissée */
-.xp-card:nth-child(3n+2){ --coloff:32px; }   /* colonne 2 → plus basse */
-.xp-card:nth-child(3n)  { --coloff:-6px; }   /* colonne 3 → légèrement haute */
 .xp-card-logo{
   max-width:64%; max-height:56%;
   width:auto; height:auto;
@@ -1586,6 +1682,21 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .xp-card--light .xp-card-logo{
   filter:none;
+}
+/* logo composé icône + texte en format portrait (ex. Ansible) : moins large mais
+   plus haut que l'icône seule pour rester lisible sans déborder de la carte */
+.xp-card-logo--tall{
+  max-width:46%; max-height:78%;
+}
+/* logo au tracé fin et centré (ex. Claude) : agrandi pour rester lisible dans la tuile */
+.xp-card-logo--big{
+  max-width:100%; max-height:92%;
+}
+/* Claude : tuile au padding réduit pour laisser le logo occuper presque tout l'espace */
+.xp-card--claude{ padding:3px; }
+.xp-card-logo--xl{
+  max-width:46%; max-height:46%;
+  width:46%; height:46%;
 }
 /* logos raster déjà livrés avec leur propre fond (wazuh, zabbix) :
    l'image occupe toute la tuile, pas de recadrage superflu */
