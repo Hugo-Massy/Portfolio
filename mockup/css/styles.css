@@ -311,7 +311,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   align-content:flex-start; gap:0; margin-top:6px;
 }
 .term-cat-item{
-  display:grid; grid-template-columns:16ch 3ch 1fr;
+  display:grid; grid-template-columns:22ch 1fr;
   gap:0 10px; align-items:baseline;
   padding:1px 6px; border-radius:4px;
   color:var(--term-text); text-decoration:none; cursor:pointer;
@@ -319,7 +319,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .term-cat-name{color:var(--term-text); white-space:nowrap;}
 .term-cat-num{color:#6f89d9; font-weight:600;}
-.term-cat-size{color:#6f89d9; text-align:right;}
 .term-cat-comment{color:#566070; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 .term-cat-ok{color:#7ee787;}
 /* survol/sélection = ligne surlignée + chevron, comme une sélection dans un listing */
@@ -333,7 +332,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .term-cat-item:focus-visible .term-cat-comment,
 .term-cat-item.is-selected .term-cat-comment{color:#8a93a3;}
 @media(max-width:860px){
-  .term-cat-item{grid-template-columns:15ch 3ch 1fr; gap:0 10px;}
+  .term-cat-item{grid-template-columns:20ch 1fr; gap:0 10px;}
 }
 
 /* indication fixe juste au-dessus du champ de saisie, hors du défilement */
