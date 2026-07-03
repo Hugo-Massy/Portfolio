@@ -1606,7 +1606,7 @@ function initBackgroundGrid() {
   if (!canvas || !container) return;
   const ctx = canvas.getContext('2d');
 
-  const SPACING = 32;
+  const SPACING = 48;
   const BASE_RADIUS = 1.2;
   const REACT_RADIUS = 140;
   const MAX_OFFSET = 10;

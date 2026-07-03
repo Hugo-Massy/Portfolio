@@ -974,7 +974,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   fill:var(--pillar-pale, var(--accent-pale)); stroke:var(--pillar-accent, var(--accent)); stroke-width:0.8;
   stroke-linecap:round; stroke-linejoin:round;
   opacity:.11; pointer-events:none;
-  transition:opacity .25s ease, fill .25s ease, transform .3s ease;
+  transition:opacity .55s cubic-bezier(.25,.8,.25,1), fill .55s cubic-bezier(.25,.8,.25,1), transform .6s cubic-bezier(.25,.8,.25,1);
 }
 .skill-item:hover .skill-pillar-bg{
   opacity:.36;
@@ -1045,7 +1045,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   box-shadow:0 0 32px 24px var(--bg-elev);
   background:var(--bg-elev);
   border-radius:4px;
-  transition:transform .25s ease;
+  transition:transform .55s cubic-bezier(.25,.8,.25,1);
 }
 .skill-item:hover .skill-content{transform:translateY(-6px);}
 
@@ -1055,7 +1055,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   display:flex; align-items:center; justify-content:center;
   color:var(--pillar-accent, var(--accent));
   flex-shrink:0;
-  transition:transform .25s ease, filter .25s ease;
+  transition:transform .55s cubic-bezier(.25,.8,.25,1), filter .55s cubic-bezier(.25,.8,.25,1);
 }
 .skill-icon svg{width:44px; height:44px;}
 .skill-item:hover .skill-icon{
@@ -1068,7 +1068,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:relative; z-index:1;
   font-size:16px; font-weight:700; color:var(--text);
   margin-bottom:12px;
-  transition:color .25s ease;
+  transition:color .55s cubic-bezier(.25,.8,.25,1);
 }
 .skill-item:hover .skill-item-title{color:var(--pillar-accent, var(--accent));}
 
@@ -1105,7 +1105,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp{
   background:var(--bg);   /* fond blanc */
   padding-top:clamp(28px, 4vh, 48px);
-  padding-bottom:clamp(48px, 8vh, 80px);
+  padding-bottom:clamp(160px, 26vh, 320px);
   --xp-alt:var(--accent);
   --xp-perso:#2ba676;   /* projet perso → vert, distinct du bleu accent */
   --xp-ecole:#c98a2e;   /* projet école → ambre, même famille que .cal-event */
@@ -1170,6 +1170,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   max-width:none;
   object-fit:contain;
   object-position:left bottom;
+  filter:brightness(1.06) saturate(.97);   /* léger voile blanc */
 }
 
 /* Tous les coins simplement arrondis (border-radius:22px de .xp-tile plus bas) —

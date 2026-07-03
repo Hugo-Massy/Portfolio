@@ -23,7 +23,7 @@ const I18N = {
     'hero-h1-suffix': ' le réel',
     'hero-lede': 'Hugo Menu, étudiant Mastère Spécialisé® Expert en cybersécurité, en alternance DSI Mairie de Massy. Systèmes, réseau, cloud et sécurité — projets déployés et documentés.',
     'hero-cta-contact': 'Me contacter',
-    'hero-cta-projects': 'Voir mes projets',
+    'hero-cta-projects': 'Voir mon expérience',
     'hero-cv-label': 'CV PDF',
 
     'term-lbl-systems': 'systèmes',
@@ -216,7 +216,7 @@ const I18N = {
     'hero-h1-suffix': ' reality',
     'hero-lede': 'Hugo Menu, Mastère Spécialisé® Expert en cybersécurité student, on a work-study program with the Massy City IT department. Systems, networking, cloud and security — deployed and documented projects.',
     'hero-cta-contact': 'Contact me',
-    'hero-cta-projects': 'View my projects',
+    'hero-cta-projects': 'View my experience',
     'hero-cv-label': 'Resume (PDF)',
 
     'term-lbl-systems': 'systems',
@@ -409,7 +409,7 @@ const I18N = {
     'hero-h1-suffix': ' la realidad',
     'hero-lede': 'Hugo Menu, estudiante de Mastère Spécialisé® Expert en cybersécurité, en formación dual con el departamento de TI del Ayuntamiento de Massy. Sistemas, redes, nube y seguridad — proyectos desplegados y documentados.',
     'hero-cta-contact': 'Contáctame',
-    'hero-cta-projects': 'Ver mis proyectos',
+    'hero-cta-projects': 'Ver mi experiencia',
     'hero-cv-label': 'CV (PDF)',
 
     'term-lbl-systems': 'sistemas',
