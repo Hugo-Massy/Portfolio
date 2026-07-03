@@ -1193,11 +1193,16 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 /* le survol reprend exactement l'état "avancé" de l'animation (même lift + zoom).
    !important indispensable : l'animation xp-wave (même en pause) imposerait sinon
-   son transform et masquerait le survol */
-.xp-tile:hover{
-  transform:translateY(-6px) scale(1.012) !important;
-  box-shadow:0 1px 2px rgba(30,25,15,.04) !important;
-  z-index:6 !important;
+   son transform et masquerait le survol.
+   @media(hover:hover) exclut le tactile : sans curseur à retirer, :hover reste
+   "collé" après un tap et la tuile restait figée en scale/lift, débordant sur
+   ses voisines. */
+@media(hover:hover) and (pointer:fine){
+  .xp-tile:hover{
+    transform:translateY(-6px) scale(1.012) !important;
+    box-shadow:0 1px 2px rgba(30,25,15,.04) !important;
+    z-index:6 !important;
+  }
 }
 /* le placement est désormais porté par les classes .xp-a-* (grid-template-areas) */
 
@@ -1283,17 +1288,31 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 
 .xp-tile-body{flex:1 1 auto;}
+/* Massy Innove : le texte grandit moins vite que le mock (chat), qui récupère
+   la majorité de l'espace flexible pour être plus haut sans écraser le texte. */
+.xp-tile--feature .xp-tile-body{flex:0.35 1 auto;}
 .xp-type{
   font-family:var(--mono); font-size:12px; font-weight:600;
   color:var(--tile-accent, #6338ab);
 }
 .xp-name{
-  font-size:22px; font-weight:800; letter-spacing:-.02em;
+  font-size:22px; font-weight:660; letter-spacing:-.02em;
   color:var(--tile-name, #452a80); margin:6px 0 10px;
+}
+.xp-name-logo{
+  display:inline-block; vertical-align:-0.05em;
+  height:1.15em; aspect-ratio:526/702; margin-right:-0.09em;
+  background-color:currentColor;
+  -webkit-mask:url("../assets/logo/massy-mark.png") no-repeat center / contain;
+  mask:url("../assets/logo/massy-mark.png") no-repeat center / contain;
 }
 .xp-desc{font-size:14px; color:var(--tile-text, #524a6b); line-height:1.65;}
 .xp-tile--feature .xp-name{font-size:34px;}
 .xp-tile--feature .xp-desc{font-size:15.5px; max-width:46ch;}
+.xp-tile--feature .xp-desc strong{font-weight:700; color:var(--tile-name, #1c2e5c);}
+/* Massy Innove & Supervision : texte en blanc pour se détacher du bleu profond de la tuile */
+.xp-a-cust .xp-name, .xp-a-cust .xp-desc, .xp-a-cust .xp-desc strong,
+.xp-a-remind .xp-name, .xp-a-remind .xp-desc, .xp-a-remind .xp-desc strong{color:#fff;}
 
 .xp-tile-foot{margin-top:20px; display:flex; flex-direction:column; gap:14px;}
 .xp-metrics{list-style:none; display:flex; gap:26px;}
@@ -1352,12 +1371,12 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   --tile-icon-bg:rgba(255,255,255,.65); --tile-shadow:rgba(60,90,180,.35);
 }
 .xp-tile--b2{              /* bleu moyen */
-  --tile-bg:#b9ccf0; --tile-name:#233a72; --tile-accent:#35529c;
+  --tile-bg:#7f9bd4; --tile-name:#233a72; --tile-accent:#35529c;
   --tile-text:#3f4d74; --tile-chip-bg:rgba(255,255,255,.55);
   --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(50,80,170,.4);
 }
 .xp-tile--b3{              /* bleu profond */
-  --tile-bg:#93b0e6; --tile-name:#1c2e5c; --tile-accent:#294a91;
+  --tile-bg:#7f9bd4; --tile-name:#1c2e5c; --tile-accent:#294a91;
   --tile-text:#33436b; --tile-chip-bg:rgba(255,255,255,.5);
   --tile-icon-bg:rgba(255,255,255,.55); --tile-shadow:rgba(40,70,150,.45);
 }
@@ -1402,31 +1421,41 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 /* 1 · Chat IA (Massy Innove, tuile vedette) */
 .xp-mock--chat{ display:flex; align-items:flex-end; }
 .xp-chat{
-  width:100%; align-self:stretch; display:flex; flex-direction:column;
+  width:76%; align-self:stretch; display:flex; flex-direction:column;
   background:#fff; border-radius:16px 16px 6px 16px; overflow:hidden;
   box-shadow:0 16px 34px -16px var(--tile-shadow, rgba(0,0,0,.3));
 }
-.xp-chat-bar{ display:flex; align-items:center; gap:6px; padding:10px 14px; background:#f3f2f8; }
+.xp-chat-bar{ position:relative; display:flex; align-items:center; gap:6px; padding:10px 14px; background:#f3f2f8; }
 .xp-chat-dot{ width:8px; height:8px; border-radius:50%; background:#d4d2e0; }
 .xp-chat-dot:nth-child(1){ background:#f0776b; }
 .xp-chat-dot:nth-child(2){ background:#f3c04a; }
 .xp-chat-dot:nth-child(3){ background:#5cc08a; }
-.xp-chat-host{ margin-left:8px; font-family:var(--mono); font-size:10.5px; color:#8b88a0; }
+.xp-chat-host{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-family:var(--mono); font-size:10.5px; color:#8b88a0; }
 .xp-chat-live{
   margin-left:auto; width:7px; height:7px; border-radius:50%; flex:none;
   background:#2ba676; box-shadow:0 0 0 3px rgba(43,166,118,.22);
   animation:xp-chat-pulse 2.4s ease-in-out infinite;
 }
 @keyframes xp-chat-pulse{ 0%,100%{ opacity:1; } 50%{ opacity:.4; } }
-.xp-chat-body{ flex:1; padding:16px 14px 10px; display:flex; flex-direction:column; gap:10px; justify-content:center; }
+.xp-chat-body{ flex:1; padding:18px 14px 10px; display:flex; flex-direction:column; gap:10px; justify-content:flex-start; }
 .xp-bubble{ border-radius:12px; padding:9px 12px; max-width:80%; }
 .xp-bubble--me{ align-self:flex-end; background:var(--tile-accent); border-bottom-right-radius:4px; }
 .xp-bubble--me span{ display:block; width:92px; height:7px; border-radius:4px; background:rgba(255,255,255,.8); }
 .xp-chat-row{ display:flex; align-items:flex-end; gap:8px; align-self:flex-start; max-width:82%; }
 .xp-avatar{ width:20px; height:20px; border-radius:50%; flex:none; background:var(--tile-accent); opacity:.85; }
 .xp-bubble--ai{ background:#f1f0f6; border-bottom-left-radius:4px; display:flex; flex-direction:column; gap:6px; }
-.xp-bubble--ai i{ display:block; height:7px; width:150px; border-radius:4px; background:#d9d7e6; }
+.xp-bubble--ai i{ display:block; height:7px; width:150px; max-width:100%; border-radius:4px; background:#d9d7e6; }
 .xp-bubble--ai i.short{ width:96px; }
+.xp-chat-input{
+  display:flex; align-items:center; gap:6px;
+  margin:0 14px 12px; padding:4px 4px 4px 10px;
+  border-radius:100px; background:#fbfafd;
+}
+.xp-chat-input span{ flex:1; height:5px; border-radius:4px; background:#e4e2ee; }
+.xp-chat-input i{
+  width:17px; height:17px; border-radius:50%; flex:none;
+  background:var(--tile-accent);
+}
 .xp-chat-foot{ display:flex; flex-wrap:wrap; gap:8px; padding:0 14px 14px; }
 .xp-pill{
   display:inline-flex; align-items:center; gap:5px;
@@ -1434,17 +1463,42 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   background:var(--tile-chip-bg); border-radius:100px; padding:5px 10px;
 }
 .xp-pill b{ color:var(--tile-accent); }
+.xp-pill-logo{ width:11px; height:11px; object-fit:contain; flex:none; }
 .xp-pill--lock{ color:#3a6a4a; background:rgba(92,192,138,.18); }
 .xp-flag{
-  position:absolute; top:-6px; right:-2px; transform:rotate(4deg);
-  display:inline-flex; align-items:center; gap:6px;
-  font-family:var(--mono); font-size:11px; font-weight:600; color:var(--tile-name);
-  background:#fff; padding:5px 10px; border-radius:100px;
-  box-shadow:0 8px 18px -8px rgba(0,0,0,.3);
+  position:absolute; top:-8px; right:calc(24% - 26px); transform:rotate(4deg);
+  display:inline-flex; align-items:center; gap:7px;
+  font-family:var(--mono); font-size:12.5px; font-weight:600; color:var(--tile-name);
+  background:#fff; padding:6.5px 12px; border-radius:100px;
+  box-shadow:0 9px 20px -8px rgba(0,0,0,.3);
 }
 .xp-flag-svg{
-  width:15px; height:10px; border-radius:2px; flex:none;
+  width:17px; height:11px; border-radius:2px; flex:none;
   box-shadow:0 0 0 1px rgba(0,0,0,.08);
+}
+/* logos OVH / Mistral posés dans la colonne vide à droite du chat, légère
+   animation de flottement (amplitude + rotation figées via --r, désynchronisées
+   par animation-delay pour éviter l'effet "en bloc"). */
+.xp-brand-badge{
+  position:absolute; z-index:2; right:-10px;
+  width:66px; height:66px; border-radius:18px;
+  display:flex; align-items:center; justify-content:center;
+  background:#fff; box-shadow:0 12px 26px -10px rgba(0,0,0,.35);
+  animation:xp-badge-float 5.5s ease-in-out infinite;
+}
+.xp-brand-badge-logo{ width:36px; height:36px; object-fit:contain; }
+.xp-brand-badge--ovh{ --r:-7deg; top:30%; }
+.xp-brand-badge--mistral{
+  --r:6deg; top:64%; right:26px;
+  width:58px; height:58px; animation-delay:1.6s; animation-duration:6.5s;
+}
+.xp-brand-badge--mistral .xp-brand-badge-logo{ width:30px; height:30px; }
+@keyframes xp-badge-float{
+  0%,100%{ transform:translateY(0) rotate(var(--r, 0deg)); }
+  50%{ transform:translateY(-10px) rotate(var(--r, 0deg)); }
+}
+@media(prefers-reduced-motion:reduce){
+  .xp-brand-badge{ animation:none; }
 }
 
 /* 2 · Flux de détections SOC (Fil Rouge SOC) */
@@ -1620,6 +1674,19 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    (--c) et texte (--t) de chaque carte posés en style inline. */
 .xp-tile--diag .xp-tile-body{
   position:absolute; left:28px; bottom:26px; z-index:3; max-width:52%; margin:0;
+}
+/* quadrillage discret en fond, cantonné au coin bas-gauche (sous le texte) —
+   dégradé en masque radial depuis ce coin pour s'estomper avant d'atteindre
+   le collage de cartes à droite. */
+.xp-tile--diag::before{
+  content:"";
+  position:absolute; inset:0; z-index:0; pointer-events:none;
+  background-image:
+    linear-gradient(rgba(63,93,176,.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(63,93,176,.1) 1px, transparent 1px);
+  background-size:24px 24px;
+  -webkit-mask-image:radial-gradient(circle at 0% 100%, #000 0%, transparent 40%);
+          mask-image:radial-gradient(circle at 0% 100%, #000 0%, transparent 40%);
 }
 .xp-a-send .xp-desc{
   max-width:34ch;

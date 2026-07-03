@@ -939,7 +939,11 @@ function initXpBentoWave() {
     // figement pour de bon, à ce point précis où c'est invisible (cf. release).
     if (offsetInTrack >= pinned - 0.5) { release(); return; }
     const progress = clamp(offsetInTrack / pinned, 0, 1);
-    const head = progress * N;   // position du pic, en « unités carte »
+    // -0.5 et +1 : décale la course du pic pour que la fenêtre triangulaire (rayon 1,
+    // centrée sur i+0.5) soit à distance >= 1 de la 1re/dernière carte aux bornes
+    // (progress 0 et 1) — sinon ces cartes démarraient/finissaient déjà à moitié
+    // gonflées (scale/lift) au lieu d'être plates.
+    const head = -0.5 + progress * (N + 1);   // position du pic, en « unités carte »
     tiles.forEach((tile, i) => {
       const d = Math.abs(head - (i + 0.5));   // distance carte ↔ pic
       const t = Math.max(0, 1 - d);           // fenêtre triangulaire d'1 carte
