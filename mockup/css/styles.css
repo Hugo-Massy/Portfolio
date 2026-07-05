@@ -1,4 +1,4 @@
-:root{
+﻿:root{
   --bg: #ffffff;
   --bg-elev: #ffffff;
   --bg-elev-2: #f3f4f2;
@@ -941,7 +941,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 
 /* SKILLS — 4 colonnes icône + titre + texte centré, style épuré */
-.skills{background:var(--bg-elev); padding-top:clamp(48px, 8vh, 80px); padding-bottom:clamp(48px, 8vh, 80px); position:relative; overflow:hidden;}
+.skills{background:var(--bg-elev); padding-top:clamp(48px, 8vh, 80px); padding-bottom:clamp(24px, 4vh, 40px); position:relative; overflow:hidden;}
 .skills-wrap{position:relative; z-index:1;}
 .skills-head{max-width:640px; margin-bottom:16px;}
 .skills-head .section-tag{margin-bottom:2px;}
@@ -953,6 +953,14 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:relative;
   display:grid; grid-template-columns:repeat(4,1fr); gap:16px;
   margin-top:48px;
+}
+
+/* Piliers cliquables (data-href renseigné plus tard : pour l'instant, aucune redirection). */
+.skill-item[role="link"], .xp-tile[role="link"]{ cursor:pointer; }
+.skill-item[role="link"]:focus-visible,
+.xp-tile[role="link"]:focus-visible{
+  outline:2px solid var(--pillar-accent, var(--accent));
+  outline-offset:4px;
 }
 
 .skill-item{
@@ -1103,8 +1111,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    ============================================================ */
 .xp{
   background:var(--bg);   /* fond blanc */
-  padding-top:clamp(28px, 4vh, 48px);
-  padding-bottom:clamp(160px, 26vh, 320px);
+  padding-top:clamp(16px, 2vh, 28px);
+  padding-bottom:clamp(96px, 16vh, 200px);
   --xp-alt:var(--accent);
   --xp-perso:#2ba676;   /* projet perso → vert, distinct du bleu accent */
   --xp-ecole:#c98a2e;   /* projet école → ambre, même famille que .cal-event */
@@ -1837,6 +1845,130 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-notif-body b{ font-size:13px; font-weight:700; color:#1b2228; }
 .xp-notif-top time{ font-size:10.5px; color:#8a97a0; font-style:normal; flex-shrink:0; }
 .xp-notif-body em{ font-style:normal; font-size:12px; color:#4a565e; }
+
+/* ============================================================
+   RÉFÉRENCES — citations de retours (tuteurs, collègues, formateurs), entre
+   #xp et #contact. Volontairement épuré : trois cartes (vedette pleine largeur
+   + deux demi-largeurs), un grand guillemet décoratif, l'auteur en pied.
+   Textes dans i18n.js (refs-*) — citations placeholder à remplacer.
+   ============================================================ */
+.refs{
+  position:relative; background:var(--bg);
+  padding-top:0;
+  padding-bottom:clamp(100px, 14vh, 180px);
+}
+.refs-wrap{position:relative; z-index:1;}
+.refs-head{max-width:640px; margin-bottom:30px;}
+.refs-head .section-tag{margin-bottom:2px;}
+.refs-head h2{font-size:36px; margin-bottom:14px;}
+.refs-head h2 .accent{color:var(--accent);}
+.refs-lede{font-size:17px; color:var(--text-dim); max-width:600px;}
+
+/* ---- CARROUSEL : citation active au centre, voisines qui dépassent aux bords ---- */
+.refs-carousel{position:relative; margin-top:14px;}
+
+/* un seul grand guillemet en filigrane, centré derrière toutes les citations */
+.refs-carousel::before{
+  content:"\201C";
+  position:absolute; top:20px; left:50%; transform:translateX(-50%);
+  height:clamp(210px, 27vh, 260px);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--sans); font-weight:800; line-height:1;
+  font-size:clamp(180px, 24vw, 340px);
+  color:var(--accent-pale); opacity:.45;
+  z-index:0; pointer-events:none; user-select:none;
+}
+
+/* scène : les cartes sont empilées et positionnées par transform (piloté en JS) */
+.refs-stage{
+  position:relative;
+  height:clamp(210px, 27vh, 260px);
+  overflow:hidden;
+  touch-action:pan-y;
+}
+
+/* chaque citation : centrée en absolu, puis décalée/atténuée selon son rang */
+.ref-card{
+  position:absolute; top:0; left:50%;
+  width:min(820px, 72%);
+  margin:0; padding:0;
+  display:flex; flex-direction:column; gap:20px;
+  height:100%;
+  justify-content:center;
+  transform:translate(-50%, 0) scale(0.8);
+  opacity:0; visibility:hidden;
+  transition:transform .55s cubic-bezier(.22,.61,.36,1), opacity .45s ease, filter .45s ease;
+  will-change:transform, opacity;
+}
+
+.ref-quote{
+  margin:0;
+  font-size:clamp(18px, 2.1vw, 23px); line-height:1.6; color:var(--text);
+  font-weight:500; font-style:italic;
+}
+/* guillemets ouvrant / fermant autour du texte de la citation */
+.ref-quote::before{content:"\201C"; color:var(--accent); font-style:normal; margin-right:1px;}
+.ref-quote::after{content:"\201D"; color:var(--accent); font-style:normal; margin-left:1px;}
+.ref-author{display:flex; justify-content:flex-end; margin-top:6px; transition:opacity .4s ease;}
+.ref-author-id{min-width:0; text-align:right;}
+.ref-author-id b{
+  display:block; font-weight:600;
+  font-size:14px; line-height:1.3; color:var(--text);
+}
+.ref-author-id > span{display:block; font-family:var(--mono); font-size:11px; color:var(--text-dim); margin-top:2px;}
+
+/* ---- états posés par le JS ---- */
+.ref-card.is-active{
+  opacity:1; visibility:visible; z-index:3;
+  transform:translate(-50%, 0) scale(1);
+  cursor:default;
+}
+.ref-card.is-prev,
+.ref-card.is-next{
+  opacity:.22; visibility:visible; z-index:2;
+  filter:grayscale(.5);
+  cursor:pointer;
+}
+.ref-card.is-prev{transform:translate(-138%, -26px) scale(0.58);}
+.ref-card.is-next{transform:translate(38%, -26px) scale(0.58);}
+.ref-card.is-prev:hover,
+.ref-card.is-next:hover{opacity:.4;}
+/* les voisines ne servent que de repère : on masque leur signature */
+.ref-card.is-prev .ref-author,
+.ref-card.is-next .ref-author{opacity:0;}
+
+/* voile dégradé aux extrémités pour appuyer l'effet « à parcourir » */
+.refs-stage::before,
+.refs-stage::after{
+  content:""; position:absolute; top:0; bottom:0; width:16%;
+  z-index:4; pointer-events:none;
+}
+.refs-stage::before{left:0; background:linear-gradient(90deg, var(--bg), transparent);}
+.refs-stage::after{right:0; background:linear-gradient(270deg, var(--bg), transparent);}
+
+/* ---- navigation : points ---- */
+.refs-nav{
+  display:flex; align-items:center; justify-content:center;
+  margin-top:16px;
+}
+.refs-dots{display:flex; align-items:center; gap:10px;}
+.refs-dot{
+  width:8px; height:8px; padding:0; border:0; border-radius:999px;
+  background:var(--border); cursor:pointer;
+  transition:background .3s ease, width .3s cubic-bezier(.65,0,.35,1);
+}
+.refs-dot:hover{background:var(--accent-tint);}
+.refs-dot.is-on{background:var(--accent); width:24px;}
+
+@media (max-width:760px){
+  .refs-head h2{font-size:30px;}
+  .ref-card{width:min(500px, 86%);}
+  .ref-card.is-prev{transform:translate(-150%, -20px) scale(0.6);}
+  .ref-card.is-next{transform:translate(50%, -20px) scale(0.6);}
+}
+@media (prefers-reduced-motion:reduce){
+  .ref-card{transition:opacity .2s ease;}
+}
 
 /* ============================================================
    DISPONIBILITÉ — calendrier mensuel dans une fenêtre sombre façon terminal

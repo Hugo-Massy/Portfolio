@@ -1,5 +1,5 @@
 // Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about', 'skills', 'xp', 'availability', 'contact'];
+const SECTIONS = ['nav', 'hero', 'about', 'skills', 'xp', 'refs', 'availability', 'contact'];
 
 // Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
 // la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).
@@ -52,6 +52,105 @@ async function loadSections() {
   initExperienceCta();
   initAvailability();
   initFooterYear();
+  initClickableCards();
+  initRefsCarousel();
+}
+
+// Carrousel des références : la citation active occupe le centre, ses voisines
+// dépassent aux extrémités (atténuées) et servent de commandes « précédent/suivant ».
+// Navigation par clic sur une carte latérale, flèches, points ou glisser.
+function initRefsCarousel() {
+  const carousel = document.querySelector('.refs-carousel');
+  if (!carousel) return;
+  const cards = Array.from(carousel.querySelectorAll('.ref-card'));
+  const dotsWrap = carousel.querySelector('.refs-dots');
+  if (cards.length < 2 || !dotsWrap) return;
+
+  const n = cards.length;
+  let index = 0;
+
+  // un point par citation
+  const dots = cards.map((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'refs-dot';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `Référence ${i + 1} sur ${n}`);
+    dot.addEventListener('click', () => go(i));
+    dotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  function render() {
+    const prev = (index - 1 + n) % n;
+    const next = (index + 1) % n;
+    cards.forEach((card, i) => {
+      card.classList.remove('is-active', 'is-prev', 'is-next');
+      if (i === index) card.classList.add('is-active');
+      else if (i === prev) card.classList.add('is-prev');
+      else if (i === next) card.classList.add('is-next');
+      card.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+    });
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('is-on', i === index);
+      dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
+    });
+  }
+
+  function go(i) { index = (i % n + n) % n; render(); }
+  const goPrev = () => go(index - 1);
+  const goNext = () => go(index + 1);
+
+  // clic sur une carte latérale → elle passe au centre
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      if (card.classList.contains('is-prev')) goPrev();
+      else if (card.classList.contains('is-next')) goNext();
+    });
+  });
+
+  // flèches clavier quand le carrousel a le focus
+  carousel.setAttribute('tabindex', '0');
+  carousel.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
+  });
+
+  // glisser tactile / souris sur la scène
+  const stage = carousel.querySelector('.refs-stage');
+  let startX = null;
+  if (stage) {
+    stage.addEventListener('pointerdown', (e) => { startX = e.clientX; });
+    stage.addEventListener('pointerup', (e) => {
+      if (startX === null) return;
+      const dx = e.clientX - startX;
+      if (Math.abs(dx) > 45) { dx < 0 ? goNext() : goPrev(); }
+      startX = null;
+    });
+    stage.addEventListener('pointercancel', () => { startX = null; });
+  }
+
+  render();
+}
+
+// Rend les piliers (.skill-item) et les cartes du bento (.xp-tile) cliquables.
+// La destination se lit dans data-href : tant qu'il est vide, aucun clic ne redirige
+// (comportement demandé pour l'instant). Renseigner data-href suffira à activer le lien.
+function initClickableCards() {
+  const cards = document.querySelectorAll('.skill-item[role="link"], .xp-tile[role="link"]');
+  cards.forEach((card) => {
+    const go = () => {
+      const href = card.dataset.href;
+      if (href) window.location.href = href;
+    };
+    card.addEventListener('click', go);
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        go();
+      }
+    });
+  });
 }
 
 // Le CTA "Voir mon expérience" du hero mène en haut de #xp. Comme #xp est remonté par le
