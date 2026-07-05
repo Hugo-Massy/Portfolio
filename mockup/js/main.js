@@ -48,8 +48,87 @@ async function loadSections() {
   initIdBadgeFlip();
   initAboutParallax();
   initScrollDownButton();
+  initContactCta();
+  initExperienceCta();
   initAvailability();
   initFooterYear();
+}
+
+// Le CTA "Voir mon expérience" du hero mène en haut de #xp. Comme #xp est remonté par le
+// parallax de #about (translateY, cf. initAboutParallax), un simple saut d'ancre vise sa
+// position de MISE EN PAGE et atterrit trop bas (la section, décalée vers le haut à l'écran,
+// dépasse le haut du viewport). On recale donc frame par frame sur sa position AFFICHÉE
+// (getBoundingClientRect().top, qui inclut le transform), comme la flèche du hero — le lift
+// bouge encore pendant le scroll, la boucle converge naturellement.
+function initExperienceCta() {
+  const btn = document.querySelector('.hero-cta a[href="#xp"]');
+  const xp = document.getElementById('xp');
+  if (!btn || !xp) return;
+
+  let rafId = null;
+  function cancel() {
+    if (rafId === null) return;
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+  ['wheel', 'touchstart', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, cancel, { passive: true });
+  });
+
+  const LANDING_OFFSET = 24; // px d'air laissés au-dessus du titre une fois arrivé
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    cancel();
+    function step() {
+      const remaining = xp.getBoundingClientRect().top - LANDING_OFFSET;
+      if (Math.abs(remaining) < 1) { rafId = null; return; }
+      // behavior:'instant' obligatoire : html{scroll-behavior:smooth} rejouerait sinon
+      // une animation CSS à chaque frame et bloquerait le défilement.
+      window.scrollTo({ top: window.scrollY + remaining * 0.18, left: 0, behavior: 'instant' });
+      rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+  });
+}
+
+// Le CTA "Me contacter" du hero mène tout en bas de la page (jusqu'au footer) plutôt
+// qu'au simple haut de la section #contact. On ne peut pas utiliser un scrollTo lissé
+// natif : en traversant la zone figée de #xp, initXpBentoWave.release() déclenche un
+// scrollBy instantané et repasse sa piste en height:auto (la page raccourcit d'un coup),
+// ce qui annule l'animation native — le scroll s'arrêterait pile en sortant du figement.
+// On pilote donc le défilement frame par frame (comme la flèche du hero) en recalculant
+// le bas réel du document à chaque frame : la boucle survit ainsi au recalage de release()
+// et à la hauteur qui change, et converge quand même jusqu'en bas.
+function initContactCta() {
+  const btn = document.querySelector('.hero-cta a[href="#contact"]');
+  if (!btn) return;
+
+  let rafId = null;
+  function cancel() {
+    if (rafId === null) return;
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+  // Si l'utilisateur reprend la main pendant l'animation, on arrête le recalage auto.
+  ['wheel', 'touchstart', 'keydown'].forEach((evt) => {
+    window.addEventListener(evt, cancel, { passive: true });
+  });
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    cancel();
+    function step() {
+      const target = document.documentElement.scrollHeight - window.innerHeight;
+      const remaining = target - window.scrollY;
+      if (remaining < 1) { rafId = null; return; }
+      // behavior:'instant' obligatoire : html{scroll-behavior:smooth} rejouerait sinon
+      // une animation CSS à chaque frame et bloquerait le défilement.
+      window.scrollTo({ top: window.scrollY + remaining * 0.18, left: 0, behavior: 'instant' });
+      rafId = requestAnimationFrame(step);
+    }
+    rafId = requestAnimationFrame(step);
+  });
 }
 
 // Année courante dans le copyright du pied de page.
@@ -1063,8 +1142,8 @@ TERM_COMMANDS['cat neofetch'] = {
 };
 
 // Raccourcis numériques du menu ASCII des catégories (voir initHeroTermGrow) : tape
-// 1-5 dans le terminal pour sélectionner la même entrée qu'au clic. Exclus de "help".
-['1', '2', '3', '4', '5'].forEach((key) => {
+// 1-4 dans le terminal pour sélectionner la même entrée qu'au clic. Exclus de "help".
+['1', '2', '3', '4'].forEach((key) => {
   TERM_COMMANDS[key] = {
     desc: null,
     run: () => {

@@ -1705,10 +1705,11 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   position:absolute; top:50%; left:54%;
   transform:translate(-50%, -50%) rotate(-14deg);
   display:grid; grid-template-columns:repeat(3, 116px); gap:14px;
-  height:330px;
+  /* track plus haut que la tuile : ses bords haut/bas sortent du cadre et
+     sont rognés net par l'overflow:hidden de .xp-tile, si bien que les
+     colonnes filent jusqu'aux bords sans carte coupée « en l'air ». */
+  height:560px;
   overflow:hidden;
-  -webkit-mask-image:linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
-          mask-image:linear-gradient(to bottom, transparent, #000 6%, #000 94%, transparent);
 }
 .xp-cards-col{ position:relative; height:100%; overflow:hidden; }
 .xp-cards-col-inner{
