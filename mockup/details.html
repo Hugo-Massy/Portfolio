@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hugo — Détails compétences & expérience</title>
+<meta name="theme-color" content="#fbfbfa">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="css/details.css">
+</head>
+<body class="dp-body">
+
+<!-- Nav dupliquée depuis sections/nav.html (accueil), adaptée aux ancres de cette page -->
+<button class="lang-switch" type="button" aria-label="Changer de langue" data-lang="fr">
+  <span class="lang-flag" aria-hidden="true">
+    <svg class="flag-fr is-active" viewBox="0 0 3 2"><rect width="1" height="2" x="0" fill="#0055A4"/><rect width="1" height="2" x="1" fill="#fff"/><rect width="1" height="2" x="2" fill="#EF4135"/></svg>
+    <svg class="flag-en" viewBox="0 0 30 20">
+      <clipPath id="lang-flag-en-clip"><path d="M15,10 h15 v10 z v10 h-15 z h-15 v-10 z v-10 h15 z"/></clipPath>
+      <rect width="30" height="20" fill="#00247d"/>
+      <path d="M0,0 L30,20 M30,0 L0,20" stroke="#fff" stroke-width="4"/>
+      <path d="M0,0 L30,20 M30,0 L0,20" clip-path="url(#lang-flag-en-clip)" stroke="#cf142b" stroke-width="2.5"/>
+      <path d="M15,0 V20 M0,10 H30" stroke="#fff" stroke-width="7"/>
+      <path d="M15,0 V20 M0,10 H30" stroke="#cf142b" stroke-width="4"/>
+    </svg>
+    <svg class="flag-es" viewBox="0 0 3 2">
+      <rect width="3" height="0.5" y="0" fill="#AA151B"/>
+      <rect width="3" height="1" y="0.5" fill="#F1BF00"/>
+      <rect width="3" height="0.5" y="1.5" fill="#AA151B"/>
+      <svg x="0.68" y="0.52" width="0.64" height="0.96" viewBox="0 0 100 150">
+        <rect x="0" y="18" width="13" height="8" fill="#F1BF00" stroke="#AA151B" stroke-width="1"/>
+        <rect x="87" y="18" width="13" height="8" fill="#F1BF00" stroke="#AA151B" stroke-width="1"/>
+        <rect x="2" y="22" width="9" height="112" fill="#F1BF00" stroke="#AA151B" stroke-width="1"/>
+        <rect x="89" y="22" width="9" height="112" fill="#F1BF00" stroke="#AA151B" stroke-width="1"/>
+        <rect x="0" y="130" width="13" height="8" fill="#F1BF00" stroke="#AA151B" stroke-width="1"/>
+        <rect x="87" y="130" width="13" height="8" fill="#F1BF00" stroke="#AA151B" stroke-width="1"/>
+        <path d="M2,18 q4.5,-9 9,0 Z" fill="#F1BF00"/>
+        <path d="M89,18 q4.5,-9 9,0 Z" fill="#F1BF00"/>
+        <rect x="0" y="88" width="100" height="9" fill="#AA151B" stroke="#fff" stroke-width="1"/>
+        <rect x="15" y="35" width="70" height="80" fill="#fff" stroke="#F1BF00" stroke-width="2"/>
+        <rect x="15" y="35" width="35" height="40" fill="#AA151B"/>
+        <rect x="50" y="75" width="35" height="40" fill="#AA151B"/>
+        <g fill="#F1BF00">
+          <rect x="24" y="50" width="18" height="16"/>
+          <rect x="22" y="45.5" width="5" height="6"/>
+          <rect x="30" y="43.5" width="6" height="8"/>
+          <rect x="39" y="45.5" width="5" height="6"/>
+        </g>
+        <rect x="31" y="58" width="4" height="8" fill="#AA151B"/>
+        <path d="M60,48 q8,-6 14,0 q4,4 0,10 q-3,5 -7,5 q-4,0 -7,-5 q-4,-6 0,-10 Z" fill="#7d2248"/>
+        <circle cx="63" cy="51.5" r="1.4" fill="#fff"/>
+        <rect x="15" y="75" width="35" height="40" fill="#F1BF00"/>
+        <rect x="19" y="75" width="5" height="40" fill="#AA151B"/>
+        <rect x="29" y="75" width="5" height="40" fill="#AA151B"/>
+        <rect x="39" y="75" width="5" height="40" fill="#AA151B"/>
+        <g fill="none" stroke="#F1BF00" stroke-width="2">
+          <circle cx="60" cy="83" r="4"/>
+          <circle cx="75" cy="83" r="4"/>
+          <circle cx="67.5" cy="90" r="4"/>
+          <circle cx="60" cy="107" r="4"/>
+          <circle cx="75" cy="107" r="4"/>
+          <circle cx="67.5" cy="100" r="4"/>
+        </g>
+        <path d="M35,115 H65 Q65,132 50,138 Q35,132 35,115 Z" fill="#fff" stroke="#F1BF00" stroke-width="2"/>
+        <circle cx="50" cy="126" r="5" fill="#AA151B"/>
+        <path d="M47,120 L50,116 L53,120 Z" fill="#2f6b3a"/>
+        <path d="M28,32 Q50,8 72,32 Z" fill="#AA151B"/>
+        <rect x="22" y="32" width="56" height="6" fill="#F1BF00"/>
+        <circle cx="30" cy="20" r="3" fill="#F1BF00"/>
+        <circle cx="50" cy="14" r="3.5" fill="#F1BF00"/>
+        <circle cx="70" cy="20" r="3" fill="#F1BF00"/>
+        <circle cx="50" cy="8" r="2.5" fill="#F1BF00"/>
+      </svg>
+  </svg>
+  </span>
+</button>
+
+<nav class="dot-rail" aria-label="Navigation">
+  <span class="dot-rail-indicator"></span>
+  <a href="#dp-hero"><span class="dot-label">Accueil</span><span class="dot"></span></a>
+  <a href="#security"><span class="dot-label">Sécurité</span><span class="dot"></span></a>
+  <a href="#sysadmin"><span class="dot-label">Admin systèmes</span><span class="dot"></span></a>
+  <a href="#infra"><span class="dot-label">Infra & Cloud</span><span class="dot"></span></a>
+  <a href="#dev"><span class="dot-label">Dev & Auto</span><span class="dot"></span></a>
+  <a href="#massy-innove"><span class="dot-label">Massy Innove</span><span class="dot"></span></a>
+  <a href="#homelab"><span class="dot-label">Homelab</span><span class="dot"></span></a>
+  <a href="#stack"><span class="dot-label">Stack</span><span class="dot"></span></a>
+  <a href="#supervision"><span class="dot-label">Supervision</span><span class="dot"></span></a>
+</nav>
+
+<a href="#dp-hero" class="back-to-top" aria-label="Remonter en haut de la page">
+  <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
+</a>
+
+<!-- En-tête de page : duplication statique du hero de l'accueil, avec le contenu propre à cette page -->
+<header class="hero" id="dp-hero">
+  <div class="wrap hero-b-grid reveal d1">
+    <div class="hero-copy">
+      <h1>Le <span class="accent">détail</span> derrière chaque carte.</h1>
+      <p class="lede">Ce que recouvrent vraiment mes <strong>4 piliers de compétences</strong> et mes <strong>projets menés en conditions réelles</strong> — outils, réalisations concrètes et résultats mesurés.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#competences">Voir les compétences</a>
+        <a class="btn btn-ghost" href="#experience">
+          Voir l'expérience
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <div class="social-row">
+        <a href="https://github.com/Cody91430" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.61-3.37-1.21-3.37-1.21-.46-1.19-1.11-1.51-1.11-1.51-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.55 2.34 1.1 2.91.84.09-.66.35-1.1.63-1.36-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.72 0 0 .84-.28 2.75 1.05a9.29 9.29 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/hugo-menu/" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+          LinkedIn
+        </a>
+        <a href="assets/CV-Hugo-Menu.pdf" target="_blank" rel="noopener noreferrer" download>
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+          <span>CV PDF</span>
+        </a>
+      </div>
+    </div>
+    <div class="term-card">
+      <div class="term-bar">
+        <div class="term-dots">
+          <div class="term-dot" style="background-color:#ff5f57"></div>
+          <div class="term-dot" style="background-color:#febc2e"></div>
+          <div class="term-dot" style="background-color:#28c840"></div>
+        </div>
+        <span class="term-bar-title">~détails</span>
+      </div>
+      <div class="term-output">
+        <div class="l ok cmd"><span class="prompt-path">~</span><span class="prompt">$</span> cd détails &amp;&amp; tree</div>
+        <nav class="dp-tree" id="dp-side-nav" aria-label="Sommaire">
+          <ul class="dp-tree-list">
+            <li class="dp-tree-node">
+              <div class="dp-tree-row dp-tree-folder">
+                <svg class="dp-ic-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                <span>compétences</span>
+              </div>
+              <ul class="dp-tree-list">
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#security" data-target="security" title="Sécurité défensive"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>sécurité-défensive.md</span></a></li>
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#sysadmin" data-target="sysadmin" title="Administration systèmes"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>administration.md</span></a></li>
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#infra" data-target="infra" title="Infrastructure &amp; Cloud"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>infrastructure.md</span></a></li>
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#dev" data-target="dev" title="Dev &amp; Automatisation"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>dev-automatisation.md</span></a></li>
+              </ul>
+            </li>
+            <li class="dp-tree-node">
+              <div class="dp-tree-row dp-tree-folder">
+                <svg class="dp-ic-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                <span>expérience</span>
+              </div>
+              <ul class="dp-tree-list">
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#massy-innove" data-target="massy-innove" title="Massy Innove"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>massy-innove.md</span></a></li>
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#homelab" data-target="homelab" title="Homelab perso"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>homelab.md</span></a></li>
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#stack" data-target="stack" title="Stack technique"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>stack.md</span></a></li>
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#supervision" data-target="supervision" title="Supervision 24/7"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>supervision.md</span></a></li>
+              </ul>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <div class="term-hint">Tape un nom de fichier puis <span class="k">Entrée</span>, ou <span class="k">Tab</span> pour parcourir les onglets.</div>
+      <div class="term-input-row" id="dp-term-input-row">
+        <span class="term-prompt-wrap"><span class="prompt-path">~</span><span class="prompt">$</span></span>
+        <span class="cursor"></span>
+        <input type="text" id="dp-term-input" class="term-input" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Naviguer dans la page détails">
+      </div>
+    </div>
+  </div>
+  <a href="#competences" class="scroll-down" aria-label="Défiler vers le bas">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg>
+  </a>
+</header>
+
+<div class="wrap dp-layout">
+
+  <main class="dp-main">
+
+    <!-- ============================ COMPÉTENCES ============================ -->
+    <section class="dp-section" id="competences">
+      <div class="dp-section-head reveal">
+        <span class="section-tag"><span class="section-tag-num">02</span>_compétences/</span>
+        <h2>Mes <span class="accent">4 piliers</span>, en profondeur.</h2>
+        <p class="dp-section-lede">De la ligne de commande à la gouvernance — voici ce que chaque pilier recouvre concrètement.</p>
+      </div>
+
+      <!-- 01 · Sécurité défensive -->
+      <article class="dp-entry reveal" id="security">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--security">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">01</span>_sécurité-défensive/</span>
+            <h3>Sécurité défensive</h3>
+            <p class="dp-entry-sub">Détecter, durcir, répondre — construire un SOC qui voit ce qui compte.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">J'aborde la sécurité par la <strong>visibilité</strong> : sans télémétrie, pas de défense. J'ai déployé une chaîne de détection complète, du capteur réseau au tableau de bord, et je sais l'exploiter en cas d'incident.</p>
+        <div class="dp-entry-cols">
+          <div class="dp-col">
+            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+            <ul class="dp-list">
+              <li><strong>SIEM &amp; EDR</strong> — collecte, corrélation et alerting avec <strong>Wazuh</strong> (agents Windows/Linux, règles custom).</li>
+              <li><strong>IDS/IPS réseau</strong> — inspection du trafic avec <strong>Suricata</strong>, signatures et détection d'anomalies.</li>
+              <li><strong>Honeypots</strong> — déploiement de <strong>T-Pot</strong> pour observer les attaques réelles et alimenter la threat intel.</li>
+              <li><strong>Durcissement</strong> — CIS Benchmarks, réduction de surface d'attaque, gestion des accès.</li>
+              <li><strong>Réponse à incident</strong> — triage, confinement, analyse post-mortem documentée.</li>
+            </ul>
+          </div>
+          <div class="dp-col">
+            <h4 class="dp-col-title">Outils &amp; technos</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Wazuh</span>
+              <span class="dp-chip">Suricata</span>
+              <span class="dp-chip">T-Pot</span>
+              <span class="dp-chip">MITRE ATT&amp;CK</span>
+              <span class="dp-chip">CIS Benchmarks</span>
+              <span class="dp-chip">pfSense</span>
+              <span class="dp-chip">Nmap</span>
+            </div>
+            <div class="dp-metrics">
+              <div class="dp-metric"><b>SOC</b><span>complet, de bout en bout</span></div>
+              <div class="dp-metric"><b>24/7</b><span>détection continue</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 · Administration systèmes -->
+      <article class="dp-entry reveal" id="sysadmin">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--sysadmin">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">02</span>_administration-systèmes/</span>
+            <h3>Administration systèmes</h3>
+            <p class="dp-entry-sub">Tenir un parc en production, sans casser le service du quotidien.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">En alternance à la <strong>DSI de la Mairie de Massy</strong>, j'administre un environnement réel : annuaire central, parc applicatif dense et serveurs Linux en production, au service d'utilisateurs qui n'attendent pas.</p>
+        <div class="dp-entry-cols">
+          <div class="dp-col">
+            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+            <ul class="dp-list">
+              <li><strong>Active Directory</strong> — GPO, gestion des identités, structuration des OU.</li>
+              <li><strong>Parc applicatif</strong> — exploitation et maintien de <strong>130+ applications</strong> métier.</li>
+              <li><strong>Linux en prod</strong> — <strong>Debian 12</strong>, services systemd, sauvegardes et mises à jour.</li>
+              <li><strong>Gestion de parc</strong> — inventaire, cycle de vie du matériel, support N2.</li>
+              <li><strong>Windows Server</strong> — rôles, services et supervision de disponibilité.</li>
+            </ul>
+          </div>
+          <div class="dp-col">
+            <h4 class="dp-col-title">Outils &amp; technos</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Active Directory</span>
+              <span class="dp-chip">Windows Server</span>
+              <span class="dp-chip">Debian 12</span>
+              <span class="dp-chip">GLPI</span>
+              <span class="dp-chip">PowerShell</span>
+              <span class="dp-chip">systemd</span>
+            </div>
+            <div class="dp-metrics">
+              <div class="dp-metric"><b>130+</b><span>applications gérées</span></div>
+              <div class="dp-metric"><b>Prod</b><span>collectivité territoriale</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 · Infrastructure & Cloud -->
+      <article class="dp-entry reveal" id="infra">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--infra">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="13" x2="5" y2="16"/><line x1="12" y1="13" x2="19" y2="16"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">03</span>_infrastructure-cloud/</span>
+            <h3>Infrastructure &amp; Cloud</h3>
+            <p class="dp-entry-sub">Exposer un service sans ouvrir un seul port. Superviser tout le reste.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">Je conçois mes infrastructures selon une approche <strong>security by design</strong> : la surface d'exposition est réduite au strict minimum, et rien n'est mis en ligne sans supervision associée.</p>
+        <div class="dp-entry-cols">
+          <div class="dp-col">
+            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+            <ul class="dp-list">
+              <li><strong>Accès zero-trust</strong> — <strong>Cloudflare Tunnel</strong> : services publiés avec <strong>zéro port ouvert</strong> sur le WAN.</li>
+              <li><strong>Supervision</strong> — <strong>Zabbix 7.2</strong> : métriques, seuils, alerting proactif.</li>
+              <li><strong>Virtualisation &amp; conteneurs</strong> — VMware, <strong>Docker</strong>, cycle de vie des images.</li>
+              <li><strong>Reverse proxy &amp; TLS</strong> — terminaison chiffrée, certificats, routage propre.</li>
+            </ul>
+          </div>
+          <div class="dp-col">
+            <h4 class="dp-col-title">Outils &amp; technos</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Cloudflare Tunnel</span>
+              <span class="dp-chip">Zabbix 7.2</span>
+              <span class="dp-chip">Docker</span>
+              <span class="dp-chip">VMware</span>
+              <span class="dp-chip">Grafana</span>
+              <span class="dp-chip">OVHcloud</span>
+            </div>
+            <div class="dp-metrics">
+              <div class="dp-metric"><b>0</b><span>port ouvert exposé</span></div>
+              <div class="dp-metric"><b>99.9%</b><span>uptime supervisé</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04 · Dev & Automatisation -->
+      <article class="dp-entry reveal" id="dev">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--dev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="2"/><polyline points="8 10 11 13 8 16"/><line x1="13" y1="16" x2="16" y2="16"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">04</span>_dev-automatisation/</span>
+            <h3>Dev &amp; Automatisation</h3>
+            <p class="dp-entry-sub">Coder l'outil qui manque, supprimer la tâche qui n'aurait jamais dû être manuelle.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">Quand un outil ne fait pas exactement ce qu'il faut, je l'étends. J'ai livré des <strong>plugins GLPI en production</strong> et automatisé des process internes jusqu'à faire <strong>disparaître entièrement le papier</strong> d'une chaîne de traitement.</p>
+        <div class="dp-entry-cols">
+          <div class="dp-col">
+            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+            <ul class="dp-list">
+              <li><strong>Plugins GLPI</strong> — développement <strong>PHP</strong> en production, intégré au SI de la collectivité.</li>
+              <li><strong>Scripting</strong> — <strong>Python</strong> et <strong>Bash</strong> pour l'automatisation d'exploitation.</li>
+              <li><strong>Dématérialisation</strong> — process papier <strong>entièrement supprimé</strong> et fiabilisé.</li>
+              <li><strong>Versioning &amp; CI</strong> — Git, revue de code, workflow propre.</li>
+            </ul>
+          </div>
+          <div class="dp-col">
+            <h4 class="dp-col-title">Outils &amp; technos</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">PHP</span>
+              <span class="dp-chip">Python</span>
+              <span class="dp-chip">Bash</span>
+              <span class="dp-chip">Git</span>
+              <span class="dp-chip">GLPI SDK</span>
+              <span class="dp-chip">VS Code</span>
+            </div>
+            <div class="dp-metrics">
+              <div class="dp-metric"><b>100%</b><span>process papier supprimé</span></div>
+              <div class="dp-metric"><b>Prod</b><span>plugins en usage réel</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- ============================ EXPÉRIENCE ============================ -->
+    <section class="dp-section" id="experience">
+      <div class="dp-section-head reveal">
+        <span class="section-tag"><span class="section-tag-num">03</span>_expérience/</span>
+        <h2>Mes <span class="accent">projets</span>, en conditions réelles.</h2>
+        <p class="dp-section-lede">Ce que j'ai conçu, déployé et sécurisé — à la DSI de Massy comme sur ma propre infrastructure.</p>
+      </div>
+
+      <!-- 01 · Massy Innove -->
+      <article class="dp-entry dp-entry--project reveal" id="massy-innove">
+        <div class="dp-entry-head">
+          <span class="dp-proj-flag"><svg viewBox="0 0 3 2" aria-hidden="true"><rect width="1" height="2" x="0" fill="#0055A4"/><rect width="1" height="2" x="1" fill="#fff"/><rect width="1" height="2" x="2" fill="#EF4135"/></svg></span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">01</span>_projet · IA souveraine</span>
+            <h3>Massy Innove</h3>
+            <p class="dp-entry-sub">Une plateforme d'IA interne 100 % souveraine, conçue pour la confidentialité.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">Plateforme d'assistance IA déployée en interne, sans dépendance à un cloud américain : authentification durcie, détection d'abus embarquée et routage intelligent vers des modèles hébergés en France.</p>
+        <div class="dp-entry-cols">
+          <div class="dp-col">
+            <h4 class="dp-col-title">Ce que j'ai fait</h4>
+            <ul class="dp-list">
+              <li>Authentification durcie via <strong>Argon2id</strong> (hachage résistant au brute-force).</li>
+              <li>Conception d'un <strong>IDS applicatif</strong> assisté par Claude pour repérer les usages anormaux.</li>
+              <li><strong>Routage multi-modèles</strong> vers <strong>Mistral AI</strong> selon le type de requête.</li>
+              <li>Hébergement <strong>souverain</strong> sur <strong>OVHcloud</strong>, données maîtrisées de bout en bout.</li>
+            </ul>
+          </div>
+          <div class="dp-col">
+            <h4 class="dp-col-title">Stack</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Mistral AI</span>
+              <span class="dp-chip">OVHcloud</span>
+              <span class="dp-chip">Argon2id</span>
+              <span class="dp-chip">Python</span>
+              <span class="dp-chip">Docker</span>
+            </div>
+            <div class="dp-metrics">
+              <div class="dp-metric"><b>100%</b><span>souverain</span></div>
+              <div class="dp-metric"><b>0</b><span>donnée hors UE</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 02 · Homelab -->
+      <article class="dp-entry dp-entry--project reveal" id="homelab">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--infra">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">02</span>_projet · infra auto-hébergée</span>
+            <h3>Homelab perso</h3>
+            <p class="dp-entry-sub">Mon terrain de jeu de production — exigeant comme le vrai.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">Une infrastructure auto-hébergée que j'exploite comme un environnement de prod : services exposés proprement, supervisés en continu, et surtout <strong>zéro port ouvert</strong> sur Internet.</p>
+        <div class="dp-entry-cols">
+          <div class="dp-col">
+            <h4 class="dp-col-title">Ce que j'ai fait</h4>
+            <ul class="dp-list">
+              <li>Socle <strong>Debian 12</strong> durci, services conteneurisés et sauvegardés.</li>
+              <li><strong>Nextcloud</strong> exposé via <strong>Cloudflare Tunnel</strong> — aucun port entrant.</li>
+              <li>Supervision <strong>Zabbix</strong> : santé des services, alerte au moindre écart.</li>
+              <li>Vérification régulière de la surface d'attaque (<strong>0 port ouvert</strong> confirmé par scan).</li>
+            </ul>
+          </div>
+          <div class="dp-col">
+            <h4 class="dp-col-title">Stack</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Debian 12</span>
+              <span class="dp-chip">Nextcloud</span>
+              <span class="dp-chip">Cloudflare Tunnel</span>
+              <span class="dp-chip">Zabbix</span>
+              <span class="dp-chip">Docker</span>
+            </div>
+            <div class="dp-metrics">
+              <div class="dp-metric"><b>0</b><span>port ouvert</span></div>
+              <div class="dp-metric"><b>24/7</b><span>supervisé</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 03 · Stack technique -->
+      <article class="dp-entry dp-entry--project reveal" id="stack">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--dev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/><polyline points="3 18 12 23 21 18" opacity="0"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">03</span>_stack · outils du quotidien</span>
+            <h3>Stack technique</h3>
+            <p class="dp-entry-sub">Les briques que je déploie, sécurise et supervise au quotidien.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">Un panorama des technologies que j'utilise réellement — pas une liste de buzzwords, mais les outils que je sais installer, durcir et exploiter en production.</p>
+        <div class="dp-stack-groups">
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Systèmes</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Debian</span><span class="dp-chip">Windows Server</span><span class="dp-chip">Linux</span>
+            </div>
+          </div>
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Sécurité</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Wazuh</span><span class="dp-chip">Suricata</span><span class="dp-chip">pfSense</span>
+            </div>
+          </div>
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Cloud &amp; supervision</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Cloudflare</span><span class="dp-chip">Zabbix</span><span class="dp-chip">Grafana</span><span class="dp-chip">Docker</span><span class="dp-chip">VMware</span>
+            </div>
+          </div>
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Dev &amp; outils</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Python</span><span class="dp-chip">Bash</span><span class="dp-chip">PowerShell</span><span class="dp-chip">GLPI</span><span class="dp-chip">Git</span><span class="dp-chip">Ansible</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 04 · Supervision -->
+      <article class="dp-entry dp-entry--project reveal" id="supervision">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--infra">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.5a16 16 0 0 1 20 0"/><path d="M5 12a11 11 0 0 1 14 0"/><path d="M8.5 15.5a6 6 0 0 1 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">04</span>_projet · monitoring</span>
+            <h3>Supervision 24/7</h3>
+            <p class="dp-entry-sub">Savoir avant l'utilisateur qu'un service a un problème.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead">Une chaîne de supervision qui veille en continu sur l'infrastructure : <strong>Zabbix</strong> collecte, seuille et alerte, pour intervenir <strong>avant</strong> que l'incident ne devienne visible.</p>
+        <div class="dp-entry-cols">
+          <div class="dp-col">
+            <h4 class="dp-col-title">Ce que j'ai fait</h4>
+            <ul class="dp-list">
+              <li>Déploiement d'agents <strong>Zabbix</strong> sur l'ensemble des hôtes.</li>
+              <li>Définition de <strong>seuils métier</strong> et de politiques d'escalade.</li>
+              <li><strong>Alerting</strong> en temps réel (notification au moindre écart).</li>
+              <li>Tableaux de bord de <strong>disponibilité</strong> et de tendance.</li>
+            </ul>
+          </div>
+          <div class="dp-col">
+            <h4 class="dp-col-title">Stack</h4>
+            <div class="dp-chips">
+              <span class="dp-chip">Zabbix 7.2</span>
+              <span class="dp-chip">Grafana</span>
+              <span class="dp-chip">SNMP</span>
+              <span class="dp-chip">Alerting</span>
+            </div>
+            <div class="dp-metrics">
+              <div class="dp-metric"><b>24/7</b><span>veille active</span></div>
+              <div class="dp-metric"><b>99.9%</b><span>uptime constaté</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- Rappel de retour en pied -->
+    <div class="dp-foot reveal">
+      <p>Envie de voir le reste ?</p>
+      <a class="btn btn-primary" href="index.html">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+        Retour à l'accueil
+      </a>
+    </div>
+
+  </main>
+</div>
+
+<script src="js/details.js"></script>
+</body>
+</html>

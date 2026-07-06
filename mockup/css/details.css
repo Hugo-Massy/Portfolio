@@ -1,0 +1,215 @@
+/* =============================================================================
+   PAGE DÉTAILS — vue longue des compétences et de l'expérience.
+   Réutilise les tokens de styles.css (:root, .section-tag, .accent, .btn...).
+   Thème clair, accent bleu, vocabulaire visuel « terminal » comme le reste du site.
+   ============================================================================= */
+
+.dp-body{
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:clip;
+}
+/* On neutralise le padding vertical géant des <section> hérité de styles.css :
+   ici les sections vivent dans une mise en page dédiée. */
+.dp-body section{padding:0;}
+
+/* Sélecteur de langue bloqué sur cette page (pas de contenu traduit) : visible pour
+   la cohérence du rail, mais non cliquable. */
+.dp-body .lang-switch.is-disabled{
+  cursor:not-allowed; opacity:.45; pointer-events:none;
+}
+
+/* titre centré dans la barre du terminal du hero, façon macOS */
+#dp-hero .term-bar-title{
+  flex:1; text-align:center; font-family:var(--mono); font-size:12px;
+  color:#566070; letter-spacing:.02em; user-select:none;
+  margin-right:34px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* --- Mise en page : contenu principal, pleine largeur --- */
+.dp-layout{
+  padding-bottom:clamp(64px, 10vh, 120px);
+}
+/* --- Sommaire en arborescence de fichiers, affiché dans le terminal du hero --- */
+.dp-tree{padding:6px 0 2px; font-family:var(--mono);}
+.dp-tree-root{
+  display:flex; align-items:center; gap:7px;
+  font-size:13px; color:#e8ecf2; font-weight:600;
+  padding:2px 0 3px;
+}
+/* listes imbriquées : trait vertical guide à gauche, comme un arbre de fichiers */
+.dp-tree-list{list-style:none; margin:0; padding:0;}
+.dp-tree-list .dp-tree-list{margin-left:9px; position:relative;}
+.dp-tree-node{position:relative;}
+/* trait vertical qui relie les enfants d'un même dossier */
+.dp-tree-list .dp-tree-list > .dp-tree-node{padding-left:15px;}
+.dp-tree-list .dp-tree-list > .dp-tree-node::before{
+  content:''; position:absolute; left:0; top:0; bottom:0;
+  border-left:1px solid rgba(255,255,255,.13);
+}
+/* le dernier enfant coupe le trait vertical à hauteur du coude */
+.dp-tree-list .dp-tree-list > .dp-tree-node:last-child::before{bottom:auto; height:16px;}
+/* coude horizontal vers chaque fichier */
+.dp-tree-list .dp-tree-list > .dp-tree-node::after{
+  content:''; position:absolute; left:0; top:16px; width:11px;
+  border-top:1px solid rgba(255,255,255,.13);
+}
+.dp-tree-row{
+  display:flex; align-items:center; gap:7px;
+  font-size:12.5px; color:var(--term-text);
+  padding:2px 4px 2px 0; border-radius:7px;
+  white-space:nowrap; overflow:hidden;
+}
+.dp-tree-row span{overflow:hidden; text-overflow:ellipsis;}
+.dp-tree-folder{color:#d7dbe3; font-weight:500; cursor:default;}
+.dp-tree-file{transition:background .16s ease, color .16s ease;}
+/* survol/sélection = ligne surlignée, même traitement que .term-cat-item du hero */
+.dp-tree-file:hover{background:rgba(111,137,217,.14); color:#ffffff;}
+.dp-tree-file.is-active{background:rgba(111,137,217,.14); color:#ffffff; font-weight:600;}
+/* icônes dossier / fichier */
+.dp-ic-folder, .dp-ic-file{width:15px; height:15px; flex-shrink:0;}
+.dp-ic-folder{color:#6f89d9;}
+.dp-tree-root .dp-ic-folder{color:#6f89d9;}
+.dp-ic-file{color:#566070;}
+.dp-tree-file:hover .dp-ic-file{color:#6f89d9;}
+.dp-tree-file.is-active .dp-ic-file{color:#6f89d9;}
+
+/* --- Colonne principale --- */
+.dp-main{min-width:0;}
+.dp-section{margin-bottom:64px;}
+.dp-section:last-of-type{margin-bottom:40px;}
+.dp-section-head{margin-bottom:28px;}
+.dp-section-head h2{
+  font-size:clamp(24px, 3.5vw, 32px); margin:4px 0 10px;
+}
+.dp-section-head h2 .accent{color:var(--accent);}
+.dp-section-lede{color:var(--text-dim); max-width:600px;}
+
+/* --- Carte d'entrée (compétence ou projet) --- */
+.dp-entry{
+  scroll-margin-top:80px;
+  border:1px solid var(--border); border-radius:var(--radius);
+  background:var(--bg-elev); box-shadow:var(--shadow-card);
+  padding:26px 28px; margin-bottom:20px;
+  transition:border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+}
+.dp-entry:hover{
+  border-color:var(--accent-pale);
+  box-shadow:0 1px 2px rgba(20,20,15,.04), 0 12px 34px rgba(45,63,128,.08);
+  transform:translateY(-2px);
+}
+.dp-entry-head{display:flex; align-items:flex-start; gap:16px; margin-bottom:16px;}
+.dp-entry-icon{
+  flex-shrink:0; width:52px; height:52px; border-radius:13px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--accent-soft); color:var(--accent);
+  border:1px solid var(--accent-pale);
+}
+.dp-entry-icon svg{width:26px; height:26px;}
+/* teintes par pilier, discrètes */
+.dp-ic--security{background:rgba(77,111,203,.09); color:#3f5fbf; border-color:#cdd8f4;}
+.dp-ic--sysadmin{background:rgba(45,127,110,.09); color:#2c7f6e; border-color:#c7e6de;}
+.dp-ic--infra{background:rgba(56,110,190,.09); color:#386ebe; border-color:#c9dbf3;}
+.dp-ic--dev{background:rgba(150,90,180,.09); color:#8a53b0; border-color:#e2d0ee;}
+
+.dp-entry-titles{min-width:0;}
+.dp-entry-tag{
+  display:inline-flex; align-items:center;
+  font-family:var(--mono); font-size:12px; color:var(--text-faint);
+  letter-spacing:.02em; margin-bottom:5px;
+}
+.dp-entry-num{color:var(--accent); font-weight:700; margin-right:2px;}
+.dp-entry-titles h3{font-size:21px; margin-bottom:3px;}
+.dp-entry-sub{font-size:14px; color:var(--text-dim); line-height:1.5;}
+.dp-entry-lead{
+  color:var(--text-dim); line-height:1.7; margin-bottom:22px;
+  font-size:15.5px;
+}
+.dp-entry-lead strong{color:var(--text); font-weight:600;}
+
+/* deux colonnes : réalisations / outils */
+.dp-entry-cols{
+  display:grid; grid-template-columns:1.25fr 1fr; gap:32px;
+  padding-top:20px; border-top:1px solid var(--border-soft);
+}
+.dp-col-title{
+  font-family:var(--mono); font-size:12px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.06em;
+  color:var(--text-faint); margin-bottom:12px;
+}
+.dp-list{list-style:none; display:flex; flex-direction:column; gap:10px;}
+.dp-list li{
+  position:relative; padding-left:22px;
+  font-size:14.5px; color:var(--text-dim); line-height:1.6;
+}
+.dp-list li::before{
+  content:''; position:absolute; left:2px; top:9px;
+  width:6px; height:6px; border-radius:2px;
+  background:var(--accent); transform:rotate(45deg);
+}
+.dp-list li strong{color:var(--text); font-weight:600;}
+
+/* puces / chips technos */
+.dp-chips{display:flex; flex-wrap:wrap; gap:8px;}
+.dp-chip{
+  font-family:var(--mono); font-size:12.5px; color:var(--text-dim);
+  padding:6px 11px; border-radius:7px;
+  background:var(--bg-elev-2); border:1px solid var(--border-soft);
+  transition:border-color .18s ease, color .18s ease, background .18s ease;
+}
+.dp-chip:hover{border-color:var(--accent-tint); color:var(--accent); background:var(--accent-soft);}
+
+/* métriques compactes */
+.dp-metrics{display:flex; gap:10px; margin-top:18px; flex-wrap:wrap;}
+.dp-metric{
+  flex:1 1 auto; min-width:120px;
+  border:1px solid var(--border-soft); border-radius:10px;
+  padding:12px 14px; background:var(--bg);
+}
+.dp-metric b{
+  display:block; font-size:22px; color:var(--accent);
+  font-weight:700; letter-spacing:-.02em; line-height:1;
+}
+.dp-metric span{
+  display:block; margin-top:5px; font-size:12px; color:var(--text-dim);
+}
+
+/* projet : drapeau français en tête de Massy Innove */
+.dp-proj-flag{
+  flex-shrink:0; width:52px; height:52px; border-radius:13px;
+  display:flex; align-items:center; justify-content:center;
+  border:1px solid var(--border); overflow:hidden; background:var(--bg);
+}
+.dp-proj-flag svg{width:30px; height:20px; border-radius:3px;}
+
+/* variante « stack technique » : groupes de chips par catégorie */
+.dp-stack-groups{
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:22px 32px;
+  padding-top:20px; border-top:1px solid var(--border-soft);
+}
+.dp-stack-group .dp-col-title{margin-bottom:10px;}
+
+/* pied de page : rappel de retour */
+.dp-foot{
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+  text-align:center; padding:44px 20px;
+  border:1px dashed var(--border); border-radius:var(--radius);
+  background:var(--bg-elev-2);
+}
+.dp-foot p{color:var(--text-dim); font-size:15px;}
+
+/* reveal identique au reste du site (initialisé par js/details.js) */
+.reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease;}
+.reveal.is-visible{opacity:1; transform:translateY(0);}
+
+/* =============================== RESPONSIVE =============================== */
+@media (max-width:640px){
+  .dp-entry-cols{grid-template-columns:1fr; gap:22px;}
+  .dp-stack-groups{grid-template-columns:1fr;}
+  .dp-entry{padding:22px 18px;}
+}
+
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1; transform:none; transition:none;}
+  .dp-entry:hover{transform:none;}
+}
