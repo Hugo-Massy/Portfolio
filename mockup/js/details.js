@@ -152,6 +152,17 @@
     return { index: best, dist: bestDist };
   }
 
+  // Index "logique" de la position actuelle. Au-delà de la dernière slide (dans #contact
+  // ou le pied de page), closestSlide() renverrait quand même le dernier index par simple
+  // proximité — et remonter d'un cran depuis là sauterait carrément la dernière carte au
+  // lieu d'y revenir en premier. On renvoie donc slides.length pour signaler "après la fin".
+  function currentIndex() {
+    const mid = window.scrollY + window.innerHeight / 2;
+    const lastRect = slides[slides.length - 1].getBoundingClientRect();
+    if (mid > window.scrollY + lastRect.bottom) return slides.length;
+    return closestSlide().index;
+  }
+
   function scrollToSlide(index) {
     index = Math.max(0, Math.min(slides.length - 1, index));
     const target = slides[index];
@@ -182,8 +193,10 @@
   // le pied de page tout en bas), on laisse le scroll natif faire son travail.
   window.addEventListener('wheel', (e) => {
     if (Math.abs(e.deltaY) < 2) return;
-    const { index } = closestSlide();
-    const nextIndex = index + (e.deltaY > 0 ? 1 : -1);
+    const index = currentIndex();
+    // Après la dernière slide (dans #contact) et on remonte : revenir sur la dernière
+    // carte d'abord, pas sur l'avant-dernière (index serait déjà slides.length).
+    const nextIndex = index >= slides.length && e.deltaY < 0 ? slides.length - 1 : index + (e.deltaY > 0 ? 1 : -1);
     if (nextIndex < 0 || nextIndex > slides.length - 1) return;
     e.preventDefault();
     if (animating) return;
@@ -199,8 +212,8 @@
     const dy = touchStartY - e.changedTouches[0].clientY;
     touchStartY = null;
     if (Math.abs(dy) < 40) return;
-    const { index } = closestSlide();
-    const nextIndex = index + (dy > 0 ? 1 : -1);
+    const index = currentIndex();
+    const nextIndex = index >= slides.length && dy < 0 ? slides.length - 1 : index + (dy > 0 ? 1 : -1);
     if (nextIndex < 0 || nextIndex > slides.length - 1) return;
     scrollToSlide(nextIndex);
   }, { passive: true });
@@ -324,20 +337,42 @@
     indicator.style.top = `${tab.offsetTop + tab.offsetHeight / 2}px`;
   }
 
+  function activate(tab) {
+    clearTimeout(activateTimer);
+    tabs.forEach((t) => t.classList.remove('is-active'));
+    moveIndicatorTo(tab);
+    activateTimer = setTimeout(() => tab.classList.add('is-active'), INDICATOR_TRAVEL_MS);
+  }
+
   const observer = new IntersectionObserver((entries) => {
+    // Ignoré tout en bas de page : #contact peut être plus courte que la fenêtre restante
+    // et ne jamais traverser la bande -40%/-55% du rootMargin, cf. le correctif juste après.
+    if (isAtBottom()) return;
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       const tab = sectionToTab.get(entry.target);
       if (!tab) return;
-      clearTimeout(activateTimer);
-      tabs.forEach((t) => t.classList.remove('is-active'));
-      moveIndicatorTo(tab);
-      activateTimer = setTimeout(() => tab.classList.add('is-active'), INDICATOR_TRAVEL_MS);
+      activate(tab);
     });
   }, { rootMargin: '-40% 0px -55% 0px' });
 
   sectionToTab.forEach((tab, section) => observer.observe(section));
   moveIndicatorTo(tabs[0]);
+
+  // Filet de sécurité : tout en bas de la page, la dernière section (#contact) n'est pas
+  // forcément assez haute pour traverser la bande centrale surveillée par l'observer — on
+  // force alors l'activation du dernier onglet plutôt que de laisser le précédent actif.
+  function isAtBottom() {
+    return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+  }
+  function checkBottom() {
+    if (!isAtBottom()) return;
+    const lastTab = tabs[tabs.length - 1];
+    if (lastTab && !lastTab.classList.contains('is-active')) activate(lastTab);
+  }
+  window.addEventListener('scroll', checkBottom, { passive: true });
+  window.addEventListener('resize', checkBottom);
+  checkBottom();
 })();
 
 // Bouton "remonter en haut" : visible dès qu'on a quitté l'en-tête de la page.

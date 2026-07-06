@@ -228,34 +228,46 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 .dp-col{position:relative;}
 .dp-col-title{
+  display:inline-flex; align-items:center; gap:9px;
   font-family:var(--mono); font-size:12px; font-weight:600;
   text-transform:uppercase; letter-spacing:.08em;
-  color:var(--text-faint); margin-bottom:18px;
+  color:var(--accent); margin-bottom:22px;
+}
+.dp-col-title::before{
+  content:''; width:22px; height:2px; border-radius:2px;
+  background:var(--accent);
 }
 .dp-list{
   list-style:none; display:grid;
-  grid-template-columns:repeat(2, 1fr); gap:4px 20px;
+  grid-template-columns:repeat(2, 1fr); gap:12px 18px;
 }
+/* chaque savoir-faire = petite carte discrète, pastille de validation à gauche */
 .dp-list li{
-  position:relative; padding:10px 14px 10px 34px; margin:0 -14px;
-  border-radius:10px;
-  font-size:14.5px; color:var(--text-dim); line-height:1.6;
-  transition:background .18s ease;
+  position:relative; padding:14px 16px 14px 46px;
+  border-radius:12px;
+  border:1px solid var(--border-soft); background:var(--bg-elev);
+  font-size:14.5px; color:var(--text-dim); line-height:1.55;
+  transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
 }
-.dp-list li:hover{background:var(--bg-elev-2);}
+.dp-list li:hover{
+  border-color:var(--accent-pale);
+  box-shadow:0 6px 18px rgba(20,20,15,.05);
+  transform:translateY(-2px);
+}
+/* pastille ronde pleine, coche blanche */
 .dp-list li::before{
-  content:''; position:absolute; left:8px; top:12px;
-  width:16px; height:16px; border-radius:50%;
-  background:var(--accent-soft);
-  box-shadow:inset 0 0 0 1px var(--accent-pale);
+  content:''; position:absolute; left:14px; top:14px;
+  width:20px; height:20px; border-radius:50%;
+  background:var(--accent);
+  box-shadow:0 2px 6px var(--accent-glow);
 }
 .dp-list li::after{
-  content:''; position:absolute; left:12.5px; top:16.5px;
+  content:''; position:absolute; left:20px; top:20px;
   width:7px; height:4px;
-  border-left:1.6px solid var(--accent); border-bottom:1.6px solid var(--accent);
+  border-left:1.8px solid #fff; border-bottom:1.8px solid #fff;
   transform:rotate(-45deg);
 }
-.dp-list li strong{color:var(--text); font-weight:600;}
+.dp-list li strong{color:var(--text); font-weight:700;}
 
 /* puces / chips technos */
 .dp-chips{display:flex; flex-wrap:wrap; gap:10px;}
