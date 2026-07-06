@@ -101,6 +101,67 @@
   if (el) el.textContent = new Date().getFullYear();
 })();
 
+// Avatar de #contact qui grandit progressivement au scroll, comme sur l'accueil
+// (initAboutParallax dans main.js). Là-bas, la progression suit le contre-lift qui
+// résorbe le décalage entre #about et #contact ; ici, sans #about, on la fait dépendre
+// simplement de la distance parcourue jusqu'au vrai bas de la page — l'avatar termine
+// sa croissance (et révèle le bras posé sur le pli) pile quand on atteint le bas du document.
+(function initContactAvatarGrow() {
+  const contact = document.getElementById('contact');
+  if (!contact) return;
+  const avatarEls = contact.querySelectorAll('.contact-avatar');
+  const armEl = contact.querySelector('.contact-avatar-arm');
+  if (!avatarEls.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', '1'));
+    if (armEl) armEl.style.setProperty('--avatar-arm-opacity', '1');
+    return;
+  }
+
+  const AVATAR_MIN_SCALE = 0.15;
+  const ARM_REVEAL_START = 0.75;
+  const EASE = 0.35;
+
+  let currentProgress = 0;
+  let rafId = null;
+
+  function targetProgress() {
+    const doc = document.documentElement;
+    const maxScroll = Math.max(doc.scrollHeight - window.innerHeight, 1);
+    const range = Math.max(300, window.innerHeight * 0.9);
+    const start = maxScroll - range;
+    return Math.min(Math.max((window.scrollY - start) / range, 0), 1);
+  }
+
+  function apply() {
+    const scale = AVATAR_MIN_SCALE + currentProgress * (1 - AVATAR_MIN_SCALE);
+    avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', scale.toFixed(3)));
+    if (armEl) {
+      armEl.style.setProperty('--avatar-arm-opacity', currentProgress >= ARM_REVEAL_START ? 1 : 0);
+    }
+  }
+
+  function tick() {
+    const target = targetProgress();
+    currentProgress += (target - currentProgress) * EASE;
+    if (Math.abs(target - currentProgress) < 0.001) currentProgress = target;
+    apply();
+    if (currentProgress !== target) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      rafId = null;
+    }
+  }
+
+  function onScroll() {
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  apply();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+})();
+
 // Anime les blocs .reveal quand ils entrent dans le viewport (une seule fois).
 (function initReveal() {
   const targets = document.querySelectorAll('.reveal');
