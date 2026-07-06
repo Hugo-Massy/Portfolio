@@ -186,10 +186,30 @@
 (function initSlideScroll() {
   // Le hero (accueil) fait partie de la séquence : il doit aussi s'accrocher au
   // scroll, pas juste les cartes, sinon on reste bloqué en sortant de la 1ère carte.
+  // Les 4 piliers du bloc bleu (#security, #sysadmin, #infra, #dev) en sont exclus :
+  // ils se parcourent désormais en carrousel horizontal (voir initCompetenceCarousel
+  // plus bas), pas en défilement vertical plein écran carte par carte.
   const hero = document.getElementById('dp-hero');
-  const slides = [hero, ...document.querySelectorAll('.dp-slide')].filter(Boolean);
+  const slideEls = Array.from(document.querySelectorAll('.dp-slide')).filter((el) => !el.closest('.dp-blue-block-wrap'));
+  const slides = [hero, ...slideEls].filter(Boolean);
   if (!slides.length) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // Le bloc bleu (défilement libre) s'intercale entre le hero et #massy-innove : ces deux-là
+  // ne sont donc plus des voisins directs. gapAfter[i] signale un tel "trou" entre
+  // slides[i] et slides[i+1] — sur cette paire, on n'accroche pas la molette, pour laisser
+  // le scroll natif traverser librement tout le bloc bleu.
+  let gapAfter = [];
+  function computeGaps() {
+    gapAfter = slides.map((el, i) => {
+      if (i === slides.length - 1) return false;
+      const rect = el.getBoundingClientRect();
+      const nextRect = slides[i + 1].getBoundingClientRect();
+      return (nextRect.top - rect.bottom) > window.innerHeight * 0.5;
+    });
+  }
+  computeGaps();
+  window.addEventListener('resize', computeGaps);
 
   const DURATION = 550; // ms — augmente/diminue pour ralentir/accélérer la transition
   let animating = false;
@@ -259,6 +279,7 @@
     // carte d'abord, pas sur l'avant-dernière (index serait déjà slides.length).
     const nextIndex = index >= slides.length && e.deltaY < 0 ? slides.length - 1 : index + (e.deltaY > 0 ? 1 : -1);
     if (nextIndex < 0 || nextIndex > slides.length - 1) return;
+    if (gapAfter[Math.min(index, nextIndex)]) return; // trou (bloc bleu) : scroll natif
     e.preventDefault();
     if (animating) return;
     scrollToSlide(nextIndex);
@@ -276,8 +297,51 @@
     const index = currentIndex();
     const nextIndex = index >= slides.length && dy < 0 ? slides.length - 1 : index + (dy > 0 ? 1 : -1);
     if (nextIndex < 0 || nextIndex > slides.length - 1) return;
+    if (gapAfter[Math.min(index, nextIndex)]) return; // trou (bloc bleu) : scroll natif déjà appliqué
     scrollToSlide(nextIndex);
   }, { passive: true });
+})();
+
+// Carrousel des 4 piliers de compétences (bloc bleu) : un seul panneau visible à la fois,
+// piloté par transform sur le track. Les liens qui pointent vers un des 4 (boutons
+// précédent/suivant de chaque carte, rail de nav, arborescence du hero) sont détournés
+// pour changer de panneau plutôt que de sauter d'ancre en ancre — un lien qui pointe
+// ailleurs (ex. #dp-hero, #massy-innove) continue de faire un scroll d'ancre classique.
+(function initCompetenceCarousel() {
+  const carousel = document.getElementById('dp-carousel-competences');
+  if (!carousel) return;
+  const track = carousel.querySelector('.dp-carousel-track');
+  const panels = Array.from(track.children).filter((el) => el.classList.contains('dp-slide'));
+  const dots = Array.from(document.querySelectorAll('.dp-carousel-dot'));
+  const idToIndex = new Map(panels.map((el, i) => [el.id, i]));
+  let index = 0;
+
+  function apply() {
+    track.style.transform = `translateX(-${index * 100}%)`;
+    panels.forEach((el, i) => el.setAttribute('aria-hidden', i === index ? 'false' : 'true'));
+    dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+  }
+
+  function goTo(i) {
+    index = Math.max(0, Math.min(panels.length - 1, i));
+    apply();
+  }
+
+  dots.forEach((d) => {
+    d.addEventListener('click', () => goTo(Number(d.dataset.carouselIndex)));
+  });
+
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    const targetId = a.getAttribute('href').slice(1);
+    if (!idToIndex.has(targetId)) return;
+    a.addEventListener('click', (e) => {
+      e.preventDefault();
+      goTo(idToIndex.get(targetId));
+      carousel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+
+  apply();
 })();
 
 // Surligne dans le sommaire l'entrée correspondant à la carte actuellement au centre
@@ -383,10 +447,15 @@
   const tabs = document.querySelectorAll('.dot-rail a[href^="#"]');
   const indicator = document.querySelector('.dot-rail-indicator');
   if (!tabs.length) return;
+  // Un onglet peut représenter plusieurs sections à la fois (ex. "Compétences détaillées"
+  // regroupe les 4 piliers du carrousel) via data-sections, en plus de sa cible href.
   const sectionToTab = new Map();
   tabs.forEach((tab) => {
-    const section = document.getElementById(tab.getAttribute('href').slice(1));
-    if (section) sectionToTab.set(section, tab);
+    const ids = [tab.getAttribute('href').slice(1), ...(tab.dataset.sections ? tab.dataset.sections.split(/\s+/) : [])];
+    ids.forEach((id) => {
+      const section = document.getElementById(id);
+      if (section) sectionToTab.set(section, tab);
+    });
   });
   if (!sectionToTab.size) return;
 
@@ -452,26 +521,42 @@
 })();
 
 // Adaptation à la couleur de fond : quand le rail de nav (points + indicateur) ou le bouton
-// "remonter en haut" passent devant le bandeau bleu de #contact, ils basculent en teintes
-// claires (classe .is-on-dark, stylée dans styles.css) pour rester lisibles. Près du bord
-// droit — là où vivent le rail et le bouton — la diagonale du haut de #contact touche 0, donc
-// le bleu couvre toute la hauteur de la section : un simple test top/bottom suffit.
+// "remonter en haut" passent devant un bandeau bleu (#contact, ou le bloc bleu des 4 piliers
+// de compétences), ils basculent en teintes claires (classe .is-on-dark, stylée dans
+// styles.css) pour rester lisibles. #contact couvre toute sa hauteur sur toute sa largeur,
+// un simple test top/bottom suffit. Le bloc bleu, lui, a une pente sur ses deux bords (voir
+// --dp-slope et le clip-path de .dp-blue-block-fill dans details.css) : sur le bord droit —
+// là où vivent justement le rail et le bouton — le bleu part du tout premier pixel en haut
+// mais s'arrête "--dp-slope" avant le bas ; sans en tenir compte on les fait passer en clair
+// alors qu'ils sont déjà repassés sur fond blanc, illisibles.
 (function initOnDarkAdaptation() {
   const contact = document.getElementById('contact');
+  const blueBlock = document.querySelector('.dp-blue-block');
   const railLinks = document.querySelectorAll('.dot-rail a');
   const indicator = document.querySelector('.dot-rail-indicator');
   const backToTop = document.querySelector('.back-to-top');
-  if (!contact) return;
+  if (!contact && !blueBlock) return;
 
-  function overContactBlue(y) {
-    const r = contact.getBoundingClientRect();
-    return y > r.top && y < r.bottom;
+  const blueSlope = blueBlock
+    ? parseFloat(getComputedStyle(blueBlock).getPropertyValue('--dp-slope')) || 0
+    : 0;
+
+  function overDarkZone(y) {
+    if (contact) {
+      const r = contact.getBoundingClientRect();
+      if (y > r.top && y < r.bottom) return true;
+    }
+    if (blueBlock) {
+      const r = blueBlock.getBoundingClientRect();
+      if (y > r.top && y < r.bottom - blueSlope) return true;
+    }
+    return false;
   }
 
   function toggle(el) {
     if (!el) return;
     const r = el.getBoundingClientRect();
-    el.classList.toggle('is-on-dark', overContactBlue(r.top + r.height / 2));
+    el.classList.toggle('is-on-dark', overDarkZone(r.top + r.height / 2));
   }
 
   function update() {

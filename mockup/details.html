@@ -93,14 +93,11 @@
 <nav class="dot-rail" aria-label="Navigation">
   <span class="dot-rail-indicator"></span>
   <a href="#dp-hero"><span class="dot-label">Accueil</span><span class="dot"></span></a>
-  <a href="#security"><span class="dot-label">Sécurité</span><span class="dot"></span></a>
-  <a href="#sysadmin"><span class="dot-label">Admin systèmes</span><span class="dot"></span></a>
-  <a href="#infra"><span class="dot-label">Infra & Cloud</span><span class="dot"></span></a>
-  <a href="#dev"><span class="dot-label">Dev & Auto</span><span class="dot"></span></a>
+  <a href="#security" data-sections="security sysadmin infra dev"><span class="dot-label">Compétences</span><span class="dot"></span></a>
   <a href="#massy-innove"><span class="dot-label">Massy Innove</span><span class="dot"></span></a>
   <a href="#homelab"><span class="dot-label">Homelab</span><span class="dot"></span></a>
-  <a href="#stack"><span class="dot-label">Stack</span><span class="dot"></span></a>
   <a href="#supervision"><span class="dot-label">Supervision</span><span class="dot"></span></a>
+  <a href="#stack"><span class="dot-label">Stack</span><span class="dot"></span></a>
   <a href="#contact"><span class="dot-label">Contact</span><span class="dot"></span></a>
 </nav>
 
@@ -169,8 +166,8 @@
               <ul class="dp-tree-list">
                 <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#massy-innove" data-target="massy-innove" title="Massy Innove"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>massy-innove.md</span></a></li>
                 <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#homelab" data-target="homelab" title="Homelab perso"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>homelab.md</span></a></li>
-                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#stack" data-target="stack" title="Stack technique"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>stack.md</span></a></li>
                 <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#supervision" data-target="supervision" title="Supervision 24/7"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>supervision.md</span></a></li>
+                <li class="dp-tree-node"><a class="dp-tree-row dp-tree-file" href="#stack" data-target="stack" title="Stack technique"><svg class="dp-ic-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span>stack.md</span></a></li>
               </ul>
             </li>
           </ul>
@@ -195,6 +192,14 @@
 
     <!-- ============================ COMPÉTENCES ============================ -->
     <section class="dp-section" id="competences">
+      <!-- Bloc bleu regroupant les 4 piliers de compétences, même traitement
+           visuel que la vague bleue de #about sur la page d'accueil -->
+      <div class="dp-blue-block">
+        <div class="dp-blue-block-fill" aria-hidden="true"></div>
+        <div class="dp-blue-block-wrap">
+        <div class="dp-carousel" id="dp-carousel-competences">
+        <div class="dp-carousel-track">
+
       <!-- 01 · Sécurité défensive -->
       <div class="dp-slide" id="security">
         <article class="dp-entry reveal" data-num="01">
@@ -208,21 +213,29 @@
             <p class="dp-entry-sub">Détecter, durcir, répondre — construire un SOC qui voit ce qui compte.</p>
           </div>
         </div>
+        <p class="dp-entry-lead dp-entry-lead--full">J'aborde la sécurité par la <strong>visibilité</strong> : sans télémétrie, pas de défense. J'ai déployé une chaîne de détection complète, du capteur réseau au tableau de bord, et je sais l'exploiter en cas d'incident.</p>
         <div class="dp-entry-copy" data-num="01">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">J'aborde la sécurité par la <strong>visibilité</strong> : sans télémétrie, pas de défense. J'ai déployé une chaîne de détection complète, du capteur réseau au tableau de bord, et je sais l'exploiter en cas d'incident.</p>
             <p class="dp-entry-story">Tout a commencé par une question toute bête : si quelqu'un rentrait ce soir, je le verrais ? À l'époque, la réponse était non. Pas de logs centralisés, pas d'alerte, juste un pare-feu qui filtrait sans jamais raconter ce qu'il avait filtré. J'ai commencé par poser un <strong>SIEM</strong> avec <strong>Wazuh</strong><img class="dp-inline-logo" src="assets/logo/WAZUH.png" alt="Wazuh">&nbsp;sur mes machines, agent par agent, pour que chaque connexion, chaque échec d'authentification, chaque processus suspect laisse une trace quelque part. Puis j'ai ajouté <strong>Suricata</strong><img class="dp-inline-logo" src="assets/logo/Logo-Suricata-vert-R.png" alt="Suricata">&nbsp;en coupure réseau, pour inspecter le trafic lui-même et pas seulement ce que les hôtes voulaient bien rapporter. Le déclic est venu du jour où j'ai monté un honeypot <strong>T-Pot</strong> exposé volontairement : en quelques heures, les tentatives de connexion pleuvaient déjà, scans automatisés, bruteforce SSH, bots qui testaient des identifiants par milliers. Voir ça en direct m'a appris plus sur les attaquants réels que n'importe quel cours. Depuis, je durcis systématiquement chaque machine avec les <strong>CIS Benchmarks</strong> avant même de la mettre en service, et je garde toujours un plan de réponse à incident prêt — parce que la question n'est plus « si », mais « quand ».</p>
           </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>3</b><span>couches de détection déployées</span></div>
+          </div>
         </div>
-        <div class="dp-entry-cols">
-          <div class="dp-col">
-            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+        <div class="dp-entry-cols dp-entry-cols--compare">
+          <div class="dp-col dp-col--have">
+            <h4 class="dp-col-title">Ce que j'ai appris</h4>
             <ul class="dp-list">
               <li><strong>SIEM &amp; EDR</strong> — collecte, corrélation et alerting avec <strong>Wazuh</strong> (agents Windows/Linux, règles custom).</li>
               <li><strong>IDS/IPS réseau</strong> — inspection du trafic avec <strong>Suricata</strong>, signatures et détection d'anomalies.</li>
               <li><strong>Honeypots</strong> — déploiement de <strong>T-Pot</strong> pour observer les attaques réelles et alimenter la threat intel.</li>
-              <li><strong>Durcissement</strong> — CIS Benchmarks, réduction de surface d'attaque, gestion des accès.</li>
-              <li><strong>Réponse à incident</strong> — triage, confinement, analyse post-mortem documentée.</li>
+            </ul>
+          </div>
+          <div class="dp-col dp-col--gap">
+            <h4 class="dp-col-title">Ce qu'il me manque</h4>
+            <ul class="dp-list dp-list--gap">
+              <li><strong>Forensics avancé</strong> — analyse mémoire et disque poussée, encore en cours d'approfondissement.</li>
+              <li><strong>Certifications</strong> — OSCP / CEH visées mais pas encore passées.</li>
             </ul>
           </div>
         </div>
@@ -242,21 +255,30 @@
             <p class="dp-entry-sub">Tenir un parc en production, sans casser le service du quotidien.</p>
           </div>
         </div>
+        <p class="dp-entry-lead dp-entry-lead--full">En alternance à la <strong>DSI de la Mairie de Massy</strong>, j'administre un environnement réel : annuaire central, parc applicatif dense et serveurs Linux en production, au service d'utilisateurs qui n'attendent pas.</p>
         <div class="dp-entry-copy" data-num="02">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">En alternance à la <strong>DSI de la Mairie de Massy</strong>, j'administre un environnement réel : annuaire central, parc applicatif dense et serveurs Linux en production, au service d'utilisateurs qui n'attendent pas.</p>
             <p class="dp-entry-story">Mon premier jour, on ne m'a pas donné un tutoriel, on m'a donné un annuaire <strong>Active Directory</strong> vieux de plusieurs années et une collectivité qui tournait dessus depuis le matin. Impossible de « faire des essais » : chaque OU, chaque GPO que je touchais pouvait bloquer un poste de travail à l'autre bout du bâtiment. J'ai appris à lire l'existant avant d'y toucher, à documenter avant d'agir. Très vite, j'ai hérité du suivi de plus de <strong>130 applications métier</strong> recensées dans <strong>GLPI</strong><img class="dp-inline-logo" src="assets/logo/glpi.svg" alt="GLPI">&nbsp;— certaines vitales, d'autres oubliées de tous sauf de l'utilisateur qui s'en sert encore chaque jour. Entre les serveurs <strong>Windows Server</strong><img class="dp-inline-logo" src="assets/logo/Windows_logo_-_2021.svg" alt="Windows Server">&nbsp;historiques et mes déploiements plus récents sous <strong>Debian 12</strong><img class="dp-inline-logo" src="assets/logo/debian.svg" alt="Debian">&nbsp;systemd, j'ai dû jongler entre deux mondes sans jamais casser le pont entre eux. Ce qui m'a le plus marqué, c'est la répétition : les mêmes tickets, les mêmes gestes. Alors j'ai commencé à automatiser ce qui pouvait l'être avec <strong>PowerShell</strong><img class="dp-inline-logo" src="assets/logo/Powershell_128.svg" alt="PowerShell">, pour transformer une tâche de vingt minutes en un script de trois secondes — et retrouver du temps pour ce qui compte vraiment : l'utilisateur qui attend une réponse.</p>
           </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>130+</b><span>applications métier suivies</span></div>
+            <div class="dp-metric"><b>2</b><span>environnements administrés</span></div>
+          </div>
         </div>
-        <div class="dp-entry-cols">
-          <div class="dp-col">
-            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+        <div class="dp-entry-cols dp-entry-cols--compare">
+          <div class="dp-col dp-col--have">
+            <h4 class="dp-col-title">Ce que j'ai appris</h4>
             <ul class="dp-list">
               <li><strong>Active Directory</strong> — GPO, gestion des identités, structuration des OU.</li>
               <li><strong>Parc applicatif</strong> — exploitation et maintien de <strong>130+ applications</strong> métier.</li>
               <li><strong>Linux en prod</strong> — <strong>Debian 12</strong>, services systemd, sauvegardes et mises à jour.</li>
-              <li><strong>Gestion de parc</strong> — inventaire, cycle de vie du matériel, support N2.</li>
-              <li><strong>Windows Server</strong> — rôles, services et supervision de disponibilité.</li>
+            </ul>
+          </div>
+          <div class="dp-col dp-col--gap">
+            <h4 class="dp-col-title">Ce qu'il me manque</h4>
+            <ul class="dp-list dp-list--gap">
+              <li><strong>Multi-sites</strong> — administration d'un AD réparti sur plusieurs datacenters.</li>
+              <li><strong>Cloud identity</strong> — migration complète vers <strong>Entra ID</strong> (Azure AD), pas encore pratiquée.</li>
             </ul>
           </div>
         </div>
@@ -276,20 +298,30 @@
             <p class="dp-entry-sub">Exposer un service sans ouvrir un seul port. Superviser tout le reste.</p>
           </div>
         </div>
+        <p class="dp-entry-lead dp-entry-lead--full">Je conçois mes infrastructures selon une approche <strong>security by design</strong> : la surface d'exposition est réduite au strict minimum, et rien n'est mis en ligne sans supervision associée.</p>
         <div class="dp-entry-copy" data-num="03">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">Je conçois mes infrastructures selon une approche <strong>security by design</strong> : la surface d'exposition est réduite au strict minimum, et rien n'est mis en ligne sans supervision associée.</p>
             <p class="dp-entry-story">Longtemps, exposer un service a voulu dire ouvrir un port sur ma box et croiser les doigts. Puis je me suis posé la question inverse : et si je n'ouvrais jamais rien ? C'est là que <strong>Cloudflare Tunnel</strong><img class="dp-inline-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare">&nbsp;a tout changé pour moi : le service sort vers l'extérieur au lieu que l'extérieur rentre, et le scan de ports le plus agressif ne trouve strictement rien à exploiter. Mais réduire la surface d'attaque sans rien surveiller derrière, c'est juste déplacer l'aveuglement. J'ai donc bâti toute une chaîne de supervision avec <strong>Zabbix</strong><img class="dp-inline-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix">&nbsp;pour garder un œil sur chaque service, chaque hôte, chaque conteneur — et des tableaux de bord <strong>Grafana</strong><img class="dp-inline-logo" src="assets/logo/Grafana_icon.svg" alt="Grafana">&nbsp;pour transformer ces métriques brutes en quelque chose de lisible d'un coup d'œil. Toute cette infrastructure vit dans des conteneurs <strong>Docker</strong><img class="dp-inline-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker">&nbsp;et des machines virtuelles <strong>VMware</strong><img class="dp-inline-logo" src="assets/logo/vmware-workstation.svg" alt="VMware">&nbsp;hébergées chez <strong>OVHcloud</strong><img class="dp-inline-logo" src="assets/logo/ovh.svg" alt="OVHcloud">, un hébergeur français choisi sciemment pour garder la main sur mes données. Le résultat aujourd'hui : zéro port ouvert sur le WAN, et pourtant je sais exactement ce qui se passe à chaque instant sur chacune de mes machines.</p>
           </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>0</b><span>port ouvert sur le WAN</span></div>
+            <div class="dp-metric"><b>100%</b><span>hébergé en France</span></div>
+          </div>
         </div>
-        <div class="dp-entry-cols">
-          <div class="dp-col">
-            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+        <div class="dp-entry-cols dp-entry-cols--compare">
+          <div class="dp-col dp-col--have">
+            <h4 class="dp-col-title">Ce que j'ai appris</h4>
             <ul class="dp-list">
               <li><strong>Accès zero-trust</strong> — <strong>Cloudflare Tunnel</strong> : services publiés avec <strong>zéro port ouvert</strong> sur le WAN.</li>
               <li><strong>Supervision</strong> — <strong>Zabbix 7.2</strong> : métriques, seuils, alerting proactif.</li>
               <li><strong>Virtualisation &amp; conteneurs</strong> — VMware, <strong>Docker</strong>, cycle de vie des images.</li>
-              <li><strong>Reverse proxy &amp; TLS</strong> — terminaison chiffrée, certificats, routage propre.</li>
+            </ul>
+          </div>
+          <div class="dp-col dp-col--gap">
+            <h4 class="dp-col-title">Ce qu'il me manque</h4>
+            <ul class="dp-list dp-list--gap">
+              <li><strong>Kubernetes</strong> — orchestration de conteneurs à grande échelle, pas encore pratiquée en prod.</li>
+              <li><strong>Multi-cloud</strong> — AWS / Azure / GCP en production, expérience encore limitée à OVHcloud.</li>
             </ul>
           </div>
         </div>
@@ -309,24 +341,53 @@
             <p class="dp-entry-sub">Coder l'outil qui manque, supprimer la tâche qui n'aurait jamais dû être manuelle.</p>
           </div>
         </div>
+        <p class="dp-entry-lead dp-entry-lead--full">Quand un outil ne fait pas exactement ce qu'il faut, je l'étends. J'ai livré des <strong>plugins GLPI en production</strong> et automatisé des process internes jusqu'à faire <strong>disparaître entièrement le papier</strong> d'une chaîne de traitement.</p>
         <div class="dp-entry-copy" data-num="04">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">Quand un outil ne fait pas exactement ce qu'il faut, je l'étends. J'ai livré des <strong>plugins GLPI en production</strong> et automatisé des process internes jusqu'à faire <strong>disparaître entièrement le papier</strong> d'une chaîne de traitement.</p>
             <p class="dp-entry-story">Il y avait ce processus qui revenait sans cesse : un formulaire papier, signé, scanné, classé, ressaisi à la main dans <strong>GLPI</strong><img class="dp-inline-logo" src="assets/logo/glpi.svg" alt="GLPI">. Personne n'aimait le faire, tout le monde le faisait quand même, parce que « ça a toujours été comme ça ». Plutôt que de contourner l'outil, j'ai choisi de l'étendre : j'ai développé un plugin <strong>GLPI</strong> en <strong>PHP</strong>, directement branché sur le système d'information de la collectivité, pour que la donnée entre une seule fois et ne ressorte plus jamais sur une feuille volante. Ce plugin tourne aujourd'hui en production, utilisé chaque jour sans que personne n'ait plus besoin d'y penser — la meilleure preuve qu'un outil interne fonctionne, c'est qu'on l'oublie. À côté de ça, j'ai pris l'habitude d'écrire des scripts <strong>Python</strong><img class="dp-inline-logo" src="assets/logo/python-logo.svg" alt="Python">&nbsp;et <strong>Bash</strong> pour automatiser tout ce qui se répète : sauvegardes, vérifications, petites tâches d'exploitation. Chaque script est versionné avec <strong>Git</strong>, relu, documenté — parce qu'un automatisme mal maîtrisé peut faire plus de dégâts que la tâche manuelle qu'il remplace.</p>
           </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>100%</b><span>papier supprimé du process</span></div>
+            <div class="dp-metric"><b>3</b><span>langages utilisés en prod</span></div>
+          </div>
         </div>
-        <div class="dp-entry-cols">
-          <div class="dp-col">
-            <h4 class="dp-col-title">Ce que je maîtrise</h4>
+        <div class="dp-entry-cols dp-entry-cols--compare">
+          <div class="dp-col dp-col--have">
+            <h4 class="dp-col-title">Ce que j'ai appris</h4>
             <ul class="dp-list">
               <li><strong>Plugins GLPI</strong> — développement <strong>PHP</strong> en production, intégré au SI de la collectivité.</li>
               <li><strong>Scripting</strong> — <strong>Python</strong> et <strong>Bash</strong> pour l'automatisation d'exploitation.</li>
               <li><strong>Dématérialisation</strong> — process papier <strong>entièrement supprimé</strong> et fiabilisé.</li>
-              <li><strong>Versioning &amp; CI</strong> — Git, revue de code, workflow propre.</li>
+            </ul>
+          </div>
+          <div class="dp-col dp-col--gap">
+            <h4 class="dp-col-title">Ce qu'il me manque</h4>
+            <ul class="dp-list dp-list--gap">
+              <li><strong>CI/CD complet</strong> — pipelines de bout en bout (build, test, déploiement automatisé).</li>
+              <li><strong>Frameworks front/back</strong> — applications complètes au-delà des scripts et plugins.</li>
             </ul>
           </div>
         </div>
       </article>
+      </div>
+
+        </div>
+        <div class="dp-carousel-dots" role="tablist" aria-label="Piliers de compétences">
+          <button type="button" class="dp-carousel-dot" data-carousel-index="0" aria-label="Sécurité défensive">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          </button>
+          <button type="button" class="dp-carousel-dot" data-carousel-index="1" aria-label="Administration systèmes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
+          </button>
+          <button type="button" class="dp-carousel-dot" data-carousel-index="2" aria-label="Infrastructure &amp; Cloud">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="13" x2="5" y2="16"/><line x1="12" y1="13" x2="19" y2="16"/></svg>
+          </button>
+          <button type="button" class="dp-carousel-dot" data-carousel-index="3" aria-label="Dev &amp; Automatisation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="2"/><polyline points="8 10 11 13 8 16"/><line x1="13" y1="16" x2="16" y2="16"/></svg>
+          </button>
+        </div>
+        </div>
+        </div>
       </div>
     </section>
 
@@ -343,13 +404,17 @@
             <p class="dp-entry-sub">Une plateforme d'IA interne 100 % souveraine, conçue pour la confidentialité.</p>
           </div>
         </div>
+        <p class="dp-entry-lead dp-entry-lead--full">Plateforme d'assistance IA déployée en interne, sans dépendance à un cloud américain : authentification durcie, détection d'abus embarquée et routage intelligent vers des modèles hébergés en France.</p>
         <div class="dp-entry-copy" data-num="01">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">Plateforme d'assistance IA déployée en interne, sans dépendance à un cloud américain : authentification durcie, détection d'abus embarquée et routage intelligent vers des modèles hébergés en France.</p>
             <p class="dp-entry-story">Le point de départ de Massy Innove, c'était une frustration simple : tout le monde voulait un assistant IA au travail, mais aucune solution du marché ne garantissait où finissaient les données envoyées. J'ai donc décidé de construire la mienne, en partant de la souveraineté comme contrainte de conception plutôt que comme argument marketing. Premier chantier : l'authentification, avec un hachage <strong>Argon2id</strong> pour que même en cas de fuite de la base, les mots de passe restent inexploitables. Ensuite, la question qui m'obsédait vraiment — comment savoir si la plateforme est détournée ? J'ai conçu un <strong>IDS applicatif assisté par Claude</strong> qui observe les usages en continu et remonte ce qui sort du cadre normal, sans jamais bloquer un usage légitime. Pour le cœur du système, j'ai construit un routeur qui envoie chaque requête vers le modèle le plus adapté hébergé par <strong>Mistral AI</strong><img class="dp-inline-logo" src="assets/logo/mistral.svg" alt="Mistral AI">, un acteur français, plutôt que vers un cloud outre-Atlantique. Le tout tourne en conteneurs <strong>Docker</strong><img class="dp-inline-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker">&nbsp;sur des serveurs <strong>OVHcloud</strong><img class="dp-inline-logo" src="assets/logo/ovh.svg" alt="OVHcloud">, orchestrés en <strong>Python</strong><img class="dp-inline-logo" src="assets/logo/python-logo.svg" alt="Python">. Résultat : une IA interne où je peux répondre précisément à la question « où va la donnée ? » — parce que je l'ai construite pour qu'elle ne parte nulle part.</p>
           </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>100%</b><span>hébergé en France</span></div>
+            <div class="dp-metric"><b>0</b><span>dépendance à un cloud américain</span></div>
+          </div>
         </div>
-        <div class="dp-entry-cols">
+        <div class="dp-entry-cols dp-entry-cols--done">
           <div class="dp-col">
             <h4 class="dp-col-title">Ce que j'ai fait</h4>
             <ul class="dp-list">
@@ -361,6 +426,10 @@
           </div>
         </div>
       </article>
+        <nav class="dp-entry-nav" aria-label="Navigation entre cartes">
+          <a class="dp-entry-nav-btn" href="#dev"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg><span>Précédent</span></a>
+          <a class="dp-entry-nav-btn dp-entry-nav-btn--next" href="#homelab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg><span>Suivant</span></a>
+        </nav>
       </div>
 
       <!-- 02 · Homelab -->
@@ -376,13 +445,16 @@
             <p class="dp-entry-sub">Mon terrain de jeu de production — exigeant comme le vrai.</p>
           </div>
         </div>
+        <p class="dp-entry-lead dp-entry-lead--full">Une infrastructure auto-hébergée que j'exploite comme un environnement de prod : services exposés proprement, supervisés en continu, et surtout <strong>zéro port ouvert</strong> sur Internet.</p>
         <div class="dp-entry-copy" data-num="02">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">Une infrastructure auto-hébergée que j'exploite comme un environnement de prod : services exposés proprement, supervisés en continu, et surtout <strong>zéro port ouvert</strong> sur Internet.</p>
             <p class="dp-entry-story">Mon homelab a commencé comme la plupart des homelabs : une machine récupérée, quelques VM installées un peu au hasard, et l'envie d'apprendre en cassant des choses sans risque. Il s'est transformé petit à petit en quelque chose que je traite avec le même sérieux qu'un environnement de production réel. Le socle, c'est <strong>Debian 12</strong><img class="dp-inline-logo" src="assets/logo/debian.svg" alt="Debian">&nbsp;durci dès l'installation, avec des services conteneurisés et des sauvegardes qui tournent sans que j'aie à y penser. J'y héberge notamment <strong>Nextcloud</strong><img class="dp-inline-logo" src="assets/logo/nextcloud logo.svg" alt="Nextcloud">, exposé exclusivement via <strong>Cloudflare Tunnel</strong><img class="dp-inline-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare">&nbsp;: aucun port entrant, aucune règle de pare-feu à maintenir dans l'urgence. Pour garder confiance dans ce système, j'ai posé <strong>Zabbix</strong><img class="dp-inline-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix">&nbsp;en supervision : la moindre alerte, le moindre service qui redémarre anormalement, je le sais avant même d'aller vérifier. Et régulièrement, je scanne ma propre infrastructure depuis l'extérieur pour vérifier que la promesse tient toujours : zéro port ouvert, confirmé, pas juste supposé. C'est ce homelab qui m'a appris le plus, parce que j'y ai le droit à l'erreur — et que j'en ai profité pour en faire beaucoup, avant de les corriger.</p>
           </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>0</b><span>port ouvert confirmé par scan</span></div>
+          </div>
         </div>
-        <div class="dp-entry-cols">
+        <div class="dp-entry-cols dp-entry-cols--done">
           <div class="dp-col">
             <h4 class="dp-col-title">Ce que j'ai fait</h4>
             <ul class="dp-list">
@@ -394,76 +466,35 @@
           </div>
         </div>
       </article>
+        <nav class="dp-entry-nav" aria-label="Navigation entre cartes">
+          <a class="dp-entry-nav-btn" href="#massy-innove"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg><span>Précédent</span></a>
+          <a class="dp-entry-nav-btn dp-entry-nav-btn--next" href="#supervision"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg><span>Suivant</span></a>
+        </nav>
       </div>
 
-      <!-- 03 · Stack technique -->
-      <div class="dp-slide" id="stack">
-        <article class="dp-entry dp-entry--project reveal" data-num="03">
-        <div class="dp-entry-head">
-          <span class="dp-entry-icon dp-ic--dev">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/><polyline points="3 18 12 23 21 18" opacity="0"/></svg>
-          </span>
-          <div class="dp-entry-titles">
-            <span class="dp-entry-tag"><span class="dp-entry-num">03</span>_stack · outils du quotidien</span>
-            <h3>Stack technique</h3>
-            <p class="dp-entry-sub">Les briques que je déploie, sécurise et supervise au quotidien.</p>
-          </div>
-        </div>
-        <div class="dp-entry-copy" data-num="03">
-          <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">Un panorama des technologies que j'utilise réellement — pas une liste de buzzwords, mais les outils que je sais installer, durcir et exploiter en production.</p>
-            <p class="dp-entry-story">Cette stack ne s'est pas construite sur le papier, elle s'est construite couche après couche, au fil des besoins réels. En bas, les systèmes : <strong>Debian</strong><img class="dp-inline-logo" src="assets/logo/debian.svg" alt="Debian">&nbsp;pour tout ce qui doit être stable et léger, <strong>Windows Server</strong><img class="dp-inline-logo" src="assets/logo/Windows_logo_-_2021.svg" alt="Windows Server">&nbsp;pour l'annuaire et l'historique du parc, et du <strong>Linux</strong><img class="dp-inline-logo" src="assets/logo/Tux.svg" alt="Linux">&nbsp;partout où je peux choisir librement. Par-dessus, la sécurité, parce qu'aucune infrastructure ne mérite d'être exposée sans elle : <strong>Wazuh</strong><img class="dp-inline-logo" src="assets/logo/WAZUH.png" alt="Wazuh">&nbsp;et <strong>Suricata</strong><img class="dp-inline-logo" src="assets/logo/Logo-Suricata-vert-R.png" alt="Suricata">&nbsp;pour voir, <strong>pfSense</strong> pour filtrer. Puis le cloud et la supervision, qui gardent tout ce petit monde visible et accessible sans jamais ouvrir la porte au premier venu : <strong>Cloudflare</strong><img class="dp-inline-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare">, <strong>Zabbix</strong><img class="dp-inline-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix">, <strong>Grafana</strong><img class="dp-inline-logo" src="assets/logo/Grafana_icon.svg" alt="Grafana">, <strong>Docker</strong><img class="dp-inline-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker">&nbsp;et <strong>VMware</strong><img class="dp-inline-logo" src="assets/logo/vmware-workstation.svg" alt="VMware">. Et enfin le développement, la couche qui me permet de ne plus subir mes outils mais de les façonner : <strong>Python</strong><img class="dp-inline-logo" src="assets/logo/python-logo.svg" alt="Python">, <strong>Bash</strong>, <strong>PowerShell</strong><img class="dp-inline-logo" src="assets/logo/Powershell_128.svg" alt="PowerShell">, <strong>GLPI</strong><img class="dp-inline-logo" src="assets/logo/glpi.svg" alt="GLPI">, <strong>Git</strong> et <strong>Ansible</strong><img class="dp-inline-logo" src="assets/logo/Ansible_logo.svg" alt="Ansible">. Ce ne sont pas des lignes sur un CV : chacun de ces outils, je l'ai installé, cassé, réparé et durci au moins une fois pour de vrai.</p>
-          </div>
-        </div>
-        <div class="dp-stack-groups">
-          <div class="dp-stack-group">
-            <h4 class="dp-col-title">Systèmes</h4>
-            <div class="dp-chips">
-              <span class="dp-chip">Debian</span><span class="dp-chip">Windows Server</span><span class="dp-chip">Linux</span>
-            </div>
-          </div>
-          <div class="dp-stack-group">
-            <h4 class="dp-col-title">Sécurité</h4>
-            <div class="dp-chips">
-              <span class="dp-chip">Wazuh</span><span class="dp-chip">Suricata</span><span class="dp-chip">pfSense</span>
-            </div>
-          </div>
-          <div class="dp-stack-group">
-            <h4 class="dp-col-title">Cloud &amp; supervision</h4>
-            <div class="dp-chips">
-              <span class="dp-chip">Cloudflare</span><span class="dp-chip">Zabbix</span><span class="dp-chip">Grafana</span><span class="dp-chip">Docker</span><span class="dp-chip">VMware</span>
-            </div>
-          </div>
-          <div class="dp-stack-group">
-            <h4 class="dp-col-title">Dev &amp; outils</h4>
-            <div class="dp-chips">
-              <span class="dp-chip">Python</span><span class="dp-chip">Bash</span><span class="dp-chip">PowerShell</span><span class="dp-chip">GLPI</span><span class="dp-chip">Git</span><span class="dp-chip">Ansible</span>
-            </div>
-          </div>
-        </div>
-      </article>
-      </div>
-
-      <!-- 04 · Supervision -->
+      <!-- 03 · Supervision -->
       <div class="dp-slide" id="supervision">
-        <article class="dp-entry dp-entry--project reveal" data-num="04">
+        <article class="dp-entry dp-entry--project reveal" data-num="03">
         <div class="dp-entry-head">
           <span class="dp-entry-icon dp-ic--infra">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 8.5a16 16 0 0 1 20 0"/><path d="M5 12a11 11 0 0 1 14 0"/><path d="M8.5 15.5a6 6 0 0 1 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
           </span>
           <div class="dp-entry-titles">
-            <span class="dp-entry-tag"><span class="dp-entry-num">04</span>_projet · monitoring</span>
+            <span class="dp-entry-tag"><span class="dp-entry-num">03</span>_projet · monitoring</span>
             <h3>Supervision 24/7</h3>
             <p class="dp-entry-sub">Savoir avant l'utilisateur qu'un service a un problème.</p>
           </div>
         </div>
-        <div class="dp-entry-copy" data-num="04">
+        <p class="dp-entry-lead dp-entry-lead--full">Une chaîne de supervision qui veille en continu sur l'infrastructure : <strong>Zabbix</strong> collecte, seuille et alerte, pour intervenir <strong>avant</strong> que l'incident ne devienne visible.</p>
+        <div class="dp-entry-copy" data-num="03">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-lead">Une chaîne de supervision qui veille en continu sur l'infrastructure : <strong>Zabbix</strong> collecte, seuille et alerte, pour intervenir <strong>avant</strong> que l'incident ne devienne visible.</p>
             <p class="dp-entry-story">Le pire incident n'est pas celui qu'on résout, c'est celui qu'on découvre en même temps que l'utilisateur qui appelle pour se plaindre. Cette idée m'a poussé à traiter la supervision non pas comme un « plus », mais comme une brique aussi essentielle que le service lui-même. J'ai déployé des agents <strong>Zabbix</strong><img class="dp-inline-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix">&nbsp;sur l'ensemble des hôtes que j'exploite, en prenant le temps de définir des seuils qui ont un sens métier — une charge CPU élevée n'est pas grave en soi, un service qui ne répond plus l'est. Autour de <strong>SNMP</strong> pour le matériel réseau et d'un alerting configuré pour remonter au bon niveau sans noyer personne sous des notifications inutiles, j'ai construit des tableaux de bord <strong>Grafana</strong><img class="dp-inline-logo" src="assets/logo/Grafana_icon.svg" alt="Grafana">&nbsp;qui racontent l'état du système d'un seul coup d'œil, disponibilité comme tendance dans le temps. Aujourd'hui, quand un service dévie de son comportement normal, je le sais avant qu'il ne tombe complètement — et souvent avant que quiconque ne s'en aperçoive.</p>
           </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>24/7</b><span>supervision continue</span></div>
+          </div>
         </div>
-        <div class="dp-entry-cols">
+        <div class="dp-entry-cols dp-entry-cols--done">
           <div class="dp-col">
             <h4 class="dp-col-title">Ce que j'ai fait</h4>
             <ul class="dp-list">
@@ -475,6 +506,70 @@
           </div>
         </div>
       </article>
+        <nav class="dp-entry-nav" aria-label="Navigation entre cartes">
+          <a class="dp-entry-nav-btn" href="#homelab"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg><span>Précédent</span></a>
+          <a class="dp-entry-nav-btn dp-entry-nav-btn--next" href="#stack"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg><span>Suivant</span></a>
+        </nav>
+      </div>
+
+      <!-- 04 · Stack technique -->
+      <div class="dp-slide" id="stack">
+        <article class="dp-entry dp-entry--project reveal" data-num="04">
+        <div class="dp-entry-head">
+          <span class="dp-entry-icon dp-ic--dev">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/><polyline points="3 18 12 23 21 18" opacity="0"/></svg>
+          </span>
+          <div class="dp-entry-titles">
+            <span class="dp-entry-tag"><span class="dp-entry-num">04</span>_stack · outils du quotidien</span>
+            <h3>Stack technique</h3>
+            <p class="dp-entry-sub">Les briques que je déploie, sécurise et supervise au quotidien.</p>
+          </div>
+        </div>
+        <p class="dp-entry-lead dp-entry-lead--full">Un panorama des technologies que j'utilise réellement — pas une liste de buzzwords, mais les outils que je sais installer, durcir et exploiter en production.</p>
+        <div class="dp-entry-copy" data-num="04">
+          <div class="dp-entry-copy-text">
+            <p class="dp-entry-story">Cette stack ne s'est pas construite sur le papier, elle s'est construite couche après couche, au fil des besoins réels. En bas, les systèmes : <strong>Debian</strong><img class="dp-inline-logo" src="assets/logo/debian.svg" alt="Debian">&nbsp;pour tout ce qui doit être stable et léger, <strong>Windows Server</strong><img class="dp-inline-logo" src="assets/logo/Windows_logo_-_2021.svg" alt="Windows Server">&nbsp;pour l'annuaire et l'historique du parc, et du <strong>Linux</strong><img class="dp-inline-logo" src="assets/logo/Tux.svg" alt="Linux">&nbsp;partout où je peux choisir librement. Par-dessus, la sécurité, parce qu'aucune infrastructure ne mérite d'être exposée sans elle : <strong>Wazuh</strong><img class="dp-inline-logo" src="assets/logo/WAZUH.png" alt="Wazuh">&nbsp;et <strong>Suricata</strong><img class="dp-inline-logo" src="assets/logo/Logo-Suricata-vert-R.png" alt="Suricata">&nbsp;pour voir, <strong>pfSense</strong> pour filtrer. Puis le cloud et la supervision, qui gardent tout ce petit monde visible et accessible sans jamais ouvrir la porte au premier venu : <strong>Cloudflare</strong><img class="dp-inline-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare">, <strong>Zabbix</strong><img class="dp-inline-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix">, <strong>Grafana</strong><img class="dp-inline-logo" src="assets/logo/Grafana_icon.svg" alt="Grafana">, <strong>Docker</strong><img class="dp-inline-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker">&nbsp;et <strong>VMware</strong><img class="dp-inline-logo" src="assets/logo/vmware-workstation.svg" alt="VMware">. Et enfin le développement, la couche qui me permet de ne plus subir mes outils mais de les façonner : <strong>Python</strong><img class="dp-inline-logo" src="assets/logo/python-logo.svg" alt="Python">, <strong>Bash</strong>, <strong>PowerShell</strong><img class="dp-inline-logo" src="assets/logo/Powershell_128.svg" alt="PowerShell">, <strong>GLPI</strong><img class="dp-inline-logo" src="assets/logo/glpi.svg" alt="GLPI">, <strong>Git</strong> et <strong>Ansible</strong><img class="dp-inline-logo" src="assets/logo/Ansible_logo.svg" alt="Ansible">. Ce ne sont pas des lignes sur un CV : chacun de ces outils, je l'ai installé, cassé, réparé et durci au moins une fois pour de vrai.</p>
+          </div>
+          <div class="dp-metrics dp-metrics--aside">
+            <div class="dp-metric"><b>17</b><span>technologies maîtrisées</span></div>
+            <div class="dp-metric"><b>4</b><span>domaines couverts</span></div>
+          </div>
+        </div>
+        <div class="dp-stack-groups">
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Systèmes</h4>
+            <p class="dp-stack-group-lede">Le socle qui doit tenir sans surprise : <strong>Debian</strong> pour tout ce qui doit rester stable et léger au quotidien, <strong>Windows Server</strong> pour l'annuaire et l'historique du parc, et du <strong>Linux</strong> partout où le choix de la distribution m'appartient.</p>
+            <div class="dp-chips">
+              <span class="dp-chip">Debian</span><span class="dp-chip">Windows Server</span><span class="dp-chip">Linux</span>
+            </div>
+          </div>
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Sécurité</h4>
+            <p class="dp-stack-group-lede">Rien n'est exposé sans être vu ni filtré au préalable : <strong>Wazuh</strong> et <strong>Suricata</strong> pour la détection côté hôtes et réseau, <strong>pfSense</strong> pour couper à la source ce qui doit l'être avant que ça devienne un incident.</p>
+            <div class="dp-chips">
+              <span class="dp-chip">Wazuh</span><span class="dp-chip">Suricata</span><span class="dp-chip">pfSense</span>
+            </div>
+          </div>
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Cloud &amp; supervision</h4>
+            <p class="dp-stack-group-lede">La couche qui garde tout visible sans jamais ouvrir de porte inutile : <strong>Cloudflare</strong> pour une exposition zero-trust, <strong>Zabbix</strong> et <strong>Grafana</strong> pour la supervision continue, <strong>Docker</strong> et <strong>VMware</strong> pour isoler et faire tourner chaque service proprement.</p>
+            <div class="dp-chips">
+              <span class="dp-chip">Cloudflare</span><span class="dp-chip">Zabbix</span><span class="dp-chip">Grafana</span><span class="dp-chip">Docker</span><span class="dp-chip">VMware</span>
+            </div>
+          </div>
+          <div class="dp-stack-group">
+            <h4 class="dp-col-title">Dev &amp; outils</h4>
+            <p class="dp-stack-group-lede">Ce qui me permet de façonner mes outils plutôt que de les subir : <strong>Python</strong>, <strong>Bash</strong> et <strong>PowerShell</strong> pour automatiser, <strong>GLPI</strong> pour m'intégrer au SI, <strong>Git</strong> et <strong>Ansible</strong> pour versionner et industrialiser chaque changement.</p>
+            <div class="dp-chips">
+              <span class="dp-chip">Python</span><span class="dp-chip">Bash</span><span class="dp-chip">PowerShell</span><span class="dp-chip">GLPI</span><span class="dp-chip">Git</span><span class="dp-chip">Ansible</span>
+            </div>
+          </div>
+        </div>
+      </article>
+        <nav class="dp-entry-nav" aria-label="Navigation entre cartes">
+          <a class="dp-entry-nav-btn" href="#supervision"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg><span>Précédent</span></a>
+          <a class="dp-entry-nav-btn dp-entry-nav-btn--next" href="#contact"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14"/><path d="M6 13l6 6 6-6"/></svg><span>Suivant</span></a>
+        </nav>
       </div>
     </section>
 

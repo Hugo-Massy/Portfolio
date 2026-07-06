@@ -129,6 +129,68 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 #experience.dp-section .dp-section-head .section-tag{justify-content:flex-end;}
 #experience.dp-section .dp-section-lede{margin-left:auto;}
 
+/* --- Bloc bleu regroupant les 4 piliers de compétences, même langage visuel que
+   la vague bleue de #about sur l'accueil (bandeau plein, incliné, ombre portée) :
+   les cartes .dp-entry restent blanches, posées dessus. Le bandeau vit dans
+   .wrap (largeur limitée) mais doit couvrir toute la largeur du viewport : on le
+   fait déborder en pleine largeur via le classique trick left:50%/translateX. --- */
+/* --dp-slope exposée en custom property (plutôt qu'en dur dans le clip-path) pour que
+   details.js puisse lire la même valeur et savoir, au pixel près, où le bleu s'arrête
+   sur le bord droit — c'est là que vivent le rail de nav et le bouton remonter. */
+.dp-blue-block{position:relative; isolation:isolate; --dp-slope:140px;}
+.dp-blue-block-fill{
+  position:absolute; top:0; bottom:0; left:50%; width:100vw;
+  transform:translateX(-50%);
+  z-index:0; pointer-events:none;
+  background:var(--accent);
+  clip-path:polygon(0 var(--dp-slope), 100% 0, 100% calc(100% - var(--dp-slope)), 0 100%);
+  filter:drop-shadow(0 8px 16px rgba(20,30,60,.22));
+}
+.dp-blue-block-wrap{position:relative; z-index:1; padding:180px 0 140px;}
+
+/* Les 4 piliers regroupés dans le bloc bleu se parcourent en carrousel horizontal
+   (un seul visible à la fois, piloté par initCompetenceCarousel dans details.js)
+   plutôt qu'un défilement vertical plein écran par carte. */
+.dp-carousel{position:relative; overflow:hidden;}
+.dp-carousel-track{
+  display:flex;
+  transition:transform .55s cubic-bezier(.4,0,.2,1);
+  will-change:transform;
+}
+/* chaque slide devient un panneau du carrousel : largeur pleine, hauteur alignée
+   sur le plus grand panneau (stretch par défaut du flex), contenu centré dedans */
+.dp-carousel-track > .dp-slide{
+  flex:0 0 100%; width:100%; box-sizing:border-box;
+  min-height:0; max-height:none;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  overflow-y:visible;
+  scroll-snap-align:none; scroll-snap-stop:normal;
+  padding:8px 24px;
+}
+.dp-carousel-track > .dp-slide[aria-hidden="true"]{visibility:hidden;}
+
+/* Pagination reprenant les icônes des 4 piliers (mêmes tracés que .skill-icon sur
+   l'accueil et .dp-entry-icon de chaque carte), plutôt que de simples points. */
+.dp-carousel-dots{
+  display:flex; justify-content:center; gap:10px;
+  margin-top:48px;
+}
+.dp-carousel-dot{
+  display:flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:12px; padding:0;
+  border:none; background:none;
+  color:rgba(255,255,255,.65);
+  cursor:pointer;
+  transition:background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+}
+.dp-carousel-dot svg{width:20px; height:20px; transition:width .2s ease, height .2s ease;}
+.dp-carousel-dot:hover{color:#fff;}
+.dp-carousel-dot.is-active{
+  color:#fff;
+  transform:translateY(-2px);
+}
+.dp-carousel-dot.is-active svg{width:25px; height:25px;}
+
 /* --- Slide : occupe tout le viewport et centre la carte dedans, c'est lui qui
    gère l'espace autour de la carte et le point d'ancrage du scroll-snap. Le
    défilement interne (overflow-y) est porté par le slide, pas par la carte,
@@ -137,12 +199,13 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   min-height:100vh; min-height:100dvh;
   max-height:100vh; max-height:100dvh;
   box-sizing:border-box;
-  display:flex; align-items:center; justify-content:center;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:40px 24px;
   overflow-y:auto;
   scroll-snap-align:center;
   scroll-snap-stop:always;
 }
+.dp-slide > .dp-entry{width:100%;}
 
 /* --- Carte d'entrée (compétence ou projet) : garde sa taille naturelle,
    déterminée par son contenu --- */
@@ -198,7 +261,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 .dp-entry-lead strong{color:var(--accent-dark); font-weight:700;}
 
-.dp-entry-copy{display:flex; align-items:center; gap:28px;}
+.dp-entry-copy{display:flex; align-items:flex-start; gap:28px;}
 .dp-entry-copy-text{flex:1 1 auto; min-width:0;}
 
 /* paragraphe « histoire » : récit long à la première personne, sous l'intro,
@@ -225,6 +288,41 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   clear:both;
   display:grid; grid-template-columns:1fr;
   padding-top:30px; margin-top:28px; border-top:1px solid var(--border-soft);
+}
+/* variante « pour / contre » : deux colonnes face à face, appris vs manquant.
+   Vert = acquis, gris = manquant : token vert local, propre à cette variante,
+   pour ne pas toucher au bleu accent utilisé partout ailleurs dans .dp-list. */
+.dp-entry-cols--compare{
+  --dp-green:#2f8f5f; --dp-green-soft:rgba(47,143,95,.10); --dp-green-glow:rgba(47,143,95,.22);
+  grid-template-columns:1fr 1fr; gap:0 40px;
+  border-top:none;
+}
+.dp-entry-cols--compare .dp-list{grid-template-columns:1fr;}
+.dp-entry-cols--compare .dp-col--gap{
+  padding-left:40px; border-left:1px solid var(--border-soft);
+}
+.dp-entry-cols--compare .dp-col--have .dp-col-title{color:var(--dp-green);}
+.dp-entry-cols--compare .dp-col--have .dp-col-title::before{background:var(--dp-green);}
+.dp-entry-cols--compare .dp-col--have .dp-list li:hover{
+  border-color:var(--dp-green); box-shadow:0 6px 18px var(--dp-green-soft);
+}
+.dp-entry-cols--compare .dp-col--have .dp-list li::before{
+  background:var(--dp-green); box-shadow:0 2px 6px var(--dp-green-glow);
+}
+
+/* variante « ce que j'ai fait » (cartes projets) : même vert que l'acquis des
+   cartes compétences, sans la barre de séparation au-dessus de la liste. */
+.dp-entry-cols--done{
+  --dp-green:#2f8f5f; --dp-green-soft:rgba(47,143,95,.10); --dp-green-glow:rgba(47,143,95,.22);
+  border-top:none;
+}
+.dp-entry-cols--done .dp-col-title{color:var(--dp-green);}
+.dp-entry-cols--done .dp-col-title::before{background:var(--dp-green);}
+.dp-entry-cols--done .dp-list li:hover{
+  border-color:var(--dp-green); box-shadow:0 6px 18px var(--dp-green-soft);
+}
+.dp-entry-cols--done .dp-list li::before{
+  background:var(--dp-green); box-shadow:0 2px 6px var(--dp-green-glow);
 }
 .dp-col{position:relative;}
 .dp-col-title{
@@ -254,20 +352,37 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   box-shadow:0 6px 18px rgba(20,20,15,.05);
   transform:translateY(-2px);
 }
-/* pastille ronde pleine, coche blanche */
+/* pastille ronde pleine, coche blanche — centrée verticalement sur la carte,
+   même quand le texte passe sur 2 lignes ou plus */
 .dp-list li::before{
-  content:''; position:absolute; left:14px; top:14px;
+  content:''; position:absolute; left:14px; top:50%; transform:translateY(-50%);
   width:20px; height:20px; border-radius:50%;
   background:var(--accent);
   box-shadow:0 2px 6px var(--accent-glow);
 }
 .dp-list li::after{
-  content:''; position:absolute; left:20px; top:20px;
+  content:''; position:absolute; left:20px; top:50%;
   width:7px; height:4px;
   border-left:1.8px solid #fff; border-bottom:1.8px solid #fff;
-  transform:rotate(-45deg);
+  transform:translateY(-65%) rotate(-45deg);
 }
 .dp-list li strong{color:var(--text); font-weight:700;}
+
+/* colonne « ce qu'il me manque » : même carte, mais pastille en pointillés et
+   teintes neutres pour marquer visuellement la différence avec l'acquis (vert plein) */
+.dp-col--gap .dp-col-title{color:var(--text-dim);}
+.dp-col--gap .dp-col-title::before{background:var(--text-dim);}
+.dp-list--gap li{background:transparent;}
+.dp-list--gap li::before{
+  background:var(--bg-elev); border:1.5px dashed var(--border);
+  box-shadow:none;
+}
+.dp-list--gap li::after{
+  content:'\2715'; width:auto; height:auto; left:20px; top:50%;
+  border:none; background:none; border-radius:0; transform:translateY(-50%);
+  font-size:12px; font-weight:700; line-height:1; color:var(--text-dim);
+}
+.dp-list--gap li strong{color:var(--text-dim);}
 
 /* puces / chips technos */
 .dp-chips{display:flex; flex-wrap:wrap; gap:10px;}
@@ -279,20 +394,68 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 .dp-chip:hover{border-color:var(--accent-tint); color:var(--accent); background:var(--accent-soft); transform:translateY(-1px);}
 
-/* métriques compactes */
+/* métriques compactes : chiffre d'accent + libellé mono, façon petite fiche
+   statistique plutôt qu'une simple pastille grise */
 .dp-metrics{display:flex; gap:14px; margin-top:26px; flex-wrap:wrap;}
 .dp-metric{
-  flex:1 1 auto; min-width:120px;
-  padding:16px 18px; border-radius:14px;
+  position:relative; flex:1 1 auto; min-width:180px;
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:16px 18px 16px 20px; border-radius:0 12px 12px 0;
   background:var(--bg-elev-2); border:1px solid var(--border-soft);
+  border-left:3px solid var(--accent);
+  box-shadow:0 0 2px rgba(20,20,15,.03);
+  transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.dp-metric:hover{
+  border-color:var(--border-soft); border-left-color:var(--accent);
+  box-shadow:0 6px 18px rgba(20,20,15,.06);
+  transform:translateY(-2px);
 }
 .dp-metric b{
-  display:block; font-size:24px; color:var(--accent);
+  order:2; flex-shrink:0; font-size:24px; color:var(--accent);
   font-weight:700; letter-spacing:-.02em; line-height:1;
 }
 .dp-metric span{
-  display:block; margin-top:6px; font-size:12px; color:var(--text-dim);
+  order:1; font-size:11px; color:var(--text-dim); line-height:1.4;
+  font-family:var(--mono); text-transform:uppercase; letter-spacing:.04em;
 }
+/* variante « à côté du texte » : colonne étroite, empilée verticalement, posée
+   à droite du paragraphe dans .dp-entry-copy, chiffre au-dessus du libellé */
+.dp-entry-copy .dp-metrics--aside{
+  flex-direction:column; flex:0 0 152px; width:152px; margin-top:0; gap:10px;
+}
+.dp-entry-copy .dp-metrics--aside .dp-metric{
+  flex-direction:column; align-items:flex-start; justify-content:center; gap:4px;
+  min-width:0; width:100%; flex:0 0 auto;
+  padding:13px 14px 13px 16px;
+}
+.dp-entry-copy .dp-metrics--aside .dp-metric b{order:1; font-size:20px;}
+.dp-entry-copy .dp-metrics--aside .dp-metric span{order:2; font-size:10px;}
+@media(max-width:860px){
+  .dp-entry-copy{flex-wrap:wrap;}
+  .dp-entry-copy .dp-metrics--aside{
+    flex:1 1 100%; width:100%; flex-direction:row;
+  }
+  .dp-entry-copy .dp-metrics--aside .dp-metric{flex-direction:row; align-items:center; justify-content:space-between;}
+}
+
+/* boutons haut/bas sous chaque carte, pour parcourir les entrées sans passer par le rail */
+.dp-entry-nav{
+  display:flex; flex-shrink:0; justify-content:center; gap:14px;
+  margin-top:20px;
+}
+.dp-entry-nav-btn{
+  display:flex; align-items:center; gap:8px;
+  padding:11px 20px; border-radius:10px;
+  border:1px solid var(--border-soft); background:#ffffff;
+  color:var(--text-dim);
+  font-family:var(--mono); font-size:13px; font-weight:500;
+  transition:box-shadow .2s ease;
+}
+.dp-entry-nav-btn--next{
+  border-color:var(--accent); background:var(--accent); color:#fff;
+}
+.dp-entry-nav-btn--next:hover{box-shadow:0 0 0 4px var(--accent-glow);}
 
 /* projet : drapeau français en tête de Massy Innove */
 .dp-proj-flag{
@@ -307,9 +470,14 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-stack-groups{
   clear:both;
   display:grid; grid-template-columns:repeat(2, 1fr); gap:22px 32px;
-  padding-top:20px; margin-top:28px; border-top:1px solid var(--border-soft);
+  padding-top:20px; margin-top:28px; border-top:none;
 }
 .dp-stack-group .dp-col-title{margin-bottom:10px;}
+.dp-stack-group-lede{
+  color:var(--text-dim); line-height:1.6; font-size:14px;
+  margin:0 0 16px; max-width:52ch;
+}
+.dp-stack-group-lede strong{color:var(--text); font-weight:700;}
 
 /* pied de page : rappel de retour. La marge basse ménage l'espace blanc dans lequel
    l'avatar de #contact déborde vers le haut (ses bras se posent sur le pli diagonal) :
@@ -339,6 +507,11 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   .dp-entry-head{gap:14px; margin-bottom:14px;}
   .dp-entry-titles h3{left:20px; font-size:30px;}
   .dp-entry-story::first-letter{font-size:2.6em;}
+  .dp-entry-cols--compare{grid-template-columns:1fr; gap:28px 0;}
+  .dp-entry-cols--compare .dp-col--gap{
+    padding-left:0; border-left:none;
+    padding-top:24px; border-top:1px solid var(--border-soft);
+  }
 }
 
 @media (prefers-reduced-motion: reduce){
