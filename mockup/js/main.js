@@ -69,6 +69,19 @@ function initRefsCarousel() {
   const n = cards.length;
   let index = 0;
 
+  // défilement automatique des citations, désactivé dès qu'une navigation manuelle survient
+  const AUTOPLAY_DELAY = 6000;
+  let autoplayTimer = null;
+  function stopAutoplay() {
+    if (autoplayTimer === null) return;
+    clearInterval(autoplayTimer);
+    autoplayTimer = null;
+  }
+  function startAutoplay() {
+    stopAutoplay();
+    autoplayTimer = setInterval(() => go(index + 1), AUTOPLAY_DELAY);
+  }
+
   // un point par citation
   const dots = cards.map((_, i) => {
     const dot = document.createElement('button');
@@ -76,7 +89,7 @@ function initRefsCarousel() {
     dot.className = 'refs-dot';
     dot.setAttribute('role', 'tab');
     dot.setAttribute('aria-label', `Référence ${i + 1} sur ${n}`);
-    dot.addEventListener('click', () => go(i));
+    dot.addEventListener('click', () => { stopAutoplay(); go(i); });
     dotsWrap.appendChild(dot);
     return dot;
   });
@@ -104,16 +117,16 @@ function initRefsCarousel() {
   // clic sur une carte latérale → elle passe au centre
   cards.forEach((card) => {
     card.addEventListener('click', () => {
-      if (card.classList.contains('is-prev')) goPrev();
-      else if (card.classList.contains('is-next')) goNext();
+      if (card.classList.contains('is-prev')) { stopAutoplay(); goPrev(); }
+      else if (card.classList.contains('is-next')) { stopAutoplay(); goNext(); }
     });
   });
 
   // flèches clavier quand le carrousel a le focus
   carousel.setAttribute('tabindex', '0');
   carousel.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowLeft') { e.preventDefault(); goPrev(); }
-    else if (e.key === 'ArrowRight') { e.preventDefault(); goNext(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); stopAutoplay(); goPrev(); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); stopAutoplay(); goNext(); }
   });
 
   // glisser tactile / souris sur la scène
@@ -124,13 +137,14 @@ function initRefsCarousel() {
     stage.addEventListener('pointerup', (e) => {
       if (startX === null) return;
       const dx = e.clientX - startX;
-      if (Math.abs(dx) > 45) { dx < 0 ? goNext() : goPrev(); }
+      if (Math.abs(dx) > 45) { stopAutoplay(); dx < 0 ? goNext() : goPrev(); }
       startX = null;
     });
     stage.addEventListener('pointercancel', () => { startX = null; });
   }
 
   render();
+  startAutoplay();
 }
 
 // Rend les piliers (.skill-item) et les cartes du bento (.xp-tile) cliquables.
@@ -959,13 +973,12 @@ function initTabSpy() {
 
 // Vrai si le point d'ordonnée y (proche du bord droit, là où vivent le rail et le bouton
 // "remonter en haut") tombe sur la vague bleue de .section-divider-bar plutôt que sur le
-// fond clair — cf. son clip-path : la vague va de 117px sous le haut de la section à
-// (hauteur - 0.4*waveH).
+// fond clair — cf. son clip-path : au bord droit (x=100%), le bleu va de 117px sous le
+// haut de la section jusqu'au bas de la section (le bord droit n'est plus clippé en bas).
 function isOverAboutWave(about, y) {
   const rect = about.getBoundingClientRect();
-  const waveH = parseFloat(getComputedStyle(about).paddingBottom) || 0;
   const top = rect.top + 117;
-  const bottom = rect.top + rect.height - waveH * 0.4;
+  const bottom = rect.top + rect.height;
   return y > top && y < bottom;
 }
 
@@ -1788,7 +1801,7 @@ function initBackgroundGrid() {
   if (!canvas || !container) return;
   const ctx = canvas.getContext('2d');
 
-  const SPACING = 48;
+  const SPACING = 38;
   const BASE_RADIUS = 1.2;
   const REACT_RADIUS = 140;
   const MAX_OFFSET = 10;
@@ -1797,6 +1810,9 @@ function initBackgroundGrid() {
   const FEATHER_OUT = 90;
   const MIN_ALPHA = 0.04;
   const ROUND_RADIUS = 10;
+  // la grille ne se révèle qu'autour du curseur : rayon plein visible, puis fondu jusqu'à 0
+  const REVEAL_RADIUS = 160;
+  const REVEAL_FEATHER = 140;
   const EXCLUSION_SELECTOR = 'h1, .lede, .btn, .social-row a';
   // déborde sous le hero pour que la grille continue derrière le bord diagonal de la section
   // "about" (.section-divider-bar), au lieu de s'arrêter pile au bas du hero.
@@ -1901,16 +1917,16 @@ function initBackgroundGrid() {
         }
         alpha = MIN_ALPHA + (1 - MIN_ALPHA) * smoothstep(-FEATHER_IN, FEATHER_OUT, minDist);
       }
-      if (alpha <= 0.01) continue;
-
       let dx = 0;
       let dy = 0;
       let scale = 1;
+      let reveal = 0;
 
       if (mouse.active) {
         const distX = p.x - mouse.x;
         const distY = p.y - mouse.y;
         const dist = Math.hypot(distX, distY);
+        reveal = 1 - smoothstep(REVEAL_RADIUS - REVEAL_FEATHER, REVEAL_RADIUS, dist);
         if (dist < REACT_RADIUS) {
           const force = 1 - dist / REACT_RADIUS;
           const angle = Math.atan2(distY, distX);
@@ -1919,6 +1935,9 @@ function initBackgroundGrid() {
           scale = 1 + force * (MAX_SCALE - 1);
         }
       }
+
+      alpha *= reveal;
+      if (alpha <= 0.01) continue;
 
       const r = BASE_RADIUS * scale;
       const fill = `rgba(${p.rgb},${0.6 * alpha})`;
