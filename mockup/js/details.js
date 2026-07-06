@@ -2,6 +2,105 @@
 // de la page d'accueil) : révélation des blocs au scroll, et surlignage de l'entrée
 // active dans le sommaire latéral au fil du défilement.
 
+// Quadrillage de points réactif au curseur, repris du hero de l'accueil (initBackgroundGrid
+// dans js/main.js) mais fixé au viewport pour couvrir toute la page détails plutôt qu'une
+// seule section — pas d'exclusion de zones de texte ici, le curseur révèle la grille partout.
+(function initDetailsBgGrid() {
+  const canvas = document.getElementById('dp-bg-grid');
+  if (!canvas) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const ctx = canvas.getContext('2d');
+
+  const SPACING = 38;
+  const BASE_RADIUS = 1.2;
+  const REACT_RADIUS = 140;
+  const MAX_OFFSET = 10;
+  const MAX_SCALE = 2.4;
+  const REVEAL_RADIUS = 160;
+  const REVEAL_FEATHER = 140;
+  const BASE_COLOR = '37,70,200';
+
+  let dpr = Math.min(window.devicePixelRatio || 1, 2);
+  let width = 0;
+  let height = 0;
+  let points = [];
+  const mouse = { x: -9999, y: -9999, active: false };
+
+  function smoothstep(edge0, edge1, value) {
+    const t = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
+    return t * t * (3 - 2 * t);
+  }
+
+  function buildPoints() {
+    points = [];
+    for (let y = SPACING / 2; y < height; y += SPACING) {
+      for (let x = SPACING / 2; x < width; x += SPACING) {
+        points.push({ x, y });
+      }
+    }
+  }
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    buildPoints();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, width, height);
+
+    if (mouse.active) {
+      for (const p of points) {
+        const distX = p.x - mouse.x;
+        const distY = p.y - mouse.y;
+        const dist = Math.hypot(distX, distY);
+        const reveal = 1 - smoothstep(REVEAL_RADIUS - REVEAL_FEATHER, REVEAL_RADIUS, dist);
+        if (reveal <= 0.01) continue;
+
+        let dx = 0, dy = 0, scale = 1;
+        if (dist < REACT_RADIUS) {
+          const force = 1 - dist / REACT_RADIUS;
+          const angle = Math.atan2(distY, distX);
+          dx = Math.cos(angle) * force * MAX_OFFSET;
+          dy = Math.sin(angle) * force * MAX_OFFSET;
+          scale = 1 + force * (MAX_SCALE - 1);
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x + dx, p.y + dy, BASE_RADIUS * scale, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${BASE_COLOR},${0.6 * reveal})`;
+        ctx.fill();
+      }
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  // Le canvas est fixé au viewport : les coordonnées souris (clientX/Y) s'y reportent
+  // directement, sans conversion par rapport à un conteneur qui défile.
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    mouse.active = true;
+  }, { passive: true });
+  document.addEventListener('mouseleave', () => { mouse.active = false; });
+  window.addEventListener('resize', resize);
+
+  resize();
+  draw();
+})();
+
+// Année courante dans le copyright du pied de page (section contact, dupliquée de l'accueil).
+(function initFooterYear() {
+  const el = document.getElementById('footer-year');
+  if (el) el.textContent = new Date().getFullYear();
+})();
+
 // Anime les blocs .reveal quand ils entrent dans le viewport (une seule fois).
 (function initReveal() {
   const targets = document.querySelectorAll('.reveal');
@@ -18,6 +117,93 @@
     });
   }, { threshold: 0.12 });
   targets.forEach((el) => observer.observe(el));
+})();
+
+// Snap plus lent entre les cartes : le scroll-snap natif du CSS anime toujours au même
+// tempo (rapide, non réglable), donc on prend la main sur la molette/le tactile pour
+// glisser d'une carte à l'autre avec une durée et un easing choisis, façon carrousel.
+(function initSlideScroll() {
+  // Le hero (accueil) fait partie de la séquence : il doit aussi s'accrocher au
+  // scroll, pas juste les cartes, sinon on reste bloqué en sortant de la 1ère carte.
+  const hero = document.getElementById('dp-hero');
+  const slides = [hero, ...document.querySelectorAll('.dp-slide')].filter(Boolean);
+  if (!slides.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  const DURATION = 550; // ms — augmente/diminue pour ralentir/accélérer la transition
+  let animating = false;
+  let raf = null;
+
+  // Démarre vite (réponse immédiate à l'action de l'utilisateur), ralentit en arrivant.
+  function easeOutCubic(t) {
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  // Carte dont le centre est le plus proche du centre du viewport.
+  function closestSlide() {
+    const mid = window.scrollY + window.innerHeight / 2;
+    let best = 0, bestDist = Infinity;
+    slides.forEach((el, i) => {
+      const rect = el.getBoundingClientRect();
+      const center = window.scrollY + rect.top + rect.height / 2;
+      const dist = Math.abs(center - mid);
+      if (dist < bestDist) { bestDist = dist; best = i; }
+    });
+    return { index: best, dist: bestDist };
+  }
+
+  function scrollToSlide(index) {
+    index = Math.max(0, Math.min(slides.length - 1, index));
+    const target = slides[index];
+    const rect = target.getBoundingClientRect();
+    const targetY = window.scrollY + rect.top - Math.max(0, (window.innerHeight - rect.height) / 2);
+    const startY = window.scrollY;
+    const delta = targetY - startY;
+    if (Math.abs(delta) < 2) return;
+
+    animating = true;
+    if (raf) cancelAnimationFrame(raf);
+    const startTime = performance.now();
+    function step(now) {
+      const t = Math.min(1, (now - startTime) / DURATION);
+      window.scrollTo(0, startY + delta * easeOutCubic(t));
+      if (t < 1) {
+        raf = requestAnimationFrame(step);
+      } else {
+        animating = false;
+      }
+    }
+    raf = requestAnimationFrame(step);
+  }
+
+  // Toujours un slide à la fois, peu importe la distance (pas de zone morte à traverser
+  // en scroll natif avant que l'effet ne s'enclenche). Seule exception : si on est déjà
+  // sur la première/dernière slide et qu'on continue dans le sens qui en sortirait (vers
+  // le pied de page tout en bas), on laisse le scroll natif faire son travail.
+  window.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) < 2) return;
+    const { index } = closestSlide();
+    const nextIndex = index + (e.deltaY > 0 ? 1 : -1);
+    if (nextIndex < 0 || nextIndex > slides.length - 1) return;
+    e.preventDefault();
+    if (animating) return;
+    scrollToSlide(nextIndex);
+  }, { passive: false });
+
+  let touchStartY = null;
+  window.addEventListener('touchstart', (e) => {
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  window.addEventListener('touchend', (e) => {
+    if (touchStartY === null || animating) return;
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    touchStartY = null;
+    if (Math.abs(dy) < 40) return;
+    const { index } = closestSlide();
+    const nextIndex = index + (dy > 0 ? 1 : -1);
+    if (nextIndex < 0 || nextIndex > slides.length - 1) return;
+    scrollToSlide(nextIndex);
+  }, { passive: true });
 })();
 
 // Surligne dans le sommaire l'entrée correspondant à la carte actuellement au centre
@@ -169,6 +355,40 @@
   window.addEventListener('resize', update);
 })();
 
+// Adaptation à la couleur de fond : quand le rail de nav (points + indicateur) ou le bouton
+// "remonter en haut" passent devant le bandeau bleu de #contact, ils basculent en teintes
+// claires (classe .is-on-dark, stylée dans styles.css) pour rester lisibles. Près du bord
+// droit — là où vivent le rail et le bouton — la diagonale du haut de #contact touche 0, donc
+// le bleu couvre toute la hauteur de la section : un simple test top/bottom suffit.
+(function initOnDarkAdaptation() {
+  const contact = document.getElementById('contact');
+  const railLinks = document.querySelectorAll('.dot-rail a');
+  const indicator = document.querySelector('.dot-rail-indicator');
+  const backToTop = document.querySelector('.back-to-top');
+  if (!contact) return;
+
+  function overContactBlue(y) {
+    const r = contact.getBoundingClientRect();
+    return y > r.top && y < r.bottom;
+  }
+
+  function toggle(el) {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.classList.toggle('is-on-dark', overContactBlue(r.top + r.height / 2));
+  }
+
+  function update() {
+    railLinks.forEach(toggle);
+    toggle(indicator);
+    toggle(backToTop);
+  }
+
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', update);
+})();
+
 // Flèche "défiler vers le bas" du header : se cache dès qu'on quitte le haut de page.
 (function initScrollDownButton() {
   const btn = document.querySelector('.scroll-down');
@@ -180,6 +400,157 @@
 
   update();
   window.addEventListener('scroll', update, { passive: true });
+})();
+
+// Ligne décorative de fond : une seule vague sinueuse continue, générée aux dimensions
+// réelles de la page (longueur d'onde constante du haut en bas), puis « dessinée » selon
+// la progression du scroll (stroke-dashoffset de 1 → 0, longueur normalisée via pathLength="1").
+(function initBgLine() {
+  const svg = document.querySelector('.dp-bg-line');
+  const path = document.querySelector('.dp-bg-line-path');
+  if (!svg || !path) return;
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const doc = document.documentElement;
+
+  // Ligne dessinée à la main via draw-line.html : points normalisés [x∈0..1, y∈0..1].
+  // Laisse le tableau vide pour utiliser le méandre généré automatiquement plus bas.
+  const CUSTOM_LINE = [[0.1721,0.0021],[0.1926,0.0032],[0.2074,0.0086],[0.2221,0.0129],[0.2426,0.0172],[0.2603,0.0215],[0.2779,0.0258],[0.2956,0.029],[0.3132,0.0333],[0.3309,0.0376],[0.3515,0.043],[0.3662,0.0473],[0.3809,0.0526],[0.4015,0.058],[0.4162,0.0623],[0.4309,0.0666],[0.4485,0.0709],[0.4662,0.0752],[0.4809,0.0795],[0.4956,0.0859],[0.5074,0.0924],[0.5132,0.101],[0.5279,0.1074],[0.5397,0.1139],[0.5515,0.1225],[0.5544,0.13],[0.5574,0.1386],[0.5662,0.1461],[0.5691,0.1547],[0.5721,0.1622],[0.5779,0.1708],[0.5838,0.1794],[0.5868,0.1869],[0.5868,0.1944],[0.5926,0.203],[0.5956,0.2116],[0.5956,0.2191],[0.5956,0.2267],[0.5956,0.2353],[0.5956,0.2428],[0.5956,0.2514],[0.5926,0.2589],[0.5868,0.2675],[0.5779,0.275],[0.5632,0.2836],[0.5515,0.2922],[0.5368,0.2986],[0.5221,0.3062],[0.5015,0.3115],[0.4838,0.3147],[0.4662,0.319],[0.4485,0.319],[0.4309,0.3223],[0.4132,0.3244],[0.3956,0.3255],[0.375,0.3255],[0.3544,0.3255],[0.3338,0.3244],[0.3162,0.3212],[0.2985,0.319],[0.2838,0.3137],[0.275,0.3051],[0.2662,0.2976],[0.2662,0.29],[0.2632,0.2825],[0.2691,0.275],[0.2868,0.2718],[0.3074,0.2686],[0.3279,0.2675],[0.3456,0.2675],[0.3632,0.2675],[0.3838,0.2686],[0.4015,0.2696],[0.4191,0.2729],[0.4368,0.2771],[0.4515,0.2814],[0.4691,0.2857],[0.4809,0.2922],[0.4926,0.2986],[0.5015,0.3062],[0.5132,0.3126],[0.5279,0.319],[0.5397,0.3255],[0.5515,0.3319],[0.5662,0.3373],[0.5809,0.3438],[0.5985,0.348],[0.6132,0.3523],[0.6279,0.3566],[0.6456,0.3609],[0.6662,0.3642],[0.6868,0.3685],[0.7074,0.3738],[0.725,0.3781],[0.7397,0.3835],[0.7544,0.3889],[0.7662,0.3953],[0.775,0.4028],[0.7838,0.4104],[0.7868,0.4179],[0.7868,0.4254],[0.7897,0.434],[0.7897,0.4415],[0.7926,0.4512],[0.7926,0.4587],[0.7926,0.4662],[0.7838,0.4737],[0.7691,0.4802],[0.7603,0.4877],[0.7485,0.4952],[0.7338,0.5006],[0.7221,0.5092],[0.7132,0.5178],[0.7044,0.5253],[0.6897,0.5328],[0.675,0.5393],[0.6632,0.5457],[0.6485,0.5511],[0.6338,0.5564],[0.6132,0.564],[0.5985,0.5693],[0.5838,0.5747],[0.5691,0.5801],[0.5544,0.5844],[0.5397,0.5887],[0.525,0.593],[0.5044,0.5983],[0.4897,0.6048],[0.475,0.6102],[0.4603,0.6155],[0.4426,0.6209],[0.4221,0.6284],[0.4074,0.6349],[0.3956,0.6413],[0.3838,0.6478],[0.3721,0.6542],[0.3574,0.6617],[0.3426,0.6671],[0.3309,0.6746],[0.3191,0.6821],[0.3074,0.6886],[0.2956,0.6972],[0.2838,0.7068],[0.2779,0.7144],[0.2691,0.7219],[0.2662,0.7294],[0.2632,0.7369],[0.2632,0.7455],[0.2632,0.753],[0.2632,0.7616],[0.2632,0.7691],[0.2632,0.7777],[0.2721,0.7853],[0.2779,0.7928],[0.2868,0.8003],[0.2985,0.8078],[0.3103,0.8164],[0.3279,0.8229],[0.3426,0.8282],[0.3574,0.8336],[0.375,0.8368],[0.3926,0.8411],[0.4132,0.8443],[0.4309,0.8476],[0.4485,0.8497],[0.4662,0.8519],[0.4838,0.854],[0.5015,0.854],[0.5191,0.8551],[0.5397,0.8551],[0.5632,0.8562],[0.5809,0.8562],[0.5985,0.8594],[0.6191,0.8605],[0.6368,0.8626],[0.6544,0.8669],[0.675,0.8712],[0.6897,0.8766],[0.7015,0.883],[0.7103,0.8905],[0.7132,0.898],[0.7162,0.9056],[0.7162,0.9131],[0.7162,0.9228],[0.7162,0.9303],[0.7103,0.9389],[0.7044,0.9464],[0.6926,0.9539],[0.6691,0.9647],[0.6515,0.97],[0.6368,0.9743],[0.625,0.9808],[0.6103,0.9851],[0.5956,0.9904],[0.5779,0.9958]];
+
+  const SEED = 20260706; // graine fixe : le tracé est aléatoire mais stable d'un chargement à l'autre
+  const STEP = 26;       // pas d'échantillonnage vertical (px) — plus petit = courbe plus fine
+  const TOP_FRAC = 1;   // part du 1er écran déjà tracée au chargement (0 = rien, 1 = tout l'écran)
+  const SPEED = 1.5;    // 1 = linéaire (suit le scroll au pixel près) ; > 1 = plus lent
+
+  // Générateur pseudo-aléatoire déterministe (mulberry32) : même graine → même courbe.
+  function makeRng(seed) {
+    let s = seed >>> 0;
+    return function () {
+      s |= 0; s = (s + 0x6D2B79F5) | 0;
+      let t = Math.imul(s ^ (s >>> 15), 1 | s);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // Construit un MÉANDRE organique : x est fonction de y via une somme de sinusoïdes de
+  // longueurs d'onde et de phases distinctes (« octaves »). Leur superposition serpente
+  // naturellement — tantôt ample, tantôt calme, sans jamais forcer les bords ni se répéter.
+  // On échantillonne la courbe puis on la lisse (quadratiques passant par les milieux).
+  // Moyenne glissante : lisse les tremblements d'un tracé fait à la main en remplaçant
+  // chaque point par la moyenne de ses voisins (fenêtre ±win). Les extrémités sont figées.
+  function averagePoints(pts, win) {
+    if (pts.length < 3) return pts;
+    const out = [pts[0]];
+    for (let i = 1; i < pts.length - 1; i++) {
+      let sx = 0, sy = 0, n = 0;
+      for (let j = Math.max(0, i - win); j <= Math.min(pts.length - 1, i + win); j++) {
+        sx += pts[j].x; sy += pts[j].y; n++;
+      }
+      out.push({ x: sx / n, y: sy / n });
+    }
+    out.push(pts[pts.length - 1]);
+    return out;
+  }
+
+  // Lissage commun : quadratiques dont chaque sommet est un point et chaque fin le milieu
+  // du segment suivant → courbe continue et douce (C1), sans angle.
+  function smooth(pts) {
+    if (pts.length < 2) return '';
+    let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+    for (let i = 1; i < pts.length - 1; i++) {
+      const p = pts[i];
+      const mx = ((p.x + pts[i + 1].x) / 2).toFixed(1);
+      const my = ((p.y + pts[i + 1].y) / 2).toFixed(1);
+      d += ` Q${p.x.toFixed(1)},${p.y.toFixed(1)} ${mx},${my}`;
+    }
+    const last = pts[pts.length - 1];
+    d += ` L${last.x.toFixed(1)},${last.y.toFixed(1)}`;
+    return d;
+  }
+
+  function buildPath(width, height) {
+    // Priorité à la ligne dessinée à la main : on remet les points normalisés à l'échelle
+    // de la page (x×largeur, y×hauteur) puis on les lisse.
+    if (CUSTOM_LINE.length >= 2) {
+      // Deux passes de moyenne glissante à large fenêtre ≈ lissage gaussien : gomme
+      // fortement les tremblements du tracé fait à la main sans écraser sa forme.
+      let pts = CUSTOM_LINE.map(([nx, ny]) => ({ x: nx * width, y: ny * height }));
+      pts = averagePoints(averagePoints(pts, 6), 6);
+      // Prolonge les deux extrémités hors du cadre, dans la continuité de la courbe, pour
+      // que le ruban entre/sorte franchement par les bords (l'embout arrondi part hors écran,
+      // masqué par le SVG) plutôt que de finir sur un bout coupé net en haut et en bas.
+      const margin = Math.max(320, height * 0.04);
+      const extend = (tip, inner) => {
+        const dx = tip.x - inner.x, dy = tip.y - inner.y;
+        const len = Math.hypot(dx, dy) || 1;
+        return { x: tip.x + (dx / len) * margin, y: tip.y + (dy / len) * margin };
+      };
+      const head = extend(pts[0], pts[1]);
+      const tail = extend(pts[pts.length - 1], pts[pts.length - 2]);
+      return smooth([head, ...pts, tail]);
+    }
+
+    const rng = makeRng(SEED);
+    const rand = (min, max) => min + rng() * (max - min);
+    const cx = width / 2;
+    const edge = width * 0.08; // la ligne reste toujours à ≥ 8 % des bords
+
+    // 4 octaves : une lente dérive de fond, deux ondulations moyennes qui donnent le
+    // caractère, une petite pour un léger frémissement. Amplitudes en fraction de largeur.
+    const octaves = [
+      { amp: width * 0.20, wave: rand(1100, 1500), phase: rng() * Math.PI * 2 },
+      { amp: width * 0.15, wave: rand(560, 760),   phase: rng() * Math.PI * 2 },
+      { amp: width * 0.09, wave: rand(300, 420),   phase: rng() * Math.PI * 2 },
+      { amp: width * 0.04, wave: rand(150, 210),   phase: rng() * Math.PI * 2 },
+    ];
+
+    const xAt = (y) => {
+      let x = cx;
+      for (const o of octaves) x += o.amp * Math.sin((2 * Math.PI * y) / o.wave + o.phase);
+      return Math.min(Math.max(x, edge), width - edge);
+    };
+
+    // Points échantillonnés régulièrement, dernier calé pile en bas de page.
+    const pts = [];
+    for (let y = 0; y < height; y += STEP) pts.push({ x: xAt(y), y });
+    pts.push({ x: xAt(height), y: height });
+
+    return smooth(pts);
+  }
+
+  function resize() {
+    const width = svg.clientWidth || window.innerWidth;
+    const height = doc.scrollHeight;
+    svg.style.height = height + 'px';
+    svg.setAttribute('viewBox', `0 0 ${width} ${height}`); // 1:1 avec les px → aucune déformation
+    path.setAttribute('d', buildPath(width, height));
+  }
+
+  function draw() {
+    if (reduce) return; // ligne pleine, gérée en CSS
+    // Courbe unique en t^SPEED (ease-in) : la progression reste faible sur la majeure
+    // partie du scroll et ne rattrape qu'en approchant du bas de page. `base` garde un
+    // tout petit bout de trait visible dès le chargement (haut de page).
+    const total = doc.scrollHeight;
+    const maxScroll = Math.max(total - window.innerHeight, 1);
+    const base = total > 0 ? Math.min((window.innerHeight * TOP_FRAC) / total, 1) : 1;
+    const t = Math.min(window.scrollY / maxScroll, 1);
+    const progress = base + (1 - base) * Math.pow(t, SPEED);
+    path.style.strokeDashoffset = String(1 - Math.min(progress, 1));
+  }
+
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { draw(); ticking = false; });
+  }
+
+  resize();
+  draw();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => { resize(); draw(); });
 })();
 
 // Sélecteur de langue : dupliqué pour la cohérence visuelle du rail, mais bloqué —

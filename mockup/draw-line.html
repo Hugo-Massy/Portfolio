@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Éditeur de ligne — page détails</title>
+<style>
+  :root{ --accent:#4d6fcb; --bg:#ffffff; --ink:#1a2233; --muted:#6b7488; --border:#e4e6e2; }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0; font-family:"Inter",system-ui,sans-serif; color:var(--ink);
+    background:#f6f7f9; padding:24px; display:flex; gap:24px; align-items:flex-start;
+    justify-content:center; min-height:100vh;
+  }
+  .panel{ background:#fff; border:1px solid var(--border); border-radius:14px; padding:18px; }
+  .stage-panel{ padding:12px; }
+  h1{ font-size:17px; margin:0 0 4px; }
+  p.sub{ margin:0 0 16px; color:var(--muted); font-size:13px; line-height:1.5; max-width:280px; }
+  /* Surface de dessin : proportions verticales rappelant une longue page. */
+  .stage{ position:relative; width:340px; height:74vh; min-height:520px; border-radius:12px;
+    background:var(--bg); border:1px solid var(--border); overflow:hidden; touch-action:none; cursor:crosshair; }
+  .stage svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .stage .guide{ stroke:#eef0f4; stroke-width:1; }
+  .line{ fill:none; stroke:var(--accent); stroke-width:14; stroke-linecap:round;
+    stroke-linejoin:round; opacity:.9; }
+  .marker{ position:absolute; left:10px; font-size:10px; letter-spacing:.08em;
+    text-transform:uppercase; color:#aeb4c0; pointer-events:none; }
+  .marker.top{ top:8px; } .marker.bottom{ bottom:8px; }
+  .controls{ display:flex; flex-direction:column; gap:10px; width:300px; }
+  .row{ display:flex; gap:8px; }
+  button{ flex:1; font:inherit; font-size:13px; font-weight:600; padding:9px 12px;
+    border-radius:9px; border:1px solid var(--border); background:#fff; color:var(--ink);
+    cursor:pointer; transition:.15s; }
+  button:hover{ border-color:var(--accent); color:var(--accent); }
+  button.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.primary:hover{ filter:brightness(1.05); color:#fff; }
+  label.opt{ display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); }
+  textarea{ width:100%; height:150px; font-family:"JetBrains Mono",ui-monospace,monospace;
+    font-size:11.5px; line-height:1.5; border:1px solid var(--border); border-radius:9px;
+    padding:10px; resize:vertical; color:#334; background:#fbfbfc; }
+  .hint{ font-size:12px; color:var(--muted); line-height:1.55; }
+  .hint code{ background:#eef0f4; padding:1px 5px; border-radius:5px; font-size:11px; }
+  .count{ font-size:12px; color:var(--muted); }
+</style>
+</head>
+<body>
+
+  <div class="panel stage-panel">
+    <div class="stage" id="stage">
+      <svg id="svg" preserveAspectRatio="none" viewBox="0 0 340 800">
+        <line class="guide" x1="170" y1="0" x2="170" y2="800"></line>
+        <path class="line" id="preview"></path>
+      </svg>
+      <span class="marker top">début (haut de page)</span>
+      <span class="marker bottom">fin (bas de page)</span>
+    </div>
+  </div>
+
+  <div class="panel controls">
+    <h1>Dessine ta ligne</h1>
+    <p class="sub">Maintiens le clic et trace la ligne du haut vers le bas. Recommence autant de fois que tu veux (chaque nouveau tracé remplace le précédent).</p>
+
+    <div class="row">
+      <button id="clear">Effacer</button>
+      <button id="sample" title="Charge un exemple ondulé pour partir d'une base">Exemple</button>
+    </div>
+
+    <label class="opt"><input type="checkbox" id="smooth" checked> Lisser le tracé</label>
+
+    <div class="count" id="count">0 point</div>
+
+    <button class="primary" id="copy">Copier le code à coller</button>
+
+    <p class="hint">Colle le résultat dans <code>js/details.js</code>, à la place de la ligne
+      <code>const CUSTOM_LINE = [];</code> (dans <code>initBgLine</code>). La page utilisera alors
+      ta ligne au lieu du tracé automatique. Vide = tracé automatique.</p>
+
+    <textarea id="output" readonly spellcheck="false"></textarea>
+  </div>
+
+<script>
+(function () {
+  const stage = document.getElementById('stage');
+  const svg = document.getElementById('svg');
+  const preview = document.getElementById('preview');
+  const output = document.getElementById('output');
+  const count = document.getElementById('count');
+  const smoothChk = document.getElementById('smooth');
+
+  const VB_W = 340, VB_H = 800;                 // repère interne du SVG (viewBox)
+  svg.setAttribute('viewBox', `0 0 ${VB_W} ${VB_H}`);
+
+  let points = [];   // points en coordonnées viewBox
+  let drawing = false;
+
+  // position pointeur → coordonnées viewBox
+  function toVB(e) {
+    const r = stage.getBoundingClientRect();
+    const x = ((e.clientX - r.left) / r.width) * VB_W;
+    const y = ((e.clientY - r.top) / r.height) * VB_H;
+    return { x: Math.min(Math.max(x, 0), VB_W), y: Math.min(Math.max(y, 0), VB_H) };
+  }
+
+  // Lissage : quadratiques passant par les milieux (même rendu que la page).
+  function buildD(pts) {
+    if (pts.length < 2) return '';
+    if (!smoothChk.checked) {
+      return 'M' + pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' L');
+    }
+    let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+    for (let i = 1; i < pts.length - 1; i++) {
+      const p = pts[i];
+      const mx = ((p.x + pts[i + 1].x) / 2).toFixed(1);
+      const my = ((p.y + pts[i + 1].y) / 2).toFixed(1);
+      d += ` Q${p.x.toFixed(1)},${p.y.toFixed(1)} ${mx},${my}`;
+    }
+    const last = pts[pts.length - 1];
+    d += ` L${last.x.toFixed(1)},${last.y.toFixed(1)}`;
+    return d;
+  }
+
+  function render() {
+    preview.setAttribute('d', buildD(points));
+    count.textContent = points.length + (points.length > 1 ? ' points' : ' point');
+    // Sortie : points NORMALISÉS [x∈0..1, y∈0..1], prêts à coller dans details.js.
+    const norm = points.map(p => [ +(p.x / VB_W).toFixed(4), +(p.y / VB_H).toFixed(4) ]);
+    output.value = points.length < 2
+      ? 'const CUSTOM_LINE = []; // dessine une ligne pour générer le code'
+      : 'const CUSTOM_LINE = ' + JSON.stringify(norm) + ';';
+  }
+
+  // Échantillonnage : on n'ajoute un point que s'il s'est assez éloigné du précédent.
+  function pushPoint(p) {
+    const last = points[points.length - 1];
+    if (!last || Math.hypot(p.x - last.x, p.y - last.y) >= 6) {
+      points.push(p);
+      render();
+    }
+  }
+
+  stage.addEventListener('pointerdown', (e) => {
+    drawing = true; points = []; stage.setPointerCapture(e.pointerId);
+    pushPoint(toVB(e));
+  });
+  stage.addEventListener('pointermove', (e) => { if (drawing) pushPoint(toVB(e)); });
+  stage.addEventListener('pointerup', () => { drawing = false; });
+  stage.addEventListener('pointercancel', () => { drawing = false; });
+
+  document.getElementById('clear').addEventListener('click', () => { points = []; render(); });
+  smoothChk.addEventListener('change', render);
+
+  document.getElementById('copy').addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(output.value); }
+    catch (_) { output.select(); document.execCommand('copy'); }
+    const btn = document.getElementById('copy');
+    const t = btn.textContent; btn.textContent = 'Copié ✓';
+    setTimeout(() => { btn.textContent = t; }, 1200);
+  });
+
+  // Exemple : un méandre de départ, pour montrer le rendu tout de suite.
+  document.getElementById('sample').addEventListener('click', () => {
+    points = [];
+    for (let y = 0; y <= VB_H; y += 12) {
+      const x = VB_W / 2
+        + 70 * Math.sin(y / 130)
+        + 45 * Math.sin(y / 47 + 1.3)
+        + 22 * Math.sin(y / 23 + 0.6);
+      points.push({ x: Math.min(Math.max(x, 12), VB_W - 12), y });
+    }
+    render();
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
