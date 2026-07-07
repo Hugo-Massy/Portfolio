@@ -2200,6 +2200,31 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 
 /* ============================================================
+   DETAILS-LINK — rappel discret vers la page détails. Vit DANS
+   #contact (donc suit exactement son transform pendant le scroll —
+   une section séparée juste avant subit un décalage de parallax
+   différent de #contact et dérive au scroll, quel que soit son
+   margin/padding : c'est ce qui rendait les réglages précédents
+   invisibles). Ne dépasse que très légèrement au-dessus du bord de la
+   section, pile sur fond blanc, tout près du pli bleu.
+   Le décalage vertical vit sur .details-link (jamais touché par
+   .reveal) ; l'apparition (fondu + montée) vit sur .details-link-inner
+   — les deux ciblent "transform" et .reveal.is-visible écraserait le
+   décalage sinon. */
+.details-link{
+  position:absolute; z-index:2; top:0; left:0; right:0;
+  transform:translateY(-205px);
+}
+.details-link-inner{
+  display:flex; flex-direction:column; align-items:center; gap:16px;
+  text-align:center;
+}
+.details-link-inner p{color:var(--text-dim); font-size:15px; margin:0;}
+@media(max-width:640px){
+  .details-link{position:static; transform:none; margin:0 0 28px;}
+}
+
+/* ============================================================
    CONTACT + FOOTER — bloc de clôture minimaliste : un titre, l'email en
    grand, quelques liens, et une fine barre de pied de page.
    ============================================================ */

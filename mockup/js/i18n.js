@@ -106,6 +106,9 @@ const I18N = {
     'contact-cv': 'CV',
     'footer-back-to-top': 'Merci de votre visite',
 
+    'details-link-lede': 'Envie d\'en savoir plus&nbsp;?',
+    'details-link-cta': 'Voir les détails',
+
     'about-card-flip-aria': 'Retourner le badge',
     'about-card-back-signature': 'Signature',
     'about-card-back-note-title': 'En cas de perte',
@@ -315,6 +318,9 @@ const I18N = {
     'contact-cv': 'Resume',
     'footer-back-to-top': 'Thanks for visiting',
 
+    'details-link-lede': 'Want to see more?',
+    'details-link-cta': 'View the details',
+
     'about-card-flip-aria': 'Flip the badge',
     'about-card-back-signature': 'Signature',
     'about-card-back-note-title': 'If found',
@@ -523,6 +529,9 @@ const I18N = {
     'contact-lede': 'Alternancia, misión o simplemente una pregunta — escríbeme, respondo en menos de 24 horas.',
     'contact-cv': 'CV',
     'footer-back-to-top': 'Gracias por su visita',
+
+    'details-link-lede': '¿Quieres ver más?',
+    'details-link-cta': 'Ver los detalles',
 
     'about-card-flip-aria': 'Girar la credencial',
     'about-card-back-signature': 'Firma',
