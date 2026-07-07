@@ -137,7 +137,10 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 /* --dp-slope exposée en custom property (plutôt qu'en dur dans le clip-path) pour que
    details.js puisse lire la même valeur et savoir, au pixel près, où le bleu s'arrête
    sur le bord droit — c'est là que vivent le rail de nav et le bouton remonter. */
-.dp-blue-block{position:relative; isolation:isolate; --dp-slope:140px;}
+.dp-blue-block{
+  position:relative; isolation:isolate; --dp-slope:140px;
+  --dp-pillar-left:clamp(24px, 4vw, 90px); --dp-pillar-w:280px;
+}
 .dp-blue-block-fill{
   position:absolute; top:0; bottom:0; left:50%; width:100vw;
   transform:translateX(-50%);
@@ -148,48 +151,189 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 .dp-blue-block-wrap{position:relative; z-index:1; padding:180px 0 140px;}
 
+/* Pilier décoratif calqué sur .skill-pillar-bg (#skills, accueil) : même tracé,
+   posé dans la marge gauche du bandeau bleu. Le carrousel se décale d'autant
+   (voir .dp-blue-block-wrap ci-dessous) pour que le pilier reste dans le bandeau
+   bleu, à côté des cartes, plutôt que caché derrière. */
+.dp-competences-pillar{
+  position:absolute; top:53%; left:var(--dp-pillar-left);
+  transform:translateY(-50%);
+  z-index:0;
+  width:var(--dp-pillar-w); height:917px;
+  fill:rgba(255,255,255,.12); stroke:rgba(255,255,255,.3); stroke-width:0.8;
+  stroke-linecap:round; stroke-linejoin:round;
+  pointer-events:none;
+}
+/* icônes flottantes autour du pilier : même mécanique que .skill-floaters/.floater
+   sur #skills (accueil, styles.css) — réutilise leur @keyframes floaterCycle,
+   seule la couleur (blanche sur le bandeau bleu) et la disposition changent. */
+.dp-pillar-floaters{
+  position:absolute; top:53%; left:var(--dp-pillar-left);
+  transform:translateY(-50%);
+  width:var(--dp-pillar-w); height:917px;
+  z-index:1; pointer-events:none;
+}
+/* un jeu d'icônes par pilier (data-index 0 à 3, voir HTML) : un seul actif à la fois,
+   basculé par initCompetenceCarousel (details.js) en même temps que la carte affichée —
+   les icônes des piliers inactifs ne sont ni visibles ni animées. */
+.dp-pillar-floater-set{position:absolute; inset:0; display:none;}
+.dp-pillar-floater-set.is-active{display:block;}
+.dp-pillar-floaters .floater{
+  position:absolute;
+  color:rgba(255,255,255,.6);
+  opacity:0; scale:.4;
+  animation:floaterCycle 6.4s ease-in-out infinite;
+  animation-delay:var(--fdelay, 0s);
+  animation-play-state:paused;
+}
+.dp-blue-block.icons-live .dp-pillar-floater-set.is-active .floater{animation-play-state:running;}
+
+/* 01 sécurité */
+.dp-pillar-floater-set[data-index="0"] .f1{top:8%;  left:-18%; width:32px; height:32px; --fdelay:0s;}
+.dp-pillar-floater-set[data-index="0"] .f2{top:38%; right:-22%; width:22px; height:22px; --fdelay:.35s;}
+.dp-pillar-floater-set[data-index="0"] .f3{top:74%; left:-14%; width:26px; height:26px; --fdelay:.7s;}
+/* 02 administration systèmes */
+.dp-pillar-floater-set[data-index="1"] .f1{top:14%; right:-20%; width:26px; height:26px; --fdelay:.1s;}
+.dp-pillar-floater-set[data-index="1"] .f2{top:48%; left:-22%;  width:24px; height:24px; --fdelay:.5s;}
+.dp-pillar-floater-set[data-index="1"] .f3{top:80%; right:-15%; width:20px; height:20px; --fdelay:.9s;}
+/* 03 infrastructure & cloud */
+.dp-pillar-floater-set[data-index="2"] .f1{top:12%; left:-16%;  width:30px; height:30px; --fdelay:.2s;}
+.dp-pillar-floater-set[data-index="2"] .f2{top:44%; right:-24%; width:22px; height:22px; --fdelay:.6s;}
+.dp-pillar-floater-set[data-index="2"] .f3{top:78%; left:-20%;  width:24px; height:24px; --fdelay:1s;}
+/* 04 dev & automatisation */
+.dp-pillar-floater-set[data-index="3"] .f1{top:16%; right:-16%; width:24px; height:24px; --fdelay:0s;}
+.dp-pillar-floater-set[data-index="3"] .f2{top:50%; left:-20%;  width:20px; height:20px; --fdelay:.45s;}
+.dp-pillar-floater-set[data-index="3"] .f3{top:82%; right:-22%; width:28px; height:28px; --fdelay:.85s;}
+@media(prefers-reduced-motion:reduce){
+  .dp-pillar-floaters .floater{animation:none;}
+}
+@media(max-width:1480px){
+  .dp-pillar-floaters{display:none;}
+}
+/* Ancre du pilier : reste centrée à un point fixe, ne bouge jamais. Le halo
+   (::before) est posé dessus une fois pour toutes ; l'icône + titre à
+   l'intérieur peuvent être remontés (voir .dp-pillar-label) sans déplacer le halo. */
+.dp-pillar-anchor{
+  position:absolute; top:53%; left:calc(var(--dp-pillar-left) + var(--dp-pillar-w) / 2);
+  transform:translate(-50%, -50%);
+  z-index:2;
+  pointer-events:none;
+}
+/* Le filter:drop-shadow utilisé par .skill-icon (#skills) reste invisible ici :
+   il est calibré pour un fond blanc, et sur des tracés aussi fins que ce shield,
+   même poussé au blanc, l'effet ne se voit pas sur le fond bleu du pilier.
+   On rend donc l'aura par un vrai halo (radial-gradient) derrière l'icône. */
+.dp-pillar-anchor::before{
+  content:''; position:absolute; z-index:-1;
+  top:50%; left:50%; transform:translate(-50%, -50%);
+  width:330px; height:330px; border-radius:50%;
+  background:radial-gradient(circle, var(--accent) 0%, var(--accent) 45%, rgba(77,111,203,0) 76%);
+}
+/* Icône + titre de la compétence active, même traitement que .skill-icon/
+   .skill-item-title sur #skills, teinté en blanc pour lire sur le fond bleu
+   plutôt qu'en couleur d'accent. L'ancre (.dp-pillar-anchor) centre déjà ce
+   bloc sur le halo — pas besoin d'un transform ici en plus. */
+.dp-pillar-label{
+  position:relative;
+  display:flex; flex-direction:column; align-items:center; gap:12px;
+  width:calc(var(--dp-pillar-w) - 24px);
+  color:#fff; text-align:center;
+  opacity:1; transform:translateY(0) scale(1);
+  transition:opacity .22s ease, transform .22s ease;
+}
+/* pendant le changement de pilier (voir initCompetenceCarousel dans details.js) :
+   fondu + léger retrait, contenu remplacé au creux du fondu, puis retour. */
+.dp-pillar-label.is-switching{
+  opacity:0; transform:translateY(6px) scale(.96);
+}
+.dp-pillar-icon{position:relative; display:flex; align-items:center; justify-content:center;}
+.dp-pillar-icon svg{width:52px; height:52px;}
+.dp-pillar-title{
+  font-size:21px; font-weight:700; letter-spacing:-.01em; line-height:1.3;
+}
+@media (max-width:1480px){
+  .dp-competences-pillar, .dp-pillar-anchor{display:none;}
+}
+@media (min-width:1481px){
+  .dp-blue-block-wrap{
+    padding-left:calc(var(--dp-pillar-left) + var(--dp-pillar-w) + 32px);
+  }
+}
+
 /* Les 4 piliers regroupés dans le bloc bleu se parcourent en carrousel horizontal
    (un seul visible à la fois, piloté par initCompetenceCarousel dans details.js)
    plutôt qu'un défilement vertical plein écran par carte. */
 .dp-carousel{position:relative; overflow:hidden;}
-.dp-carousel-track{
-  display:flex;
-  transition:transform .55s cubic-bezier(.4,0,.2,1);
-  will-change:transform;
+/* flèches gauche/droite pour parcourir les 4 compétences sans passer par le rail
+   de nav — posées à l'intérieur du carrousel (overflow:hidden) pour ne jamais
+   déborder sur le pilier décoratif à gauche ni sur le bord du bandeau à droite. */
+.dp-carousel-arrow{
+  position:absolute; top:50%; transform:translateY(-50%);
+  z-index:3;
+  display:flex; align-items:center; justify-content:center;
+  width:44px; height:44px; border-radius:50%;
+  border:none; background:rgba(255,255,255,.14);
+  color:#fff; cursor:pointer;
+  transition:background .18s ease, transform .18s ease;
 }
-/* chaque slide devient un panneau du carrousel : largeur pleine, hauteur alignée
-   sur le plus grand panneau (stretch par défaut du flex), contenu centré dedans */
+.dp-carousel-arrow svg{width:20px; height:20px;}
+.dp-carousel-arrow:hover{background:rgba(255,255,255,.26);}
+.dp-carousel-arrow--prev{left:8px;}
+.dp-carousel-arrow--next{right:8px;}
+/* les 4 panneaux se superposent dans la même cellule de grille (empilement plutôt
+   que côte à côte) : passer de l'un à l'autre devient un simple fondu croisé
+   d'opacité, plus besoin de faire glisser le track. */
+.dp-carousel-track{display:grid;}
 .dp-carousel-track > .dp-slide{
-  flex:0 0 100%; width:100%; box-sizing:border-box;
+  grid-column:1; grid-row:1;
+  width:100%; box-sizing:border-box;
   min-height:0; max-height:none;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
   overflow-y:visible;
   scroll-snap-align:none; scroll-snap-stop:normal;
   padding:8px 24px;
+  opacity:0; pointer-events:none;
+  transition:opacity .4s ease;
 }
-.dp-carousel-track > .dp-slide[aria-hidden="true"]{visibility:hidden;}
+.dp-carousel-track > .dp-slide.is-active{opacity:1; pointer-events:auto;}
 
 /* Pagination reprenant les icônes des 4 piliers (mêmes tracés que .skill-icon sur
    l'accueil et .dp-entry-icon de chaque carte), plutôt que de simples points. */
 .dp-carousel-dots{
-  display:flex; justify-content:center; gap:10px;
+  display:flex; justify-content:center; gap:14px;
   margin-top:48px;
 }
-.dp-carousel-dot{
-  display:flex; align-items:center; justify-content:center;
-  width:44px; height:44px; border-radius:12px; padding:0;
-  border:none; background:none;
-  color:rgba(255,255,255,.65);
-  cursor:pointer;
-  transition:background .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
+/* recentrées sur toute la largeur de la page : au-delà de 1480px, .dp-blue-block-wrap
+   se décale à droite pour laisser la place au pilier décoratif (voir plus haut), donc
+   sans ça les icônes suivraient ce décalage au lieu d'être au milieu de la page. */
+@media (min-width:1481px){
+  .dp-carousel-dots{
+    margin-left:calc(-1 * (var(--dp-pillar-left) + var(--dp-pillar-w) + 32px));
+    width:calc(100% + var(--dp-pillar-left) + var(--dp-pillar-w) + 32px);
+  }
 }
-.dp-carousel-dot svg{width:20px; height:20px; transition:width .2s ease, height .2s ease;}
-.dp-carousel-dot:hover{color:#fff;}
+.dp-carousel-dot{
+  display:flex; flex-direction:row; align-items:center; justify-content:center; gap:10px;
+  width:auto; height:auto; padding:10px 14px; border-radius:14px;
+  border:none; background:#fff;
+  color:var(--accent);
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(20,30,60,.14);
+  transition:box-shadow .2s ease, transform .2s ease;
+}
+.dp-carousel-dot svg{width:17px; height:17px; transition:width .2s ease, height .2s ease;}
+.dp-carousel-dot-label{
+  display:none;
+  font-family:var(--mono); font-size:11px; color:var(--text-dim);
+  white-space:nowrap;
+}
+.dp-carousel-dot:hover{box-shadow:0 6px 20px rgba(20,30,60,.22); transform:translateY(-2px);}
 .dp-carousel-dot.is-active{
-  color:#fff;
+  box-shadow:0 0 0 2px var(--accent), 0 6px 20px rgba(20,30,60,.22);
   transform:translateY(-2px);
 }
-.dp-carousel-dot.is-active svg{width:25px; height:25px;}
+.dp-carousel-dot.is-active .dp-carousel-dot-label{display:inline; color:var(--accent);}
+.dp-carousel-dot.is-active svg{width:19px; height:19px;}
 
 /* --- Slide : occupe tout le viewport et centre la carte dedans, c'est lui qui
    gère l'espace autour de la carte et le point d'ancrage du scroll-snap. Le
@@ -205,6 +349,9 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   scroll-snap-align:center;
   scroll-snap-stop:always;
 }
+/* cartes de compétences : le contenu s'aligne en haut (comme le pilier), avec
+   un léger espace, plutôt que centré verticalement dans le viewport. */
+#dp-carousel-competences .dp-slide{justify-content:flex-start; padding-top:16px; scroll-snap-align:start;}
 .dp-slide > .dp-entry{width:100%;}
 
 /* --- Carte d'entrée (compétence ou projet) : garde sa taille naturelle,
@@ -246,10 +393,14 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   font-size:44px; letter-spacing:-.02em; margin:0 0 0 -14px;
   padding:0 14px; background:var(--bg-elev);
 }
+/* Titre des 4 piliers de compétences : gardé dans le DOM pour que le
+   carrousel (initCompetenceCarousel dans details.js) puisse en lire le texte
+   et l'afficher dans le pilier bleu, mais plus dupliqué en débordement sur la carte. */
+#dp-carousel-competences .dp-entry-titles h3{display:none;}
 .dp-entry-sub{display:none; font-size:14.5px; color:var(--text-dim); line-height:1.6; max-width:46ch;}
 .dp-entry-lead{
   position:relative;
-  color:var(--text); line-height:1.7; margin:0 0 30px;
+  color:var(--text); line-height:1.7; margin:0 0 48px;
   font-size:16.5px; font-weight:500; letter-spacing:-.005em;
   padding:18px 24px 18px 26px; border-radius:14px;
   background:var(--accent-soft);
@@ -270,12 +421,29 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   color:var(--text-dim); line-height:1.9; margin:0 0 6px;
   font-family:Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
   font-size:16px; max-width:72ch;
+  text-align:justify;
 }
 .dp-entry-story::first-letter{
   font-size:4.2em; font-weight:700; color:var(--accent);
   float:left; line-height:.82; margin:.03em .08em 0 0;
 }
 .dp-entry-story strong{color:var(--text); font-weight:700;}
+/* effet machine à écrire (initCompetenceCarousel dans details.js) : le texte
+   complet reste affiché (rien n'est invisible), chaque caractère part grisé
+   et retrouve sa couleur finale un par un via un délai croissant (--i) — deux
+   variantes de couleur d'arrivée pour respecter le blanc plein du <strong>
+   contre le blanc atténué du texte courant. */
+.dp-type-ch{color:rgba(255,255,255,.3);}
+.dp-entry-story.is-typing .dp-type-ch{
+  animation:dp-type-color .01s linear forwards;
+  animation-delay:calc(var(--i) * 9ms);
+}
+.dp-entry-story.is-typing strong .dp-type-ch{animation-name:dp-type-color-strong;}
+@keyframes dp-type-color{to{color:rgba(255,255,255,.82);}}
+@keyframes dp-type-color-strong{to{color:#fff;}}
+@media(prefers-reduced-motion:reduce){
+  .dp-type-ch{color:inherit; animation:none;}
+}
 .dp-inline-logo{
   display:inline-block;
   width:18px; height:18px; object-fit:contain;
@@ -288,18 +456,17 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   clear:both;
   display:grid; grid-template-columns:1fr;
   padding-top:30px; margin-top:28px; border-top:1px solid var(--border-soft);
-}
-/* variante « pour / contre » : deux colonnes face à face, appris vs manquant.
+}/* variante « pour / contre » : deux colonnes face à face, appris vs manquant.
    Vert = acquis, gris = manquant : token vert local, propre à cette variante,
    pour ne pas toucher au bleu accent utilisé partout ailleurs dans .dp-list. */
 .dp-entry-cols--compare{
   --dp-green:#2f8f5f; --dp-green-soft:rgba(47,143,95,.10); --dp-green-glow:rgba(47,143,95,.22);
-  grid-template-columns:1fr 1fr; gap:0 40px;
-  border-top:none;
+  grid-template-columns:1fr 1fr; gap:0 20px;
+  border-top:none; padding-top:12px; margin-top:10px;
 }
 .dp-entry-cols--compare .dp-list{grid-template-columns:1fr;}
 .dp-entry-cols--compare .dp-col--gap{
-  padding-left:40px; border-left:1px solid var(--border-soft);
+  padding-left:40px;
 }
 .dp-entry-cols--compare .dp-col--have .dp-col-title{color:var(--dp-green);}
 .dp-entry-cols--compare .dp-col--have .dp-col-title::before{background:var(--dp-green);}
@@ -383,6 +550,94 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   font-size:12px; font-weight:700; line-height:1; color:var(--text-dim);
 }
 .dp-list--gap li strong{color:var(--text-dim);}
+
+/* --- Variante « posée sur le bandeau bleu » : la carte elle-même n'a plus de
+   fond propre (elle se lit à même le bleu, voir #dp-carousel-competences), sauf
+   .dp-entry-body qui regroupe tout ce qui suit la citation (récit + colonnes) sur
+   un vrai bloc blanc — seule la citation du haut reste directement sur le bleu.
+   Sans effet sur les cartes projets (fond blanc normal, hors .dp-blue-block). */
+.dp-blue-block .dp-entry{
+  background:transparent;
+  border-top:none;
+  box-shadow:none;
+}
+.dp-blue-block .dp-entry-lead{background:rgba(255,255,255,.14); color:#fff;}
+.dp-blue-block .dp-entry-lead::before{color:rgba(255,255,255,.55);}
+.dp-blue-block .dp-entry-lead strong{color:#fff;}
+.dp-blue-block .dp-entry-body{
+  background:transparent;
+  box-shadow:none;
+}
+/* plus de fond blanc : le récit se lit directement sur le bleu, mêmes couleurs
+   éclaircies que le bloc « ce que j'ai appris » juste en dessous. */
+.dp-blue-block .dp-entry-body .dp-entry-story{color:rgba(255,255,255,.82); font-size:18px;}
+.dp-blue-block .dp-entry-body .dp-entry-story::first-letter{color:#fff;}
+.dp-blue-block .dp-entry-body .dp-entry-story strong{color:#fff;}
+/* même fond « verre » que la citation d'origine (.dp-entry-lead) : la phrase de
+   conclusion et les logos vivent maintenant dans le même bloc, donc les deux
+   partagent exactement le même traitement visuel plutôt qu'un fond blanc plein. */
+.dp-blue-block .dp-entry-cols{
+  background:rgba(255,255,255,.14);
+  border-radius:14px;
+  padding:22px 24px;
+  margin-top:56px;
+  border-top:none;
+  transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.dp-blue-block .dp-entry-cols:hover{
+  background:rgba(255,255,255,.2);
+  box-shadow:0 12px 28px rgba(15,22,50,.22);
+  transform:translateY(-2px);
+}
+.dp-blue-block .dp-skills-summary-lead{color:#fff; margin:8px 0 0; line-height:1.7;}
+.dp-blue-block .dp-skills-summary-lead strong{color:#fff;}
+.dp-blue-block .dp-entry-skills-summary .dp-col-title{color:#fff;}
+.dp-blue-block .dp-entry-skills-summary .dp-col-title::before{background:#fff;}
+/* résumé « ce que j'ai appris » : juste le titre et la phrase, les logos des
+   outils maîtrisés vivent maintenant entre le récit et ce bloc (voir plus bas). */
+.dp-entry-cols.dp-entry-skills-summary{display:block;}
+.dp-skills-summary-text{min-width:0;}
+/* logos des outils maîtrisés, entre le texte de contenu et le bloc « ce que
+   j'ai appris » plutôt qu'à l'intérieur de celui-ci : calés à droite, en
+   collage décalé (chaque tuile a sa propre hauteur, voir nth-child ci-dessous)
+   plutôt qu'alignées sur une même ligne. */
+.dp-skills-summary-logos{
+  display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:flex-end; gap:14px;
+  margin:28px 0 0;
+}
+.dp-skills-summary-logos .dp-summary-logo:nth-child(3n+1){margin-top:0;}
+.dp-skills-summary-logos .dp-summary-logo:nth-child(3n+2){margin-top:22px;}
+.dp-skills-summary-logos .dp-summary-logo:nth-child(3n+3){margin-top:-14px;}
+/* même traitement que les badges de logo flottants sur la tuile Massy Innove
+   (.xp-brand-badge / xp-badge-float, styles.css) : légère rotation fixe par
+   badge (--r) et flottement vertical continu, désynchronisé via animation-delay. */
+.dp-summary-logo{
+  position:relative; z-index:1;
+  width:60px; height:60px; object-fit:contain; padding:13px;
+  border-radius:18px; background:#fff; border:none;
+  box-shadow:0 14px 30px rgba(15,22,50,.32);
+  box-sizing:border-box;
+  animation:dp-logo-float 5.5s ease-in-out infinite;
+  animation-delay:var(--fdelay, 0s);
+  transition:box-shadow .2s ease, transform .2s ease;
+}
+.dp-summary-logo:hover{
+  z-index:2;
+  box-shadow:0 18px 36px rgba(15,22,50,.4), 0 0 0 4px rgba(255,255,255,.35);
+  animation-play-state:paused;
+  transform:translateY(-4px) scale(1.05) rotate(var(--r, 0deg));
+}
+@keyframes dp-logo-float{
+  0%, 100%{transform:translateY(0) rotate(var(--r, 0deg));}
+  50%{transform:translateY(-8px) rotate(var(--r, 0deg));}
+}
+@media(prefers-reduced-motion:reduce){
+  .dp-summary-logo{animation:none; transform:rotate(var(--r, 0deg));}
+}
+/* tailles, rotation et décalage d'animation alternés plutôt qu'une grille uniforme */
+.dp-skills-summary-logos .dp-summary-logo:nth-child(3n+1){width:70px; height:70px; padding:15px; --r:-6deg; --fdelay:0s;}
+.dp-skills-summary-logos .dp-summary-logo:nth-child(3n+2){width:58px; height:58px; padding:12px; --r:5deg; --fdelay:.6s;}
+.dp-skills-summary-logos .dp-summary-logo:nth-child(3n+3){width:64px; height:64px; padding:13px; --r:-4deg; --fdelay:1.2s;}
 
 /* puces / chips technos */
 .dp-chips{display:flex; flex-wrap:wrap; gap:10px;}

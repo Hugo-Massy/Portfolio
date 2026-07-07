@@ -314,22 +314,99 @@
   const panels = Array.from(track.children).filter((el) => el.classList.contains('dp-slide'));
   const dots = Array.from(document.querySelectorAll('.dp-carousel-dot'));
   const idToIndex = new Map(panels.map((el, i) => [el.id, i]));
+  const pillarLabel = document.querySelector('.dp-pillar-label');
+  const pillarIcon = document.querySelector('.dp-pillar-icon');
+  const pillarTitle = document.querySelector('.dp-pillar-title');
+  const floaterSets = Array.from(document.querySelectorAll('.dp-pillar-floater-set'));
   let index = 0;
+  let first = true;
+
+  function setPillarLabel() {
+    if (!pillarIcon || !pillarTitle) return;
+    const panel = panels[index];
+    const icon = panel && panel.querySelector('.dp-entry-icon svg');
+    const title = panel && panel.querySelector('.dp-entry-titles h3');
+    pillarIcon.innerHTML = icon ? icon.outerHTML : '';
+    pillarTitle.textContent = title ? title.textContent : '';
+  }
+
+  // Effet machine à écrire sur le récit de chaque compétence : chaque caractère
+  // est isolé dans un <span> (une seule fois, au chargement) pour pouvoir lui
+  // donner un délai d'apparition croissant (--i) ; .is-strong ajoutée/retirée à
+  // chaque changement de carte pour rejouer l'effet, dans l'esprit "terminal"
+  // du reste du site. <img>/<strong> restent intacts, seul leur texte est éclaté.
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function wrapStoryChars(story) {
+    if (!story || story.dataset.typingReady) return;
+    let i = 0;
+    function walk(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        const frag = document.createDocumentFragment();
+        Array.from(node.textContent).forEach((ch) => {
+          const span = document.createElement('span');
+          span.className = 'dp-type-ch';
+          span.style.setProperty('--i', i++);
+          span.textContent = ch;
+          frag.appendChild(span);
+        });
+        node.replaceWith(frag);
+      } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'IMG') {
+        Array.from(node.childNodes).forEach(walk);
+      }
+    }
+    Array.from(story.childNodes).forEach(walk);
+    story.dataset.typingReady = 'true';
+  }
+  function playTyping(panel) {
+    if (reduceMotion) return;
+    const story = panel && panel.querySelector('.dp-entry-story');
+    if (!story) return;
+    story.classList.remove('is-typing');
+    void story.offsetWidth; // force le navigateur à repartir de zéro avant de relancer
+    story.classList.add('is-typing');
+  }
+  if (!reduceMotion) {
+    panels.forEach((panel) => wrapStoryChars(panel.querySelector('.dp-entry-story')));
+  }
 
   function apply() {
-    track.style.transform = `translateX(-${index * 100}%)`;
-    panels.forEach((el, i) => el.setAttribute('aria-hidden', i === index ? 'false' : 'true'));
+    panels.forEach((el, i) => {
+      el.classList.toggle('is-active', i === index);
+      el.setAttribute('aria-hidden', i === index ? 'false' : 'true');
+    });
     dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
+    floaterSets.forEach((el) => el.classList.toggle('is-active', Number(el.dataset.index) === index));
+    playTyping(panels[index]);
+
+    // Icône + titre du pilier actif recopiés depuis la carte elle-même (source
+    // unique dans le DOM), plutôt que dupliqués en dur ici. Petit fondu enchaîné
+    // à chaque changement (voir .dp-pillar-label.is-switching dans details.css)
+    // pour ne pas juste couper l'ancien contenu et coller le nouveau.
+    if (!pillarLabel || first) {
+      setPillarLabel();
+      first = false;
+      return;
+    }
+    pillarLabel.classList.add('is-switching');
+    window.setTimeout(() => {
+      setPillarLabel();
+      pillarLabel.classList.remove('is-switching');
+    }, 220);
   }
 
   function goTo(i) {
-    index = Math.max(0, Math.min(panels.length - 1, i));
+    index = (i + panels.length) % panels.length;
     apply();
   }
 
   dots.forEach((d) => {
     d.addEventListener('click', () => goTo(Number(d.dataset.carouselIndex)));
   });
+
+  const prevBtn = carousel.querySelector('.dp-carousel-arrow--prev');
+  const nextBtn = carousel.querySelector('.dp-carousel-arrow--next');
+  if (prevBtn) prevBtn.addEventListener('click', () => goTo(index - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goTo(index + 1));
 
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     const targetId = a.getAttribute('href').slice(1);
@@ -373,6 +450,19 @@
   links.forEach((link) => {
     link.addEventListener('click', () => setActive(link));
   });
+})();
+
+// Icônes flottantes autour du pilier de compétences : rejoue à chaque passage dans
+// le viewport (pas d'unobserve), comme initSkillFloaterObserver sur la page d'accueil.
+(function initPillarFloaterObserver() {
+  const target = document.querySelector('.dp-blue-block');
+  if (!target) return;
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      entry.target.classList.toggle('icons-live', entry.isIntersecting);
+    });
+  }, { threshold: 0.15 });
+  observer.observe(target);
 })();
 
 // Terminal du hero : champ de saisie utilisable pour sauter à un fichier (Entrée),

@@ -197,7 +197,64 @@
       <div class="dp-blue-block">
         <div class="dp-blue-block-fill" aria-hidden="true"></div>
         <div class="dp-blue-block-wrap">
+        <!-- Même pilier décoratif que .skill-pillar-bg sur #skills (accueil),
+             posé dans la marge gauche réservée du bandeau bleu (voir padding-left
+             de .dp-blue-block-wrap) pour rester accolé aux cartes, pas isolé au
+             bord du viewport. -->
+        <svg class="dp-competences-pillar" viewBox="0 0 50 200" aria-hidden="true" preserveAspectRatio="none">
+          <rect x="0.5" y="0.5" width="49"  height="6"  rx="0.5"/>
+          <rect x="4"   y="6.5" width="42"  height="5"  rx="0.5"/>
+          <rect x="8"   y="11.5" width="34" height="3"  rx="0.5"/>
+          <path d="M15 14.5 C13 17 12 20 12 24 H38 C38 20 37 17 35 14.5 Z"/>
+          <rect x="16" y="24" width="18" height="152" rx="0.3"/>
+          <line x1="21" y1="27" x2="21" y2="172"/>
+          <line x1="25" y1="27" x2="25" y2="172"/>
+          <line x1="29" y1="27" x2="29" y2="172"/>
+          <rect x="12"  y="176" width="26" height="5"   rx="0.5"/>
+          <rect x="0.5" y="181" width="49" height="7"   rx="0.5"/>
+        </svg>
+        <!-- Petites icônes flottantes autour du pilier, même animation que .skill-floaters
+             sur #skills (accueil) : apparition/disparition en boucle tant que le bandeau
+             bleu est dans le viewport (voir initPillarFloaterObserver dans details.js). -->
+        <div class="dp-pillar-floaters" aria-hidden="true">
+          <!-- 01 sécurité : cadenas, œil, loupe -->
+          <div class="dp-pillar-floater-set is-active" data-index="0">
+            <svg class="floater f1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+            <svg class="floater f2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+            <svg class="floater f3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="15" r="4"/><path d="M9.5 12.5 20 2M17 5l2 2M14 8l2 2"/></svg>
+          </div>
+          <!-- 02 administration : serveurs, écran, réseau -->
+          <div class="dp-pillar-floater-set" data-index="1">
+            <svg class="floater f1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="7" rx="1.5"/><rect x="2" y="14" width="20" height="7" rx="1.5"/><circle cx="6" cy="6.5" r="1" fill="currentColor" stroke="none"/><circle cx="6" cy="17.5" r="1" fill="currentColor" stroke="none"/></svg>
+            <svg class="floater f2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="6 9 10 12 6 15"/><line x1="12" y1="15" x2="16" y2="15"/></svg>
+            <svg class="floater f3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M12 6v4M12 10 5 16M12 10l7 6"/></svg>
+          </div>
+          <!-- 03 infra & cloud : nuage, wifi, réseau maillé -->
+          <div class="dp-pillar-floater-set" data-index="2">
+            <svg class="floater f1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 19a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.5A4.5 4.5 0 0 1 18 19H6z"/></svg>
+            <svg class="floater f2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8.5a16 16 0 0 1 20 0"/><path d="M5 12a11 11 0 0 1 14 0"/><path d="M8.5 15.5a6 6 0 0 1 7 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
+            <svg class="floater f3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 3 21 8 12 13 3 8 12 3"/><polyline points="3 13 12 18 21 13"/></svg>
+          </div>
+          <!-- 04 dev & automatisation : chevrons de code, engrenage -->
+          <div class="dp-pillar-floater-set" data-index="3">
+            <svg class="floater f1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 3 12 9 18"/><polyline points="15 6 21 12 15 18"/></svg>
+            <svg class="floater f2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 6 10 12 4 18"/><line x1="12" y1="18" x2="20" y2="18"/></svg>
+            <svg class="floater f3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 0 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 0 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 0 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 0 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z"/></svg>
+          </div>
+        </div>
+        <!-- Ancre fixe pour le halo (position stable) : l'icône + titre à l'intérieur
+             peuvent être décalés indépendamment sans déplacer le halo. Mis à jour par
+             initCompetenceCarousel (details.js) au fil du carrousel. -->
+        <div class="dp-pillar-anchor" aria-hidden="true">
+          <div class="dp-pillar-label">
+            <span class="dp-pillar-icon"></span>
+            <span class="dp-pillar-title"></span>
+          </div>
+        </div>
         <div class="dp-carousel" id="dp-carousel-competences">
+        <button type="button" class="dp-carousel-arrow dp-carousel-arrow--next" aria-label="Compétence suivante">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
         <div class="dp-carousel-track">
 
       <!-- 01 · Sécurité défensive -->
@@ -213,31 +270,22 @@
             <p class="dp-entry-sub">Détecter, durcir, répondre — construire un SOC qui voit ce qui compte.</p>
           </div>
         </div>
-        <p class="dp-entry-lead dp-entry-lead--full">J'aborde la sécurité par la <strong>visibilité</strong> : sans télémétrie, pas de défense. J'ai déployé une chaîne de détection complète, du capteur réseau au tableau de bord, et je sais l'exploiter en cas d'incident.</p>
+        <div class="dp-entry-body">
         <div class="dp-entry-copy" data-num="01">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-story">Tout a commencé par une question toute bête : si quelqu'un rentrait ce soir, je le verrais ? À l'époque, la réponse était non. Pas de logs centralisés, pas d'alerte, juste un pare-feu qui filtrait sans jamais raconter ce qu'il avait filtré. J'ai commencé par poser un <strong>SIEM</strong> avec <strong>Wazuh</strong><img class="dp-inline-logo" src="assets/logo/WAZUH.png" alt="Wazuh">&nbsp;sur mes machines, agent par agent, pour que chaque connexion, chaque échec d'authentification, chaque processus suspect laisse une trace quelque part. Puis j'ai ajouté <strong>Suricata</strong><img class="dp-inline-logo" src="assets/logo/Logo-Suricata-vert-R.png" alt="Suricata">&nbsp;en coupure réseau, pour inspecter le trafic lui-même et pas seulement ce que les hôtes voulaient bien rapporter. Le déclic est venu du jour où j'ai monté un honeypot <strong>T-Pot</strong> exposé volontairement : en quelques heures, les tentatives de connexion pleuvaient déjà, scans automatisés, bruteforce SSH, bots qui testaient des identifiants par milliers. Voir ça en direct m'a appris plus sur les attaquants réels que n'importe quel cours. Depuis, je durcis systématiquement chaque machine avec les <strong>CIS Benchmarks</strong> avant même de la mettre en service, et je garde toujours un plan de réponse à incident prêt — parce que la question n'est plus « si », mais « quand ».</p>
-          </div>
-          <div class="dp-metrics dp-metrics--aside">
-            <div class="dp-metric"><b>3</b><span>couches de détection déployées</span></div>
+            <p class="dp-entry-story">Tout a commencé par une question toute bête : si quelqu'un rentrait ce soir, je le verrais ? À l'époque, la réponse était non. Pas de logs centralisés, pas d'alerte, juste un pare-feu qui filtrait sans jamais raconter ce qu'il avait filtré. J'ai commencé par poser un <strong>SIEM</strong> avec <strong>Wazuh</strong> sur mes machines, agent par agent, pour que chaque connexion, chaque échec d'authentification, chaque processus suspect laisse une trace quelque part. Puis j'ai ajouté <strong>Suricata</strong> en coupure réseau, pour inspecter le trafic lui-même et pas seulement ce que les hôtes voulaient bien rapporter. Le déclic est venu du jour où j'ai monté un honeypot <strong>T-Pot</strong> exposé volontairement : en quelques heures, les tentatives de connexion pleuvaient déjà, scans automatisés, bruteforce SSH, bots qui testaient des identifiants par milliers. Voir ça en direct m'a appris plus sur les attaquants réels que n'importe quel cours. Depuis, je durcis systématiquement chaque machine avec les <strong>CIS Benchmarks</strong> avant même de la mettre en service, et je garde toujours un plan de réponse à incident prêt — parce que la question n'est plus « si », mais « quand ».</p>
           </div>
         </div>
-        <div class="dp-entry-cols dp-entry-cols--compare">
-          <div class="dp-col dp-col--have">
+        <div class="dp-skills-summary-logos">
+          <img class="dp-summary-logo" src="assets/logo/WAZUH.png" alt="Wazuh">
+          <img class="dp-summary-logo" src="assets/logo/Logo-Suricata-vert-R.png" alt="Suricata">
+        </div>
+        <div class="dp-entry-cols dp-entry-skills-summary">
+          <div class="dp-skills-summary-text">
             <h4 class="dp-col-title">Ce que j'ai appris</h4>
-            <ul class="dp-list">
-              <li><strong>SIEM &amp; EDR</strong> — collecte, corrélation et alerting avec <strong>Wazuh</strong> (agents Windows/Linux, règles custom).</li>
-              <li><strong>IDS/IPS réseau</strong> — inspection du trafic avec <strong>Suricata</strong>, signatures et détection d'anomalies.</li>
-              <li><strong>Honeypots</strong> — déploiement de <strong>T-Pot</strong> pour observer les attaques réelles et alimenter la threat intel.</li>
-            </ul>
+            <p class="dp-skills-summary-lead">J'aborde la sécurité par la <strong>visibilité</strong> : sans télémétrie, pas de défense. J'ai déployé une chaîne de détection complète, du capteur réseau au tableau de bord, pour une <strong>visibilité totale</strong> sur mes machines et mon réseau, et je sais l'exploiter en cas d'incident.</p>
           </div>
-          <div class="dp-col dp-col--gap">
-            <h4 class="dp-col-title">Ce qu'il me manque</h4>
-            <ul class="dp-list dp-list--gap">
-              <li><strong>Forensics avancé</strong> — analyse mémoire et disque poussée, encore en cours d'approfondissement.</li>
-              <li><strong>Certifications</strong> — OSCP / CEH visées mais pas encore passées.</li>
-            </ul>
-          </div>
+        </div>
         </div>
       </article>
       </div>
@@ -255,32 +303,24 @@
             <p class="dp-entry-sub">Tenir un parc en production, sans casser le service du quotidien.</p>
           </div>
         </div>
-        <p class="dp-entry-lead dp-entry-lead--full">En alternance à la <strong>DSI de la Mairie de Massy</strong>, j'administre un environnement réel : annuaire central, parc applicatif dense et serveurs Linux en production, au service d'utilisateurs qui n'attendent pas.</p>
+        <div class="dp-entry-body">
         <div class="dp-entry-copy" data-num="02">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-story">Mon premier jour, on ne m'a pas donné un tutoriel, on m'a donné un annuaire <strong>Active Directory</strong> vieux de plusieurs années et une collectivité qui tournait dessus depuis le matin. Impossible de « faire des essais » : chaque OU, chaque GPO que je touchais pouvait bloquer un poste de travail à l'autre bout du bâtiment. J'ai appris à lire l'existant avant d'y toucher, à documenter avant d'agir. Très vite, j'ai hérité du suivi de plus de <strong>130 applications métier</strong> recensées dans <strong>GLPI</strong><img class="dp-inline-logo" src="assets/logo/glpi.svg" alt="GLPI">&nbsp;— certaines vitales, d'autres oubliées de tous sauf de l'utilisateur qui s'en sert encore chaque jour. Entre les serveurs <strong>Windows Server</strong><img class="dp-inline-logo" src="assets/logo/Windows_logo_-_2021.svg" alt="Windows Server">&nbsp;historiques et mes déploiements plus récents sous <strong>Debian 12</strong><img class="dp-inline-logo" src="assets/logo/debian.svg" alt="Debian">&nbsp;systemd, j'ai dû jongler entre deux mondes sans jamais casser le pont entre eux. Ce qui m'a le plus marqué, c'est la répétition : les mêmes tickets, les mêmes gestes. Alors j'ai commencé à automatiser ce qui pouvait l'être avec <strong>PowerShell</strong><img class="dp-inline-logo" src="assets/logo/Powershell_128.svg" alt="PowerShell">, pour transformer une tâche de vingt minutes en un script de trois secondes — et retrouver du temps pour ce qui compte vraiment : l'utilisateur qui attend une réponse.</p>
-          </div>
-          <div class="dp-metrics dp-metrics--aside">
-            <div class="dp-metric"><b>130+</b><span>applications métier suivies</span></div>
-            <div class="dp-metric"><b>2</b><span>environnements administrés</span></div>
+            <p class="dp-entry-story">Mon premier jour, on ne m'a pas donné un tutoriel, on m'a donné un annuaire <strong>Active Directory</strong> vieux de plusieurs années et une collectivité qui tournait dessus depuis le matin. Impossible de « faire des essais » : chaque OU, chaque GPO que je touchais pouvait bloquer un poste de travail à l'autre bout du bâtiment. J'ai appris à lire l'existant avant d'y toucher, à documenter avant d'agir. Très vite, j'ai hérité du suivi de plus de <strong>130 applications métier</strong> recensées dans <strong>GLPI</strong> — certaines vitales, d'autres oubliées de tous sauf de l'utilisateur qui s'en sert encore chaque jour. Entre les serveurs <strong>Windows Server</strong> historiques et mes déploiements plus récents sous <strong>Debian 12</strong> systemd, j'ai dû jongler entre deux mondes sans jamais casser le pont entre eux. Ce qui m'a le plus marqué, c'est la répétition : les mêmes tickets, les mêmes gestes. Alors j'ai commencé à automatiser ce qui pouvait l'être avec <strong>PowerShell</strong>, pour transformer une tâche de vingt minutes en un script de trois secondes — et retrouver du temps pour ce qui compte vraiment : l'utilisateur qui attend une réponse.</p>
           </div>
         </div>
-        <div class="dp-entry-cols dp-entry-cols--compare">
-          <div class="dp-col dp-col--have">
+        <div class="dp-skills-summary-logos">
+          <img class="dp-summary-logo" src="assets/logo/glpi.svg" alt="GLPI">
+          <img class="dp-summary-logo" src="assets/logo/Windows_logo_-_2021.svg" alt="Windows Server">
+          <img class="dp-summary-logo" src="assets/logo/debian.svg" alt="Debian">
+          <img class="dp-summary-logo" src="assets/logo/Powershell_128.svg" alt="PowerShell">
+        </div>
+        <div class="dp-entry-cols dp-entry-skills-summary">
+          <div class="dp-skills-summary-text">
             <h4 class="dp-col-title">Ce que j'ai appris</h4>
-            <ul class="dp-list">
-              <li><strong>Active Directory</strong> — GPO, gestion des identités, structuration des OU.</li>
-              <li><strong>Parc applicatif</strong> — exploitation et maintien de <strong>130+ applications</strong> métier.</li>
-              <li><strong>Linux en prod</strong> — <strong>Debian 12</strong>, services systemd, sauvegardes et mises à jour.</li>
-            </ul>
+            <p class="dp-skills-summary-lead">En alternance à la <strong>DSI de la Mairie de Massy</strong>, j'administre un environnement réel : un <strong>annuaire Active Directory</strong> central, plus de <strong>130 applications métier</strong> et des serveurs Windows et Linux en production, au service d'utilisateurs qui n'attendent pas.</p>
           </div>
-          <div class="dp-col dp-col--gap">
-            <h4 class="dp-col-title">Ce qu'il me manque</h4>
-            <ul class="dp-list dp-list--gap">
-              <li><strong>Multi-sites</strong> — administration d'un AD réparti sur plusieurs datacenters.</li>
-              <li><strong>Cloud identity</strong> — migration complète vers <strong>Entra ID</strong> (Azure AD), pas encore pratiquée.</li>
-            </ul>
-          </div>
+        </div>
         </div>
       </article>
       </div>
@@ -298,32 +338,26 @@
             <p class="dp-entry-sub">Exposer un service sans ouvrir un seul port. Superviser tout le reste.</p>
           </div>
         </div>
-        <p class="dp-entry-lead dp-entry-lead--full">Je conçois mes infrastructures selon une approche <strong>security by design</strong> : la surface d'exposition est réduite au strict minimum, et rien n'est mis en ligne sans supervision associée.</p>
+        <div class="dp-entry-body">
         <div class="dp-entry-copy" data-num="03">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-story">Longtemps, exposer un service a voulu dire ouvrir un port sur ma box et croiser les doigts. Puis je me suis posé la question inverse : et si je n'ouvrais jamais rien ? C'est là que <strong>Cloudflare Tunnel</strong><img class="dp-inline-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare">&nbsp;a tout changé pour moi : le service sort vers l'extérieur au lieu que l'extérieur rentre, et le scan de ports le plus agressif ne trouve strictement rien à exploiter. Mais réduire la surface d'attaque sans rien surveiller derrière, c'est juste déplacer l'aveuglement. J'ai donc bâti toute une chaîne de supervision avec <strong>Zabbix</strong><img class="dp-inline-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix">&nbsp;pour garder un œil sur chaque service, chaque hôte, chaque conteneur — et des tableaux de bord <strong>Grafana</strong><img class="dp-inline-logo" src="assets/logo/Grafana_icon.svg" alt="Grafana">&nbsp;pour transformer ces métriques brutes en quelque chose de lisible d'un coup d'œil. Toute cette infrastructure vit dans des conteneurs <strong>Docker</strong><img class="dp-inline-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker">&nbsp;et des machines virtuelles <strong>VMware</strong><img class="dp-inline-logo" src="assets/logo/vmware-workstation.svg" alt="VMware">&nbsp;hébergées chez <strong>OVHcloud</strong><img class="dp-inline-logo" src="assets/logo/ovh.svg" alt="OVHcloud">, un hébergeur français choisi sciemment pour garder la main sur mes données. Le résultat aujourd'hui : zéro port ouvert sur le WAN, et pourtant je sais exactement ce qui se passe à chaque instant sur chacune de mes machines.</p>
-          </div>
-          <div class="dp-metrics dp-metrics--aside">
-            <div class="dp-metric"><b>0</b><span>port ouvert sur le WAN</span></div>
-            <div class="dp-metric"><b>100%</b><span>hébergé en France</span></div>
+            <p class="dp-entry-story">Longtemps, exposer un service a voulu dire ouvrir un port sur ma box et croiser les doigts. Puis je me suis posé la question inverse : et si je n'ouvrais jamais rien ? C'est là que <strong>Cloudflare Tunnel</strong> a tout changé pour moi : le service sort vers l'extérieur au lieu que l'extérieur rentre, et le scan de ports le plus agressif ne trouve strictement rien à exploiter. Mais réduire la surface d'attaque sans rien surveiller derrière, c'est juste déplacer l'aveuglement. J'ai donc bâti toute une chaîne de supervision avec <strong>Zabbix</strong> pour garder un œil sur chaque service, chaque hôte, chaque conteneur — et des tableaux de bord <strong>Grafana</strong> pour transformer ces métriques brutes en quelque chose de lisible d'un coup d'œil. Toute cette infrastructure vit dans des conteneurs <strong>Docker</strong> et des machines virtuelles <strong>VMware</strong> hébergées chez <strong>OVHcloud</strong>, un hébergeur français choisi sciemment pour garder la main sur mes données. Le résultat aujourd'hui : zéro port ouvert sur le WAN, et pourtant je sais exactement ce qui se passe à chaque instant sur chacune de mes machines.</p>
           </div>
         </div>
-        <div class="dp-entry-cols dp-entry-cols--compare">
-          <div class="dp-col dp-col--have">
+        <div class="dp-skills-summary-logos">
+          <img class="dp-summary-logo" src="assets/logo/Cloudflare_Logo.svg" alt="Cloudflare">
+          <img class="dp-summary-logo" src="assets/logo/Zabbix_logo.png" alt="Zabbix">
+          <img class="dp-summary-logo" src="assets/logo/Grafana_icon.svg" alt="Grafana">
+          <img class="dp-summary-logo" src="assets/logo/docker-mark-ocean-blue.svg" alt="Docker">
+          <img class="dp-summary-logo" src="assets/logo/vmware-workstation.svg" alt="VMware">
+          <img class="dp-summary-logo" src="assets/logo/ovh.svg" alt="OVHcloud">
+        </div>
+        <div class="dp-entry-cols dp-entry-skills-summary">
+          <div class="dp-skills-summary-text">
             <h4 class="dp-col-title">Ce que j'ai appris</h4>
-            <ul class="dp-list">
-              <li><strong>Accès zero-trust</strong> — <strong>Cloudflare Tunnel</strong> : services publiés avec <strong>zéro port ouvert</strong> sur le WAN.</li>
-              <li><strong>Supervision</strong> — <strong>Zabbix 7.2</strong> : métriques, seuils, alerting proactif.</li>
-              <li><strong>Virtualisation &amp; conteneurs</strong> — VMware, <strong>Docker</strong>, cycle de vie des images.</li>
-            </ul>
+            <p class="dp-skills-summary-lead">Je conçois mes infrastructures selon une approche <strong>security by design</strong> : la surface d'exposition est réduite au strict minimum — <strong>zéro port ouvert</strong> sur le WAN — et rien n'est mis en ligne sans supervision associée, du tunnel sécurisé au tableau de bord.</p>
           </div>
-          <div class="dp-col dp-col--gap">
-            <h4 class="dp-col-title">Ce qu'il me manque</h4>
-            <ul class="dp-list dp-list--gap">
-              <li><strong>Kubernetes</strong> — orchestration de conteneurs à grande échelle, pas encore pratiquée en prod.</li>
-              <li><strong>Multi-cloud</strong> — AWS / Azure / GCP en production, expérience encore limitée à OVHcloud.</li>
-            </ul>
-          </div>
+        </div>
         </div>
       </article>
       </div>
@@ -341,50 +375,27 @@
             <p class="dp-entry-sub">Coder l'outil qui manque, supprimer la tâche qui n'aurait jamais dû être manuelle.</p>
           </div>
         </div>
-        <p class="dp-entry-lead dp-entry-lead--full">Quand un outil ne fait pas exactement ce qu'il faut, je l'étends. J'ai livré des <strong>plugins GLPI en production</strong> et automatisé des process internes jusqu'à faire <strong>disparaître entièrement le papier</strong> d'une chaîne de traitement.</p>
+        <div class="dp-entry-body">
         <div class="dp-entry-copy" data-num="04">
           <div class="dp-entry-copy-text">
-            <p class="dp-entry-story">Il y avait ce processus qui revenait sans cesse : un formulaire papier, signé, scanné, classé, ressaisi à la main dans <strong>GLPI</strong><img class="dp-inline-logo" src="assets/logo/glpi.svg" alt="GLPI">. Personne n'aimait le faire, tout le monde le faisait quand même, parce que « ça a toujours été comme ça ». Plutôt que de contourner l'outil, j'ai choisi de l'étendre : j'ai développé un plugin <strong>GLPI</strong> en <strong>PHP</strong>, directement branché sur le système d'information de la collectivité, pour que la donnée entre une seule fois et ne ressorte plus jamais sur une feuille volante. Ce plugin tourne aujourd'hui en production, utilisé chaque jour sans que personne n'ait plus besoin d'y penser — la meilleure preuve qu'un outil interne fonctionne, c'est qu'on l'oublie. À côté de ça, j'ai pris l'habitude d'écrire des scripts <strong>Python</strong><img class="dp-inline-logo" src="assets/logo/python-logo.svg" alt="Python">&nbsp;et <strong>Bash</strong> pour automatiser tout ce qui se répète : sauvegardes, vérifications, petites tâches d'exploitation. Chaque script est versionné avec <strong>Git</strong>, relu, documenté — parce qu'un automatisme mal maîtrisé peut faire plus de dégâts que la tâche manuelle qu'il remplace.</p>
-          </div>
-          <div class="dp-metrics dp-metrics--aside">
-            <div class="dp-metric"><b>100%</b><span>papier supprimé du process</span></div>
-            <div class="dp-metric"><b>3</b><span>langages utilisés en prod</span></div>
+            <p class="dp-entry-story">Il y avait ce processus qui revenait sans cesse : un formulaire papier, signé, scanné, classé, ressaisi à la main dans <strong>GLPI</strong>. Personne n'aimait le faire, tout le monde le faisait quand même, parce que « ça a toujours été comme ça ». Plutôt que de contourner l'outil, j'ai choisi de l'étendre : j'ai développé un plugin <strong>GLPI</strong> en <strong>PHP</strong>, directement branché sur le système d'information de la collectivité, pour que la donnée entre une seule fois et ne ressorte plus jamais sur une feuille volante. Ce plugin tourne aujourd'hui en production, utilisé chaque jour sans que personne n'ait plus besoin d'y penser — la meilleure preuve qu'un outil interne fonctionne, c'est qu'on l'oublie. À côté de ça, j'ai pris l'habitude d'écrire des scripts <strong>Python</strong> et <strong>Bash</strong> pour automatiser tout ce qui se répète : sauvegardes, vérifications, petites tâches d'exploitation. Chaque script est versionné avec <strong>Git</strong>, relu, documenté — parce qu'un automatisme mal maîtrisé peut faire plus de dégâts que la tâche manuelle qu'il remplace.</p>
           </div>
         </div>
-        <div class="dp-entry-cols dp-entry-cols--compare">
-          <div class="dp-col dp-col--have">
+        <div class="dp-skills-summary-logos">
+          <img class="dp-summary-logo" src="assets/logo/glpi.svg" alt="GLPI">
+          <img class="dp-summary-logo" src="assets/logo/python-logo.svg" alt="Python">
+          <img class="dp-summary-logo" src="assets/logo/github_PNG40.png" alt="Git">
+        </div>
+        <div class="dp-entry-cols dp-entry-skills-summary">
+          <div class="dp-skills-summary-text">
             <h4 class="dp-col-title">Ce que j'ai appris</h4>
-            <ul class="dp-list">
-              <li><strong>Plugins GLPI</strong> — développement <strong>PHP</strong> en production, intégré au SI de la collectivité.</li>
-              <li><strong>Scripting</strong> — <strong>Python</strong> et <strong>Bash</strong> pour l'automatisation d'exploitation.</li>
-              <li><strong>Dématérialisation</strong> — process papier <strong>entièrement supprimé</strong> et fiabilisé.</li>
-            </ul>
+            <p class="dp-skills-summary-lead">Quand un outil ne fait pas exactement ce qu'il faut, je l'étends. J'ai livré des <strong>plugins GLPI en production</strong> et automatisé des tâches répétitives jusqu'à faire <strong>disparaître entièrement le papier</strong> d'une chaîne de traitement.</p>
           </div>
-          <div class="dp-col dp-col--gap">
-            <h4 class="dp-col-title">Ce qu'il me manque</h4>
-            <ul class="dp-list dp-list--gap">
-              <li><strong>CI/CD complet</strong> — pipelines de bout en bout (build, test, déploiement automatisé).</li>
-              <li><strong>Frameworks front/back</strong> — applications complètes au-delà des scripts et plugins.</li>
-            </ul>
-          </div>
+        </div>
         </div>
       </article>
       </div>
 
-        </div>
-        <div class="dp-carousel-dots" role="tablist" aria-label="Piliers de compétences">
-          <button type="button" class="dp-carousel-dot" data-carousel-index="0" aria-label="Sécurité défensive">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          </button>
-          <button type="button" class="dp-carousel-dot" data-carousel-index="1" aria-label="Administration systèmes">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><circle cx="6" cy="6" r="1" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="1" fill="currentColor" stroke="none"/><line x1="10" y1="6" x2="14" y2="6"/><line x1="10" y1="18" x2="14" y2="18"/></svg>
-          </button>
-          <button type="button" class="dp-carousel-dot" data-carousel-index="2" aria-label="Infrastructure &amp; Cloud">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="3"/><circle cx="5" cy="19" r="3"/><circle cx="19" cy="19" r="3"/><line x1="12" y1="8" x2="12" y2="13"/><line x1="12" y1="13" x2="5" y2="16"/><line x1="12" y1="13" x2="19" y2="16"/></svg>
-          </button>
-          <button type="button" class="dp-carousel-dot" data-carousel-index="3" aria-label="Dev &amp; Automatisation">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="18" rx="2"/><polyline points="8 10 11 13 8 16"/><line x1="13" y1="16" x2="16" y2="16"/></svg>
-          </button>
         </div>
         </div>
         </div>
