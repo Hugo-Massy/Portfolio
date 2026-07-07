@@ -418,6 +418,11 @@
     });
   });
 
+  // Arrivée directe depuis un lien externe (ex. les piliers de la page d'accueil)
+  // avec un hash déjà présent dans l'URL : ouvrir le bon panneau dès le chargement.
+  const initialId = window.location.hash.slice(1);
+  if (idToIndex.has(initialId)) index = idToIndex.get(initialId);
+
   apply();
 })();
 
@@ -625,6 +630,7 @@
   const railLinks = document.querySelectorAll('.dot-rail a');
   const indicator = document.querySelector('.dot-rail-indicator');
   const backToTop = document.querySelector('.back-to-top');
+  const backHome = document.querySelector('.dp-back-home');
   if (!contact && !blueBlock) return;
 
   const blueSlope = blueBlock
@@ -653,6 +659,7 @@
     railLinks.forEach(toggle);
     toggle(indicator);
     toggle(backToTop);
+    toggle(backHome);
   }
 
   update();

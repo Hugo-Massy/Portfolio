@@ -607,6 +607,9 @@ function initAboutParallax() {
     if (armEl) {
       const armOpacity = currentAvatarProgress >= ARM_REVEAL_START ? 1 : 0;
       armEl.style.setProperty('--avatar-arm-opacity', armOpacity);
+      // posée aussi sur #contact (ancêtre commun) pour que .details-link puisse
+      // s'aligner sur la même bascule sans dépendre de l'observer .reveal générique
+      if (last) last.style.setProperty('--avatar-arm-opacity', armOpacity);
     }
     // #contact continue de bouger (lissage EASE) pendant plusieurs frames après la fin
     // du scroll : le bouton "remonter" et le rail, qui ne se recalculent que sur l'event
