@@ -264,22 +264,6 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    (un seul visible à la fois, piloté par initCompetenceCarousel dans details.js)
    plutôt qu'un défilement vertical plein écran par carte. */
 .dp-carousel{position:relative; overflow:hidden;}
-/* flèches gauche/droite pour parcourir les 4 compétences sans passer par le rail
-   de nav — posées à l'intérieur du carrousel (overflow:hidden) pour ne jamais
-   déborder sur le pilier décoratif à gauche ni sur le bord du bandeau à droite. */
-.dp-carousel-arrow{
-  position:absolute; top:50%; transform:translateY(-50%);
-  z-index:3;
-  display:flex; align-items:center; justify-content:center;
-  width:44px; height:44px; border-radius:50%;
-  border:none; background:rgba(255,255,255,.14);
-  color:#fff; cursor:pointer;
-  transition:background .18s ease, transform .18s ease;
-}
-.dp-carousel-arrow svg{width:20px; height:20px;}
-.dp-carousel-arrow:hover{background:rgba(255,255,255,.26);}
-.dp-carousel-arrow--prev{left:8px;}
-.dp-carousel-arrow--next{right:8px;}
 /* les 4 panneaux se superposent dans la même cellule de grille (empilement plutôt
    que côte à côte) : passer de l'un à l'autre devient un simple fondu croisé
    d'opacité, plus besoin de faire glisser le track. */
@@ -297,43 +281,41 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 .dp-carousel-track > .dp-slide.is-active{opacity:1; pointer-events:auto;}
 
-/* Pagination reprenant les icônes des 4 piliers (mêmes tracés que .skill-icon sur
-   l'accueil et .dp-entry-icon de chaque carte), plutôt que de simples points. */
-.dp-carousel-dots{
-  display:flex; justify-content:center; gap:14px;
-  margin-top:48px;
+/* Pagination : flèches précédent/suivant alignées avec les points, même ligne. */
+.dp-carousel-nav{
+  display:flex; align-items:center; justify-content:center; gap:80px;
+  margin-top:32px;
 }
-/* recentrées sur toute la largeur de la page : au-delà de 1480px, .dp-blue-block-wrap
+/* recentrée sur toute la largeur de la page : au-delà de 1480px, .dp-blue-block-wrap
    se décale à droite pour laisser la place au pilier décoratif (voir plus haut), donc
-   sans ça les icônes suivraient ce décalage au lieu d'être au milieu de la page. */
+   sans ça la nav suivrait ce décalage au lieu d'être au milieu de la page. */
 @media (min-width:1481px){
-  .dp-carousel-dots{
+  .dp-carousel-nav{
     margin-left:calc(-1 * (var(--dp-pillar-left) + var(--dp-pillar-w) + 32px));
     width:calc(100% + var(--dp-pillar-left) + var(--dp-pillar-w) + 32px);
   }
 }
+.dp-carousel-arrow{
+  display:flex; align-items:center; justify-content:center;
+  width:28px; height:28px; padding:0; border-radius:50%;
+  border:none; background:rgba(255,255,255,.14);
+  color:#fff; cursor:pointer;
+  transition:background .18s ease;
+}
+.dp-carousel-arrow svg{width:16px; height:16px;}
+.dp-carousel-arrow:hover{background:rgba(255,255,255,.26);}
+
+/* Pagination : petits points ronds, même traitement que .refs-dot sur #références. */
+.dp-carousel-dots{
+  display:flex; justify-content:center; align-items:center; gap:10px;
+}
 .dp-carousel-dot{
-  display:flex; flex-direction:row; align-items:center; justify-content:center; gap:10px;
-  width:auto; height:auto; padding:10px 14px; border-radius:14px;
-  border:none; background:#fff;
-  color:var(--accent);
-  cursor:pointer;
-  box-shadow:0 4px 14px rgba(20,30,60,.14);
-  transition:box-shadow .2s ease, transform .2s ease;
+  width:8px; height:8px; padding:0; border:0; border-radius:999px;
+  background:rgba(255,255,255,.4); cursor:pointer;
+  transition:background .3s ease, width .3s cubic-bezier(.65,0,.35,1);
 }
-.dp-carousel-dot svg{width:17px; height:17px; transition:width .2s ease, height .2s ease;}
-.dp-carousel-dot-label{
-  display:none;
-  font-family:var(--mono); font-size:11px; color:var(--text-dim);
-  white-space:nowrap;
-}
-.dp-carousel-dot:hover{box-shadow:0 6px 20px rgba(20,30,60,.22); transform:translateY(-2px);}
-.dp-carousel-dot.is-active{
-  box-shadow:0 0 0 2px var(--accent), 0 6px 20px rgba(20,30,60,.22);
-  transform:translateY(-2px);
-}
-.dp-carousel-dot.is-active .dp-carousel-dot-label{display:inline; color:var(--accent);}
-.dp-carousel-dot.is-active svg{width:19px; height:19px;}
+.dp-carousel-dot:hover{background:rgba(255,255,255,.7);}
+.dp-carousel-dot.is-active{background:#fff; width:24px;}
 
 /* --- Slide : occupe tout le viewport et centre la carte dedans, c'est lui qui
    gère l'espace autour de la carte et le point d'ancrage du scroll-snap. Le
@@ -593,6 +575,35 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-blue-block .dp-skills-summary-lead strong{color:#fff;}
 .dp-blue-block .dp-entry-skills-summary .dp-col-title{color:#fff;}
 .dp-blue-block .dp-entry-skills-summary .dp-col-title::before{background:#fff;}
+/* badges de blocs RNCP : même logique que .about-timeline-badge-rncp (styles.css) —
+   pastille compacte + intitulé officiel du bloc en infobulle au survol/focus,
+   pour rattacher chaque pilier aux compétences réellement évaluées. */
+.dp-rncp-badges{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0;}
+.dp-rncp-badge{
+  position:relative; cursor:pointer;
+  display:inline-block; font-family:var(--mono); font-size:11px; font-weight:600;
+  color:var(--accent-dark); text-decoration:none;
+  background:#fff; border-radius:5px; padding:3px 9px;
+  box-shadow:0 4px 10px -4px rgba(0,0,0,.4);
+  transition:transform .2s ease;
+}
+.dp-rncp-badge:hover, .dp-rncp-badge:focus-visible{transform:translateY(-2px);}
+.dp-rncp-badge::after{
+  content:attr(data-tooltip);
+  position:absolute; left:0; bottom:calc(100% + 10px);
+  width:max-content; max-width:260px;
+  background:#11162b; color:#fff; font-family:var(--mono); font-size:11px; line-height:1.4;
+  font-weight:400; text-align:left; white-space:normal;
+  padding:8px 10px; border-radius:6px;
+  opacity:0; pointer-events:none; transform:translateY(4px);
+  box-shadow:0 10px 20px -8px rgba(0,0,0,.5);
+  transition:opacity .2s ease, transform .2s ease;
+  z-index:6;
+}
+.dp-rncp-badge:hover::after, .dp-rncp-badge:focus-visible::after{opacity:1; transform:translateY(0);}
+/* variante « badge perso » (pilier dev & automatisation) : pas de fiche RNCP
+   correspondante, donc palette verte dédiée plutôt que le bleu des blocs officiels. */
+.dp-rncp-badge--personal{color:#2f8f5f;}
 /* résumé « ce que j'ai appris » : juste le titre et la phrase, les logos des
    outils maîtrisés vivent maintenant entre le récit et ce bloc (voir plus bas). */
 .dp-entry-cols.dp-entry-skills-summary{display:block;}
@@ -617,9 +628,21 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   border-radius:18px; background:#fff; border:none;
   box-shadow:0 14px 30px rgba(15,22,50,.32);
   box-sizing:border-box;
+  opacity:0;
   animation:dp-logo-float 5.5s ease-in-out infinite;
   animation-delay:var(--fdelay, 0s);
   transition:box-shadow .2s ease, transform .2s ease;
+}
+/* n'apparaissent (et ne rejouent leur entrée) que lorsque le panneau de
+   compétence auquel ils appartiennent devient actif dans le carrousel,
+   un par un plutôt que toutes en même temps (voir --pop-delay ci-dessous). */
+.dp-slide.is-active .dp-summary-logo{
+  animation-name:dp-logo-float, dp-logo-pop;
+  animation-duration:5.5s, .45s;
+  animation-timing-function:ease-in-out, ease-out;
+  animation-iteration-count:infinite, 1;
+  animation-delay:var(--fdelay, 0s), var(--pop-delay, 0s);
+  animation-fill-mode:none, both;
 }
 .dp-summary-logo:hover{
   z-index:2;
@@ -631,13 +654,27 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   0%, 100%{transform:translateY(0) rotate(var(--r, 0deg));}
   50%{transform:translateY(-8px) rotate(var(--r, 0deg));}
 }
+@keyframes dp-logo-pop{
+  from{opacity:0; scale:.6;}
+  to{opacity:1; scale:1;}
+}
 @media(prefers-reduced-motion:reduce){
-  .dp-summary-logo{animation:none; transform:rotate(var(--r, 0deg));}
+  .dp-summary-logo, .dp-slide.is-active .dp-summary-logo{animation:none; opacity:1; transform:rotate(var(--r, 0deg));}
 }
 /* tailles, rotation et décalage d'animation alternés plutôt qu'une grille uniforme */
 .dp-skills-summary-logos .dp-summary-logo:nth-child(3n+1){width:70px; height:70px; padding:15px; --r:-6deg; --fdelay:0s;}
 .dp-skills-summary-logos .dp-summary-logo:nth-child(3n+2){width:58px; height:58px; padding:12px; --r:5deg; --fdelay:.6s;}
 .dp-skills-summary-logos .dp-summary-logo:nth-child(3n+3){width:64px; height:64px; padding:13px; --r:-4deg; --fdelay:1.2s;}
+/* décalage d'apparition indépendant de l'ordre 3n (celui-ci sert au flottement) :
+   incrément par position depuis la fin de la liste (nth-last-child), pour que
+   l'apparition se déroule de droite à gauche plutôt que de gauche à droite,
+   sans changer l'ordre visuel des logos (jusqu'à 6 logos, cas #03). */
+.dp-skills-summary-logos .dp-summary-logo:nth-last-child(1){--pop-delay:0s;}
+.dp-skills-summary-logos .dp-summary-logo:nth-last-child(2){--pop-delay:.12s;}
+.dp-skills-summary-logos .dp-summary-logo:nth-last-child(3){--pop-delay:.24s;}
+.dp-skills-summary-logos .dp-summary-logo:nth-last-child(4){--pop-delay:.36s;}
+.dp-skills-summary-logos .dp-summary-logo:nth-last-child(5){--pop-delay:.48s;}
+.dp-skills-summary-logos .dp-summary-logo:nth-last-child(6){--pop-delay:.6s;}
 
 /* puces / chips technos */
 .dp-chips{display:flex; flex-wrap:wrap; gap:10px;}
