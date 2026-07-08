@@ -111,10 +111,14 @@
   if (!contact) return;
   const avatarEls = contact.querySelectorAll('.contact-avatar');
   const armEl = contact.querySelector('.contact-avatar-arm');
+  // le texte et le bouton du pied de page n'ont de sens que tant que le bras de
+  // l'avatar est visible et semble les désigner : ils se cachent avec le bras.
+  const footEl = document.querySelector('.dp-foot');
   if (!avatarEls.length) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', '1'));
     if (armEl) armEl.style.setProperty('--avatar-arm-opacity', '1');
+    if (footEl) footEl.classList.remove('dp-foot-arm-hidden');
     return;
   }
 
@@ -136,9 +140,11 @@
   function apply() {
     const scale = AVATAR_MIN_SCALE + currentProgress * (1 - AVATAR_MIN_SCALE);
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', scale.toFixed(3)));
+    const armVisible = currentProgress >= ARM_REVEAL_START;
     if (armEl) {
-      armEl.style.setProperty('--avatar-arm-opacity', currentProgress >= ARM_REVEAL_START ? 1 : 0);
+      armEl.style.setProperty('--avatar-arm-opacity', armVisible ? 1 : 0);
     }
+    if (footEl) footEl.classList.toggle('dp-foot-arm-hidden', !armVisible);
   }
 
   function tick() {
@@ -192,7 +198,10 @@
   const hero = document.getElementById('dp-hero');
   const slideEls = Array.from(document.querySelectorAll('.dp-slide')).filter((el) => !el.closest('.dp-blue-block-wrap'));
   const slides = [hero, ...slideEls].filter(Boolean);
-  if (!slides.length) return;
+  // Depuis le passage de l'expérience en grilles bento (défilement libre), il ne reste
+  // que le hero dans cette séquence : sans au moins deux slides, le calage molette n'a
+  // plus de sens et renverrait par erreur vers le hero au moindre scroll vers le haut.
+  if (slides.length < 2) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
   // Le bloc bleu (défilement libre) s'intercale entre le hero et #massy-innove : ces deux-là

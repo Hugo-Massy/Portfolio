@@ -798,6 +798,10 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   margin-bottom:calc(clamp(320px, 42vw, 620px) * 0.5 - clamp(160px, 22vw, 360px));
 }
 .dp-foot p{color:var(--text-dim); font-size:15px;}
+/* le texte et le bouton ne restent affichés que tant que le bras de l'avatar les
+   désigne (cf. initContactAvatarGrow dans js/details.js) : ils se cachent avec lui. */
+.dp-foot p, .dp-foot .btn{transition:opacity .3s ease, transform .3s ease;}
+.dp-foot-arm-hidden p, .dp-foot-arm-hidden .btn{opacity:0; transform:translateY(6px); pointer-events:none;}
 @media(max-width:640px){
   .dp-foot{margin-bottom:0;}
 }
@@ -825,4 +829,172 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 
 @media (prefers-reduced-motion: reduce){
   .reveal{opacity:1; transform:none; transition:none;}
+}
+
+/* =============================================================================
+   EXPÉRIENCE — GRILLES BENTO (Massy Innove, Homelab, Supervision, Stack)
+   Chaque projet est une grille bento autonome qui reprend le vocabulaire visuel
+   de #xp (accueil) : une tuile vedette colorée porte la maquette (.xp-tile +
+   .xp-mock--*, réutilisées telles quelles depuis styles.css), entourée de tuiles
+   de contenu (métriques, logos, « ce que j'ai fait », récit, chips). Contrairement
+   à #xp, pas de figement au scroll : les blocs apparaissent via .reveal.
+   ============================================================================= */
+.dp-bento-block{
+  scroll-margin-top:96px;      /* pour que l'ancre ne colle pas sous la nav */
+  margin:0 0 clamp(64px, 9vh, 110px);
+}
+.dp-bento-head{margin-bottom:18px;}
+.dp-bento-head .dp-entry-tag{position:static;}
+.dp-bento-sub{
+  color:var(--text-dim); font-size:16px; line-height:1.6;
+  margin:10px 0 0; max-width:64ch;
+}
+.dp-bento-sub strong{color:var(--text); font-weight:700;}
+
+/* Un seul mur global « difforme » : toutes les tuiles des 4 projets s'enchaînent
+   dans une même grille dense (4 colonnes), en tailles variées, sans séparation.
+   Le placement n'est plus figé par des zones nommées : chaque tuile déclare sa
+   taille (.dp-w2/.dp-h2…) et grid-auto-flow:dense comble les trous. */
+.dp-wall{
+  display:grid;
+  grid-template-columns:repeat(4, 1fr);
+  grid-auto-rows:172px;
+  grid-auto-flow:dense;
+  gap:12px;
+}
+/* Chaque projet = une « famille » de couleur. Le conteneur passe en display:contents
+   pour ne PAS créer sa propre grille : ses tuiles participent directement au mur,
+   tout en héritant de la palette du projet via les variables --proj*. */
+.dp-fam{display:contents;}
+.dp-fam--massy      {--proj:#6338ab; --proj-dark:#452a80; --proj-soft:#efecfa; --proj-line:#e0d9f5;}
+.dp-fam--homelab    {--proj:#4a7d24; --proj-dark:#3a6821; --proj-soft:#eef5e2; --proj-line:#dcebc6;}
+.dp-fam--supervision{--proj:#37647a; --proj-dark:#2f5566; --proj-soft:#e9f0f3; --proj-line:#d2e0e6;}
+.dp-fam--stack      {--proj:#35529c; --proj-dark:#233a72; --proj-soft:#eaeefb; --proj-line:#d4dcf5;}
+
+/* Tailles des tuiles — c'est ce qui crée l'aspect « difforme ». */
+.dp-w2{grid-column:span 2;}
+.dp-w3{grid-column:span 3;}
+.dp-h2{grid-row:span 2;}
+.dp-h3{grid-row:span 3;}
+
+/* Tuiles « en retrait » : épinglées à la colonne de bord (1 ou 4) puis tirées
+   vers l'intérieur par une marge, pour casser le bord droit/gauche du mur —
+   simule une carte posée plus vers le centre plutôt que collée au bord.
+   La taille du retrait est réglée au cas par cas via --edge-gap (inline),
+   pour que les espaces ne soient jamais tous identiques. Variantes -w2 pour
+   les tuiles larges (span 2) : elles gardent leur largeur en s'épinglant sur
+   la paire de colonnes du bord (1-2 ou 3-4) au lieu d'une seule colonne. */
+.dp-edge-l{grid-column:1; margin-left:var(--edge-gap, 18px);}
+.dp-edge-r{grid-column:4; margin-right:var(--edge-gap, 18px);}
+.dp-edge-l-w2{grid-column:1 / span 2; margin-left:var(--edge-gap, 18px);}
+.dp-edge-r-w2{grid-column:3 / span 2; margin-right:var(--edge-gap, 18px);}
+
+/* Marges « organiques » : chaque tuile (bord ou intérieure) peut recevoir un
+   retrait individuel, réglé au cas par cas et jamais identique d'une tuile à
+   l'autre, sur n'importe quel côté — largeur (ml/mr) ET hauteur (mt/mb). C'est
+   ce qui casse l'alignement en grille bien rangée et donne le mur difforme. */
+.dp-mt{margin-top:var(--mt, 0);}
+.dp-mb{margin-bottom:var(--mb, 0);}
+.dp-ml{margin-left:var(--ml, 0);}
+.dp-mr{margin-right:var(--mr, 0);}
+
+/* Tuile d'intro d'un projet : porte le tag + le sous-titre, dans la couleur du projet.
+   Elle remplace l'ancien en-tête de section et sert d'ancre de navigation. */
+.dp-bt--intro{
+  justify-content:center;
+  background:var(--proj-soft);
+  border:1px solid var(--proj-line);
+  scroll-margin-top:96px;
+}
+.dp-bt--intro .dp-entry-tag{position:static; display:inline-flex; align-self:flex-start; margin-bottom:12px;}
+.dp-bt-sub{color:var(--proj-dark); font-size:14px; line-height:1.55; margin:0;}
+.dp-bt-sub strong{color:var(--proj-dark); font-weight:700;}
+
+/* La vedette réutilise .xp-tile + son thème : on garde tout SAUF le débordement.
+   .xp-tile--home / --diag passent en overflow:hidden pour que la maquette reste
+   cadrée dans sa tuile, au lieu de mordre sur ses voisines comme dans le bento de #xp. */
+.dp-wall .xp-tile{overflow:hidden;}
+.dp-wall .xp-tile--home{overflow:hidden; z-index:auto;}
+.dp-wall .xp-tile--home::before{z-index:0;}
+/* on ramène les décorations flottantes du chat à l'intérieur du cadre */
+.dp-wall .xp-flag{top:4px; right:12%;}
+.dp-wall .xp-brand-badge--ovh{right:8px; top:24%;}
+.dp-wall .xp-brand-badge--mistral{right:16px; top:60%;}
+
+/* Tuiles de contenu : mêmes coins/ombres que .xp-tile mais fond « soft » du projet. */
+.dp-bt{
+  display:flex; flex-direction:column;
+  border-radius:22px; padding:18px 20px;
+  background:var(--proj-soft);
+  border:1px solid var(--proj-line);
+  box-shadow:0 1px 2px rgba(30,25,15,.04);
+  overflow:hidden;
+}
+.dp-bt-title{
+  font-family:var(--mono); font-size:11.5px; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase;
+  color:var(--proj); margin:0 0 14px;
+}
+
+/* métriques */
+.dp-bt--metrics{flex-direction:row; align-items:center; gap:30px; flex-wrap:wrap;}
+.dp-bt-metric b{
+  display:block; font-family:var(--mono); font-size:38px; font-weight:700;
+  line-height:1; color:var(--proj);
+}
+.dp-bt-metric span{
+  display:block; margin-top:8px; font-size:12px; line-height:1.35;
+  color:var(--proj-dark); opacity:.85; max-width:18ch;
+}
+
+/* logos */
+.dp-bt--logos{justify-content:center;}
+.dp-bt-logos{display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px;}
+.dp-bt-logos img{height:34px; width:auto; max-width:88px; object-fit:contain;}
+
+/* « ce que j'ai fait » */
+.dp-bt-list{list-style:none; display:flex; flex-direction:column; gap:12px; margin:0;}
+.dp-bt-list li{
+  position:relative; padding-left:22px;
+  font-size:14px; line-height:1.5; color:var(--proj-dark);
+}
+.dp-bt-list li::before{
+  content:''; position:absolute; left:0; top:7px;
+  width:8px; height:8px; border-radius:50%; background:var(--proj);
+}
+.dp-bt-list li strong{color:var(--proj-dark); font-weight:700;}
+
+/* récit long */
+.dp-bt--story{overflow:auto;}
+.dp-bt-story{
+  font-size:13.5px; line-height:1.72; color:var(--proj-dark); margin:0;
+}
+.dp-bt-story strong{color:var(--proj-dark); font-weight:700;}
+.dp-bt-story .dp-inline-logo{border-color:var(--proj-line);}
+
+/* groupes de technos (Stack) */
+.dp-bt-chips{display:flex; flex-wrap:wrap; gap:7px; margin-top:auto;}
+.dp-bt-chip{
+  font-family:var(--mono); font-size:11.5px; font-weight:500;
+  padding:5px 10px; border-radius:8px;
+  background:#fff; color:var(--proj-dark); border:1px solid var(--proj-line);
+}
+
+/* --- Responsive du mur : sous 960px on repasse le mur en 2 colonnes (les tuiles
+   larges deviennent pleine largeur), puis en 1 colonne sous 620px. --- */
+@media(max-width:960px){
+  .dp-wall{grid-template-columns:repeat(2, 1fr); grid-auto-rows:168px;}
+  .dp-w3{grid-column:span 2;}
+  .dp-h3{grid-row:span 2;}
+  .dp-edge-l, .dp-edge-l-w2{grid-column:1;}
+  .dp-edge-r, .dp-edge-r-w2{grid-column:2;}
+}
+@media(max-width:620px){
+  .dp-wall{grid-template-columns:1fr; grid-auto-rows:auto; grid-auto-flow:row;}
+  .dp-w2, .dp-w3, .dp-h2, .dp-h3{grid-column:auto; grid-row:auto;}
+  .dp-edge-l, .dp-edge-r, .dp-edge-l-w2, .dp-edge-r-w2{grid-column:auto; margin-left:0; margin-right:0;}
+  .dp-mt, .dp-mb, .dp-ml, .dp-mr{margin:0;}
+  .dp-bt{min-height:140px;}
+  .dp-wall .xp-tile{min-height:340px;}
+  .dp-bt--story{min-height:0;}
 }
