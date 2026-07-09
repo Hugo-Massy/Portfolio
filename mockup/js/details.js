@@ -761,17 +761,18 @@
 })();
 
 // Adaptation à la couleur de fond : quand le rail de nav (points + indicateur), le bouton
-// "remonter en haut" ou page-tag passent devant un bandeau bleu (#contact, ou le bloc bleu
-// des 4 piliers de compétences), ils basculent en teintes claires (classe .is-on-dark,
-// stylée dans styles.css) pour rester lisibles.
+// "remonter en haut" ou page-tag passent devant un bandeau bleu (#contact, le bloc bleu
+// des 4 piliers de compétences, ou les deux rubans inclinés de la section stack), ils
+// basculent en teintes claires (classe .is-on-dark, stylée dans styles.css) pour rester lisibles.
 (function initOnDarkAdaptation() {
   const contact = document.getElementById('contact');
   const blueBlock = document.querySelector('.dp-blue-block');
+  const stackBanners = Array.from(document.querySelectorAll('.dp-stack-banner'));
   const railLinks = document.querySelectorAll('.dot-rail a');
   const indicator = document.querySelector('.dot-rail-indicator');
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
-  if (!contact && !blueBlock) return;
+  if (!contact && !blueBlock && !stackBanners.length) return;
 
   // Résout une longueur CSS (clamp(), calc(), var()...) en px réels, en la posant sur une
   // propriété de layout normale (height) d'une sonde hors-écran : contrairement à
@@ -797,10 +798,37 @@
     contactSlope = resolveCSSLength('var(--contact-slope)');
   });
 
+  // Un ruban stack est tourné (rotate(±deg)) autour de son propre centre : sa
+  // getBoundingClientRect() ne donne que la boîte englobante axis-aligned, plus grande
+  // que le rectangle réellement peint. Comme ce centre de rotation ne bouge pas sous
+  // transform, il coïncide avec le centre de cette boîte englobante ; et offsetWidth /
+  // offsetHeight restent les dimensions du rectangle AVANT rotation (les transforms ne
+  // touchent pas le layout box). On peut donc reprojeter le point testé dans le repère
+  // local non tourné du ruban et faire un test rectangle classique, précis au pixel près
+  // sur l'arête diagonale plutôt que sur la boîte englobante.
+  function bannerAngleRad(el) {
+    const t = getComputedStyle(el).transform;
+    const m = t && t.match(/^matrix\(([^,]+),\s*([^,]+),/);
+    if (!m) return 0;
+    return Math.atan2(parseFloat(m[2]), parseFloat(m[1]));
+  }
+
+  function insideBanner(el, x, y) {
+    const r = el.getBoundingClientRect();
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    const angle = bannerAngleRad(el);
+    const dx = x - cx;
+    const dy = y - cy;
+    const localX = dx * Math.cos(angle) + dy * Math.sin(angle);
+    const localY = -dx * Math.sin(angle) + dy * Math.cos(angle);
+    return Math.abs(localX) <= el.offsetWidth / 2 && Math.abs(localY) <= el.offsetHeight / 2;
+  }
+
   // side: 'right' pour les éléments proches du bord droit (rail, bouton), 'left' pour
   // ceux proches du bord gauche (page-tag) — la pente est inversée entre les deux bords
   // (voir clip-path de .dp-blue-block-fill et .contact-fill dans details.css).
-  function overDarkZone(y, side) {
+  function overDarkZone(x, y, side) {
     if (contact) {
       const r = contact.getBoundingClientRect();
       if (side === 'left') {
@@ -817,13 +845,18 @@
         return true;
       }
     }
+    for (const banner of stackBanners) {
+      if (insideBanner(banner, x, y)) return true;
+    }
     return false;
   }
 
   function toggle(el, side) {
     if (!el) return;
     const r = el.getBoundingClientRect();
-    el.classList.toggle('is-on-dark', overDarkZone(r.top + r.height / 2, side));
+    const cx = r.left + r.width / 2;
+    const cy = r.top + r.height / 2;
+    el.classList.toggle('is-on-dark', overDarkZone(cx, cy, side));
   }
 
   function update() {

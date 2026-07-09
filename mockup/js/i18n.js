@@ -224,6 +224,7 @@ const I18N = {
     'dp-nav-massy': 'Massy Innove',
     'dp-nav-homelab': 'Homelab',
     'dp-nav-supervision': 'Supervision',
+    'dp-nav-stack': 'Stack',
     'dp-nav-contact': 'Contact',
     'dp-back-home-aria': 'Retour à la page d\'accueil',
 
@@ -290,6 +291,15 @@ const I18N = {
     'dp-xp-03-story': 'Le pire incident n\'est pas celui qu\'on résout, c\'est celui qu\'on découvre en même temps que l\'utilisateur qui appelle pour se plaindre. Cette idée m\'a poussé à traiter la supervision non pas comme un « plus », mais comme une brique aussi essentielle que le service lui-même.<br>J\'ai déployé des agents <strong>Zabbix</strong> sur l\'ensemble des hôtes, en prenant le temps de définir des seuils qui ont un sens métier — une charge CPU élevée n\'est pas grave en soi, un service qui ne répond plus l\'est. Autour de <strong>SNMP</strong> pour le matériel réseau et d\'un alerting configuré pour remonter au bon niveau sans noyer personne, j\'ai construit des tableaux de bord <strong>Grafana</strong> qui racontent l\'état du système d\'un seul coup d\'œil.<br>Aujourd\'hui, quand un service dévie de son comportement normal, je le sais avant qu\'il ne tombe — et souvent avant que quiconque ne s\'en aperçoive.',
     'dp-xp-03-li1': 'Déploiement d\'agents Zabbix sur l\'ensemble des hôtes et définition de seuils d\'alerte à sens métier',
     'dp-xp-03-li2': 'Alerting en temps réel et tableaux de bord Grafana de disponibilité et de tendance',
+
+    'dp-stack-h2': 'Tout ce que je <span class="accent">maîtrise</span>, au même endroit.',
+    'dp-stack-lede': 'Outils, langages, référentiels et certifications utilisés au quotidien, en formation comme en production.',
+    'dp-stack-g1-title': 'Sécurité défensive',
+    'dp-stack-g2-title': 'Administration systèmes',
+    'dp-stack-g3-title': 'Infrastructure & Cloud',
+    'dp-stack-g4-title': 'Dev & Automatisation',
+    'dp-stack-g5-title': 'Certifications & référentiels',
+    'dp-stack-cert-pending': '· étudié',
 
     'dp-foot-lede': 'Envie de voir le reste&nbsp;?',
     'dp-foot-cta': 'Retour à l\'accueil',
@@ -516,6 +526,7 @@ const I18N = {
     'dp-nav-massy': 'Massy Innove',
     'dp-nav-homelab': 'Homelab',
     'dp-nav-supervision': 'Monitoring',
+    'dp-nav-stack': 'Stack',
     'dp-nav-contact': 'Contact',
     'dp-back-home-aria': 'Back to the home page',
 
@@ -582,6 +593,15 @@ const I18N = {
     'dp-xp-03-story': 'The worst incident isn\'t the one you fix, it\'s the one you discover at the same time as the user calling to complain. That idea pushed me to treat monitoring not as a "nice to have," but as a building block as essential as the service itself.<br>I deployed <strong>Zabbix</strong> agents across every host, taking the time to define thresholds that actually make business sense — high CPU load isn\'t a problem in itself, a service that stops responding is. Around <strong>SNMP</strong> for network hardware and alerting tuned to escalate at the right level without drowning anyone in noise, I built <strong>Grafana</strong> dashboards that tell the system\'s state at a glance.<br>Today, when a service drifts from its normal behavior, I know before it goes down — and often before anyone else notices.',
     'dp-xp-03-li1': 'Deployment of Zabbix agents across every host and definition of business-meaningful alert thresholds',
     'dp-xp-03-li2': 'Real-time alerting and Grafana dashboards for availability and trend tracking',
+
+    'dp-stack-h2': 'Everything I <span class="accent">master</span>, in one place.',
+    'dp-stack-lede': 'Tools, languages, frameworks and certifications I use daily, in training as much as in production.',
+    'dp-stack-g1-title': 'Defensive security',
+    'dp-stack-g2-title': 'System administration',
+    'dp-stack-g3-title': 'Infrastructure & Cloud',
+    'dp-stack-g4-title': 'Dev & Automation',
+    'dp-stack-g5-title': 'Certifications & frameworks',
+    'dp-stack-cert-pending': '· studied',
 
     'dp-foot-lede': 'Want to see the rest?',
     'dp-foot-cta': 'Back to home',
@@ -808,6 +828,7 @@ const I18N = {
     'dp-nav-massy': 'Massy Innove',
     'dp-nav-homelab': 'Homelab',
     'dp-nav-supervision': 'Supervisión',
+    'dp-nav-stack': 'Stack',
     'dp-nav-contact': 'Contacto',
     'dp-back-home-aria': 'Volver a la página de inicio',
 
@@ -874,6 +895,15 @@ const I18N = {
     'dp-xp-03-story': 'El peor incidente no es el que se resuelve, es el que se descubre al mismo tiempo que el usuario que llama para quejarse. Esta idea me llevó a tratar la supervisión no como un «extra», sino como un componente tan esencial como el propio servicio.<br>Desplegué agentes <strong>Zabbix</strong> en todos los hosts, tomándome el tiempo de definir umbrales con sentido de negocio — una carga de CPU alta no es grave por sí sola, un servicio que deja de responder sí lo es. Con <strong>SNMP</strong> para el hardware de red y una alerta configurada para escalar al nivel adecuado sin saturar a nadie, construí paneles <strong>Grafana</strong> que cuentan el estado del sistema de un solo vistazo.<br>Hoy, cuando un servicio se desvía de su comportamiento normal, lo sé antes de que caiga — y a menudo antes de que nadie más se dé cuenta.',
     'dp-xp-03-li1': 'Despliegue de agentes Zabbix en todos los hosts y definición de umbrales de alerta con sentido de negocio',
     'dp-xp-03-li2': 'Alertas en tiempo real y paneles Grafana de disponibilidad y tendencia',
+
+    'dp-stack-h2': 'Todo lo que <span class="accent">domino</span>, en un solo lugar.',
+    'dp-stack-lede': 'Herramientas, lenguajes, referenciales y certificaciones que uso a diario, tanto en formación como en producción.',
+    'dp-stack-g1-title': 'Seguridad defensiva',
+    'dp-stack-g2-title': 'Administración de sistemas',
+    'dp-stack-g3-title': 'Infraestructura y Cloud',
+    'dp-stack-g4-title': 'Dev y Automatización',
+    'dp-stack-g5-title': 'Certificaciones y referenciales',
+    'dp-stack-cert-pending': '· estudiado',
 
     'dp-foot-lede': '¿Quieres ver el resto?',
     'dp-foot-cta': 'Volver al inicio',

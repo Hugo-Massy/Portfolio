@@ -830,6 +830,101 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 .dp-stack-group-lede strong{color:var(--text); font-weight:700;}
 
+/* variante de chip avec logo inline, pour la grille "tout ce que je maîtrise" */
+.dp-chip--logo{display:inline-flex; align-items:center; gap:8px; padding-left:10px;}
+.dp-chip--logo img{width:16px; height:16px; object-fit:contain; flex-shrink:0;}
+.dp-stack-group--wide{grid-column:1 / -1;}
+
+/* Bandeau bleu plein largeur, purement décoratif, au-dessus de la section
+   "applications maîtrisées" — même technique de fuite hors conteneur que
+   .dp-blue-block-fill / .contact-fill (left:50% + width:100vw + translateX(-50%)
+   pour déborder du .wrap centré, capé par overflow-x:clip sur .dp-body). */
+.dp-stack-banner{
+  position:relative; z-index:2; left:50%; width:112vw; transform:translateX(-50%) rotate(-8deg);
+  height:150px; margin:0; margin-top:260px;
+  background:color-mix(in srgb, var(--accent), #fff 6%);
+  box-shadow:0 24px 40px rgba(20,30,60,.38);
+  pointer-events:none;
+}
+/* chaque trait suivant chevauche le précédent (négative margin-top) pour
+   qu'ils se superposent nettement les uns au-dessus des autres, plutôt que
+   d'être simplement espacés ; l'ordre du DOM suffit à les empiler visuellement
+   (chaque élément suivant se peint au-dessus). */
+.dp-stack-banner--2{z-index:1; transform:translateX(-50%) rotate(6deg); margin-top:-120px; margin-bottom:280px; background:color-mix(in srgb, var(--accent), #fff 6%);}
+
+/* conteneurs englobant chaque bandeau + son texte : position:relative sert de
+   repère pour positionner le texte par-dessus la bande sans hériter de sa
+   rotation (le texte reste un frère du bandeau, pas un enfant). */
+.dp-stack-banner-hero, .dp-stack-banner-hero2{position:relative;}
+/* le texte reprend la même rotation que le bandeau sous-jacent (même valeur
+   d'angle que .dp-stack-banner / .dp-stack-banner--2) pour suivre son
+   inclinaison plutôt que de rester à plat par-dessus. */
+.dp-stack-banner-title{
+  position:absolute; inset:0; z-index:3;
+  display:flex; align-items:center; justify-content:center; text-align:center;
+  margin:0; padding:0 32px;
+  color:#fff; font-size:clamp(26px, 4vw, 44px); font-weight:700; letter-spacing:-.01em;
+  text-shadow:0 2px 10px rgba(20,30,60,.35);
+  pointer-events:none;
+  animation:dp-stack-title-scroll 22s linear infinite;
+}
+.dp-stack-banner-title .accent{color:inherit;}
+/* le titre défile de droite à gauche à la même vitesse (22s linear) que le
+   ticker de hashtags, pour donner l'impression qu'ils avancent ensemble sur
+   la même ligne inclinée plutôt que le titre restant figé au centre. */
+@keyframes dp-stack-title-scroll{
+  0%{transform:translateX(70vw) rotate(-8deg);}
+  100%{transform:translateX(-70vw) rotate(-8deg);}
+}
+@media (prefers-reduced-motion: reduce){
+  .dp-stack-banner-title{animation:none; transform:rotate(-8deg);}
+}
+/* bandeau de mots-clés qui défile en boucle sur la même ligne inclinée que le
+   titre, derrière lui : deux jeux de tags identiques mis bout à bout, translatés
+   de -50% pour boucler sans à-coup (classique marquee CSS). */
+.dp-stack-banner-ticker{
+  position:absolute; top:0; bottom:0; left:50%; width:112vw; z-index:2; overflow:hidden;
+  transform:translateX(-50%) rotate(-8deg);
+  display:flex; align-items:center;
+  pointer-events:none;
+}
+.dp-stack-banner-ticker-track{
+  display:flex; flex-wrap:nowrap; gap:88px; white-space:nowrap;
+  font-family:var(--mono); font-size:22px; font-weight:600; letter-spacing:.05em;
+  color:rgba(255,255,255,.32);
+  animation:dp-stack-ticker 22s linear infinite;
+  will-change:transform; backface-visibility:hidden;
+}
+.dp-stack-banner-ticker-track span:nth-child(even){color:rgba(255,255,255,.75);}
+@keyframes dp-stack-ticker{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
+}
+@media (prefers-reduced-motion: reduce){
+  .dp-stack-banner-ticker-track{animation:none;}
+}
+.dp-stack-banner-desc{
+  position:absolute; top:0; bottom:-40px; right:-60px; left:auto; z-index:3;
+  display:flex; align-items:flex-end; justify-content:flex-end;
+  padding-bottom:0; margin:0; max-width:380px; text-align:right;
+  transform:rotate(6deg);
+  color:rgba(255,255,255,.8); font-size:15px; line-height:1.65;
+  text-shadow:0 2px 8px rgba(20,30,60,.35);
+  pointer-events:none;
+}
+/* certifications en cours de préparation : même logique que .dp-list--gap
+   (bordure pointillée = pas encore acquis) plutôt qu'un chip plein comme les
+   outils déjà maîtrisés, pour ne pas laisser croire à un diplôme obtenu. */
+.dp-chip--pending{
+  background:transparent; border-style:dashed; color:var(--text-dim);
+}
+.dp-chip--pending .dp-chip-status{
+  font-size:10.5px; color:var(--accent); margin-left:6px;
+}
+@media(max-width:720px){
+  .dp-stack-groups{grid-template-columns:1fr;}
+}
+
 /* pied de page : rappel de retour. La marge basse ménage l'espace blanc dans lequel
    l'avatar de #contact déborde vers le haut (ses bras se posent sur le pli diagonal) :
    sur l'accueil ce débordement recouvre la section précédente, ici il faut le prévoir
