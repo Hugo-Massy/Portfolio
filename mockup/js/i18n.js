@@ -6,6 +6,8 @@
 const I18N = {
   fr: {
     'lang-switch-aria': 'Changer de langue',
+    'page-tag-aria': 'Pages du site',
+    'page-tag-home': 'Accueil',
     'nav-aria': 'Navigation',
     'nav-home': 'Accueil',
     'nav-about': 'À propos',
@@ -216,6 +218,7 @@ const I18N = {
     'refs-q3-author': 'Formateur cybersécurité',
     'refs-q3-role': 'Mastère cybersécurité',
 
+    'page-tag-details': 'Détails',
     'dp-nav-home': 'Accueil',
     'dp-nav-skills': 'Compétences',
     'dp-nav-massy': 'Massy Innove',
@@ -295,6 +298,8 @@ const I18N = {
   },
   en: {
     'lang-switch-aria': 'Change language',
+    'page-tag-aria': 'Site pages',
+    'page-tag-home': 'Home',
     'nav-aria': 'Navigation',
     'nav-home': 'Home',
     'nav-about': 'About',
@@ -505,6 +510,7 @@ const I18N = {
     'refs-q3-author': 'Cybersecurity instructor',
     'refs-q3-role': 'Cybersecurity Master\'s',
 
+    'page-tag-details': 'Details',
     'dp-nav-home': 'Home',
     'dp-nav-skills': 'Skills',
     'dp-nav-massy': 'Massy Innove',
@@ -584,6 +590,8 @@ const I18N = {
   },
   es: {
     'lang-switch-aria': 'Cambiar idioma',
+    'page-tag-aria': 'Páginas del sitio',
+    'page-tag-home': 'Inicio',
     'nav-aria': 'Navegación',
     'nav-home': 'Inicio',
     'nav-about': 'Acerca de',
@@ -794,6 +802,7 @@ const I18N = {
     'refs-q3-author': 'Formador en ciberseguridad',
     'refs-q3-role': 'Máster en ciberseguridad',
 
+    'page-tag-details': 'Detalles',
     'dp-nav-home': 'Inicio',
     'dp-nav-skills': 'Competencias',
     'dp-nav-massy': 'Massy Innove',

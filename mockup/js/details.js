@@ -715,51 +715,77 @@
   window.addEventListener('resize', update);
 })();
 
-// Adaptation à la couleur de fond : quand le rail de nav (points + indicateur) ou le bouton
-// "remonter en haut" passent devant un bandeau bleu (#contact, ou le bloc bleu des 4 piliers
-// de compétences), ils basculent en teintes claires (classe .is-on-dark, stylée dans
-// styles.css) pour rester lisibles. #contact couvre toute sa hauteur sur toute sa largeur,
-// un simple test top/bottom suffit. Le bloc bleu, lui, a une pente sur ses deux bords (voir
-// --dp-slope et le clip-path de .dp-blue-block-fill dans details.css) : sur le bord droit —
-// là où vivent justement le rail et le bouton — le bleu part du tout premier pixel en haut
-// mais s'arrête "--dp-slope" avant le bas ; sans en tenir compte on les fait passer en clair
-// alors qu'ils sont déjà repassés sur fond blanc, illisibles.
+// Adaptation à la couleur de fond : quand le rail de nav (points + indicateur), le bouton
+// "remonter en haut" ou page-tag passent devant un bandeau bleu (#contact, ou le bloc bleu
+// des 4 piliers de compétences), ils basculent en teintes claires (classe .is-on-dark,
+// stylée dans styles.css) pour rester lisibles.
 (function initOnDarkAdaptation() {
   const contact = document.getElementById('contact');
   const blueBlock = document.querySelector('.dp-blue-block');
   const railLinks = document.querySelectorAll('.dot-rail a');
   const indicator = document.querySelector('.dot-rail-indicator');
   const backToTop = document.querySelector('.back-to-top');
-  const backHome = document.querySelector('.dp-back-home');
+  const pageTag = document.querySelector('.page-tag');
   if (!contact && !blueBlock) return;
 
-  const blueSlope = blueBlock
-    ? parseFloat(getComputedStyle(blueBlock).getPropertyValue('--dp-slope')) || 0
-    : 0;
+  // Résout une longueur CSS (clamp(), calc(), var()...) en px réels, en la posant sur une
+  // propriété de layout normale (height) d'une sonde hors-écran : contrairement à
+  // parseFloat(getComputedStyle(el).getPropertyValue('--xxx')), qui échoue silencieusement
+  // dès que la custom property contient autre chose qu'un nombre nu (ex: "clamp(160px,
+  // 22vw, 360px)" pour --contact-slope), le moteur de layout résout toujours une hauteur
+  // en un nombre de px. La sonde doit être ajoutée DANS l'élément qui définit la custom
+  // property (ex: --dp-slope est posée sur .dp-blue-block elle-même, pas sur :root) :
+  // les custom properties descendent aux enfants, jamais vers un ancêtre comme document.body.
+  function resolveCSSLength(value, container) {
+    const probe = document.createElement('div');
+    probe.style.cssText = `position:absolute; visibility:hidden; pointer-events:none; height:${value};`;
+    (container || document.body).appendChild(probe);
+    const px = probe.getBoundingClientRect().height;
+    probe.remove();
+    return px;
+  }
 
-  function overDarkZone(y) {
+  let blueSlope = blueBlock ? resolveCSSLength('var(--dp-slope)', blueBlock) : 0;
+  let contactSlope = resolveCSSLength('var(--contact-slope)');
+  window.addEventListener('resize', () => {
+    blueSlope = blueBlock ? resolveCSSLength('var(--dp-slope)', blueBlock) : 0;
+    contactSlope = resolveCSSLength('var(--contact-slope)');
+  });
+
+  // side: 'right' pour les éléments proches du bord droit (rail, bouton), 'left' pour
+  // ceux proches du bord gauche (page-tag) — la pente est inversée entre les deux bords
+  // (voir clip-path de .dp-blue-block-fill et .contact-fill dans details.css).
+  function overDarkZone(y, side) {
     if (contact) {
       const r = contact.getBoundingClientRect();
-      if (y > r.top && y < r.bottom) return true;
+      if (side === 'left') {
+        if (y > r.top + contactSlope && y < r.bottom) return true;
+      } else if (y > r.top && y < r.bottom) {
+        return true;
+      }
     }
     if (blueBlock) {
       const r = blueBlock.getBoundingClientRect();
-      if (y > r.top && y < r.bottom - blueSlope) return true;
+      if (side === 'left') {
+        if (y > r.top + blueSlope && y < r.bottom) return true;
+      } else if (y > r.top && y < r.bottom - blueSlope) {
+        return true;
+      }
     }
     return false;
   }
 
-  function toggle(el) {
+  function toggle(el, side) {
     if (!el) return;
     const r = el.getBoundingClientRect();
-    el.classList.toggle('is-on-dark', overDarkZone(r.top + r.height / 2));
+    el.classList.toggle('is-on-dark', overDarkZone(r.top + r.height / 2, side));
   }
 
   function update() {
-    railLinks.forEach(toggle);
-    toggle(indicator);
-    toggle(backToTop);
-    toggle(backHome);
+    railLinks.forEach((el) => toggle(el, 'right'));
+    toggle(indicator, 'right');
+    toggle(backToTop, 'right');
+    toggle(pageTag, 'left');
   }
 
   update();

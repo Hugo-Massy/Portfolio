@@ -59,22 +59,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   cursor:not-allowed; opacity:.45; pointer-events:none;
 }
 
-/* Bouton "retour à l'accueil" : toujours visible en bas à droite, contrairement au
-   bouton "remonter en haut" (.back-to-top) qui n'apparaît qu'au scroll. Quand les deux
-   sont visibles, .back-to-top remonte au-dessus (voir override juste après) pour que
-   celui-ci reste le plus proche du bord, conformément à l'empilement demandé. */
-.dp-back-home{
-  position:fixed; right:22px; bottom:22px; z-index:50;
-  width:44px; height:44px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  background:var(--accent); color:#fff;
-  transition:background .2s ease, color .2s ease, box-shadow .2s ease;
-}
-.dp-back-home:hover{box-shadow:0 0 0 4px var(--accent-glow);}
-.dp-back-home.is-on-dark{background:#fff; color:var(--accent);}
-.dp-back-home.is-on-dark:hover{box-shadow:0 0 0 4px rgba(255,255,255,.3);}
-
-.dp-body .back-to-top{bottom:78px;}
+.dp-body .back-to-top{bottom:22px;}
 
 /* titre centré dans la barre du terminal du hero, façon macOS */
 #dp-hero .term-bar-title{

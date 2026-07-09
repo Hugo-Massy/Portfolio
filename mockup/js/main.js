@@ -974,29 +974,61 @@ function initTabSpy() {
   moveIndicatorTo(tabs[0]);
 }
 
-// Vrai si le point d'ordonnée y (proche du bord droit, là où vivent le rail et le bouton
-// "remonter en haut") tombe sur la vague bleue de .section-divider-bar plutôt que sur le
-// fond clair — cf. son clip-path : au bord droit (x=100%), le bleu va de 117px sous le
-// haut de la section jusqu'au bas de la section (le bord droit n'est plus clippé en bas).
-function isOverAboutWave(about, y) {
+// Résout une longueur CSS (clamp(), calc(), var()...) en px réels, en la posant sur une
+// propriété de layout normale (height) d'une sonde hors-écran : contrairement à
+// parseFloat(getComputedStyle(el).getPropertyValue('--xxx')), qui échoue silencieusement
+// dès que la custom property contient autre chose qu'un nombre nu (ex: "clamp(120px,
+// 14vw, 320px)"), le moteur de layout résout toujours une hauteur en un nombre de px.
+function resolveCSSLength(value) {
+  const probe = document.createElement('div');
+  probe.style.cssText = `position:absolute; visibility:hidden; pointer-events:none; height:${value};`;
+  document.body.appendChild(probe);
+  const px = probe.getBoundingClientRect().height;
+  probe.remove();
+  return px;
+}
+
+let waveH = resolveCSSLength('var(--wave-h)');
+let contactSlope = resolveCSSLength('var(--contact-slope)');
+window.addEventListener('resize', () => {
+  waveH = resolveCSSLength('var(--wave-h)');
+  contactSlope = resolveCSSLength('var(--contact-slope)');
+});
+
+// Vrai si le point d'ordonnée y tombe sur la vague bleue de .section-divider-bar plutôt
+// que sur le fond clair — cf. son clip-path : polygon(0 13px, 100% 117px, 100% 100%,
+// 0 calc(100% - var(--wave-h) * 0.4)). La pente est inversée entre les deux bords : au
+// bord droit (x=100%, là où vivent le rail et le bouton), le bleu va de 117px sous le
+// haut jusqu'au tout bas ; au bord gauche (x=0, là où vit page-tag), il va de 13px sous
+// le haut jusqu'à "wave-h * 0.4" avant le bas.
+function isOverAboutWave(about, y, side) {
   const rect = about.getBoundingClientRect();
+  if (side === 'left') {
+    const top = rect.top + 13;
+    const bottom = rect.top + rect.height - waveH * 0.4;
+    return y > top && y < bottom;
+  }
   const top = rect.top + 117;
   const bottom = rect.top + rect.height;
   return y > top && y < bottom;
 }
 
-// Vrai si le point d'ordonnée y (bord droit, là où vivent le rail et le bouton) tombe
-// sur le bloc bleu de #contact. Près du bord droit, la diagonale du haut touche 0 : le
-// bleu couvre donc toute la hauteur de la section, du haut jusqu'en bas.
-function isOverContactBlue(contact, y) {
+// Vrai si le point d'ordonnée y tombe sur le bloc bleu de #contact — cf. son clip-path :
+// polygon(0 var(--contact-slope), 100% 0, 100% 100%, 0 100%). Au bord droit (x=100%, rail
+// et bouton), la diagonale du haut touche 0 : le bleu couvre toute la hauteur. Au bord
+// gauche (x=0, page-tag), le bleu ne commence qu'à "contact-slope" sous le haut.
+function isOverContactBlue(contact, y, side) {
   const rect = contact.getBoundingClientRect();
+  if (side === 'left') {
+    return y > rect.top + contactSlope && y < rect.bottom;
+  }
   return y > rect.top && y < rect.bottom;
 }
 
 // Regroupe les deux zones sombres du bas de page (vague #about + bloc #contact) : un
 // point en est "sur fond sombre" s'il tombe sur l'une ou l'autre.
-function isOverDarkZone(about, contact, y) {
-  return isOverAboutWave(about, y) || (contact && isOverContactBlue(contact, y));
+function isOverDarkZone(about, contact, y, side) {
+  return isOverAboutWave(about, y, side) || (contact && isOverContactBlue(contact, y, side));
 }
 
 // Bascule chaque point du rail sur des teintes claires quand la vague bleue passe sous lui,
@@ -1007,6 +1039,7 @@ function initRailOnDark() {
   const rail = document.querySelector('.dot-rail');
   const indicator = document.querySelector('.dot-rail-indicator');
   const dots = document.querySelectorAll('.dot-rail a');
+  const pageTag = document.querySelector('.page-tag');
   const about = document.getElementById('about');
   const contact = document.getElementById('contact');
   if (!rail || !about || !dots.length) return;
@@ -1014,11 +1047,15 @@ function initRailOnDark() {
   function update() {
     dots.forEach((dot) => {
       const r = dot.getBoundingClientRect();
-      dot.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2));
+      dot.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'right'));
     });
     if (indicator) {
       const r = indicator.getBoundingClientRect();
-      indicator.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2));
+      indicator.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'right'));
+    }
+    if (pageTag) {
+      const r = pageTag.getBoundingClientRect();
+      pageTag.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'left'));
     }
   }
 
@@ -1041,7 +1078,7 @@ function initBackToTop() {
   function update() {
     btn.classList.toggle('is-visible', window.scrollY > hero.offsetHeight * 0.5);
     const r = btn.getBoundingClientRect();
-    btn.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2));
+    btn.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'right'));
   }
 
   update();

@@ -180,6 +180,34 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 
 /* bouton de changement de langue, en haut à droite ; reprend le même langage visuel
    (pastille blanche, halo accent au survol) que le rail de nav et back-to-top */
+/* Étiquette légère en haut à gauche listant les pages du site : la page courante
+   est affichée en texte simple, les autres sont des liens vers ces pages. */
+.page-tag{
+  position:fixed; top:22px; left:22px; z-index:60;
+  display:flex; flex-direction:column; align-items:flex-start; gap:4px;
+  font-family:var(--mono); font-size:12px; font-weight:500;
+  letter-spacing:.02em; color:var(--text-faint);
+  user-select:none;
+}
+.page-tag-item{color:var(--text-faint); text-decoration:none; transition:color .2s ease; display:flex; align-items:center; gap:6px;}
+.page-tag-item::before{content:''; display:block; flex:none; width:8px; height:1px; background:var(--text-faint); transition:width .2s ease, background .2s ease;}
+.page-tag-item.is-current{color:var(--accent); font-size:13px; pointer-events:none;}
+.page-tag-item.is-current::before{width:16px; background:var(--accent);}
+.page-tag-item:not(.is-current):hover{color:var(--accent);}
+.page-tag-item:not(.is-current):hover::before{background:var(--accent);}
+
+/* Sur fond bleu (vague #about, #contact, bloc bleu des 4 piliers), les teintes grises
+   se fondent dans le bleu : on bascule en blanc, comme le reste du rail (is-on-dark). */
+.page-tag.is-on-dark .page-tag-item{color:rgba(255,255,255,.7);}
+.page-tag.is-on-dark .page-tag-item::before{background:rgba(255,255,255,.7);}
+.page-tag.is-on-dark .page-tag-item:not(.is-current):hover{color:#fff;}
+.page-tag.is-on-dark .page-tag-item:not(.is-current):hover::before{background:#fff;}
+.page-tag.is-on-dark .page-tag-item.is-current{color:#fff; font-weight:600;}
+.page-tag.is-on-dark .page-tag-item.is-current::before{background:#fff;}
+@media(max-width:600px){
+  .page-tag{top:14px; left:14px; font-size:11px; gap:3px;}
+}
+
 .lang-switch{
   position:fixed; top:22px; right:22px; z-index:60;
   display:flex; align-items:center; justify-content:center;
