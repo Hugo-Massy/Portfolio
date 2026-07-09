@@ -1006,7 +1006,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-xp-list-ic{
   flex-shrink:0; width:44px; height:44px; border-radius:50%;
   display:flex; align-items:center; justify-content:center;
-  background:var(--proj); color:#fff;
+  background:color-mix(in srgb, var(--proj) 88%, transparent); color:#fff;
 }
 .dp-xp-list-ic svg{width:22px; height:22px;}
 
