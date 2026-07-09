@@ -838,7 +838,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    logos des outils, liste « ce que j'ai fait ». La seule maquette conservée est
    l'illustration .xp-tile/.xp-mock (accueil #xp), posée à côté du texte.
    ============================================================================= */
-.dp-wall{display:flex; flex-direction:column; gap:clamp(28px, 5vh, 60px);}
+.dp-wall{display:flex; flex-direction:column; gap:clamp(28px, 5vh, 60px); padding-top:56px;}
 .dp-fam{display:contents;}
 .dp-fam--massy, .dp-fam--homelab, .dp-fam--supervision, .dp-fam--stack{
   --proj:var(--accent); --proj-dark:var(--accent-dark); --proj-soft:var(--accent-soft); --proj-line:var(--accent-pale);
@@ -856,7 +856,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   margin:0; display:flex; align-items:baseline; gap:10px;
   font-family:var(--mono); font-weight:700;
 }
-.dp-xp-entry-tag-num{font-size:32px; line-height:1; letter-spacing:-.01em; color:var(--accent);}
+.dp-xp-entry-tag-num{font-family:var(--sans); font-size:32px; line-height:1; letter-spacing:-.01em; color:var(--accent);}
 .dp-xp-entry-tag-slug{font-size:19px; line-height:1.2; color:var(--text);}
 
 .dp-xp-entry-body{display:flex; align-items:flex-start; gap:12px;}

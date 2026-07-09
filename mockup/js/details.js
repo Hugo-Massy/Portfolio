@@ -168,6 +168,101 @@
   window.addEventListener('resize', onScroll);
 })();
 
+// Parallax du bandeau bleu des 4 piliers de compétences, repris à l'identique de #about
+// sur l'accueil (initAboutParallax dans js/main.js) : le bloc bleu part de sa position
+// naturelle (transform nul) puis remonte de plus en plus (translateY négatif) au fil de
+// sa traversée du viewport — purement visuel (transform), sans toucher au flow du document.
+// Tout ce qui le suit (#experience, le rappel de pied, puis #contact) reçoit le même
+// décalage pour que la page reste structurée, sans trou entre le bloc qui remonte et la
+// suite immobile. #contact, dernière section, reçoit en plus un contre-lift qui grandit sur
+// la fin du scroll pour le ramener pile à sa position naturelle au moment où on atteint le
+// bas réel du document (sinon le lift laisserait un vide en bas de page).
+(function initCompetencesParallax() {
+  const block = document.getElementById('competences');
+  if (!block) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  // #experience et le rappel de pied vivent dans .dp-main ; #contact est en dehors (frère
+  // de .dp-layout). On rassemble donc les suiveurs explicitement plutôt que par parcours de
+  // voisins comme sur l'accueil, à cause de cette frontière de conteneur.
+  const followers = [
+    document.getElementById('experience'),
+    document.querySelector('.dp-foot'),
+  ].filter(Boolean);
+  const last = document.getElementById('contact');
+
+  // Même amplitude et même lissage que --about-lift / EASE sur l'accueil : sensation identique.
+  const MAX_LIFT = 220; // px
+  const EASE = 0.35;
+  let currentLift = 0;
+  let currentLastLift = 0;
+  let rafId = null;
+
+  // Position "naturelle" (hors transform) via offsetTop cumulé, plutôt que getBoundingClientRect
+  // qui inclurait déjà le transform qu'on est en train d'appliquer.
+  function naturalTop(el) {
+    let top = 0;
+    for (let node = el; node; node = node.offsetParent) top += node.offsetTop;
+    return top;
+  }
+
+  function targets() {
+    const viewportTop = naturalTop(block) - window.scrollY;
+    const progress = Math.min(Math.max(1 - viewportTop / window.innerHeight, 0), 1);
+    const lift = -progress * MAX_LIFT;
+    let lastLift = lift;
+    if (last) {
+      // Le contre-lift doit annuler pile MAX_LIFT au moment où on touche le bas réel du
+      // document, mais peut commencer à monter bien avant : COUNTER_RANGE fixe sur quelle
+      // distance de scroll il se résorbe, indépendamment du montant à annuler.
+      const COUNTER_RANGE = Math.max(MAX_LIFT, window.innerHeight * 0.9);
+      const revealStart = naturalTop(last) + last.offsetHeight - COUNTER_RANGE;
+      const counterProgress = Math.min(Math.max((window.scrollY + window.innerHeight - revealStart) / COUNTER_RANGE, 0), 1);
+      lastLift = lift + counterProgress * MAX_LIFT;
+    }
+    return { lift, lastLift };
+  }
+
+  function apply() {
+    const transform = `translateY(${currentLift}px)`;
+    block.style.transform = transform;
+    followers.forEach((el) => { el.style.transform = transform; });
+    if (last) last.style.transform = `translateY(${currentLastLift}px)`;
+    // Le rail de nav et le bouton "remonter" recalculent leur teinte sur l'event scroll ;
+    // comme le lift continue de bouger (lissage EASE) quelques frames après l'arrêt du
+    // scroll, on les réveille via cet event dédié pour qu'ils suivent jusqu'au repos.
+    window.dispatchEvent(new Event('parallax-tick'));
+  }
+
+  function loop() {
+    const { lift, lastLift } = targets();
+    currentLift += (lift - currentLift) * EASE;
+    currentLastLift += (lastLift - currentLastLift) * EASE;
+    apply();
+    if (Math.abs(lift - currentLift) < 0.05 && Math.abs(lastLift - currentLastLift) < 0.05) {
+      currentLift = lift;
+      currentLastLift = lastLift;
+      apply();
+      rafId = null;
+      return;
+    }
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function requestLoop() {
+    if (rafId === null) rafId = requestAnimationFrame(loop);
+  }
+
+  window.addEventListener('scroll', requestLoop, { passive: true });
+  window.addEventListener('resize', requestLoop);
+  // Positionne tout correctement dès le chargement (ex. scroll déjà restauré par le
+  // navigateur), sans animation de rattrapage visible.
+  const initial = targets();
+  currentLift = initial.lift;
+  currentLastLift = initial.lastLift;
+  apply();
+})();
+
 // Anime les blocs .reveal quand ils entrent dans le viewport (une seule fois).
 (function initReveal() {
   const targets = document.querySelectorAll('.reveal');
@@ -674,6 +769,10 @@
   update();
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', update);
+  // Le bloc bleu et #contact bougent encore quelques frames après l'arrêt du scroll
+  // (lissage du parallax, cf. initCompetencesParallax) : on recalcule aussi sur ce tick
+  // pour que la teinte claire/foncée reste calée sur leur position réelle jusqu'au repos.
+  window.addEventListener('parallax-tick', update);
 })();
 
 // Flèche "défiler vers le bas" du header : se cache dès qu'on quitte le haut de page.
