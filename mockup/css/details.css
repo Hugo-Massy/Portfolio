@@ -905,8 +905,12 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-xp-entry-media .xp-mock--phone{zoom:1; align-items:flex-start;}
 .dp-xp-entry-media .xp-phone-shell{
   width:110%; max-width:320px;
-  margin-top:-150px; margin-right:8%;
+  margin-top:-150px; margin-right:5%;
 }
+/* à cette taille/rotation, l'inset droit par défaut de l'écran (5.1%, calé sur
+   le PNG à plat) laisse un mince trou entre le dégradé et le bord noir du
+   cadre ; on le resserre légèrement pour cette maquette précise. */
+.dp-xp-entry-media .xp-phone-screen{right:3.5%;}
 
 /* variante inversée : illustration à gauche ; à droite, texte puis logos
    (rangée horizontale) empilés dessous — d'où le passage en grid pour placer
