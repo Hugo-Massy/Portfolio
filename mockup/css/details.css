@@ -174,7 +174,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    bleu, à côté des cartes, plutôt que caché derrière. */
 .dp-competences-pillar{
   position:absolute; top:53%; left:var(--dp-pillar-left);
-  transform:translateY(-50%);
+  transform:translateY(-50%) rotate(-1deg);
   z-index:0;
   width:var(--dp-pillar-w); height:917px;
   fill:rgba(255,255,255,.12); stroke:rgba(255,255,255,.3); stroke-width:0.8;
@@ -419,12 +419,8 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-entry-story{
   color:var(--text-dim); line-height:1.9; margin:0 0 6px;
   font-family:var(--sans);
-  font-size:14.5px; max-width:72ch;
+  font-size:15.5px; max-width:72ch;
   text-align:justify;
-}
-.dp-entry-story::first-letter{
-  font-size:4.2em; font-weight:700; color:var(--accent);
-  float:left; line-height:.82; margin:.03em .08em 0 0;
 }
 .dp-entry-story strong{color:var(--text); font-weight:700;}
 /* effet machine à écrire (initCompetenceCarousel dans details.js) : le texte
@@ -560,6 +556,26 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   border-top:none;
   box-shadow:none;
 }
+/* Les 4 récits n'ont pas la même longueur, donc sans ça le bloc « ce que j'ai
+   appris » atterrit à une hauteur différente selon le pilier actif — gênant
+   puisque les 4 slides se superposent dans la même cellule de grille (voir
+   .dp-carousel-track) et se comparent d'un clic sur l'autre. On étire la carte
+   sur toute la hauteur partagée (déterminée par le récit le plus long) et on
+   pousse ce bloc en bas via margin-top:auto, pour qu'il reste toujours calé
+   au même niveau, en bas du pilier, quel que soit le récit affiché. */
+.dp-blue-block .dp-carousel-track > .dp-slide{justify-content:flex-start;}
+.dp-blue-block .dp-slide > .dp-entry{display:flex; flex-direction:column; height:100%;}
+.dp-blue-block .dp-entry-body{display:flex; flex-direction:column; flex:1 1 auto;}
+/* le margin-top:auto se pose sur les logos (premier élément du groupe
+   « logos + ce que j'ai appris ») plutôt que sur ce bloc seul à l'origine ;
+   désormais margin-top:auto ET margin-bottom:auto sur les logos eux-mêmes,
+   pour que le navigateur répartisse également tout l'espace laissé par un
+   récit plus court de part et d'autre des logos (technique de centrage
+   flexbox par marges auto symétriques) : les icônes restent pile au milieu
+   entre le bloc récit et le bloc « ce que j'ai appris », quelle que soit la
+   longueur du texte au-dessus. .dp-entry-cols n'a donc plus de margin-top
+   fixe (voir plus bas) : tout l'écart est porté par les auto-margins ici. */
+.dp-blue-block .dp-skills-summary-logos{margin-top:auto; margin-bottom:auto;}
 .dp-blue-block .dp-entry-lead{background:rgba(255,255,255,.14); color:#fff;}
 .dp-blue-block .dp-entry-lead::before{color:rgba(255,255,255,.55);}
 .dp-blue-block .dp-entry-lead strong{color:#fff;}
@@ -569,24 +585,53 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 /* plus de fond blanc : le récit se lit directement sur le bleu, mêmes couleurs
    éclaircies que le bloc « ce que j'ai appris » juste en dessous. */
-.dp-blue-block .dp-entry-body .dp-entry-story{color:rgba(255,255,255,.82); font-size:16px;}
-.dp-blue-block .dp-entry-body .dp-entry-story::first-letter{color:#fff;}
+.dp-blue-block .dp-entry-body .dp-entry-story{color:rgba(255,255,255,.82); font-size:14.5px; max-width:none;}
 .dp-blue-block .dp-entry-body .dp-entry-story strong{color:#fff;}
+/* même traitement « verre » que .dp-entry-cols juste en dessous : le récit
+   flotte désormais dans son propre bloc plutôt que directement sur le bleu. */
+.dp-blue-block .dp-entry-copy-text{
+  background:linear-gradient(155deg, rgba(255,255,255,.22), rgba(255,255,255,.1));
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+  border-radius:16px 14px 15px 13px;
+  padding:24px 26px;
+  margin-left:-32px;
+  margin-right:-48px;
+  margin-bottom:32px;
+  box-shadow:0 14px 30px rgba(10,16,40,.18);
+  transform:rotate(-.7deg);
+  transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+.dp-blue-block .dp-entry-copy-text:hover{
+  background:linear-gradient(155deg, rgba(255,255,255,.28), rgba(255,255,255,.14));
+  box-shadow:0 12px 28px rgba(15,22,50,.22);
+  transform:rotate(-.7deg) translateY(-2px);
+}
+/* tailles réduites pour tout le contenu texte du bloc compétences (titres de
+   colonne, résumé « ce que j'ai appris ») afin d'alléger la densité visuelle
+   du bandeau bleu, cohérentes avec le récit ci-dessus. */
+.dp-blue-block .dp-skills-summary-lead{font-size:14.5px;}
+.dp-blue-block .dp-entry-skills-summary .dp-col-title{font-size:11px;}
+.dp-blue-block .dp-pillar-title{font-size:18px;}
 /* même fond « verre » que la citation d'origine (.dp-entry-lead) : la phrase de
    conclusion et les logos vivent maintenant dans le même bloc, donc les deux
    partagent exactement le même traitement visuel plutôt qu'un fond blanc plein. */
 .dp-blue-block .dp-entry-cols{
-  background:rgba(255,255,255,.14);
+  background:linear-gradient(155deg, rgba(255,255,255,.22), rgba(255,255,255,.1));
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
   border-radius:14px;
   padding:22px 24px;
-  margin-top:56px;
+  margin-top:32px;
   border-top:none;
+  box-shadow:0 14px 30px rgba(10,16,40,.18);
+  transform:rotate(.6deg);
   transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .dp-blue-block .dp-entry-cols:hover{
-  background:rgba(255,255,255,.2);
+  background:linear-gradient(155deg, rgba(255,255,255,.28), rgba(255,255,255,.14));
   box-shadow:0 12px 28px rgba(15,22,50,.22);
-  transform:translateY(-2px);
+  transform:rotate(.6deg) translateY(-2px);
 }
 .dp-blue-block .dp-skills-summary-lead{color:#fff; margin:8px 0 0; line-height:1.7;}
 .dp-blue-block .dp-skills-summary-lead strong{color:#fff;}
@@ -624,14 +669,26 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 /* résumé « ce que j'ai appris » : juste le titre et la phrase, les logos des
    outils maîtrisés vivent maintenant entre le récit et ce bloc (voir plus bas). */
 .dp-entry-cols.dp-entry-skills-summary{display:block;}
-.dp-skills-summary-text{min-width:0;}
+/* titre + badges sur la même ligne (badges casés en haut à droite), le
+   texte du résumé en dessous sur toute la largeur — grid plutôt que l'ordre
+   naturel du DOM (titre, texte, badges) pour ne pas avoir à déplacer les
+   badges après le paragraphe dans le HTML. */
+.dp-skills-summary-text{
+  min-width:0;
+  display:grid;
+  grid-template-columns:1fr auto;
+  align-items:start;
+  column-gap:16px;
+}
+.dp-skills-summary-text .dp-col-title{grid-column:1; grid-row:1;}
+.dp-skills-summary-text .dp-skills-summary-lead{grid-column:1 / -1; grid-row:2;}
+.dp-skills-summary-text .dp-rncp-badges{grid-column:2; grid-row:1; justify-content:flex-end; margin:2px 0 0;}
 /* logos des outils maîtrisés, entre le texte de contenu et le bloc « ce que
    j'ai appris » plutôt qu'à l'intérieur de celui-ci : calés à droite, en
    collage décalé (chaque tuile a sa propre hauteur, voir nth-child ci-dessous)
    plutôt qu'alignées sur une même ligne. */
 .dp-skills-summary-logos{
   display:flex; flex-wrap:wrap; justify-content:flex-end; align-items:flex-end; gap:14px;
-  margin:28px 0 0;
 }
 .dp-skills-summary-logos .dp-summary-logo:nth-child(3n+1){margin-top:0;}
 .dp-skills-summary-logos .dp-summary-logo:nth-child(3n+2){margin-top:22px;}
@@ -794,7 +851,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    pour retrouver exactement le même rendu — même calcul que le translateY de .contact-avatar. */
 .dp-foot{
   display:flex; flex-direction:column; align-items:center; gap:16px;
-  text-align:center; padding:44px 20px;
+  text-align:center; padding:220px 20px 44px;
   margin-bottom:calc(clamp(320px, 42vw, 620px) * 0.5 - clamp(160px, 22vw, 360px));
 }
 .dp-foot p{color:var(--text-dim); font-size:15px;}
@@ -819,7 +876,6 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   .dp-entry{padding:26px 20px 30px;}
   .dp-entry-head{gap:14px; margin-bottom:14px;}
   .dp-entry-titles h3{left:20px; font-size:30px;}
-  .dp-entry-story::first-letter{font-size:2.6em;}
   .dp-entry-cols--compare{grid-template-columns:1fr; gap:28px 0;}
   .dp-entry-cols--compare .dp-col--gap{
     padding-left:0; border-left:none;
@@ -925,6 +981,11 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-xp-entry-body--rev .dp-xp-entry-media .xp-flag{right:auto; left:-24px;}
 .dp-xp-entry-body--rev .dp-xp-entry-copy{grid-column:2; grid-row:1;}
 .dp-xp-entry-body--rev .dp-xp-entry-copy .dp-entry-story{text-align:right;}
+/* même variante « inversée » : le récit et les logos sont alignés à droite
+   (colonne de texte à droite de l'illustration), donc le tag numéroté juste
+   au-dessus (« 02 · _homelab/ ») suit la même logique plutôt que de rester
+   collé à gauche au-dessus de l'illustration. */
+.dp-xp-entry:has(.dp-xp-entry-body--rev) .dp-xp-entry-head{display:flex; justify-content:flex-end;}
 .dp-xp-entry-body--rev .dp-xp-logos{grid-column:2; grid-row:2; flex-direction:row; justify-content:flex-start; margin-left:-160px; margin-top:32px;}
 
 /* logos des outils maîtrisés : même carte flottante que .dp-summary-logo
