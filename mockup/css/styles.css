@@ -1507,6 +1507,21 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   background:#fff; padding:6.5px 12px; border-radius:100px;
   box-shadow:0 9px 20px -8px rgba(0,0,0,.3);
 }
+/* petit ping façon "signal souverain" qui part du badge drapeau et s'estompe
+   en s'agrandissant, boucle discrète pour ne pas concurrencer le contenu. */
+.xp-flag::before{
+  content:''; position:absolute; inset:-5px; border-radius:100px;
+  border:1.5px solid var(--tile-accent, #6338ab);
+  opacity:0; animation:xp-flag-ping 2.8s ease-out infinite;
+}
+@keyframes xp-flag-ping{
+  0%{transform:scale(.88); opacity:.6;}
+  70%{transform:scale(1.3); opacity:0;}
+  100%{transform:scale(1.3); opacity:0;}
+}
+@media(prefers-reduced-motion:reduce){
+  .xp-flag::before{animation:none; display:none;}
+}
 .xp-flag-svg{
   width:17px; height:11px; border-radius:2px; flex:none;
   box-shadow:0 0 0 1px rgba(0,0,0,.08);

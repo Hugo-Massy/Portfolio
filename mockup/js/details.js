@@ -262,6 +262,26 @@
 // Anime les blocs .reveal quand ils entrent dans le viewport (une seule fois).
 (function initReveal() {
   const targets = document.querySelectorAll('.reveal');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Compteur 0 → valeur pour les métriques de la carte Massy Innove (100%, 0…),
+  // déclenché une fois quand la tuile devient visible.
+  function animateCountUp(el) {
+    const match = el.textContent.trim().match(/^(\d+)(.*)$/);
+    if (!match) return;
+    const target = parseInt(match[1], 10);
+    const suffix = match[2];
+    const duration = 900;
+    const start = performance.now();
+    function tick(now) {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
   if (!('IntersectionObserver' in window)) {
     targets.forEach((el) => el.classList.add('is-visible'));
     return;
@@ -270,11 +290,36 @@
     entries.forEach((entry) => {
       if (entry.isIntersecting) {
         entry.target.classList.add('is-visible');
+        if (!reduceMotion && entry.target.classList.contains('dp-bt--metrics') && entry.target.closest('.dp-fam--massy')) {
+          entry.target.querySelectorAll('.dp-bt-metric b').forEach(animateCountUp);
+        }
         observer.unobserve(entry.target);
       }
     });
   }, { threshold: 0.12 });
   targets.forEach((el) => observer.observe(el));
+})();
+
+// Léger tilt 3D de la maquette chat au survol de la carte Massy Innove : suit
+// la position de la souris dans la tuile, désactivé au tactile / reduced-motion.
+(function initFeatureTilt() {
+  const tile = document.querySelector('.dp-fam--massy .xp-tile--feature');
+  const mock = tile && tile.querySelector('.xp-mock--chat');
+  if (!mock) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  const MAX_DEG = 6;
+  mock.style.transition = 'transform .25s ease-out';
+  tile.addEventListener('mousemove', (e) => {
+    const rect = tile.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mock.style.transform = `rotateX(${(-y * MAX_DEG).toFixed(2)}deg) rotateY(${(x * MAX_DEG).toFixed(2)}deg)`;
+  });
+  tile.addEventListener('mouseleave', () => {
+    mock.style.transform = '';
+  });
 })();
 
 // Snap plus lent entre les cartes : le scroll-snap natif du CSS anime toujours au même
