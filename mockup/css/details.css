@@ -575,21 +575,17 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 /* même traitement « verre » que .dp-entry-cols juste en dessous : le récit
    flotte désormais dans son propre bloc plutôt que directement sur le bleu. */
 .dp-blue-block .dp-entry-copy-text{
-  background:linear-gradient(155deg, rgba(255,255,255,.22), rgba(255,255,255,.1));
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
+  background:transparent;
   border-radius:16px 14px 15px 13px;
   padding:24px 26px;
   margin-left:-32px;
   margin-right:-48px;
   margin-bottom:32px;
-  box-shadow:0 14px 30px rgba(10,16,40,.18);
+  box-shadow:none;
   transform:rotate(-.7deg);
   transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
 }
 .dp-blue-block .dp-entry-copy-text:hover{
-  background:linear-gradient(155deg, rgba(255,255,255,.28), rgba(255,255,255,.14));
-  box-shadow:0 12px 28px rgba(15,22,50,.22);
   transform:rotate(-.7deg) translateY(-2px);
 }
 /* tailles réduites pour tout le contenu texte du bloc compétences (titres de
