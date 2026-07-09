@@ -921,7 +921,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-xp-entry-body--rev .dp-xp-entry-media .xp-flag{right:auto; left:-24px;}
 .dp-xp-entry-body--rev .dp-xp-entry-copy{grid-column:2; grid-row:1;}
 .dp-xp-entry-body--rev .dp-xp-entry-copy .dp-entry-story{text-align:right;}
-.dp-xp-entry-body--rev .dp-xp-logos{grid-column:2; grid-row:2; flex-direction:row; justify-content:flex-start; margin-left:-260px; margin-top:-16px;}
+.dp-xp-entry-body--rev .dp-xp-logos{grid-column:2; grid-row:2; flex-direction:row; justify-content:flex-start; margin-left:-160px; margin-top:32px;}
 
 /* logos des outils maîtrisés : même carte flottante que .dp-summary-logo
    (compétences), simplement toujours visible (pas de « pop » liée au carrousel). */
