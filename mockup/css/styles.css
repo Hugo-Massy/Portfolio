@@ -1806,14 +1806,17 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   border-radius:12% / 6%;
   overflow:hidden;
   z-index:1;
-  /* fond d'écran : dégradé « mesh » bleu façon wallpaper iOS
-     (plusieurs halos radiaux superposés sur une base bleu nuit) */
+  /* fond d'écran : dégradé « mesh » bleu façon wallpaper iOS — halos radiaux
+     répartis sur toute la hauteur (haut, milieu, bas) pour qu'aucune bande sombre
+     et plate ne subsiste au centre, sur une base bleu nuit. */
   background:
-    radial-gradient(120% 80% at 15% 0%,  rgba(88,150,255,.55) 0%, transparent 55%),
-    radial-gradient(110% 70% at 100% 12%, rgba(56,214,214,.35) 0%, transparent 50%),
-    radial-gradient(120% 90% at 85% 100%, rgba(120,86,255,.45) 0%, transparent 55%),
-    radial-gradient(120% 80% at 0% 100%,  rgba(38,90,190,.55) 0%, transparent 55%),
-    linear-gradient(155deg, #143a7a 0%, #0e2350 55%, #0a1838 100%);
+    radial-gradient(90% 55% at 15% 0%,   rgba(88,150,255,.55) 0%, transparent 60%),
+    radial-gradient(85% 50% at 100% 12%, rgba(56,214,214,.35) 0%, transparent 55%),
+    radial-gradient(95% 55% at 80% 45%,  rgba(70,120,235,.42) 0%, transparent 60%),
+    radial-gradient(95% 55% at 10% 60%,  rgba(48,100,205,.42) 0%, transparent 60%),
+    radial-gradient(100% 60% at 85% 100%, rgba(120,86,255,.48) 0%, transparent 60%),
+    radial-gradient(100% 60% at 0% 100%,  rgba(38,90,190,.55) 0%, transparent 60%),
+    linear-gradient(155deg, #164080 0%, #123468 45%, #0d2350 75%, #0a1838 100%);
   /* police système Apple (San Francisco) — repli propre hors macOS/iOS */
   font-family:-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
               "SF Pro", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
@@ -1835,7 +1838,7 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   backdrop-filter:blur(14px) saturate(160%);
   border:1px solid rgba(255,255,255,.6);
   border-radius:16px; padding:10px 11px;
-  box-shadow:0 6px 16px -8px rgba(0,0,0,.45);
+  box-shadow:0 10px 22px -12px rgba(6,16,40,.5);
 }
 .xp-notif-ic{ position:relative; width:32px; height:32px; flex-shrink:0; border-radius:9px; background:#c8172c; }
 .xp-notif-ic::after{ content:"Z"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
@@ -1845,6 +1848,128 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-notif-body b{ font-size:13px; font-weight:700; color:#1b2228; }
 .xp-notif-top time{ font-size:10.5px; color:#8a97a0; font-style:normal; flex-shrink:0; }
 .xp-notif-body em{ font-style:normal; font-size:12px; color:#4a565e; }
+
+/* widgets iOS façon écran verrouillé, empilés sous la notification : donnent
+   à l'écran du téléphone un vrai tableau de supervision plutôt qu'une seule
+   alerte isolée — carte disponibilité (grand %, tendance, aire graphée), liste
+   d'hôtes (statut + métrique inline), synthèse chiffrée en trois colonnes. */
+/* barres « squelette » de chargement : comme les autres illustrations du bento,
+   le contenu du téléphone est volontairement abstrait — des barres grises qui
+   scintillent (état « pas encore chargé ») plutôt que du texte lisible. Les seuls
+   éléments colorés conservés sont les accents porteurs de sens (pastille de la
+   notif, points de statut). */
+.xp-sk{
+  display:block; height:9px; border-radius:100px;
+  background:rgba(120,134,158,.30);
+}
+.xp-sk--light{
+  background:rgba(255,255,255,.42);
+}
+/* graphe rendu neutre (gris) pour rester cohérent avec l'état « non chargé » */
+.xp-phone-graph--sk polyline{ stroke:rgba(120,134,158,.42); }
+.xp-phone-graph--sk polygon{ fill:rgba(120,134,158,.12); }
+
+/* bloc écran verrouillé (date + heure) qui occupe le vide entre la notification
+   en haut et les cartes en bas : rend l'écran crédible façon iOS verrouillé.
+   Typo calée sur le cadran officiel iOS : SF Pro Display, très gras, chiffres
+   tabulaires pour un alignement net des deux « 9 » autour du deux-points. */
+.xp-phone-lock{
+  position:absolute; left:4.5%; right:4.5%; top:20%; z-index:2;
+  text-align:center;
+}
+.xp-phone-date{
+  font-size:13px; font-weight:600; color:rgba(255,255,255,.92);
+  margin-bottom:0;
+  text-shadow:0 1px 6px rgba(0,0,0,.28);
+}
+/* chiffres « verre » : blanc translucide laissant transparaître le fond d'écran,
+   avec un léger flou de fond clipé sur le texte (façon verre dépoli de la notif). */
+.xp-phone-clock{
+  font-family:"SF Pro Display", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size:70px; font-weight:700; line-height:1.05;
+  letter-spacing:.01em; font-variant-numeric:tabular-nums;
+  color:rgba(255,255,255,.72);
+  -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);
+  -webkit-background-clip:text; background-clip:text;
+  text-shadow:0 2px 16px rgba(0,0,0,.22);
+}
+
+.xp-phone-widgets{
+  position:absolute; left:4.5%; right:4.5%; bottom:4.5%; z-index:2;
+  display:flex; flex-direction:column; gap:8px;
+}
+.xp-phone-card{
+  background:rgba(255,255,255,.82);
+  -webkit-backdrop-filter:blur(14px) saturate(160%);
+  backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.6);
+  border-radius:16px; padding:12px 14px;
+  box-shadow:0 6px 16px -8px rgba(0,0,0,.45);
+}
+
+/* — carte 1 : disponibilité (eyebrow + tendance, grand chiffre, aire graphée) — */
+.xp-phone-card-head{
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:6px;
+}
+.xp-phone-card-head b{
+  font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:#8a97a6;
+}
+.xp-phone-trend{
+  display:inline-flex; align-items:center;
+  font-family:var(--mono); font-size:9.5px; font-weight:700; color:#1a9c5f;
+  background:rgba(38,194,129,.14); border-radius:100px; padding:2px 7px;
+}
+.xp-phone-uptime-val{
+  font-family:var(--mono); font-size:26px; font-weight:800; line-height:1;
+  color:#12332a; letter-spacing:-.01em;
+}
+.xp-phone-uptime-val small{ font-size:14px; font-weight:700; color:#5b9e83; margin-left:1px; }
+.xp-phone-graph{ margin-top:8px; }
+.xp-phone-graph svg{ width:100%; height:26px; display:block; overflow:visible; }
+.xp-phone-graph polyline{ fill:none; stroke:#1fae6b; stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; }
+.xp-phone-graph polygon{ fill:rgba(31,174,107,.12); stroke:none; }
+
+/* — carte 2 : liste d'hôtes (dot statut, nom, métrique inline, âge) — */
+.xp-phone-hosts{ display:flex; flex-direction:column; }
+.xp-phone-host-row{ display:flex; align-items:center; gap:8px; padding:7px 0; }
+.xp-phone-host-row:first-child{ padding-top:0; }
+.xp-phone-host-row:last-child{ padding-bottom:0; }
+.xp-phone-host-row + .xp-phone-host-row{ border-top:1px solid rgba(20,36,70,.07); }
+.xp-phone-host-name{
+  flex:1; font-size:12.5px; font-weight:600; color:#28303a;
+  font-family:var(--mono); letter-spacing:-.01em;
+}
+.xp-phone-host-dot{
+  width:7px; height:7px; border-radius:50%; flex-shrink:0;
+  background:#26c281; box-shadow:0 0 0 3px rgba(38,194,129,.16);
+}
+.xp-phone-host-dot--warn{ background:#eaa53a; box-shadow:0 0 0 3px rgba(234,165,58,.18); }
+.xp-phone-host-metric{
+  font-family:var(--mono); font-size:9.5px; font-weight:700; color:#4f8f70;
+  background:rgba(38,194,129,.12); border-radius:100px; padding:2px 6px;
+}
+.xp-phone-host-metric--warn{ color:#b47613; background:rgba(234,165,58,.16); }
+.xp-phone-host-row time{
+  font-family:var(--mono); font-size:9.5px; color:#a2acb6; font-style:normal;
+  min-width:32px; text-align:right;
+}
+
+/* — carte 3 : synthèse (3 colonnes, séparateurs, code couleur) — */
+.xp-phone-stats{ display:flex; padding:16px 0 12px; }
+.xp-phone-stat{ flex:1; text-align:center; }
+.xp-phone-stat + .xp-phone-stat{ border-left:1px solid rgba(20,36,70,.07); }
+.xp-phone-stat b{
+  display:block; margin-bottom:-1px;
+  font-family:var(--mono); font-size:18px; font-weight:800; line-height:1; color:#1b2228;
+}
+.xp-phone-stat--ok b{ color:#1a9c5f; }
+.xp-phone-stat--warn b{ color:#d98a17; }
+.xp-phone-stat em{
+  font-style:normal; font-size:8.5px; font-weight:700; letter-spacing:.05em;
+  text-transform:uppercase; color:#a2acb6;
+}
 
 /* ============================================================
    RÉFÉRENCES — citations de retours (tuteurs, collègues, formateurs), entre

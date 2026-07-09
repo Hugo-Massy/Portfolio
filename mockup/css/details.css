@@ -418,8 +418,8 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    typographie serif pour marquer la bascule vers un registre narratif */
 .dp-entry-story{
   color:var(--text-dim); line-height:1.9; margin:0 0 6px;
-  font-family:Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
-  font-size:16px; max-width:72ch;
+  font-family:var(--sans);
+  font-size:14.5px; max-width:72ch;
   text-align:justify;
 }
 .dp-entry-story::first-letter{
@@ -569,7 +569,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 /* plus de fond blanc : le récit se lit directement sur le bleu, mêmes couleurs
    éclaircies que le bloc « ce que j'ai appris » juste en dessous. */
-.dp-blue-block .dp-entry-body .dp-entry-story{color:rgba(255,255,255,.82); font-size:18px;}
+.dp-blue-block .dp-entry-body .dp-entry-story{color:rgba(255,255,255,.82); font-size:16px;}
 .dp-blue-block .dp-entry-body .dp-entry-story::first-letter{color:#fff;}
 .dp-blue-block .dp-entry-body .dp-entry-story strong{color:#fff;}
 /* même fond « verre » que la citation d'origine (.dp-entry-lead) : la phrase de
@@ -832,169 +832,169 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 }
 
 /* =============================================================================
-   EXPÉRIENCE — GRILLES BENTO (Massy Innove, Homelab, Supervision, Stack)
-   Chaque projet est une grille bento autonome qui reprend le vocabulaire visuel
-   de #xp (accueil) : une tuile vedette colorée porte la maquette (.xp-tile +
-   .xp-mock--*, réutilisées telles quelles depuis styles.css), entourée de tuiles
-   de contenu (métriques, logos, « ce que j'ai fait », récit, chips). Contrairement
-   à #xp, pas de figement au scroll : les blocs apparaissent via .reveal.
+   EXPÉRIENCE — cartes texte (Massy Innove, Homelab, Supervision, Stack)
+   Même traitement visuel que les cartes de compétences (.dp-entry) : en-tête
+   icône + tag + titre, récit en prose (.dp-entry-story, réutilisée telle quelle),
+   logos des outils, liste « ce que j'ai fait ». La seule maquette conservée est
+   l'illustration .xp-tile/.xp-mock (accueil #xp), posée à côté du texte.
    ============================================================================= */
-.dp-bento-block{
-  scroll-margin-top:96px;      /* pour que l'ancre ne colle pas sous la nav */
-  margin:0 0 clamp(64px, 9vh, 110px);
-}
-.dp-bento-head{margin-bottom:18px;}
-.dp-bento-head .dp-entry-tag{position:static;}
-.dp-bento-sub{
-  color:var(--text-dim); font-size:16px; line-height:1.6;
-  margin:10px 0 0; max-width:64ch;
-}
-.dp-bento-sub strong{color:var(--text); font-weight:700;}
-
-/* Un seul mur global « difforme » : toutes les tuiles des 4 projets s'enchaînent
-   dans une même grille dense (4 colonnes), en tailles variées, sans séparation.
-   Le placement n'est plus figé par des zones nommées : chaque tuile déclare sa
-   taille (.dp-w2/.dp-h2…) et grid-auto-flow:dense comble les trous. */
-.dp-wall{
-  display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  grid-auto-rows:172px;
-  grid-auto-flow:dense;
-  gap:12px;
-}
-/* Chaque projet = une « famille » de couleur. Le conteneur passe en display:contents
-   pour ne PAS créer sa propre grille : ses tuiles participent directement au mur,
-   tout en héritant de la palette du projet via les variables --proj*. */
+.dp-wall{display:flex; flex-direction:column; gap:clamp(28px, 5vh, 60px);}
 .dp-fam{display:contents;}
-.dp-fam--massy      {--proj:#6338ab; --proj-dark:#452a80; --proj-soft:#efecfa; --proj-line:#e0d9f5;}
-.dp-fam--homelab    {--proj:#4a7d24; --proj-dark:#3a6821; --proj-soft:#eef5e2; --proj-line:#dcebc6;}
-.dp-fam--supervision{--proj:#37647a; --proj-dark:#2f5566; --proj-soft:#e9f0f3; --proj-line:#d2e0e6;}
-.dp-fam--stack      {--proj:#35529c; --proj-dark:#233a72; --proj-soft:#eaeefb; --proj-line:#d4dcf5;}
+.dp-fam--massy, .dp-fam--homelab, .dp-fam--supervision, .dp-fam--stack{
+  --proj:var(--accent); --proj-dark:var(--accent-dark); --proj-soft:var(--accent-soft); --proj-line:var(--accent-pale);
+}
 
-/* Tailles des tuiles — c'est ce qui crée l'aspect « difforme ». */
-.dp-w2{grid-column:span 2;}
-.dp-w3{grid-column:span 3;}
-.dp-h2{grid-row:span 2;}
-.dp-h3{grid-row:span 3;}
-
-/* Tuiles « en retrait » : épinglées à la colonne de bord (1 ou 4) puis tirées
-   vers l'intérieur par une marge, pour casser le bord droit/gauche du mur —
-   simule une carte posée plus vers le centre plutôt que collée au bord.
-   La taille du retrait est réglée au cas par cas via --edge-gap (inline),
-   pour que les espaces ne soient jamais tous identiques. Variantes -w2 pour
-   les tuiles larges (span 2) : elles gardent leur largeur en s'épinglant sur
-   la paire de colonnes du bord (1-2 ou 3-4) au lieu d'une seule colonne. */
-.dp-edge-l{grid-column:1; margin-left:var(--edge-gap, 18px);}
-.dp-edge-r{grid-column:4; margin-right:var(--edge-gap, 18px);}
-.dp-edge-l-w2{grid-column:1 / span 2; margin-left:var(--edge-gap, 18px);}
-.dp-edge-r-w2{grid-column:3 / span 2; margin-right:var(--edge-gap, 18px);}
-
-/* Marges « organiques » : chaque tuile (bord ou intérieure) peut recevoir un
-   retrait individuel, réglé au cas par cas et jamais identique d'une tuile à
-   l'autre, sur n'importe quel côté — largeur (ml/mr) ET hauteur (mt/mb). C'est
-   ce qui casse l'alignement en grille bien rangée et donne le mur difforme. */
-.dp-mt{margin-top:var(--mt, 0);}
-.dp-mb{margin-bottom:var(--mb, 0);}
-.dp-ml{margin-left:var(--ml, 0);}
-.dp-mr{margin-right:var(--mr, 0);}
-
-/* Tuile d'intro d'un projet : porte le tag + le sous-titre, dans la couleur du projet.
-   Elle remplace l'ancien en-tête de section et sert d'ancre de navigation. */
-.dp-bt--intro{
-  justify-content:center;
-  background:var(--proj-soft);
-  border:1px solid var(--proj-line);
+.dp-xp-entry{
+  width:100%; box-sizing:border-box;
+  position:relative;
+  padding:32px 48px 44px; margin:0;
   scroll-margin-top:96px;
 }
-.dp-bt--intro .dp-entry-tag{position:static; display:inline-flex; align-self:flex-start; margin-bottom:12px;}
-.dp-bt-sub{color:var(--proj-dark); font-size:14px; line-height:1.55; margin:0;}
-.dp-bt-sub strong{color:var(--proj-dark); font-weight:700;}
-
-/* La vedette réutilise .xp-tile + son thème : on garde tout SAUF le débordement.
-   .xp-tile--home / --diag passent en overflow:hidden pour que la maquette reste
-   cadrée dans sa tuile, au lieu de mordre sur ses voisines comme dans le bento de #xp. */
-.dp-wall .xp-tile{overflow:hidden;}
-.dp-wall .xp-tile--home{overflow:hidden; z-index:auto;}
-.dp-wall .xp-tile--home::before{z-index:0;}
-/* on ramène les décorations flottantes du chat à l'intérieur du cadre */
-.dp-wall .xp-flag{top:4px; right:12%;}
-.dp-wall .xp-brand-badge--ovh{right:8px; top:24%;}
-.dp-wall .xp-brand-badge--mistral{right:16px; top:60%;}
-
-/* Tuiles de contenu : mêmes coins/ombres que .xp-tile mais fond « soft » du projet. */
-.dp-bt{
-  display:flex; flex-direction:column;
-  border-radius:22px; padding:18px 20px;
-  background:var(--proj-soft);
-  border:1px solid var(--proj-line);
-  box-shadow:0 1px 2px rgba(30,25,15,.04);
-  overflow:hidden;
+.dp-xp-entry-head{margin-bottom:18px;}
+.dp-xp-entry-titles{min-width:0;}
+.dp-xp-entry-titles h3.dp-xp-entry-tag{
+  margin:0; display:flex; align-items:baseline; gap:10px;
+  font-family:var(--mono); font-weight:700;
 }
-.dp-bt-title{
+.dp-xp-entry-tag-num{font-size:32px; line-height:1; letter-spacing:-.01em; color:var(--accent);}
+.dp-xp-entry-tag-slug{font-size:19px; line-height:1.2; color:var(--text);}
+
+.dp-xp-entry-body{display:flex; align-items:flex-start; gap:12px;}
+.dp-xp-entry-copy{flex:1 1 auto; min-width:0;}
+/* texte courant, sans traitement particulier (pas de serif ni de lettrine,
+   contrairement au récit des cartes de compétences) */
+.dp-xp-entry-copy .dp-entry-story{
+  font-family:var(--sans);
+  text-align:left;
+}
+.dp-xp-entry-copy .dp-entry-story::first-letter{
+  font-size:inherit; font-weight:inherit; color:inherit;
+  float:none; line-height:inherit; margin:0;
+}
+
+/* illustration conservée du bento (.xp-tile/.xp-mock, styles.css), posée en
+   colonne fixe à côté du texte plutôt que dans une grille de tuiles */
+.dp-xp-entry-media{flex:0 0 560px; width:560px; position:relative; z-index:1; transform:rotate(2deg); margin-left:-130px; margin-top:0px;}
+/* téléphone (Supervision) : moins de recouvrement que les autres maquettes,
+   pour ne pas empiéter sur le texte une fois recadré plus à gauche. */
+.dp-fam--supervision .dp-xp-entry-media{margin-left:-70px;}
+/* la maquette téléphone déborde déjà de sa boîte (overflow:visible + marges
+   négatives), donc réduire la hauteur réservée en flux ne la déplace pas
+   visuellement — ça rapproche seulement les points juste sous un texte plus
+   court que les autres illustrations. */
+.dp-fam--supervision .dp-xp-entry-media .xp-tile{height:220px;}
+/* même bleu que le reste des cartes pour la maquette, quel que soit le thème
+   de couleur --tile-* d'origine (.xp-tile--purple/--green/--b1…) ; overflow
+   visible pour que les décorations qui débordent du cadre (drapeau, badges…)
+   restent entières au lieu d'être rognées par le bloc. */
+.dp-xp-entry-media .xp-tile{
+  width:100%; height:440px; overflow:visible; background:transparent; box-shadow:none;
+  --tile-accent:var(--accent); --tile-name:var(--accent-dark); --tile-text:var(--accent-dark);
+}
+.dp-xp-entry-media .xp-card:not(.xp-card--light):not(.xp-card--photo){--c:var(--accent) !important;}
+.dp-xp-entry-media .xp-tile--home{overflow:visible; z-index:auto;}
+.dp-xp-entry-media .xp-tile--home::before{display:none;}
+.dp-xp-entry-media .xp-flag{top:-12px; right:-24px; z-index:2;}
+.dp-xp-entry-media .xp-mock--chat{justify-content:flex-end;}
+/* le contenu de la maquette (bulles, barres, avatar…) est dimensionné en px fixes
+   dans styles.css pour la petite tuile du bento #xp ; on l'agrandit ici pour
+   remplir la maquette bien plus grande de cette page. */
+.dp-xp-entry-media .xp-mock{zoom:1.2;}
+/* téléphone (Supervision) : plus petit que les autres maquettes, et calé pour
+   déborder par le haut de la tuile plutôt que par le bas/la droite. */
+.dp-xp-entry-media .xp-mock--phone{zoom:1; align-items:flex-start;}
+.dp-xp-entry-media .xp-phone-shell{
+  width:110%; max-width:320px;
+  margin-top:-150px; margin-right:8%;
+}
+
+/* variante inversée : illustration à gauche ; à droite, texte puis logos
+   (rangée horizontale) empilés dessous — d'où le passage en grid pour placer
+   le texte et les logos dans la même colonne mais des lignes séparées. */
+.dp-xp-entry-body--rev{
+  display:grid; grid-template-columns:560px 1fr; column-gap:56px; row-gap:16px; align-items:start;
+}
+.dp-xp-entry-body--rev .dp-xp-entry-media{
+  grid-column:1; grid-row:1 / span 2;
+  margin-left:0; margin-right:0; margin-top:-64px; transform:rotate(-2deg);
+}
+.dp-xp-entry-body--rev .dp-xp-entry-media .xp-flag{right:auto; left:-24px;}
+.dp-xp-entry-body--rev .dp-xp-entry-copy{grid-column:2; grid-row:1;}
+.dp-xp-entry-body--rev .dp-xp-entry-copy .dp-entry-story{text-align:right;}
+.dp-xp-entry-body--rev .dp-xp-logos{grid-column:2; grid-row:2; flex-direction:row; justify-content:flex-start; margin-left:-260px; margin-top:-16px;}
+
+/* logos des outils maîtrisés : même carte flottante que .dp-summary-logo
+   (compétences), simplement toujours visible (pas de « pop » liée au carrousel). */
+/* colonne flottante entre le texte et l'illustration, plutôt qu'une rangée
+   sous le récit : les logos « volent » dans l'espace qui sépare les deux */
+.dp-xp-logos{
+  flex:0 0 auto;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:22px; align-self:stretch; margin:-40px 12px 0 28px;
+}
+.dp-xp-logos .dp-summary-logo{opacity:1;}
+/* légère rotation fixe par logo, et flottement désynchronisé (délai propre
+   à chaque logo) plutôt que les 4 qui montent et descendent ensemble */
+.dp-xp-logos .dp-summary-logo:nth-child(4n+1){--r:-6deg; --fdelay:0s; margin-left:-16px;}
+.dp-xp-logos .dp-summary-logo:nth-child(4n+2){--r:5deg; --fdelay:.9s; margin-left:18px;}
+.dp-xp-logos .dp-summary-logo:nth-child(4n+3){--r:-4deg; --fdelay:1.8s; margin-left:-10px;}
+.dp-xp-logos .dp-summary-logo:nth-child(4n+4){--r:6deg; --fdelay:2.7s; margin-left:14px;}
+
+.dp-xp-entry-done{margin-top:8px; padding-top:4px;}
+#homelab .dp-xp-entry-done{margin-top:24px;}
+.dp-xp-entry-done h4{
   font-family:var(--mono); font-size:11.5px; font-weight:700;
-  letter-spacing:.08em; text-transform:uppercase;
-  color:var(--proj); margin:0 0 14px;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--proj); margin:0;
+}
+.dp-xp-list{list-style:none; display:flex; gap:10px; margin:14px 0 0; padding:0; width:100%;}
+.dp-xp-list li{
+  flex:1 1 0; min-width:0;
+  display:flex; flex-direction:column; align-items:center; text-align:center; gap:8px;
+  padding:14px 10px;
+  font-size:13.5px; font-weight:600; line-height:1.25; color:var(--text);
+}
+.dp-xp-list-ic{
+  flex-shrink:0; width:44px; height:44px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--proj); color:#fff;
+}
+.dp-xp-list-ic svg{width:22px; height:22px;}
+
+/* Homelab : grille 2x2 alignée à gauche plutôt que 4 colonnes centrées */
+#homelab .dp-xp-list{
+  display:grid; grid-template-columns:repeat(2, auto); gap:24px 48px;
+  width:auto; justify-content:start;
+}
+#homelab .dp-xp-list li{
+  flex-direction:row; text-align:left; align-items:center; justify-content:flex-start;
+  padding:0; min-width:0; max-width:300px;
 }
 
-/* métriques */
-.dp-bt--metrics{flex-direction:row; align-items:center; gap:30px; flex-wrap:wrap;}
-.dp-bt-metric b{
-  display:block; font-family:var(--mono); font-size:38px; font-weight:700;
-  line-height:1; color:var(--proj);
+/* Supervision : 2 items côte à côte (icône au-dessus du label, comme le défaut),
+   centrés (icône + texte) plutôt qu'étirés sur toute la largeur. */
+.dp-fam--supervision .dp-xp-list{
+  justify-content:flex-start;
 }
-.dp-bt-metric span{
-  display:block; margin-top:8px; font-size:12px; line-height:1.35;
-  color:var(--proj-dark); opacity:.85; max-width:18ch;
+.dp-fam--supervision .dp-xp-list li{
+  flex:0 1 320px; min-width:0; max-width:320px;
+  align-items:center; text-align:center;
 }
-
-/* logos */
-.dp-bt--logos{justify-content:center;}
-.dp-bt-logos{display:flex; flex-wrap:wrap; align-items:center; gap:14px 22px;}
-.dp-bt-logos img{height:34px; width:auto; max-width:88px; object-fit:contain;}
-
-/* « ce que j'ai fait » */
-.dp-bt-list{list-style:none; display:flex; flex-direction:column; gap:12px; margin:0;}
-.dp-bt-list li{
-  position:relative; padding-left:22px;
-  font-size:14px; line-height:1.5; color:var(--proj-dark);
-}
-.dp-bt-list li::before{
-  content:''; position:absolute; left:0; top:7px;
-  width:8px; height:8px; border-radius:50%; background:var(--proj);
-}
-.dp-bt-list li strong{color:var(--proj-dark); font-weight:700;}
-
-/* récit long */
-.dp-bt--story{overflow:auto;}
-.dp-bt-story{
-  font-size:13.5px; line-height:1.72; color:var(--proj-dark); margin:0;
-}
-.dp-bt-story strong{color:var(--proj-dark); font-weight:700;}
-.dp-bt-story .dp-inline-logo{border-color:var(--proj-line);}
-
-/* groupes de technos (Stack) */
-.dp-bt-chips{display:flex; flex-wrap:wrap; gap:7px; margin-top:auto;}
-.dp-bt-chip{
-  font-family:var(--mono); font-size:11.5px; font-weight:500;
-  padding:5px 10px; border-radius:8px;
-  background:#fff; color:var(--proj-dark); border:1px solid var(--proj-line);
+@media(max-width:640px){
+  .dp-xp-list{flex-wrap:wrap;}
+  .dp-xp-list li{flex:1 1 auto; min-width:140px;}
 }
 
-/* --- Responsive du mur : sous 960px on repasse le mur en 2 colonnes (les tuiles
-   larges deviennent pleine largeur), puis en 1 colonne sous 620px. --- */
-@media(max-width:960px){
-  .dp-wall{grid-template-columns:repeat(2, 1fr); grid-auto-rows:168px;}
-  .dp-w3{grid-column:span 2;}
-  .dp-h3{grid-row:span 2;}
-  .dp-edge-l, .dp-edge-l-w2{grid-column:1;}
-  .dp-edge-r, .dp-edge-r-w2{grid-column:2;}
+@media(max-width:1080px){
+  .dp-xp-entry-body{flex-direction:column;}
+  .dp-xp-entry-media{width:100%; flex-basis:auto;}
+  .dp-xp-logos{flex-direction:row; flex-wrap:wrap; align-self:auto;}
+  .dp-xp-entry-body--rev{display:flex; flex-direction:column;}
+  .dp-xp-entry-body--rev .dp-xp-entry-media{width:100%; margin-top:0;}
+  .dp-xp-entry-body--rev .dp-xp-logos{flex-direction:row; flex-wrap:wrap; justify-self:auto;}
 }
-@media(max-width:620px){
-  .dp-wall{grid-template-columns:1fr; grid-auto-rows:auto; grid-auto-flow:row;}
-  .dp-w2, .dp-w3, .dp-h2, .dp-h3{grid-column:auto; grid-row:auto;}
-  .dp-edge-l, .dp-edge-r, .dp-edge-l-w2, .dp-edge-r-w2{grid-column:auto; margin-left:0; margin-right:0;}
-  .dp-mt, .dp-mb, .dp-ml, .dp-mr{margin:0;}
-  .dp-bt{min-height:140px;}
-  .dp-wall .xp-tile{min-height:340px;}
-  .dp-bt--story{min-height:0;}
+@media(max-width:640px){
+  .dp-xp-entry{padding:22px 20px 30px;}
+  .dp-xp-entry-head{margin-bottom:12px;}
+  .dp-xp-entry-tag-num{font-size:26px;}
+  .dp-xp-entry-tag-slug{font-size:15px;}
 }
