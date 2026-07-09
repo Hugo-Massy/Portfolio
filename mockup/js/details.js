@@ -168,34 +168,32 @@
   window.addEventListener('resize', onScroll);
 })();
 
-// Parallax du bandeau bleu des 4 piliers de compétences, repris à l'identique de #about
-// sur l'accueil (initAboutParallax dans js/main.js) : le bloc bleu part de sa position
-// naturelle (transform nul) puis remonte de plus en plus (translateY négatif) au fil de
-// sa traversée du viewport — purement visuel (transform), sans toucher au flow du document.
-// Tout ce qui le suit (#experience, le rappel de pied, puis #contact) reçoit le même
-// décalage pour que la page reste structurée, sans trou entre le bloc qui remonte et la
-// suite immobile. #contact, dernière section, reçoit en plus un contre-lift qui grandit sur
-// la fin du scroll pour le ramener pile à sa position naturelle au moment où on atteint le
-// bas réel du document (sinon le lift laisserait un vide en bas de page).
+// Parallax du bandeau bleu des 4 piliers de compétences, repris de #about sur l'accueil
+// (initAboutParallax dans js/main.js) : le bloc bleu part de sa position naturelle
+// (transform nul) puis remonte de plus en plus (translateY négatif) au fil de sa traversée
+// du viewport — purement visuel (transform), sans toucher au flow du document.
+//
+// Deux gaps naîtraient de ce lift, qu'on comble sans jamais faire bouger le bas visible de
+// la page (le rappel de pied .dp-foot et #contact restent, eux, TOUJOURS à leur place —
+// c'est ce qui manquait avant : le petit pied glissait visiblement) :
+//   1. juste sous le bloc bleu qui remonte → #experience remonte du même montant, collée
+//      dessous ;
+//   2. tout en bas du document → #experience, grande section, porte un contre-lift qui la
+//      ramène pile à 0 au moment où son bas atteint le bas du viewport, donc juste avant que
+//      le pied n'entre en scène. Comme ce contre-lift ne joue que tant que la frontière
+//      #experience / pied est encore sous le viewport, le raccord reste toujours hors écran :
+//      le pied ne bouge pas, et aucun trou n'apparaît.
 (function initCompetencesParallax() {
   const block = document.getElementById('competences');
+  const settle = document.getElementById('experience');
   if (!block) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-  // #experience et le rappel de pied vivent dans .dp-main ; #contact est en dehors (frère
-  // de .dp-layout). On rassemble donc les suiveurs explicitement plutôt que par parcours de
-  // voisins comme sur l'accueil, à cause de cette frontière de conteneur.
-  const followers = [
-    document.getElementById('experience'),
-    document.querySelector('.dp-foot'),
-  ].filter(Boolean);
-  const last = document.getElementById('contact');
 
   // Même amplitude et même lissage que --about-lift / EASE sur l'accueil : sensation identique.
   const MAX_LIFT = 220; // px
   const EASE = 0.35;
   let currentLift = 0;
-  let currentLastLift = 0;
+  let currentSettleLift = 0;
   let rafId = null;
 
   // Position "naturelle" (hors transform) via offsetTop cumulé, plutôt que getBoundingClientRect
@@ -210,24 +208,22 @@
     const viewportTop = naturalTop(block) - window.scrollY;
     const progress = Math.min(Math.max(1 - viewportTop / window.innerHeight, 0), 1);
     const lift = -progress * MAX_LIFT;
-    let lastLift = lift;
-    if (last) {
-      // Le contre-lift doit annuler pile MAX_LIFT au moment où on touche le bas réel du
-      // document, mais peut commencer à monter bien avant : COUNTER_RANGE fixe sur quelle
-      // distance de scroll il se résorbe, indépendamment du montant à annuler.
+    let settleLift = lift;
+    if (settle) {
+      // Le contre-lift résorbe le lift de #experience pile quand son bas naturel atteint le
+      // bas du viewport (donc avant que le pied, immobile juste dessous, n'apparaisse) ; il
+      // peut commencer à jouer bien avant, sur COUNTER_RANGE px de scroll.
       const COUNTER_RANGE = Math.max(MAX_LIFT, window.innerHeight * 0.9);
-      const revealStart = naturalTop(last) + last.offsetHeight - COUNTER_RANGE;
-      const counterProgress = Math.min(Math.max((window.scrollY + window.innerHeight - revealStart) / COUNTER_RANGE, 0), 1);
-      lastLift = lift + counterProgress * MAX_LIFT;
+      const settleBottom = naturalTop(settle) + settle.offsetHeight;
+      const counterProgress = Math.min(Math.max((window.scrollY + window.innerHeight - (settleBottom - COUNTER_RANGE)) / COUNTER_RANGE, 0), 1);
+      settleLift = lift + counterProgress * MAX_LIFT;
     }
-    return { lift, lastLift };
+    return { lift, settleLift };
   }
 
   function apply() {
-    const transform = `translateY(${currentLift}px)`;
-    block.style.transform = transform;
-    followers.forEach((el) => { el.style.transform = transform; });
-    if (last) last.style.transform = `translateY(${currentLastLift}px)`;
+    block.style.transform = `translateY(${currentLift}px)`;
+    if (settle) settle.style.transform = `translateY(${currentSettleLift}px)`;
     // Le rail de nav et le bouton "remonter" recalculent leur teinte sur l'event scroll ;
     // comme le lift continue de bouger (lissage EASE) quelques frames après l'arrêt du
     // scroll, on les réveille via cet event dédié pour qu'ils suivent jusqu'au repos.
@@ -235,13 +231,13 @@
   }
 
   function loop() {
-    const { lift, lastLift } = targets();
+    const { lift, settleLift } = targets();
     currentLift += (lift - currentLift) * EASE;
-    currentLastLift += (lastLift - currentLastLift) * EASE;
+    currentSettleLift += (settleLift - currentSettleLift) * EASE;
     apply();
-    if (Math.abs(lift - currentLift) < 0.05 && Math.abs(lastLift - currentLastLift) < 0.05) {
+    if (Math.abs(lift - currentLift) < 0.05 && Math.abs(settleLift - currentSettleLift) < 0.05) {
       currentLift = lift;
-      currentLastLift = lastLift;
+      currentSettleLift = settleLift;
       apply();
       rafId = null;
       return;
@@ -259,7 +255,7 @@
   // navigateur), sans animation de rattrapage visible.
   const initial = targets();
   currentLift = initial.lift;
-  currentLastLift = initial.lastLift;
+  currentSettleLift = initial.settleLift;
   apply();
 })();
 
