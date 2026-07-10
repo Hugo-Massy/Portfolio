@@ -12,3 +12,27 @@
 .vl-item dt{color:#777; font-weight:600;}
 .vl-item dd{margin:0; word-break:break-word;}
 .vl-item a{color:#06c;}
+
+/* Vignette du top 3 : boîte 16/9. L'image (posée en absolu, au-dessus) recouvre
+   le spinner dès qu'elle est peinte ; .is-loaded masque le spinner définitivement. */
+.vl-img{
+  position:relative; margin:0 0 10px; width:100%; max-width:420px; aspect-ratio:16/9;
+  background:#f0f0ee; border:1px solid #ddd; border-radius:8px; overflow:hidden;
+}
+.vl-img img{
+  position:absolute; inset:0; z-index:1;
+  width:100%; height:100%; object-fit:cover; display:block;
+}
+.vl-img-spinner{
+  position:absolute; top:50%; left:50%; margin:-13px 0 0 -13px;
+  width:26px; height:26px; border-radius:50%;
+  border:3px solid #d0d0cc; border-top-color:#2546c8;
+  animation:vl-spin 0.8s linear infinite;
+}
+.vl-img.is-loaded .vl-img-spinner{display:none;}
+@keyframes vl-spin{to{transform:rotate(360deg);}}
+@media (prefers-reduced-motion:reduce){ .vl-img-spinner{animation-duration:2s;} }
+
+/* Titres de section (top 3 + flux complet) */
+.vl-top-h{font-size:16px; margin:0 0 4px;}
+.vl-all-h{font-size:16px; margin:28px 0 4px; padding-top:20px; border-top:2px solid #333;}

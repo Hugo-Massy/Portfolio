@@ -17,6 +17,9 @@
 const fs = require('fs');
 const path = require('path');
 
+// Fenêtre glissante : on ne conserve que les publications des 3 derniers jours.
+const WINDOW_DAYS = 3;
+
 // --------------------------------------------------------------------------
 // Sources — flux RSS publics. `type` sert au style (officiel vs presse).
 // --------------------------------------------------------------------------
@@ -115,6 +118,40 @@ function pickLink(block) {
   return atom ? atom[1] : '';
 }
 
+// Image « à la source » : on la cherche directement dans le bloc RSS brut (donc
+// AVANT decodeEntities qui, lui, supprime tout le HTML). Ordre de préférence :
+// Media RSS → enclosure typée image → premier <img> du résumé/contenu.
+function pickImage(block) {
+  let m = block.match(/<media:(?:content|thumbnail)[^>]*\burl="([^"]+)"/i);
+  if (m) return m[1];
+  m = block.match(/<enclosure[^>]*\burl="([^"]+)"[^>]*type="image\//i)
+    || block.match(/<enclosure[^>]*type="image\/[^"]*"[^>]*\burl="([^"]+)"/i);
+  if (m) return m[1];
+  m = block.match(/<img[^>]*\bsrc="([^"]+)"/i);
+  if (m) return m[1];
+  return '';
+}
+
+// Fallback réseau : quand le flux n'expose aucune image, on va chercher la balise
+// Open Graph (og:image) — présente sur la quasi-totalité des pages d'articles —
+// à défaut twitter:image. Réservé au top 3 pour rester à ≤ 3 requêtes en plus.
+async function fetchOgImage(url) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'PortfolioVeilleBot/1.0 (+https://github.com/Hugo-Massy/Portfolio)' },
+      redirect: 'follow',
+    });
+    if (!res.ok) return '';
+    const html = await res.text();
+    const m = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)
+      || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i)
+      || html.match(/<meta[^>]+name="twitter:image(?::src)?"[^>]+content="([^"]+)"/i);
+    return m ? decodeEntities(m[1]) : '';
+  } catch {
+    return '';
+  }
+}
+
 function parseFeed(xml) {
   const isAtom = /<entry[\s>]/i.test(xml) && !/<item[\s>]/i.test(xml);
   const tag = isAtom ? 'entry' : 'item';
@@ -125,6 +162,7 @@ function parseFeed(xml) {
     link: pickLink(b),
     date: pick(b, 'pubDate') || pick(b, 'published') || pick(b, 'updated') || pick(b, 'dc:date'),
     summary: pick(b, 'description') || pick(b, 'summary') || pick(b, 'content'),
+    image: pickImage(b),
   })).filter((it) => it.title && it.link);
 }
 
@@ -169,6 +207,62 @@ function severityOf(source, item) {
   if (source.kind === 'avis') return 'medium';
   if (/\bcritical|critique|activement exploit|actively exploit|zero-?day|0-?day\b/i.test(`${item.title} ${item.summary}`)) return 'high';
   return 'info';
+}
+
+// Téléchargement local d'une image : on rapatrie les octets dans assets/veille/
+// pour SERVIR l'image en même origine. Le navigateur n'a alors plus à joindre un
+// hôte externe (fini les blocages proxy / anti-hotlink / indispos). Renvoie le
+// chemin web relatif à veille.html, ou '' en cas d'échec.
+const IMG_EXT_BY_TYPE = {
+  'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png',
+  'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif',
+};
+
+async function downloadImage(url, destDir, base) {
+  try {
+    const res = await fetch(url, {
+      headers: { 'User-Agent': 'PortfolioVeilleBot/1.0 (+https://github.com/Hugo-Massy/Portfolio)' },
+      redirect: 'follow',
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const ct = (res.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+    let ext = IMG_EXT_BY_TYPE[ct];
+    if (!ext) {
+      const m = url.split('?')[0].match(/\.(jpe?g|png|webp|gif|avif)$/i);
+      ext = m ? m[1].toLowerCase().replace('jpeg', 'jpg') : 'jpg';
+    }
+    const filename = `${base}.${ext}`;
+    fs.writeFileSync(path.join(destDir, filename), Buffer.from(await res.arrayBuffer()));
+    return `assets/veille/${filename}`;
+  } catch (err) {
+    console.warn(`    ⚠ téléchargement image échoué (${err.message}) — repli sur l'URL distante`);
+    return '';
+  }
+}
+
+// --------------------------------------------------------------------------
+// Score d'importance — DOIT rester identique à importance() de veille.js pour
+// que le top 3 « imagé » au build coïncide avec le top 3 affiché côté client.
+// --------------------------------------------------------------------------
+const IMPORTANCE_SIGNALS = [
+  [50, /actively exploit|exploited in the wild|activement exploit|exploitation active|\bkev\b|known exploited|zero-?day|0-?day|jour[- ]?z[eé]ro/i],
+  [35, /ransomware|ran[cç]ongiciel|data breach|fuite de donn|supply[- ]chain|cha[îi]ne d'approvisionnement|breach|piratage/i],
+  [30, /\bcritical\b|critique|\brce\b|remote code execution|ex[eé]cution de code|unauthenticated|pre-?auth|non authentifi/i],
+  [20, /emergency|urgent|patch now|out-?of-?band|correctif d'urgence|hotfix/i],
+  [18, /millions?|thousands?|widespread|massive|worldwide|global|des milliers|des millions|à grande échelle/i],
+  [12, /privilege escalation|[eé]l[eé]vation de privil|takeover|prise de contr[ôo]le|bypass|contournement|exfiltrat/i],
+  [14, /microsoft|windows|\boffice\b|exchange|outlook|azure|google|chrome|android|apple|\bios\b|macos|cisco|fortinet|forti|ivanti|citrix|vmware|palo alto|\bsap\b|oracle|openssh|openssl|wordpress|linux kernel|kubernetes|docker/i],
+];
+const SEV_BASE = { high: 40, medium: 18, info: 6 };
+
+function importance(it) {
+  let score = SEV_BASE[it.severity] || 0;
+  const hay = `${it.title || ''} ${it.summary || ''}`;
+  for (const [w, rx] of IMPORTANCE_SIGNALS) if (rx.test(hay)) score += w;
+  if (it.sourceType === 'official') score += 8;
+  const ageDays = (Date.now() - (Date.parse(it.date) || Date.now())) / 86400000;
+  if (isFinite(ageDays)) score += Math.max(0, 12 - ageDays);
+  return score;
 }
 
 async function fetchFeed(source) {
@@ -220,26 +314,60 @@ async function main() {
       tags,
       projects,
       severity: severityOf(it.source, it),
+      image: null,          // renseigné plus bas, uniquement pour le top 3
+      _rssImage: it.image,  // image trouvée dans le flux (temporaire, retirée avant écriture)
     });
   }
 
-  // Tri antéchronologique ; les items sans date passent en fin.
+  // Tri antéchronologique.
   items.sort((a, b) => (b.date ? Date.parse(b.date) : 0) - (a.date ? Date.parse(a.date) : 0));
-  const trimmed = items.slice(0, 48);
+
+  // Fenêtre glissante : on ne garde que les publications des WINDOW_DAYS derniers
+  // jours (les items sans date exploitable sont écartés, faute de pouvoir les situer).
+  const cutoff = Date.now() - WINDOW_DAYS * 86400000;
+  const windowed = items.filter((it) => it.date && Date.parse(it.date) >= cutoff);
+
+  // Top 3 « imagé » : on descend le classement par importance et on ne retient
+  // QUE des items pourvus d'une image — un item sans image (typiquement CERT-FR)
+  // n'est pas mis en avant, il reste dans le flux normal. Image de flux d'abord
+  // (gratuite) ; à défaut, fallback og:image dans une enveloppe de requêtes bornée.
+  // On repart d'un dossier d'images propre pour ne pas accumuler d'orphelins.
+  const veilleAssetsDir = path.join(__dirname, '..', 'assets', 'veille');
+  fs.rmSync(veilleAssetsDir, { recursive: true, force: true });
+  fs.mkdirSync(veilleAssetsDir, { recursive: true });
+
+  const ranked = [...windowed].sort((a, b) => importance(b) - importance(a));
+  console.log('\nSélection du top 3 imagé…');
+  let fetchBudget = 6;
+  let imaged = 0;
+  for (const it of ranked) {
+    if (imaged >= 3) break;
+    let src = it._rssImage || '';
+    if (!src && fetchBudget > 0) { fetchBudget--; src = await fetchOgImage(it.link); }
+    if (!src) { console.log(`  ∅ (écarté du top) ${it.title.slice(0, 46)}`); continue; }
+    // Rapatriement en local ; repli sur l'URL distante si le téléchargement échoue.
+    const local = await downloadImage(src, veilleAssetsDir, `top-${imaged + 1}`);
+    it.image = local || src;
+    imaged++;
+    console.log(`  ✓ ${local ? '[local] ' : '[distant] '}${it.title.slice(0, 52)}`);
+  }
+  // Nettoyage du champ interne avant écriture.
+  for (const it of windowed) delete it._rssImage;
 
   const out = {
     generatedAt: new Date().toISOString(),
-    count: trimmed.length,
+    windowDays: WINDOW_DAYS,
+    count: windowed.length,
     sources: SOURCES.map((s) => ({ name: s.name, type: s.type, kind: s.kind })),
     pillars: Object.fromEntries(Object.entries(PILLARS).map(([k, v]) => [k, v.label])),
-    items: trimmed,
+    items: windowed,
   };
 
   const outPath = path.join(__dirname, '..', 'js', 'veille-data.json');
   fs.writeFileSync(outPath, JSON.stringify(out, null, 2) + '\n', 'utf8');
-  console.log(`\n✓ ${trimmed.length} publications écrites dans ${path.relative(process.cwd(), outPath)}`);
-  if (trimmed.length === 0) {
-    console.error('Aucune publication récupérée — flux injoignables ?');
+  console.log(`\n✓ ${windowed.length} publications (fenêtre ${WINDOW_DAYS} j) écrites dans ${path.relative(process.cwd(), outPath)}`);
+  if (windowed.length === 0) {
+    console.error('Aucune publication dans la fenêtre — flux injoignables ?');
     process.exit(1);
   }
 }

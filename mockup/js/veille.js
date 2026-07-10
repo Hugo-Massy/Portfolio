@@ -36,18 +36,79 @@ function fmtValue(key, value) {
   return escapeHtml(value);
 }
 
+// Score d'importance « générale » d'une news : on combine plusieurs signaux
+// objectifs plutôt qu'un simple tri sévérité + date, pour faire remonter ce qui
+// compte vraiment (exploitation réelle, ampleur, portée, autorité, fraîcheur).
+const IMPORTANCE_SIGNALS = [
+  // Exploitation réelle / urgence — le signal le plus fort
+  [50, /actively exploit|exploited in the wild|activement exploit|exploitation active|\bkev\b|known exploited|zero-?day|0-?day|jour[- ]?z[eé]ro/i],
+  // Impact majeur (rançongiciel, fuite massive, supply-chain)
+  [35, /ransomware|ran[cç]ongiciel|data breach|fuite de donn|supply[- ]chain|cha[îi]ne d'approvisionnement|breach|piratage/i],
+  // Gravité technique
+  [30, /\bcritical\b|critique|\brce\b|remote code execution|ex[eé]cution de code|unauthenticated|pre-?auth|non authentifi/i],
+  // Urgence de correctif
+  [20, /emergency|urgent|patch now|out-?of-?band|correctif d'urgence|hotfix/i],
+  // Ampleur
+  [18, /millions?|thousands?|widespread|massive|worldwide|global|des milliers|des millions|à grande échelle/i],
+  [12, /privilege escalation|[eé]l[eé]vation de privil|takeover|prise de contr[ôo]le|bypass|contournement|exfiltrat/i],
+  // Portée : éditeurs / produits très répandus (grand rayon d'impact)
+  [14, /microsoft|windows|\boffice\b|exchange|outlook|azure|google|chrome|android|apple|\bios\b|macos|cisco|fortinet|forti|ivanti|citrix|vmware|palo alto|\bsap\b|oracle|openssh|openssl|wordpress|linux kernel|kubernetes|docker/i],
+];
+const SEV_BASE = { high: 40, medium: 18, info: 6 };
+
+function importance(it) {
+  let score = SEV_BASE[it.severity] || 0;
+  const hay = `${it.title || ''} ${it.summary || ''}`;
+  for (const [w, rx] of IMPORTANCE_SIGNALS) if (rx.test(hay)) score += w;
+  if (it.sourceType === 'official') score += 8;         // avis/alertes officiels un peu boostés
+  const ageDays = (Date.now() - (Date.parse(it.date) || Date.now())) / 86400000;
+  if (isFinite(ageDays)) score += Math.max(0, 12 - ageDays); // bonus fraîcheur dégressif sur ~12 j
+  return score;
+}
+
+// Rendu brut d'un élément. `withImage` (top 3 uniquement) ajoute une vignette :
+// l'<img> est posée directement dans le DOM (chargement immédiat garanti), le
+// spinner restant visible derrière tant qu'elle n'est pas peinte (voir dumpAll).
+function itemHtml(it, label, withImage) {
+  const rows = Object.keys(it).map((k) =>
+    `<dt>${escapeHtml(k)}</dt><dd>${fmtValue(k, it[k])}</dd>`).join('');
+  const img = withImage && it.image
+    ? `<figure class="vl-img"><img src="${escapeHtml(it.image)}" alt="" decoding="async"><span class="vl-img-spinner" aria-hidden="true"></span></figure>`
+    : '';
+  return `<div class="vl-item">${img}<h3>${escapeHtml(label)} — ${escapeHtml(it.title || '')}</h3><dl>${rows}</dl></div>`;
+}
+
 function dumpAll(data) {
   const meta = document.getElementById('vl-meta');
   const srcList = (data.sources || []).map((s) => `${s.name}/${s.kind}`).join(', ');
   meta.textContent = `généré le ${data.generatedAt} · ${data.count} éléments · sources : ${srcList}`;
 
-  const grid = document.getElementById('vl-grid');
   const items = data.items || [];
-  grid.innerHTML = items.map((it, i) => {
-    const rows = Object.keys(it).map((k) =>
-      `<dt>${escapeHtml(k)}</dt><dd>${fmtValue(k, it[k])}</dd>`).join('');
-    return `<div class="vl-item"><h2>#${i + 1} — ${escapeHtml(it.title || '')}</h2><dl>${rows}</dl></div>`;
-  }).join('');
+
+  // Les 3 news les plus importantes — parmi les seuls items pourvus d'une image
+  // (le build ne renseigne `image` que sur les items mis en avant). Un item sans
+  // image (typiquement CERT-FR) reste dans le flux complet mais pas dans le top.
+  const top = document.getElementById('vl-top');
+  const top3 = items.filter((it) => it.image).sort((a, b) => importance(b) - importance(a)).slice(0, 3);
+  top.innerHTML = `<h2 class="vl-top-h">Les 3 news les plus importantes</h2>`
+    + top3.map((it, i) => itemHtml(it, `#${i + 1}`, true)).join('');
+
+  // Câblage des vignettes : on masque le spinner dès que l'image est peinte.
+  // img.complete couvre le cas où l'image (en cache) charge avant l'écoute.
+  top.querySelectorAll('.vl-img img').forEach((img) => {
+    const fig = img.closest('.vl-img');
+    const done = () => fig.classList.add('is-loaded');
+    if (img.complete && img.naturalWidth > 0) done();
+    else {
+      img.addEventListener('load', done);
+      img.addEventListener('error', () => fig.classList.add('is-error'));
+    }
+  });
+
+  // Affichage brut complet de tout le flux.
+  const grid = document.getElementById('vl-grid');
+  grid.innerHTML = `<h2 class="vl-all-h">Tout le flux (${items.length})</h2>`
+    + items.map((it, i) => itemHtml(it, `#${i + 1}`)).join('');
 }
 
 async function initVeille() {
