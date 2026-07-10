@@ -829,6 +829,7 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 /* variante de chip avec logo inline, pour la grille "tout ce que je maîtrise" */
 .dp-chip--logo{display:inline-flex; align-items:center; gap:8px; padding-left:10px;}
 .dp-chip--logo img{width:16px; height:16px; object-fit:contain; flex-shrink:0;}
+.dp-chip--logo img[src*="jtr-logo-transparent"]{width:24px; height:24px;}
 .dp-stack-group--wide{grid-column:1 / -1;}
 
 /* Bandeau bleu plein largeur, purement décoratif, au-dessus de la section
