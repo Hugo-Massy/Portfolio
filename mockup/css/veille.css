@@ -1,0 +1,14 @@
+/* Veille — affichage brut, sans design. Juste de quoi rester lisible. */
+.vl-raw{
+  position:relative; z-index:1;
+  max-width:1000px; margin:0 auto; padding:90px 16px 60px;
+  font-family:var(--mono, monospace); color:#111; line-height:1.5;
+}
+.vl-raw h1{font-size:20px; margin-bottom:8px;}
+.vl-raw #vl-meta{color:#555; font-size:13px; margin-bottom:20px;}
+.vl-item{border-top:1px solid #ccc; padding:14px 0;}
+.vl-item h2{font-size:15px; margin:0 0 8px;}
+.vl-item dl{display:grid; grid-template-columns:130px 1fr; gap:2px 12px; margin:0; font-size:13px;}
+.vl-item dt{color:#777; font-weight:600;}
+.vl-item dd{margin:0; word-break:break-word;}
+.vl-item a{color:#06c;}

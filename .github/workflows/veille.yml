@@ -1,0 +1,44 @@
+name: Veille technologique
+
+# Met à jour mockup/js/veille-data.json à partir des flux cyber (CERT-FR + presse).
+# Tourne tout seul 2×/jour ; lançable aussi à la main depuis l'onglet Actions.
+on:
+  schedule:
+    - cron: '17 6,18 * * *'   # 06:17 et 18:17 UTC, chaque jour
+  workflow_dispatch:            # bouton « Run workflow » manuel
+
+# Autorise le job à committer le JSON régénéré dans le repo.
+permissions:
+  contents: write
+
+# Évite deux exécutions simultanées qui se marcheraient dessus.
+concurrency:
+  group: veille
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Générer la veille
+        run: node mockup/tools/build-veille.js
+
+      - name: Committer si le contenu a changé
+        run: |
+          if git diff --quiet -- mockup/js/veille-data.json; then
+            echo "Aucun changement — rien à committer."
+            exit 0
+          fi
+          git config user.name  "veille-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add mockup/js/veille-data.json
+          git commit -m "chore(veille): mise à jour automatique du flux"
+          git push
