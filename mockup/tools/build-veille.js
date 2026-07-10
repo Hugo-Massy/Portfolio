@@ -143,9 +143,14 @@ async function fetchOgImage(url) {
     });
     if (!res.ok) return '';
     const html = await res.text();
-    const m = html.match(/<meta[^>]+property="og:image"[^>]+content="([^"]+)"/i)
-      || html.match(/<meta[^>]+content="([^"]+)"[^>]+property="og:image"/i)
-      || html.match(/<meta[^>]+name="twitter:image(?::src)?"[^>]+content="([^"]+)"/i);
+    // Les balises meta varient : guillemets simples OU doubles, et l'attribut
+    // content parfois avant, parfois après property/name (ex. The Hacker News
+    // utilise content='…' property='og:image'). On couvre les deux ordres et
+    // les deux styles de guillemets, sinon l'og:image passe inaperçue.
+    const m = html.match(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i)
+      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["']/i)
+      || html.match(/<meta[^>]+name=["']twitter:image(?::src)?["'][^>]+content=["']([^"']+)["']/i)
+      || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image(?::src)?["']/i);
     return m ? decodeEntities(m[1]) : '';
   } catch {
     return '';
@@ -327,24 +332,26 @@ async function main() {
   const cutoff = Date.now() - WINDOW_DAYS * 86400000;
   const windowed = items.filter((it) => it.date && Date.parse(it.date) >= cutoff);
 
-  // Top 3 « imagé » : on descend le classement par importance et on ne retient
-  // QUE des items pourvus d'une image — un item sans image (typiquement CERT-FR)
-  // n'est pas mis en avant, il reste dans le flux normal. Image de flux d'abord
-  // (gratuite) ; à défaut, fallback og:image dans une enveloppe de requêtes bornée.
+  // Top 10 « imagé » — DOIT rester égal au RETAINED de veille.js (dumpAll) :
+  // on descend le classement par importance et on va chercher une image pour
+  // chacun des 10 retenus (top 3 en cartes + 7 en liste côté front). Un item
+  // qui reste sans image (RSS ni og:image introuvables) retombe sur le
+  // placeholder d'initiale côté client. Image de flux d'abord (gratuite) ; à
+  // défaut, fallback og:image dans une enveloppe de requêtes bornée.
   // On repart d'un dossier d'images propre pour ne pas accumuler d'orphelins.
   const veilleAssetsDir = path.join(__dirname, '..', 'assets', 'veille');
   fs.rmSync(veilleAssetsDir, { recursive: true, force: true });
   fs.mkdirSync(veilleAssetsDir, { recursive: true });
 
-  const ranked = [...windowed].sort((a, b) => importance(b) - importance(a));
-  console.log('\nSélection du top 3 imagé…');
-  let fetchBudget = 6;
+  const RETAINED = 10;
+  const ranked = [...windowed].sort((a, b) => importance(b) - importance(a)).slice(0, RETAINED);
+  console.log(`\nSélection du top ${RETAINED} imagé…`);
+  let fetchBudget = 16;
   let imaged = 0;
   for (const it of ranked) {
-    if (imaged >= 3) break;
     let src = it._rssImage || '';
     if (!src && fetchBudget > 0) { fetchBudget--; src = await fetchOgImage(it.link); }
-    if (!src) { console.log(`  ∅ (écarté du top) ${it.title.slice(0, 46)}`); continue; }
+    if (!src) { console.log(`  ∅ (pas d'image trouvée) ${it.title.slice(0, 46)}`); continue; }
     // Rapatriement en local ; repli sur l'URL distante si le téléchargement échoue.
     const local = await downloadImage(src, veilleAssetsDir, `top-${imaged + 1}`);
     it.image = local || src;

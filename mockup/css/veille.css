@@ -1,17 +1,104 @@
-/* Veille — affichage brut, sans design. Juste de quoi rester lisible. */
+/* Veille — page mise au même langage visuel que le reste du site (tokens de styles.css). */
+:root{ --vl-peek:310px; }
 .vl-raw{
   position:relative; z-index:1;
-  max-width:1000px; margin:0 auto; padding:90px 16px 60px;
-  font-family:var(--mono, monospace); color:#111; line-height:1.5;
+  max-width:var(--maxw); margin:0 auto; padding:0 16px 60px;
+  font-family:var(--sans); color:var(--text); line-height:1.5;
 }
-.vl-raw h1{font-size:20px; margin-bottom:8px;}
-.vl-raw #vl-meta{color:#555; font-size:13px; margin-bottom:20px;}
-.vl-item{border-top:1px solid #ccc; padding:14px 0;}
-.vl-item h2{font-size:15px; margin:0 0 8px;}
-.vl-item dl{display:grid; grid-template-columns:130px 1fr; gap:2px 12px; margin:0; font-size:13px;}
-.vl-item dt{color:#777; font-weight:600;}
-.vl-item dd{margin:0; word-break:break-word;}
-.vl-item a{color:#06c;}
+
+/* --- En-tête calqué sur le hero (.hero de styles.css), avec une variante : la
+   hauteur s'arrête juste avant le haut des cartes du top 3 (qui dépasse ensuite
+   en bas de la vue), de sorte que le titre soit centré entre le haut de page et
+   le haut des cartes plutôt qu'au milieu du 100vh entier. --- */
+.vl-head{
+  position:relative;
+  min-height:calc(100vh - var(--vl-peek));
+  display:flex; flex-direction:column; justify-content:center;
+  padding:clamp(18px, 3.5vh, 50px) 0;
+  margin-bottom:0;
+}
+.vl-head h1{
+  font-size:50px; line-height:1.15; letter-spacing:-0.01em; font-weight:700;
+  max-width:540px; margin:0 0 22px;
+}
+.vl-head h1 .accent{color:var(--accent);}
+.vl-lede{
+  font-size:18px; color:var(--text-dim); max-width:600px; margin:0 0 42px;
+}
+@media(max-width:640px){ .vl-head h1{font-size:38px;} }
+@media(max-width:760px){ .vl-head{ min-height:100vh; } }
+
+/* Bloc méta : phrase de stats, entre le top 3 et le flux complet. */
+.vl-meta{
+  display:flex; flex-direction:column; align-items:center; gap:20px;
+  width:100%; text-align:center;
+  margin:44px 0;
+}
+.vl-meta-stats{
+  margin:0 auto; font-size:38px; font-weight:600; line-height:1.35;
+  color:var(--text); max-width:820px;
+}
+.vl-meta-stats b{font-size:1.4em; font-weight:800; color:var(--accent);}
+/* Horodatage fixé en bas à gauche, même traitement de coin que .page-tag (top-left),
+   .lang-switch (top-right) et .back-to-top (bottom-right) dans styles.css. */
+.vl-updated{
+  position:fixed; left:22px; bottom:22px; z-index:50;
+  margin:0; font-family:var(--mono); font-size:10px; color:var(--text-faint);
+  pointer-events:none;
+}
+@media(max-width:640px){
+  .vl-updated{left:14px; bottom:14px; font-size:11px;}
+}
+/* Liste du top 10 : lignes façon carte, même langage visuel que le top 3
+   (.vl-top-card) mais empilées horizontalement plutôt qu'en grille. */
+.vl-list{display:flex; flex-direction:column; gap:12px;}
+.vl-list-item{
+  display:flex; align-items:flex-start; gap:16px;
+  padding:18px 20px; border:none; list-style:none;
+  background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  text-decoration:none; color:inherit; cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.vl-list-item:hover{
+  transform:translateY(-2px);
+  border-color:var(--accent-tint);
+  box-shadow:0 2px 4px rgba(20,20,15,.06), 0 16px 32px rgba(20,20,15,.08);
+}
+.vl-list-rank{
+  flex:none; font-family:var(--mono); font-size:13px; font-weight:600; letter-spacing:.04em;
+  color:var(--accent); min-width:26px; padding-top:2px;
+}
+.vl-list-body{flex:1; min-width:0; display:flex; flex-direction:column; gap:6px;}
+.vl-list-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+.vl-list-head h3{
+  font-family:var(--sans); font-size:16px; font-weight:600; line-height:1.3;
+  margin:0; color:var(--text);
+}
+.vl-list-date{
+  font-family:var(--mono); font-size:11px; color:var(--text-faint); white-space:nowrap;
+}
+.vl-list-meta{margin:0; font-family:var(--mono); font-size:11px; color:var(--text-faint);}
+.vl-list-summary{
+  margin:0; font-size:13px; line-height:1.55; color:var(--text-dim);
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.vl-list-tags{display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 0; padding:0; list-style:none;}
+.vl-list-tags li{
+  font-family:var(--mono); font-size:10px; letter-spacing:.03em; text-transform:uppercase;
+  color:var(--accent-dark); background:var(--accent-soft);
+  padding:3px 8px; border-radius:999px;
+}
+.vl-list-link{
+  display:inline-flex; align-items:center; gap:6px; margin-top:2px;
+  font-family:var(--sans); font-size:12.5px; font-weight:600; color:var(--accent);
+}
+.vl-list-link svg{transition:transform .18s ease;}
+.vl-list-item:hover .vl-list-link svg{transform:translateX(3px);}
+@media(max-width:640px){
+  .vl-list-item{padding:14px 16px; gap:12px;}
+  .vl-list-head{flex-direction:column; gap:2px;}
+}
 
 /* Vignette du top 3 : boîte 16/9. L'image (posée en absolu, au-dessus) recouvre
    le spinner dès qu'elle est peinte ; .is-loaded masque le spinner définitivement. */
@@ -30,9 +117,108 @@
   animation:vl-spin 0.8s linear infinite;
 }
 .vl-img.is-loaded .vl-img-spinner{display:none;}
+/* Repli sans image : initiale de la source sur fond accent. */
+.vl-img-placeholder{
+  display:flex; align-items:center; justify-content:center;
+  background:var(--accent-soft); color:var(--accent-dark);
+  font-family:var(--sans); font-weight:700; font-size:22px;
+}
+/* Vignette du top 10 : carré compact, doit passer après .vl-img (même
+   spécificité) pour l'emporter sur sa taille par défaut (16/9, 420px). */
+.vl-list-img{
+  flex:none; margin:0; width:96px; max-width:96px; aspect-ratio:1/1;
+  border-radius:8px;
+}
+@media(max-width:640px){ .vl-list-img{width:64px; max-width:64px;} }
 @keyframes vl-spin{to{transform:rotate(360deg);}}
 @media (prefers-reduced-motion:reduce){ .vl-img-spinner{animation-duration:2s;} }
 
-/* Titres de section (top 3 + flux complet) */
-.vl-top-h{font-size:16px; margin:0 0 4px;}
-.vl-all-h{font-size:16px; margin:28px 0 4px; padding-top:20px; border-top:2px solid #333;}
+/* État de chargement */
+#vl-status{font-family:var(--mono); font-size:13px; color:var(--text-dim); margin-bottom:20px;}
+
+/* Le top 3 suit directement le hero réduit (voir --vl-peek sur .vl-head) : son
+   haut dépasse dans la première vue, sous un titre centré entre le haut de page
+   et le haut des cartes. */
+#vl-top{ position:relative; z-index:1; }
+
+/* Top 3 : 3 cartes façon podium, même langage visuel que le reste du site
+   (tokens de styles.css : --bg-elev, --border, --shadow-card, --accent…). */
+.vl-top-grid{
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:40px;
+  align-items:stretch; padding:8px 24px 24px;
+}
+.vl-top-card{
+  border:none; padding:0; overflow:hidden; list-style:none;
+  display:flex; flex-direction:column;
+  background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
+  box-shadow:var(--shadow-card);
+  transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  text-decoration:none; color:inherit; cursor:pointer;
+}
+/* #1 (1er du DOM) est réordonné visuellement au centre, en position surélevée. */
+.vl-top-grid .vl-top-card:nth-child(1){ order:2; transform:translateY(-36px); }
+.vl-top-grid .vl-top-card:nth-child(2){ order:1; transform:rotate(-3deg); transform-origin:bottom center; }
+.vl-top-grid .vl-top-card:nth-child(3){ order:3; transform:rotate(3deg); transform-origin:bottom center; }
+.vl-top-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--accent-tint);
+  box-shadow:0 2px 4px rgba(20,20,15,.06), 0 16px 32px rgba(20,20,15,.08);
+}
+.vl-top-grid .vl-top-card:nth-child(1):hover{ transform:translateY(-39px); }
+.vl-top-grid .vl-top-card:nth-child(2):hover{ transform:rotate(-3deg) translateY(-3px); }
+.vl-top-grid .vl-top-card:nth-child(3):hover{ transform:rotate(3deg) translateY(-3px); }
+/* Image en bandeau plein cadre en haut de la carte */
+.vl-top-card .vl-img{
+  margin:0; max-width:none; width:100%; aspect-ratio:16/9;
+  border:none; border-radius:0; border-bottom:1px solid var(--border);
+}
+.vl-top-card-body{ display:flex; flex-direction:column; flex:1; min-height:0; padding:16px 18px 18px; gap:8px; }
+/* Rang + date sur une même ligne, rang à gauche, date à droite. */
+.vl-top-card-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.vl-top-rank{
+  font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.04em;
+  color:var(--accent);
+}
+.vl-top-date{
+  font-family:var(--mono); font-size:11px; color:var(--text-faint); white-space:nowrap;
+}
+.vl-top-card h3{
+  font-family:var(--sans); font-size:16px; font-weight:600; line-height:1.3;
+  margin:0; color:var(--text);
+}
+.vl-top-meta{
+  margin:0; font-family:var(--mono); font-size:11px; color:var(--text-faint);
+}
+.vl-top-summary{
+  margin:2px 0 0; font-size:13px; line-height:1.55; color:var(--text-dim);
+  display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; overflow:hidden;
+}
+.vl-top-tags{
+  display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 0; padding:0; list-style:none;
+}
+.vl-top-tags li{
+  font-family:var(--mono); font-size:10px; letter-spacing:.03em; text-transform:uppercase;
+  color:var(--accent-dark); background:var(--accent-soft);
+  padding:3px 8px; border-radius:999px;
+}
+.vl-top-link{
+  display:inline-flex; align-items:center; gap:6px; margin-top:auto; padding-top:10px;
+  font-family:var(--sans); font-size:13px; font-weight:600; color:var(--accent);
+  text-decoration:none;
+}
+.vl-top-link svg{ transition:transform .18s ease; }
+.vl-top-link:hover svg{ transform:translateX(3px); }
+@media (max-width:760px){
+  .vl-top-grid{grid-template-columns:1fr; gap:16px; padding:0;}
+  .vl-top-grid .vl-top-card:nth-child(1),
+  .vl-top-grid .vl-top-card:nth-child(2),
+  .vl-top-grid .vl-top-card:nth-child(3){ order:initial; transform:none; }
+  .vl-top-grid .vl-top-card:nth-child(1):hover,
+  .vl-top-grid .vl-top-card:nth-child(2):hover,
+  .vl-top-grid .vl-top-card:nth-child(3):hover{ transform:translateY(-3px); }
+}
+.vl-all-h{
+  font-size:13px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em;
+  color:var(--text-faint);
+  margin:44px 0 16px; padding-top:24px; border-top:1px solid var(--border);
+}

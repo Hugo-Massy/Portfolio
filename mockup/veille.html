@@ -91,11 +91,37 @@
   <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></svg>
 </a>
 
+<p id="vl-updated" class="vl-updated"></p>
+
 <main id="veille-hero" class="vl-raw">
-  <h1>Veille — affichage brut</h1>
-  <p id="vl-meta">…</p>
+  <header class="vl-head">
+    <h1>La <span class="accent">veille</span> derrière chaque menace.</h1>
+    <p class="vl-lede">Les actualités <strong>cybersécurité les plus marquantes</strong>, agrégées automatiquement depuis le <strong>CERT-FR</strong> et la presse spécialisée.</p>
+    <div class="hero-cta">
+      <a class="btn btn-primary" href="#vl-top">Voir les actus</a>
+      <a class="btn btn-ghost" href="#vl-grid">
+        <span>Tout le flux</span>
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+    <div class="social-row">
+      <a href="https://github.com/Cody91430" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-1.04-.01-1.89-2.78.61-3.37-1.21-3.37-1.21-.46-1.19-1.11-1.51-1.11-1.51-.9-.63.07-.62.07-.62 1 .07 1.53 1.05 1.53 1.05.89 1.55 2.34 1.1 2.91.84.09-.66.35-1.1.63-1.36-2.22-.26-4.56-1.14-4.56-5.06 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.31.1-2.72 0 0 .84-.28 2.75 1.05a9.29 9.29 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.46.1 2.72.64.72 1.03 1.63 1.03 2.75 0 3.93-2.34 4.79-4.57 5.05.36.32.68.94.68 1.9 0 1.37-.01 2.47-.01 2.81 0 .27.18.6.69.49A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2z"/></svg>
+        GitHub
+      </a>
+      <a href="https://www.linkedin.com/in/hugo-menu/" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>
+        LinkedIn
+      </a>
+      <a href="assets/CV-Hugo-Menu.pdf" target="_blank" rel="noopener noreferrer" download>
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M4 20h16"/></svg>
+        <span>CV PDF</span>
+      </a>
+    </div>
+  </header>
   <div id="vl-status">Chargement de la veille…</div>
   <section id="vl-top"></section>
+  <div id="vl-meta" class="vl-meta">…</div>
   <div id="vl-grid"></div>
 </main>
 

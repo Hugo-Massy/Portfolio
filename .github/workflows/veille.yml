@@ -33,12 +33,15 @@ jobs:
 
       - name: Committer si le contenu a changé
         run: |
-          if git diff --quiet -- mockup/js/veille-data.json; then
+          # On suit aussi les images rapatriées (assets/veille/) : le JSON y
+          # référence des chemins locaux, il faut donc committer les fichiers
+          # avec, sinon les vignettes du top 10 pointent dans le vide.
+          git add -A mockup/js/veille-data.json mockup/assets/veille
+          if git diff --cached --quiet; then
             echo "Aucun changement — rien à committer."
             exit 0
           fi
           git config user.name  "veille-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add mockup/js/veille-data.json
           git commit -m "chore(veille): mise à jour automatique du flux"
           git push

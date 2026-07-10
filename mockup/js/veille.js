@@ -24,16 +24,24 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// Rend n'importe quelle valeur de champ en texte lisible.
-function fmtValue(key, value) {
-  if (value === null || value === undefined) return '<em>null</em>';
-  if (Array.isArray(value)) return value.length ? value.map(escapeHtml).join(', ') : '<em>(vide)</em>';
-  if (typeof value === 'object') return escapeHtml(JSON.stringify(value));
-  if (key === 'link') {
-    const u = escapeHtml(value);
-    return `<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`;
+// Les résumés du flux source arrivent parfois déjà tronqués en plein mot
+// (« …read live conversat… ») ou proprement via un marqueur « [...] ». On
+// uniformise : le marqueur « [...] » indique une coupe déjà propre (on la
+// garde telle quelle), tandis qu'une ellipse collée au texte trahit une coupe
+// en plein mot (on retire alors ce dernier mot incomplet).
+function cleanSummary(s) {
+  if (!s) return '';
+  const t = s.trim();
+  const bracket = t.match(/^(.*?)\s*\[\.\.\.\]\s*$/);
+  if (bracket) return `${bracket[1].trimEnd()}…`;
+  const raw = t.match(/^(.*?)(?:\.\.\.|…)$/);
+  if (raw) {
+    let base = raw[1].trimEnd();
+    const idx = base.lastIndexOf(' ');
+    if (idx > 0) base = base.slice(0, idx);
+    return `${base.trimEnd()}…`;
   }
-  return escapeHtml(value);
+  return t;
 }
 
 // Score d'importance « générale » d'une news : on combine plusieurs signaux
@@ -66,36 +74,76 @@ function importance(it) {
   return score;
 }
 
-// Rendu brut d'un élément. `withImage` (top 3 uniquement) ajoute une vignette :
-// l'<img> est posée directement dans le DOM (chargement immédiat garanti), le
-// spinner restant visible derrière tant qu'elle n'est pas peinte (voir dumpAll).
-function itemHtml(it, label, withImage) {
-  const rows = Object.keys(it).map((k) =>
-    `<dt>${escapeHtml(k)}</dt><dd>${fmtValue(k, it[k])}</dd>`).join('');
-  const img = withImage && it.image
-    ? `<figure class="vl-img"><img src="${escapeHtml(it.image)}" alt="" decoding="async"><span class="vl-img-spinner" aria-hidden="true"></span></figure>`
-    : '';
-  return `<div class="vl-item">${img}<h3>${escapeHtml(label)} — ${escapeHtml(it.title || '')}</h3><dl>${rows}</dl></div>`;
+// Vignette de repli quand l'item n'a pas d'image (typiquement CERT-FR) :
+// initiale de la source sur fond accent, plutôt qu'un vide.
+function sourcePlaceholderHtml(it, extraClass) {
+  const initial = (it.source || '?').trim().charAt(0).toUpperCase();
+  return `<span class="vl-img vl-img-placeholder ${extraClass}" aria-hidden="true">${escapeHtml(initial)}</span>`;
 }
 
-function dumpAll(data) {
-  const meta = document.getElementById('vl-meta');
-  const srcList = (data.sources || []).map((s) => `${s.name}/${s.kind}`).join(', ');
-  meta.textContent = `généré le ${data.generatedAt} · ${data.count} éléments · sources : ${srcList}`;
+// Rendu soigné d'une ligne du flux retenu (top 10) : même langage visuel que
+// les cartes du top 3, mais en ligne compacte plutôt qu'en carte.
+function listItemHtml(it, rank) {
+  let dateLabel = it.date;
+  const parsed = Date.parse(it.date);
+  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const tags = Array.isArray(it.tags) && it.tags.length
+    ? `<ul class="vl-list-tags">${it.tags.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
+    : '';
+  const link = it.link
+    ? `<span class="vl-list-link">Lire l'article<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
+    : '';
+  const tag = it.link ? 'a' : 'article';
+  const href = it.link ? ` href="${escapeHtml(it.link)}" target="_blank" rel="noopener noreferrer"` : '';
+  const img = it.image
+    ? `<figure class="vl-img vl-list-img"><img src="${escapeHtml(it.image)}" alt="" decoding="async"><span class="vl-img-spinner" aria-hidden="true"></span></figure>`
+    : sourcePlaceholderHtml(it, 'vl-list-img');
+  return `<${tag} class="vl-list-item"${href}>`
+    + img
+    + `<span class="vl-list-rank">${escapeHtml(rank)}</span>`
+    + `<div class="vl-list-body">`
+    + `<div class="vl-list-head"><h3>${escapeHtml(it.title || '')}</h3><span class="vl-list-date">${escapeHtml(dateLabel || '')}</span></div>`
+    + `<p class="vl-list-meta">${escapeHtml(it.source || '')}</p>`
+    + `<p class="vl-list-summary">${escapeHtml(cleanSummary(it.summary))}</p>`
+    + tags
+    + link
+    + `</div></${tag}>`;
+}
 
-  const items = data.items || [];
+// Rendu soigné (contrairement à itemHtml, volontairement brut) des 3 cartes du
+// top 3 : mêmes tokens visuels que le reste du site (voir styles.css), champs
+// triés pour raconter la news plutôt que déballer toutes les clés du JSON.
+function topItemHtml(it, rank) {
+  const img = it.image
+    ? `<figure class="vl-img"><img src="${escapeHtml(it.image)}" alt="" decoding="async"><span class="vl-img-spinner" aria-hidden="true"></span></figure>`
+    : '';
+  let dateLabel = it.date;
+  const parsed = Date.parse(it.date);
+  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const tags = Array.isArray(it.tags) && it.tags.length
+    ? `<ul class="vl-top-tags">${it.tags.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
+    : '';
+  const link = it.link
+    ? `<span class="vl-top-link">Lire l'article<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
+    : '';
+  const tag = it.link ? 'a' : 'article';
+  const href = it.link ? ` href="${escapeHtml(it.link)}" target="_blank" rel="noopener noreferrer"` : '';
+  return `<${tag} class="vl-top-card"${href}>${img}`
+    + `<div class="vl-top-card-body">`
+    + `<div class="vl-top-card-head"><span class="vl-top-rank">${escapeHtml(rank)}</span><span class="vl-top-date">${escapeHtml(dateLabel || '')}</span></div>`
+    + `<h3>${escapeHtml(it.title || '')}</h3>`
+    + `<p class="vl-top-meta">${escapeHtml(it.source || '')}</p>`
+    + `<p class="vl-top-summary">${escapeHtml(cleanSummary(it.summary))}</p>`
+    + tags
+    + link
+    + `</div></${tag}>`;
+}
 
-  // Les 3 news les plus importantes — parmi les seuls items pourvus d'une image
-  // (le build ne renseigne `image` que sur les items mis en avant). Un item sans
-  // image (typiquement CERT-FR) reste dans le flux complet mais pas dans le top.
-  const top = document.getElementById('vl-top');
-  const top3 = items.filter((it) => it.image).sort((a, b) => importance(b) - importance(a)).slice(0, 3);
-  top.innerHTML = `<h2 class="vl-top-h">Les 3 news les plus importantes</h2>`
-    + top3.map((it, i) => itemHtml(it, `#${i + 1}`, true)).join('');
-
-  // Câblage des vignettes : on masque le spinner dès que l'image est peinte.
-  // img.complete couvre le cas où l'image (en cache) charge avant l'écoute.
-  top.querySelectorAll('.vl-img img').forEach((img) => {
+// Câblage des vignettes d'un conteneur : on masque le spinner dès que l'image
+// est peinte. img.complete couvre le cas où l'image (en cache) charge avant
+// l'écoute des événements.
+function wireImages(container) {
+  container.querySelectorAll('.vl-img img').forEach((img) => {
     const fig = img.closest('.vl-img');
     const done = () => fig.classList.add('is-loaded');
     if (img.complete && img.naturalWidth > 0) done();
@@ -104,11 +152,60 @@ function dumpAll(data) {
       img.addEventListener('error', () => fig.classList.add('is-error'));
     }
   });
+}
 
-  // Affichage brut complet de tout le flux.
+function dumpAll(data) {
+  const meta = document.getElementById('vl-meta');
+  // Date de génération lisible (fr) plutôt que l'horodatage ISO brut.
+  let genDate = data.generatedAt;
+  const parsed = Date.parse(data.generatedAt);
+  if (isFinite(parsed)) {
+    const d = new Date(parsed);
+    const datePart = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const timePart = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    genDate = `${datePart} à ${timePart}`;
+  }
+  const genEl = document.getElementById('vl-updated');
+  if (genEl) genEl.textContent = `Mise à jour le ${genDate}`;
+  // Sources dédupliquées par nom (une puce par source, kinds regroupés).
+  const byName = new Map();
+  for (const s of data.sources || []) {
+    if (!byName.has(s.name)) byName.set(s.name, new Set());
+    byName.get(s.name).add(s.kind);
+  }
+  const items = data.items || [];
+
+  // On ne retient que les 10 items les plus importants (selon le score de
+  // pondération importance()) parmi ceux publiés dans les 7 derniers jours :
+  // le compteur d'en-tête porte sur cette sélection de 10, répartie ensuite
+  // entre le top 3 (cartes) et la liste (les 7 suivants, sans doublon).
+  const RETAINED = 10;
+  const WINDOW_DAYS = 7;
+  const recent = items.filter((it) => {
+    const t = Date.parse(it.date);
+    return isFinite(t) && (Date.now() - t) / 86400000 <= WINDOW_DAYS;
+  });
+  const kept = recent.sort((a, b) => importance(b) - importance(a)).slice(0, RETAINED);
+
+  meta.innerHTML =
+    `<p class="vl-meta-stats">Les <b>${escapeHtml(kept.length)}</b> <strong>actualités</strong> les plus importantes auprès de <b>${byName.size}</b> sources ces <b>${WINDOW_DAYS}</b> derniers jours.</p>`;
+
+  // Les 3 news les plus importantes — parmi les seules du top 10 pourvues d'une
+  // image (le build ne renseigne `image` que sur les items mis en avant).
+  const top = document.getElementById('vl-top');
+  const top3 = kept.filter((it) => it.image).slice(0, 3);
+  top.innerHTML = `<div class="vl-top-grid">`
+    + top3.map((it, i) => topItemHtml(it, `#${i + 1}`)).join('')
+    + `</div>`;
+
+  wireImages(top);
+
+  // Le reste du top 10, déjà présenté ci-dessus via le top 3, n'est pas répété.
+  const rest = kept.filter((it) => !top3.includes(it));
   const grid = document.getElementById('vl-grid');
-  grid.innerHTML = `<h2 class="vl-all-h">Tout le flux (${items.length})</h2>`
-    + items.map((it, i) => itemHtml(it, `#${i + 1}`)).join('');
+  grid.innerHTML = `<h2 class="vl-all-h">Le reste du top ${kept.length} des ${WINDOW_DAYS} derniers jours</h2>`
+    + `<div class="vl-list">${rest.map((it, i) => listItemHtml(it, `#${i + top3.length + 1}`)).join('')}</div>`;
+  wireImages(grid);
 }
 
 async function initVeille() {
