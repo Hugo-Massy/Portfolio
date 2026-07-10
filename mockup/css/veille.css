@@ -28,17 +28,39 @@
 @media(max-width:640px){ .vl-head h1{font-size:38px;} }
 @media(max-width:760px){ .vl-head{ min-height:100vh; } }
 
-/* Bloc méta : phrase de stats, entre le top 3 et le flux complet. */
+/* --- Séquence « épinglée » : le top 3 + la phrase de stats restent centrés à
+   l'écran pendant qu'on scrolle à travers une piste plus haute que le viewport
+   (.vl-showcase-track). Le scroll progresse normalement (la barre défile) mais
+   la suite (le flux complet) reste cachée sous la piste tant que l'animation
+   n'est pas terminée ; l'avancement de l'animation est piloté par le scroll. --- */
+.vl-showcase-track{ position:relative; }
+.vl-showcase-pin{
+  position:sticky; top:0; height:100vh;
+  display:flex; flex-direction:column; justify-content:center; gap:56px;
+  overflow:hidden;
+}
+/* État final : séquence jouée et dépassée → plus de pin ni de scrub, le bloc
+   reprend un flux normal (un second passage ne re-fige donc plus rien). */
+.vl-showcase-track.is-done .vl-showcase-pin{
+  position:static; height:auto; overflow:visible; gap:56px; padding:120px 0;
+}
+
+/* Bloc méta : phrase de stats, sous le top 3 dans la séquence épinglée. */
 .vl-meta{
   display:flex; flex-direction:column; align-items:center; gap:20px;
   width:100%; text-align:center;
-  margin:44px 0;
 }
 .vl-meta-stats{
   margin:0 auto; font-size:38px; font-weight:600; line-height:1.35;
   color:var(--text); max-width:820px;
 }
 .vl-meta-stats b{font-size:1.4em; font-weight:800; color:var(--accent);}
+.vl-meta-line{
+  display:block;
+  opacity:0; transform:translateY(60px);
+  transition:transform .7s cubic-bezier(.22,1,.36,1), opacity .55s ease;
+}
+.vl-meta-line.is-visible{ opacity:1; transform:translateY(0); }
 /* Horodatage fixé en bas à gauche, même traitement de coin que .page-tag (top-left),
    .lang-switch (top-right) et .back-to-top (bottom-right) dans styles.css. */
 .vl-updated{
@@ -83,14 +105,20 @@
   margin:0; font-size:13px; line-height:1.55; color:var(--text-dim);
   display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
 }
-.vl-list-tags{display:flex; flex-wrap:wrap; gap:6px; margin:2px 0 0; padding:0; list-style:none;}
+/* Ligne basse de la carte : tags à gauche, lien "Lire l'article" plaqué à
+   droite sur la même ligne (plutôt que sous les tags). */
+.vl-list-foot{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  margin-top:2px;
+}
+.vl-list-tags{display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0; list-style:none;}
 .vl-list-tags li{
   font-family:var(--mono); font-size:10px; letter-spacing:.03em; text-transform:uppercase;
   color:var(--accent-dark); background:var(--accent-soft);
   padding:3px 8px; border-radius:999px;
 }
 .vl-list-link{
-  display:inline-flex; align-items:center; gap:6px; margin-top:2px;
+  display:inline-flex; align-items:center; gap:6px; flex:none; margin-left:auto;
   font-family:var(--sans); font-size:12.5px; font-weight:600; color:var(--accent);
 }
 .vl-list-link svg{transition:transform .18s ease;}
@@ -123,13 +151,30 @@
   background:var(--accent-soft); color:var(--accent-dark);
   font-family:var(--sans); font-weight:700; font-size:22px;
 }
-/* Vignette du top 10 : carré compact, doit passer après .vl-img (même
+/* Repli avec logo connu (ex. CERT-FR) : logo contenu, fond neutre, marge interne. */
+.vl-img-placeholder--logo{
+  background:#fff; padding:76px; box-sizing:border-box; border:none;
+}
+.vl-img-placeholder--logo img{
+  width:100%; height:100%; object-fit:contain;
+}
+/* Variante liste (vl-list-img) : la vignette est un rectangle 16/9 (même
+   ratio que le top 3, pour ne pas recadrer les screenshots sur les côtés),
+   il faut donc une marge interne bien plus fine que dans le top 3 ; on fixe
+   aussi width/height ici pour ne pas dépendre de l'ordre des règles ailleurs. */
+.vl-list-img.vl-img-placeholder--logo{
+  width:210px; height:auto; padding:38px;
+}
+@media(max-width:640px){
+  .vl-list-img.vl-img-placeholder--logo{width:108px; padding:21px;}
+}
+/* Vignette du top 10 : rectangle 16/9, doit passer après .vl-img (même
    spécificité) pour l'emporter sur sa taille par défaut (16/9, 420px). */
 .vl-list-img{
-  flex:none; margin:0; width:96px; max-width:96px; aspect-ratio:1/1;
+  flex:none; margin:0; width:210px; max-width:210px; aspect-ratio:16/9;
   border-radius:8px;
 }
-@media(max-width:640px){ .vl-list-img{width:64px; max-width:64px;} }
+@media(max-width:640px){ .vl-list-img{width:108px; max-width:108px;} }
 @keyframes vl-spin{to{transform:rotate(360deg);}}
 @media (prefers-reduced-motion:reduce){ .vl-img-spinner{animation-duration:2s;} }
 
@@ -159,14 +204,21 @@
 .vl-top-grid .vl-top-card:nth-child(1){ order:2; transform:translateY(-36px); }
 .vl-top-grid .vl-top-card:nth-child(2){ order:1; transform:rotate(-3deg); transform-origin:bottom center; }
 .vl-top-grid .vl-top-card:nth-child(3){ order:3; transform:rotate(3deg); transform-origin:bottom center; }
-.vl-top-card:hover{
+.vl-top-card:hover, .vl-top-card.is-spotlight{
   transform:translateY(-3px);
   border-color:var(--accent-tint);
   box-shadow:0 2px 4px rgba(20,20,15,.06), 0 16px 32px rgba(20,20,15,.08);
 }
-.vl-top-grid .vl-top-card:nth-child(1):hover{ transform:translateY(-39px); }
-.vl-top-grid .vl-top-card:nth-child(2):hover{ transform:rotate(-3deg) translateY(-3px); }
-.vl-top-grid .vl-top-card:nth-child(3):hover{ transform:rotate(3deg) translateY(-3px); }
+.vl-top-grid .vl-top-card:nth-child(1):hover, .vl-top-grid .vl-top-card:nth-child(1).is-spotlight{ transform:translateY(-39px); }
+.vl-top-grid .vl-top-card:nth-child(2):hover, .vl-top-grid .vl-top-card:nth-child(2).is-spotlight{ transform:rotate(-3deg) translateY(-3px); }
+.vl-top-grid .vl-top-card:nth-child(3):hover, .vl-top-grid .vl-top-card:nth-child(3).is-spotlight{ transform:rotate(3deg) translateY(-3px); }
+/* Pendant la mise en avant séquentielle du top 3 (scroll figé sur .vl-meta),
+   les cartes non concernées s'estompent pour accentuer celle en cours. */
+.vl-top-grid.is-showcasing .vl-top-card{
+  transition:transform .65s cubic-bezier(.22,1,.36,1), box-shadow .65s ease, border-color .65s ease, opacity .55s ease, filter .55s ease;
+  opacity:.5; filter:saturate(.6);
+}
+.vl-top-grid.is-showcasing .vl-top-card.is-spotlight{ opacity:1; filter:none; }
 /* Image en bandeau plein cadre en haut de la carte */
 .vl-top-card .vl-img{
   margin:0; max-width:none; width:100%; aspect-ratio:16/9;
@@ -216,9 +268,14 @@
   .vl-top-grid .vl-top-card:nth-child(1):hover,
   .vl-top-grid .vl-top-card:nth-child(2):hover,
   .vl-top-grid .vl-top-card:nth-child(3):hover{ transform:translateY(-3px); }
+  /* Le top 3 empilé dépasse la hauteur d'écran : pas de séquence épinglée en
+     mobile, on repasse en flux normal et les lignes de stats sont visibles. */
+  .vl-showcase-track{ height:auto !important; }
+  .vl-showcase-pin{ position:static; height:auto; overflow:visible; gap:40px; margin:120px 0; }
+  .vl-meta-line{ opacity:1; transform:none; }
 }
 .vl-all-h{
   font-size:13px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em;
   color:var(--text-faint);
-  margin:44px 0 16px; padding-top:24px; border-top:1px solid var(--border);
+  margin:44px 0 16px; padding-top:24px;
 }

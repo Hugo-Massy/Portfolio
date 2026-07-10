@@ -75,8 +75,15 @@ function importance(it) {
 }
 
 // Vignette de repli quand l'item n'a pas d'image (typiquement CERT-FR) :
-// initiale de la source sur fond accent, plutôt qu'un vide.
+// logo de la source connue si on en a un, sinon initiale sur fond accent.
+const SOURCE_LOGOS = {
+  'CERT-FR': 'assets/logo/logo-cert-fr.png',
+};
 function sourcePlaceholderHtml(it, extraClass) {
+  const logo = SOURCE_LOGOS[it.source];
+  if (logo) {
+    return `<span class="vl-img vl-img-placeholder vl-img-placeholder--logo ${extraClass}" aria-hidden="true"><img src="${escapeHtml(logo)}" alt=""></span>`;
+  }
   const initial = (it.source || '?').trim().charAt(0).toUpperCase();
   return `<span class="vl-img vl-img-placeholder ${extraClass}" aria-hidden="true">${escapeHtml(initial)}</span>`;
 }
@@ -105,8 +112,7 @@ function listItemHtml(it, rank) {
     + `<div class="vl-list-head"><h3>${escapeHtml(it.title || '')}</h3><span class="vl-list-date">${escapeHtml(dateLabel || '')}</span></div>`
     + `<p class="vl-list-meta">${escapeHtml(it.source || '')}</p>`
     + `<p class="vl-list-summary">${escapeHtml(cleanSummary(it.summary))}</p>`
-    + tags
-    + link
+    + (tags || link ? `<div class="vl-list-foot">${tags}${link}</div>` : '')
     + `</div></${tag}>`;
 }
 
@@ -188,7 +194,10 @@ function dumpAll(data) {
   const kept = recent.sort((a, b) => importance(b) - importance(a)).slice(0, RETAINED);
 
   meta.innerHTML =
-    `<p class="vl-meta-stats">Les <b>${escapeHtml(kept.length)}</b> <strong>actualités</strong> les plus importantes auprès de <b>${byName.size}</b> sources ces <b>${WINDOW_DAYS}</b> derniers jours.</p>`;
+    `<p class="vl-meta-stats">`
+    + `<span class="vl-meta-line">Les <b>${escapeHtml(kept.length)}</b> <strong>actualités</strong> les plus importantes</span>`
+    + `<span class="vl-meta-line">auprès de <b>${byName.size}</b> sources ces <b>${WINDOW_DAYS}</b> derniers jours.</span>`
+    + `</p>`;
 
   // Les 3 news les plus importantes — parmi les seules du top 10 pourvues d'une
   // image (le build ne renseigne `image` que sur les items mis en avant).
@@ -199,6 +208,7 @@ function dumpAll(data) {
     + `</div>`;
 
   wireImages(top);
+  initShowcaseScrub(meta, top);
 
   // Le reste du top 10, déjà présenté ci-dessus via le top 3, n'est pas répété.
   const rest = kept.filter((it) => !top3.includes(it));
@@ -206,6 +216,114 @@ function dumpAll(data) {
   grid.innerHTML = `<h2 class="vl-all-h">Le reste du top ${kept.length} des ${WINDOW_DAYS} derniers jours</h2>`
     + `<div class="vl-list">${rest.map((it, i) => listItemHtml(it, `#${i + top3.length + 1}`)).join('')}</div>`;
   wireImages(grid);
+}
+
+// ---------------------------------------- Séquence épinglée pilotée au scroll --
+// Le top 3 et la phrase de stats restent centrés à l'écran (pin sticky) pendant
+// qu'on scrolle à travers une piste plus haute que le viewport. Le scroll
+// progresse normalement (la barre défile, aucun blocage) mais la suite reste
+// cachée sous la piste ; l'avancement des animations (mise en avant des cartes
+// du top 3 puis apparition des lignes de texte) est piloté par la progression
+// du scroll dans la piste.
+function initShowcaseScrub(meta, top) {
+  const track = document.getElementById('vl-showcase');
+  const lines = Array.from(meta.querySelectorAll('.vl-meta-line'));
+  if (!track || !lines.length) return;
+
+  const grid = top && top.querySelector('.vl-top-grid');
+  const cards = grid ? Array.from(grid.querySelectorAll('.vl-top-card')) : [];
+
+  // Étapes successives : d'abord une par carte du top 3 (mise en avant façon
+  // survol), puis une par ligne de texte.
+  const steps = [
+    ...cards.map((card) => ({
+      on: () => card.classList.add('is-spotlight'),
+      off: () => card.classList.remove('is-spotlight'),
+    })),
+    ...lines.map((line) => ({
+      on: () => line.classList.add('is-visible'),
+      off: () => line.classList.remove('is-visible'),
+    })),
+  ];
+  if (!steps.length) return;
+
+  // Distance de scroll (en px) allouée à chaque étape, plus une marge finale où
+  // tout reste affiché avant que la suite n'apparaisse. La hauteur de la piste
+  // = viewport (pour le pin) + cette distance totale.
+  const PER_STEP = 320;
+  const END_HOLD = 260;
+  const scrubLen = steps.length * PER_STEP + END_HOLD;
+
+  function sizeTrack() {
+    if (finalized) return;
+    track.style.height = (window.innerHeight + scrubLen) + 'px';
+  }
+
+  let shown = -1;     // nombre d'étapes actuellement actives (pour éviter les reflows inutiles)
+  let completed = false; // séquence entièrement jouée au moins une fois
+  let finalized = false; // piste effondrée : plus de pin, plus de scrub
+
+  // Une fois la séquence jouée et la piste entièrement dépassée, on effondre la
+  // piste (fin du pin et de la distance de scrub) pour qu'un second passage ne
+  // re-fige plus la page. Pour éviter tout saut, on mesure le déplacement réel
+  // de l'élément qui suit la piste (le flux complet) avant/après l'effondrement
+  // et on corrige exactement le scroll — le tout avec `scroll-behavior:auto`
+  // pour que la correction soit instantanée (et non une remontée animée).
+  const nextEl = document.getElementById('vl-grid');
+  function finalize() {
+    if (finalized) return;
+    finalized = true;
+    lines.forEach((line) => line.classList.add('is-visible'));
+    cards.forEach((card) => card.classList.remove('is-spotlight'));
+    if (grid) grid.classList.remove('is-showcasing');
+
+    const html = document.documentElement;
+    const prevBehavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+
+    const anchor = nextEl || track;
+    const before = anchor.getBoundingClientRect().top;
+    track.classList.add('is-done');
+    track.style.height = '';
+    const after = anchor.getBoundingClientRect().top;
+    const shift = after - before; // décalage résiduel non absorbé par le navigateur
+    if (Math.abs(shift) > 0.5) window.scrollBy(0, shift);
+
+    html.style.scrollBehavior = prevBehavior;
+    window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('resize', sizeTrack);
+  }
+
+  function render() {
+    // Distance déjà parcourue dans la phase épinglée : 0 quand le haut de la
+    // piste atteint le haut du viewport, jusqu'à `scrubLen` à la fin du pin.
+    const rect = track.getBoundingClientRect();
+    const scrolled = Math.min(Math.max(-rect.top, 0), scrubLen);
+    // Nombre d'étapes qui doivent être actives à cette progression.
+    const active = Math.min(steps.length, Math.floor(scrolled / PER_STEP));
+    if (active >= steps.length) completed = true;
+    // Séquence jouée ET piste entièrement dépassée vers le haut → on effondre.
+    if (completed && rect.bottom <= 0) { finalize(); return; }
+    if (active === shown) return;
+    for (let i = 0; i < steps.length; i++) {
+      if (i < active) steps[i].on(); else steps[i].off();
+    }
+    // Les cartes non mises en avant s'estompent uniquement pendant la phase du
+    // top 3 (tant que toutes les cartes ne sont pas encore éclairées).
+    if (grid) grid.classList.toggle('is-showcasing', active > 0 && active < cards.length);
+    shown = active;
+  }
+
+  let raf = null;
+  function onScroll() {
+    if (raf) return;
+    raf = requestAnimationFrame(() => { raf = null; render(); });
+  }
+
+  sizeTrack();
+  window.addEventListener('resize', sizeTrack, { passive: true });
+  window.addEventListener('scroll', onScroll, { passive: true });
+  render();
 }
 
 async function initVeille() {
