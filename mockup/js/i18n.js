@@ -219,6 +219,7 @@ const I18N = {
     'refs-q3-role': 'Mastère cybersécurité',
 
     'page-tag-details': 'Détails',
+    'page-tag-veille': 'Veille',
     'dp-nav-home': 'Accueil',
     'dp-nav-skills': 'Compétences',
     'dp-nav-massy': 'Massy Innove',
@@ -237,6 +238,7 @@ const I18N = {
     'dp-term-cmd': 'cd détails &amp;&amp; tree',
     'dp-tree-skills-label': 'compétences',
     'dp-tree-xp-label': 'expérience',
+    'dp-tree-stack-file': 'stack.md',
     'dp-term-hint': 'Tape un nom de fichier puis <span class="k">Entrée</span>, ou <span class="k">Tab</span> pour parcourir les onglets.',
     'dp-term-input-aria': 'Naviguer dans la page détails',
 
@@ -521,6 +523,7 @@ const I18N = {
     'refs-q3-role': 'Cybersecurity Master\'s',
 
     'page-tag-details': 'Details',
+    'page-tag-veille': 'Watch',
     'dp-nav-home': 'Home',
     'dp-nav-skills': 'Skills',
     'dp-nav-massy': 'Massy Innove',
@@ -539,6 +542,7 @@ const I18N = {
     'dp-term-cmd': 'cd details &amp;&amp; tree',
     'dp-tree-skills-label': 'skills',
     'dp-tree-xp-label': 'experience',
+    'dp-tree-stack-file': 'stack.md',
     'dp-term-hint': 'Type a filename then <span class="k">Enter</span>, or <span class="k">Tab</span> to cycle through the tabs.',
     'dp-term-input-aria': 'Navigate the details page',
 
@@ -823,6 +827,7 @@ const I18N = {
     'refs-q3-role': 'Máster en ciberseguridad',
 
     'page-tag-details': 'Detalles',
+    'page-tag-veille': 'Vigilancia',
     'dp-nav-home': 'Inicio',
     'dp-nav-skills': 'Competencias',
     'dp-nav-massy': 'Massy Innove',
@@ -841,6 +846,7 @@ const I18N = {
     'dp-term-cmd': 'cd detalles &amp;&amp; tree',
     'dp-tree-skills-label': 'competencias',
     'dp-tree-xp-label': 'experiencia',
+    'dp-tree-stack-file': 'stack.md',
     'dp-term-hint': 'Escribe un nombre de archivo y pulsa <span class="k">Intro</span>, o <span class="k">Tab</span> para recorrer las pestañas.',
     'dp-term-input-aria': 'Navegar por la página de detalles',
 
