@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-12T19:29:38.018Z",
+  "generatedAt": "2026-07-13T09:47:14.511Z",
   "windowDays": 3,
-  "count": 41,
+  "count": 30,
   "sources": [
     {
       "name": "CERT-FR",
@@ -52,6 +52,114 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "US and allies warn of Russian critical infrastructure attacks",
+      "link": "https://www.bleepingcomputer.com/news/security/us-and-allies-share-defense-tips-against-russian-hackers-targeting-critical-infrastructure/",
+      "date": "2026-07-13T09:32:23.000Z",
+      "summary": "Cybersecurity agencies from the United States and eight other countries have issued a joint warning that Russian state hackers are targeting vulnerable and poorly configured routers to infiltrate critical infrastructure networks. [...]",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-3.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Misconfigured Server Reveals Three Evilginx Phishing Operations Targeting Microsoft 365",
+      "link": "https://thehackernews.com/2026/07/misconfigured-server-reveals-three.html",
+      "date": "2026-07-13T07:30:00.000Z",
+      "summary": "An attacker running a live Microsoft 365 phishing operation left a Python web server listening on a public port with directory listing switched on. The command that did it: python3 -m http.server 8080, was still sitting in the readable .…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Phishing",
+        "Microsoft 365",
+        "Python"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "iCagenda and Balbooa Forms Joomla Flaws Reportedly Exploited as Zero-Days",
+      "link": "https://thehackernews.com/2026/07/icagenda-and-balbooa-forms-joomla-flaws.html",
+      "date": "2026-07-13T05:36:02.000Z",
+      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) has added two maximum-severity security flaws impacting iCagenda and Balbooa extensions for Joomla to its Known Exploited Vulnerabilities (KEV) catalog, following reports o…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-2.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI temporarily relaxes GPT-5.6 Sol usage limits",
+      "link": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-temporarily-relaxes-gpt-56-sol-usage-limits/",
+      "date": "2026-07-13T00:44:44.000Z",
+      "summary": "OpenAI is temporarily relaxing GPT-5.6 Sol usage after demand for the company's most powerful model surged over the past 48 hours. [...]",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Claude Fable 5 stays free for paid users until July 19 as Anthropic buys more time",
+      "link": "https://www.bleepingcomputer.com/news/artificial-intelligence/claude-fable-5-stays-free-for-paid-users-until-july-19-as-anthropic-buys-more-time/",
+      "date": "2026-07-12T19:39:12.000Z",
+      "summary": "Anthropic has just extended access to Claude Fable 5 for paid subscribers until July 19, giving you another week to keep using the most powerful model. [...]",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "BleepingComputer",
       "sourceType": "press",
@@ -137,7 +245,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": null
+      "image": "assets/veille/top-10.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -181,7 +289,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-2.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -224,7 +332,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-4.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -239,7 +347,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "The Hacker News",
@@ -483,7 +591,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-5.jpg"
     },
     {
       "source": "The Hacker News",
@@ -519,7 +627,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": null
+      "image": "assets/veille/top-9.jpg"
     },
     {
       "source": "The Hacker News",
@@ -560,353 +668,6 @@
         "Phishing",
         "Entra ID",
         "Microsoft 365"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Attackers Exploit 'Ill Bloom' Vulnerability to Drain Over $5 Million From Cryptocurrency Wallets",
-      "link": "https://thehackernews.com/2026/07/attackers-exploit-ill-bloom.html",
-      "date": "2026-07-10T09:00:05.000Z",
-      "summary": "Security firm Coinspect has disclosed a crypto wallet flaw it calls Ill Bloom, and attackers are already using it. The flaw is in how some wallet software generated its recovery phrase, the words that control the money. When that phrase…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Former ransomware negotiator gets 4 years for BlackCat attacks",
-      "link": "https://www.bleepingcomputer.com/news/security/us-ransomware-negotiator-gets-4-years-in-prison-for-blackcat-attacks/",
-      "date": "2026-07-10T08:17:52.000Z",
-      "summary": "A former employee of cybersecurity incident response company DigitalMint was sentenced to 70 months in prison for targeting U.S. companies in BlackCat (ALPHV) ransomware attacks. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": "assets/veille/top-6.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Ransomware Negotiator Gets 70 Months in Prison for Aiding BlackCat Attacks",
-      "link": "https://thehackernews.com/2026/07/ransomware-negotiator-gets-70-months-in.html",
-      "date": "2026-07-10T08:10:12.000Z",
-      "summary": "A 41-year-old former ransomware negotiator has been sentenced to nearly six years (i.e., 70 months) in prison in the U.S. for their role in conspiring with the now-defunct BlackCat ransomware operators to extort multiple victims and work…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": "assets/veille/top-7.jpg"
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Progress MOVEit Transfer (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0856/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Progress MOVEit Transfer. Certaines d'entre elles permettent à un attaquant de provoquer une élévation de privilèges, une atteinte à la confidentialité des données et une injection de…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans NetApp ONTAP 9 (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0857/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans NetApp ONTAP 9. Elle permet à un attaquant de provoquer un déni de service à distance et une atteinte à l'intégrité des données.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans CPython (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0858/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans CPython. Elle permet à un attaquant de provoquer un déni de service à distance.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Suricata (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0859/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Suricata. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Suricata",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits Siemens (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0860/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Siemens. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire, une élévation de privilèges et un déni de service à distance.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans le noyau Linux d'Ubuntu (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0861/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans le noyau Linux d'Ubuntu. Certaines d'entre elles permettent à un attaquant de provoquer une élévation de privilèges, une atteinte à la confidentialité des données et un contournement d…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans le noyau Linux de Debian LTS (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0862/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans le noyau Linux de Debian LTS. Certaines d'entre elles permettent à un attaquant de provoquer une élévation de privilèges, une atteinte à la confidentialité des données et un déni de se…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans le noyau Linux de Red Hat (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0863/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans le noyau Linux de Red Hat. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et un déni de service…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans le noyau Linux de SUSE (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0864/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans le noyau Linux de SUSE. Certaines d'entre elles permettent à un attaquant de provoquer une atteinte à la confidentialité des données, une atteinte à l'intégrité des données et un conto…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits IBM (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0865/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits IBM. Certaines d'entre elles permettent à un attaquant de provoquer un déni de service à distance, une atteinte à la confidentialité des données et une falsification de re…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Microsoft Azure Linux (10 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0866/",
-      "date": "2026-07-10T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Microsoft Azure Linux. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "Azure",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "OpenMandriva Linux says contributor tried to sabotage the project",
-      "link": "https://www.bleepingcomputer.com/news/security/openmandriva-linux-says-contributor-tried-to-sabotage-the-project/",
-      "date": "2026-07-09T22:14:13.000Z",
-      "summary": "The OpenMandriva Linux project announced that it was the target of an attempted act of internal sabotage after a dispute among contributors. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Injective SDK on npm infected with cryptocurrency wallet stealer",
-      "link": "https://www.bleepingcomputer.com/news/security/injective-sdk-on-npm-infected-with-cryptocurrency-wallet-stealer/",
-      "date": "2026-07-09T20:10:00.000Z",
-      "summary": "Hackers compromised the Injective Labs SDK project's GitHub repository and used it to publish a malicious package on the Node Package Manager (npm) that stole cryptocurrency wallet private keys and mnemonic seed phrases. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "JavaScript",
-        "Git"
       ],
       "projects": [],
       "severity": "info",
