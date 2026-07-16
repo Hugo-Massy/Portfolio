@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-15T19:35:31.730Z",
+  "generatedAt": "2026-07-16T08:32:56.354Z",
   "windowDays": 3,
-  "count": 70,
+  "count": 68,
   "sources": [
     {
       "name": "CERT-FR",
@@ -52,6 +52,66 @@
     }
   },
   "items": [
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Zoom Patches Critical Windows Flaw That Could Enable Account Takeover",
+      "link": "https://thehackernews.com/2026/07/zoom-patches-critical-windows-flaw-that.html",
+      "date": "2026-07-16T07:22:44.000Z",
+      "summary": "Zoom has released security updates for a critical security flaw impacting Zoom Workplace for Windows that could facilitate account takeover. The vulnerability, tracked as CVE-2026-53412 (CVSS score: 9.8), affects Zoom Desktop Client for…",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Windows Server",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-6.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Dutch police bust investment fraud ring stealing over €100 million",
+      "link": "https://www.bleepingcomputer.com/news/security/dutch-police-bust-investment-fraud-ring-stealing-over-100-million/",
+      "date": "2026-07-15T21:55:50.000Z",
+      "summary": "The Dutch Police announced the arrest of multiple individuals suspected of being part of an international investment fraud scheme estimated to have tens of thousands of victims. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Zoom warns of critical account takeover vulnerability",
+      "link": "https://www.bleepingcomputer.com/news/security/zoom-warns-of-critical-account-takeover-vulnerability/",
+      "date": "2026-07-15T20:16:02.000Z",
+      "summary": "Zoom is warning of a critical vulnerability in its desktop client and software development kit for Windows that could be exploited by an unauthenticated party to hijack accounts. [...]",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Windows Server",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-7.jpg"
+    },
     {
       "source": "The Hacker News",
       "sourceType": "press",
@@ -169,7 +229,7 @@
         "massy-innove"
       ],
       "severity": "high",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-8.jpg"
     },
     {
       "source": "The Hacker News",
@@ -193,7 +253,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-10.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -309,7 +369,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-7.jpg"
+      "image": "assets/veille/top-9.jpg"
     },
     {
       "source": "The Hacker News",
@@ -395,7 +455,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-8.jpg"
+      "image": "assets/veille/top-10.jpg"
     },
     {
       "source": "CERT-FR",
@@ -1098,49 +1158,6 @@
       "image": "assets/veille/top-3.jpg"
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "LastPass, Bitwarden users targeted with fake security alerts",
-      "link": "https://www.bleepingcomputer.com/news/security/lastpass-bitwarden-users-targeted-with-fake-security-alerts/",
-      "date": "2026-07-14T15:31:52.000Z",
-      "summary": "LastPass is warning users about an ongoing phishing campaign that is using fake security notices to direct them to fraudulent websites. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "You Don't Have to Run an Exploit to Know If You're Vulnerable",
-      "link": "https://www.bleepingcomputer.com/news/security/you-dont-have-to-run-an-exploit-to-know-if-youre-vulnerable/",
-      "date": "2026-07-14T14:00:10.000Z",
-      "summary": "Many vulnerabilities cannot be safely validated with live exploits, either because no exploit exists or the affected systems are too critical to test. Picus explains how TTP chaining helps organizations determine exploitability by valida…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -1501,72 +1518,6 @@
       "projects": [
         "massy-innove"
       ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Misconfigured Server Reveals Three Evilginx Phishing Operations Targeting Microsoft 365",
-      "link": "https://thehackernews.com/2026/07/misconfigured-server-reveals-three.html",
-      "date": "2026-07-13T07:30:00.000Z",
-      "summary": "An attacker running a live Microsoft 365 phishing operation left a Python web server listening on a public port with directory listing switched on. The command that did it: python3 -m http.server 8080, was still sitting in the readable .…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Microsoft 365",
-        "Python"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "iCagenda and Balbooa Forms Joomla Flaws Reportedly Exploited as Zero-Days",
-      "link": "https://thehackernews.com/2026/07/icagenda-and-balbooa-forms-joomla-flaws.html",
-      "date": "2026-07-13T05:36:02.000Z",
-      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) has added two maximum-severity security flaws impacting iCagenda and Balbooa extensions for Joomla to its Known Exploited Vulnerabilities (KEV) catalog, following reports o…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-9.jpg"
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "actualité",
-      "title": "Bulletin d'actualité CERTFR-2026-ACT-030 (13 juillet 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/actualite/CERTFR-2026-ACT-030/",
-      "date": "2026-07-13T00:00:00.000Z",
-      "summary": "Ce bulletin d'actualité du CERT-FR revient sur les vulnérabilités significatives de la semaine passée pour souligner leurs criticités. Il ne remplace pas l'analyse de l'ensemble des avis et alertes publiés par le CERT-FR dans le cadre d'…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
       "severity": "info",
       "image": null
     }
