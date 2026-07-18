@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-18T08:07:05.652Z",
+  "generatedAt": "2026-07-18T19:29:51.432Z",
   "windowDays": 3,
-  "count": 61,
+  "count": 53,
   "sources": [
     {
       "name": "CERT-FR",
@@ -52,6 +52,64 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "WordPress Core \"wp2shell\" RCE flaws get public exploits, patch now",
+      "link": "https://www.bleepingcomputer.com/news/security/wordpress-core-wp2shell-rce-flaws-get-public-exploits-patch-now/",
+      "date": "2026-07-18T17:22:47.000Z",
+      "summary": "Public exploits have been released for the critical \"wp2shell\" remote code execution vulnerabilities affecting WordPress Core, making it imperative that administrators patch their sites immediately. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-2.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Microsoft warns of surge in ACR Stealer attacks on customers",
+      "link": "https://www.bleepingcomputer.com/news/security/microsoft-warns-of-surge-in-acr-stealer-attacks-on-customers/",
+      "date": "2026-07-18T14:17:19.000Z",
+      "summary": "Microsoft has observed a surge in attacks using the ACR Stealer malware to steal browser-stored passwords, authentication tokens, and sensitive documents from its enterprise customers. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "The Future of Age Verification: Your Face Never Leaves Your Device",
+      "link": "https://www.bleepingcomputer.com/news/security/the-future-of-age-verification-your-face-never-leaves-your-device/",
+      "date": "2026-07-18T13:15:24.000Z",
+      "summary": "As age verification laws expand worldwide, organizations face growing pressure to protect users' privacy while meeting regulatory requirements. Incode explains how on-device age estimation verifies age without transmitting or storing fac…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "The Hacker News",
       "sourceType": "press",
@@ -303,7 +361,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-2.jpg"
+      "image": "assets/veille/top-3.jpg"
     },
     {
       "source": "The Hacker News",
@@ -426,7 +484,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
@@ -725,45 +783,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "AI Agents Broke the Security Playbook. Here's What Replaces It.",
-      "link": "https://www.bleepingcomputer.com/news/security/ai-agents-broke-the-security-playbook-heres-what-replaces-it/",
-      "date": "2026-07-16T14:00:10.000Z",
-      "summary": "Traditional security workflows were built for environments that changed at human speed. Token Security explains why AI agents require a new approach: building on a live identity foundation while giving security teams the flexibility to c…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "23andMe to pay $18 million in new genetics data breach settlement",
-      "link": "https://www.bleepingcomputer.com/news/security/23andme-to-pay-18-million-in-new-genetics-data-breach-settlement/",
-      "date": "2026-07-16T13:47:23.000Z",
-      "summary": "Genetic testing company 23andMe has agreed to pay $18 million to settle claims from a coalition of 43 attorneys general that it failed to protect customers' genetic data. [...]",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": "assets/veille/top-7.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "The Hacker News",
@@ -824,21 +844,6 @@
       "tags": [
         "Malware"
       ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Scattered Spider members behind TfL hack get five years in prison",
-      "link": "https://www.bleepingcomputer.com/news/security/scattered-spider-members-behind-transport-for-london-hack-get-five-years-in-prison/",
-      "date": "2026-07-16T12:31:29.000Z",
-      "summary": "Two leading members of the Scattered Spider cybercrime collective were sentenced to five years and six months in prison each for hacking Transport for London (TfL) in 2024. [...]",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
       "projects": [],
       "severity": "info",
       "image": null
@@ -1144,191 +1149,6 @@
       ],
       "projects": [],
       "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "TuxBot v3 Evolution Shows Signs of LLM-Assisted IoT Botnet Development",
-      "link": "https://thehackernews.com/2026/07/tuxbot-v3-evolution-shows-signs-of-llm.html",
-      "date": "2026-07-15T18:43:08.000Z",
-      "summary": "Cybersecurity researchers have disclosed details of a previously unreported Internet-of-Things (IoT) botnet framework dubbed TuxBot v3 Evolution that shows signs of being developed with assistance from a large language model (LLM), albei…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "OkoBot Malware Framework Injects Seed Phrase Phishing Into Ledger and Trezor Apps",
-      "link": "https://thehackernews.com/2026/07/okobot-malware-framework-injects-seed.html",
-      "date": "2026-07-15T15:30:30.000Z",
-      "summary": "A malware framework called OkoBot has been running on Windows machines since April 2025, and one of its modules is built to con hardware wallet owners out of their recovery phrase. On an infected PC, the request comes from inside the wal…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Malware",
-        "Windows Server"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Firefox, Chrome, Adobe, and VMware Updates Fix Multiple Critical Security Flaws",
-      "link": "https://thehackernews.com/2026/07/firefox-chrome-adobe-and-vmware-updates.html",
-      "date": "2026-07-15T13:18:53.000Z",
-      "summary": "Mozilla has released updates to address two critical flaws in Firefox for which it warned that exploit code has been published. The vulnerabilities are listed below - CVE-2026-15718, an invalid pointer in the JavaScript: WebAssembly comp…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "VMware",
-        "JavaScript",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-6.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "SASE Has An AI Blind Spot. Inspecting Packets Is No Longer Enough.",
-      "link": "https://thehackernews.com/2026/07/sase-has-ai-blind-spot-inspecting.html",
-      "date": "2026-07-15T11:50:01.000Z",
-      "summary": "For years, routing traffic through cloud proxies was good enough. Then work moved to the browser, AI entered the workflow, and the inspection model stopped keeping up. Enterprise workflows now live across SaaS applications, browsers, and…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Researcher Drops New Windows Zero-Day PoC Hours After Microsoft Patch Tuesday",
-      "link": "https://thehackernews.com/2026/07/researcher-drops-new-windows-zero-day.html",
-      "date": "2026-07-15T11:07:07.000Z",
-      "summary": "Security researcher Chaotic Eclipse (aka Nightmare-Eclipse) has released a new proof-of-concept (PoC) exploit called LegacyHive. It has been described as a Windows User Profile Service arbitrary hive load elevation of privileges vulnerab…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-4.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "New Webinar: Closing the Approval Gap in AI-Era Ad Tech",
-      "link": "https://thehackernews.com/2026/07/new-webinar-closing-approval-gap-in-ai.html",
-      "date": "2026-07-15T11:06:57.000Z",
-      "summary": "A single approved marketing tag can quietly load fourth-party code your security team has never seen, granting full access to your forms, customer data, and checkout pages. This on-demand webinar reveals how this Approval Gap forms, and…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Active Directory",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Cursor Flaw Lets Malicious Cloned Repositories Trigger Windows Code Execution",
-      "link": "https://thehackernews.com/2026/07/cursor-flaw-lets-malicious-cloned.html",
-      "date": "2026-07-15T10:55:22.000Z",
-      "summary": "Open a repository in Cursor on Windows and, if a file named git.exe is sitting in the project root, Cursor runs it. No click, no approval dialog, no warning that anything in the folder is about to execute. Whatever that binary does, it d…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server",
-        "Git",
-        "Exploit"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Compromised AsyncAPI npm Packages Deliver Multi-Stage Botnet Malware",
-      "link": "https://thehackernews.com/2026/07/compromised-asyncapi-npm-packages.html",
-      "date": "2026-07-15T09:16:13.000Z",
-      "summary": "Four compromised npm packages in the @asyncapi namespace have been observed distributing a multi-stage botnet loader, according to findings from OX Security, SafeDep, Socket, and StepSecurity. The affected packages are listed below - @as…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware",
-        "JavaScript"
-      ],
-      "projects": [],
-      "severity": "info",
       "image": null
     }
   ]
