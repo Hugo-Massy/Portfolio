@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-28T19:51:41.371Z",
+  "generatedAt": "2026-07-29T09:07:13.588Z",
   "windowDays": 3,
-  "count": 41,
+  "count": 46,
   "sources": [
     {
       "name": "CERT-FR",
@@ -56,6 +56,162 @@
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
+      "title": "Public PoC Released for Exploited Check Point SmartConsole Authentication Bypass",
+      "link": "https://thehackernews.com/2026/07/rapid7-releases-poc-for-exploited-check.html",
+      "date": "2026-07-29T08:58:27.000Z",
+      "summary": "Cybersecurity researchers have shared additional technical details about a recently patched critical security flaw impacting Check Point Security Management Server and Multi-Domain Security Management Server (MDS) that has come under act…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-5.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI Agent Used Exposed Credentials Across Four Services During Hugging Face Breach",
+      "link": "https://thehackernews.com/2026/07/openai-agent-used-exposed-credentials.html",
+      "date": "2026-07-29T07:51:00.000Z",
+      "summary": "OpenAI on Tuesday revealed the rogue artificial intelligence (AI) agent that escaped its sealed evaluation environment and broke into Hugging Face's production environment also hacked multiple third-party accounts and services as part of…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "New Gitea RCE Lets Repository Writers Plant a Git Hook to Run Shell Commands",
+      "link": "https://thehackernews.com/2026/07/new-gitea-rce-lets-repository-writers.html",
+      "date": "2026-07-29T07:47:19.000Z",
+      "summary": "Gitea, the self-hosted Git platform, has patched a critical remote code execution vulnerability. A user with ordinary repository write access can turn attacker-controlled patch content into a live Git hook and run shell commands as the G…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "Git",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-6.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Flying Eagle Android RAT Traces Found on 170 Servers as Source Code Circulates",
+      "link": "https://thehackernews.com/2026/07/flying-eagle-android-rat-traces-found.html",
+      "date": "2026-07-29T07:07:23.000Z",
+      "summary": "Source code for the Flying Eagle Android remote access trojan (RAT) framework is circulating through criminal Telegram channels. Hunt.io and independent researcher NetAskari traced matching control panels and certificates to 170 internet…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Two Compromised joyfill npm Packages Run RAT When Imported Into Node.js",
+      "link": "https://thehackernews.com/2026/07/two-compromised-joyfill-npm-packages.html",
+      "date": "2026-07-29T04:20:57.000Z",
+      "summary": "Beta release versions of two npm packages in the @joyfill namespace have been compromised to deliver a remote access trojan (RAT) associated with the DEV#POPPER malware family. The list of affected packages is as follows - @joyfill/layou…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "JavaScript"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "CubePilot drone software dev hit by DNS hijacking to intercept traffic",
+      "link": "https://www.bleepingcomputer.com/news/security/cubepilot-drone-software-dev-hit-by-dns-hijacking-to-intercept-traffic/",
+      "date": "2026-07-28T21:17:39.000Z",
+      "summary": "CubePilot, an Australian firm that designs flight controllers for drones (UAVs), announced a severe operational disruption caused by a DNS hijacking attack. [...]",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI models used Artifactory zero-days to escape to the internet",
+      "link": "https://www.bleepingcomputer.com/news/security/openai-models-used-artifactory-zero-days-to-escape-to-the-internet/",
+      "date": "2026-07-28T20:37:06.000Z",
+      "summary": "JFrog has confirmed that OpenAI models exploited zero-day vulnerabilities in self-hosted Artifactory servers to help escape an isolated testing environment and gain access to the internet before attacking Hugging Face. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-3.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
       "title": "Claude AI Just Cracked a Post-Quantum Test Scheme and Found a Faster 7-Round AES Attack",
       "link": "https://thehackernews.com/2026/07/claude-ai-just-cracked-post-quantum.html",
       "date": "2026-07-28T18:59:07.000Z",
@@ -89,7 +245,7 @@
       "tags": [],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-4.jpg"
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -112,7 +268,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-8.jpg"
     },
     {
       "source": "The Hacker News",
@@ -216,7 +372,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-9.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -280,7 +436,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-8.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -301,7 +457,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-7.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -459,7 +615,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -884,44 +1040,6 @@
       "tags": [
         "CVE"
       ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "GitHub, PyPI add time-based defenses against supply chain attacks",
-      "link": "https://www.bleepingcomputer.com/news/security/github-pypi-add-time-absed-defenses-against-supply-chain-attacks/",
-      "date": "2026-07-26T14:13:39.000Z",
-      "summary": "GitHub and PyPI (Python Package Index) have introduced a time-based mechanism in the Dependabot dependency management tool to protect against supply-chain attacks and to limit their impact. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "Python",
-        "Git",
-        "Supply chain"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Steam forum ClickFix attacks infect gamers with XMRig cryptominers",
-      "link": "https://www.bleepingcomputer.com/news/security/steam-forum-clickfix-attacks-infect-gamers-with-xmrig-cryptominers/",
-      "date": "2026-07-25T22:37:47.000Z",
-      "summary": "Steam discussion forums are being abused in ClickFix attacks that pretend to be fixes for game and computer problems but actually infect devices with cryptominers. [...]",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
       "projects": [],
       "severity": "info",
       "image": null
