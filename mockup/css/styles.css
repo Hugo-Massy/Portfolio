@@ -2375,6 +2375,10 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   pointer-events:auto;
 }
 .details-link-inner p{color:var(--text-dim); font-size:15px; margin:0;}
+/* deux sorties côte à côte (détails + veille) : .details-link-inner est une colonne,
+   il faut donc une rangée dédiée pour ne pas empiler les boutons. */
+.details-link-actions{display:flex; flex-wrap:wrap; justify-content:center; gap:12px;}
+.details-link-actions .btn-ghost{background:var(--bg-elev);}
 @media(max-width:640px){
   .details-link{position:static; transform:none; margin:0 0 28px; opacity:1;}
 }

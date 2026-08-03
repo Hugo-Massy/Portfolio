@@ -92,15 +92,37 @@ function sourcePlaceholderHtml(it, extraClass) {
 // ne transportent que les identifiants.
 let PROJECT_LABELS = {};
 
+// Locale Intl associée à chaque langue du sélecteur, pour le formatage des dates.
+const LOCALE = { fr: 'fr-FR', en: 'en-US', es: 'es-ES' };
+
+// Données brutes mises en cache après le premier chargement, pour pouvoir
+// ré-afficher dans la nouvelle langue au changement de langue sans refetch.
+let veilleData = null;
+let impactData = null;
+let currentLang = 'fr';
+
+// Lit un champ qui peut être soit une simple chaîne (contenu factuel non
+// traduit, ex. titre d'article externe), soit un objet { fr, en, es } (texte
+// rédigé par mes soins, ex. récit "Impact").
+function loc(field, lang) {
+  if (field == null) return '';
+  if (typeof field === 'string') return field;
+  return field[lang] || field.fr || field.en || field.es || '';
+}
+
 // Ligne combinée « projet concerné » + tags de sujet, sur une seule rangée qui
 // s'enroule si besoin. Le chip projet reste plus appuyé (fond plein) que les
 // tags de sujet (fond léger) : c'est la différence entre une revue de presse
 // et une veille exploitée, on ne montre pas seulement qu'on lit, mais quel
 // système déployé est concerné.
-function tagsRowHtml(it) {
+function tagsRowHtml(it, lang) {
   const projIds = Array.isArray(it.projects) ? it.projects : [];
   const projChips = projIds.length
-    ? projIds.map((id) => `<span class="vl-proj-chip">${escapeHtml((PROJECT_LABELS[id] && PROJECT_LABELS[id].fr) || id)}</span>`).join('')
+    ? projIds.map((id) => {
+        const labels = PROJECT_LABELS[id];
+        const label = labels ? (labels[lang] || labels.fr || id) : id;
+        return `<span class="vl-proj-chip">${escapeHtml(label)}</span>`;
+      }).join('')
     : '';
   const tagChips = Array.isArray(it.tags) && it.tags.length
     ? it.tags.map((t) => `<span class="vl-tag-chip">${escapeHtml(t)}</span>`).join('')
@@ -111,13 +133,13 @@ function tagsRowHtml(it) {
 
 // Rendu soigné d'une ligne du flux retenu (top 10) : même langage visuel que
 // les cartes du top 3, mais en ligne compacte plutôt qu'en carte.
-function listItemHtml(it, rank) {
+function listItemHtml(it, rank, lang, dict, locale) {
   let dateLabel = it.date;
   const parsed = Date.parse(it.date);
-  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const tagsRow = tagsRowHtml(it);
+  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
+  const tagsRow = tagsRowHtml(it, lang);
   const link = it.link
-    ? `<span class="vl-list-link">Lire l'article<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
+    ? `<span class="vl-list-link">${dict['vl-read-article']}<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
     : '';
   const tag = it.link ? 'a' : 'article';
   const href = it.link ? ` href="${escapeHtml(it.link)}" target="_blank" rel="noopener noreferrer"` : '';
@@ -138,16 +160,16 @@ function listItemHtml(it, rank) {
 // Rendu soigné (contrairement à itemHtml, volontairement brut) des 3 cartes du
 // top 3 : mêmes tokens visuels que le reste du site (voir styles.css), champs
 // triés pour raconter la news plutôt que déballer toutes les clés du JSON.
-function topItemHtml(it, rank) {
+function topItemHtml(it, rank, lang, dict, locale) {
   const img = it.image
     ? `<figure class="vl-img"><img src="${escapeHtml(it.image)}" alt="" decoding="async"><span class="vl-img-spinner" aria-hidden="true"></span></figure>`
     : '';
   let dateLabel = it.date;
   const parsed = Date.parse(it.date);
-  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const tagsRow = tagsRowHtml(it);
+  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
+  const tagsRow = tagsRowHtml(it, lang);
   const link = it.link
-    ? `<span class="vl-top-link">Lire l'article<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
+    ? `<span class="vl-top-link">${dict['vl-read-article']}<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
     : '';
   const tag = it.link ? 'a' : 'article';
   const href = it.link ? ` href="${escapeHtml(it.link)}" target="_blank" rel="noopener noreferrer"` : '';
@@ -177,20 +199,20 @@ function wireImages(container) {
   });
 }
 
-function dumpAll(data) {
+function dumpAll(data, lang) {
+  const dict = I18N[lang] || I18N.fr;
+  const locale = LOCALE[lang] || 'fr-FR';
   PROJECT_LABELS = data.projects || {};
   const meta = document.getElementById('vl-meta');
-  // Date de génération lisible (fr) plutôt que l'horodatage ISO brut.
+  // Date de génération lisible dans la langue active plutôt que l'horodatage ISO brut.
   let genDate = data.generatedAt;
   const parsed = Date.parse(data.generatedAt);
   if (isFinite(parsed)) {
     const d = new Date(parsed);
-    const datePart = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const timePart = d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    genDate = `${datePart} à ${timePart}`;
+    genDate = d.toLocaleString(locale, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   }
   const genEl = document.getElementById('vl-updated');
-  if (genEl) genEl.textContent = `Mise à jour le ${genDate}`;
+  if (genEl) genEl.textContent = `${dict['vl-updated-prefix']} ${genDate}`;
   // Sources dédupliquées par nom (une puce par source, kinds regroupés).
   const byName = new Map();
   for (const s of data.sources || []) {
@@ -213,8 +235,8 @@ function dumpAll(data) {
 
   meta.innerHTML =
     `<p class="vl-meta-stats">`
-    + `<span class="vl-meta-line">Les <b>${escapeHtml(kept.length)}</b> <strong>actualités</strong> les plus importantes</span>`
-    + `<span class="vl-meta-line">auprès de <b>${byName.size}</b> sources ces <b>${WINDOW_DAYS}</b> derniers jours.</span>`
+    + `<span class="vl-meta-line">${dict['vl-meta-line1'].replace('{count}', kept.length)}</span>`
+    + `<span class="vl-meta-line">${dict['vl-meta-line2'].replace('{sources}', byName.size).replace('{days}', WINDOW_DAYS)}</span>`
     + `</p>`;
 
   // Les 3 news les plus importantes — parmi les seules du top 10 pourvues d'une
@@ -222,7 +244,7 @@ function dumpAll(data) {
   const top = document.getElementById('vl-top');
   const top3 = kept.filter((it) => it.image).slice(0, 3);
   top.innerHTML = `<div class="vl-top-grid">`
-    + top3.map((it, i) => topItemHtml(it, `#${i + 1}`)).join('')
+    + top3.map((it, i) => topItemHtml(it, `#${i + 1}`, lang, dict, locale)).join('')
     + `</div>`;
 
   wireImages(top);
@@ -231,8 +253,8 @@ function dumpAll(data) {
   // Le reste du top 10, déjà présenté ci-dessus via le top 3, n'est pas répété.
   const rest = kept.filter((it) => !top3.includes(it));
   const grid = document.getElementById('vl-grid');
-  grid.innerHTML = `<h2 class="vl-all-h">Le reste du top ${kept.length} des ${WINDOW_DAYS} derniers jours</h2>`
-    + `<div class="vl-list">${rest.map((it, i) => listItemHtml(it, `#${i + top3.length + 1}`)).join('')}</div>`;
+  grid.innerHTML = `<h2 class="vl-all-h">${dict['vl-rest-of-top'].replace('{count}', kept.length).replace('{days}', WINDOW_DAYS)}</h2>`
+    + `<div class="vl-list">${rest.map((it, i) => listItemHtml(it, `#${i + top3.length + 1}`, lang, dict, locale)).join('')}</div>`;
   wireImages(grid);
 }
 
@@ -243,7 +265,15 @@ function dumpAll(data) {
 // cachée sous la piste ; l'avancement des animations (mise en avant des cartes
 // du top 3 puis apparition des lignes de texte) est piloté par la progression
 // du scroll dans la piste.
+// Écouteurs de la séquence en cours, pour pouvoir les retirer avant d'en
+// recréer d'autres si initShowcaseScrub est rappelée après un changement de
+// langue (dumpAll régénère le contenu de meta/top, donc les anciens `lines`/
+// `cards` capturés par la précédente instance pointent vers des nœuds retirés
+// du DOM — sans ce nettoyage, les écouteurs scroll/resize s'accumuleraient).
+let scrubTeardown = null;
+
 function initShowcaseScrub(meta, top) {
+  if (scrubTeardown) { scrubTeardown(); scrubTeardown = null; }
   const track = document.getElementById('vl-showcase');
   const pin = track && track.querySelector('.vl-showcase-pin');
   const lines = Array.from(meta.querySelectorAll('.vl-meta-line'));
@@ -389,9 +419,17 @@ function initShowcaseScrub(meta, top) {
   window.addEventListener('resize', layout, { passive: true });
   // La hauteur du pin change quand les images du top 3 se chargent : on
   // recale alors la position de gel et la course.
+  let resizeObserver = null;
   if (typeof ResizeObserver !== 'undefined') {
-    new ResizeObserver(() => layout()).observe(pin);
+    resizeObserver = new ResizeObserver(() => layout());
+    resizeObserver.observe(pin);
   }
+
+  scrubTeardown = () => {
+    window.removeEventListener('scroll', onScroll);
+    window.removeEventListener('resize', layout);
+    if (resizeObserver) resizeObserver.disconnect();
+  };
 }
 
 // ------------------------------------------------------- Bloc « Impact » --
@@ -402,16 +440,17 @@ function initShowcaseScrub(meta, top) {
 // Carte de l'actu source, au même langage visuel que les cartes du flux
 // ci-dessus (.vl-top-card) — mêmes classes, sans puce de rang (ces entrées
 // sont chronologiques, pas classées par importance).
-function impactArticleCardHtml(e) {
+function impactArticleCardHtml(e, lang, dict) {
+  const locale = LOCALE[lang] || 'fr-FR';
   const img = e.image
     ? `<figure class="vl-img"><img src="${escapeHtml(e.image)}" alt="" decoding="async"><span class="vl-img-spinner" aria-hidden="true"></span></figure>`
     : sourcePlaceholderHtml({ source: (e.source && e.source.label) || '' }, '');
   let dateLabel = e.date;
   const parsed = Date.parse(e.date);
-  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString(locale, { day: '2-digit', month: 'short', year: 'numeric' });
   const hasLink = e.source && e.source.link;
   const link = hasLink
-    ? `<span class="vl-top-link">Lire l'article<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
+    ? `<span class="vl-top-link">${dict['vl-read-article']}<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
     : '';
   const tag = hasLink ? 'a' : 'article';
   const href = hasLink ? ` href="${escapeHtml(e.source.link)}" target="_blank" rel="noopener noreferrer"` : '';
@@ -430,28 +469,34 @@ function impactArticleCardHtml(e) {
 // différentes, partagent ainsi la même ligne et donc la même hauteur de
 // rangée — leur texte démarre à la même hauteur, quelle que soit la longueur
 // du texte de la colonne voisine sur les rangs précédents.
-function impactEntryHtml(e, col, row, isLast) {
+function impactEntryHtml(e, col, row, isLast, lang, dict) {
   const rankInCol = row - 2; // rang 0-based de l'entrée dans sa propre colonne
   const sideClass = rankInCol % 2 === 1 ? ' vl-impact-entry--right' : '';
   const offsetClass = rankInCol % 4 === 2 ? ' vl-impact-entry--offset' : '';
   const sepClass = rankInCol > 0 ? ' vl-impact-entry--sep' : '';
   const lastClass = isLast ? ' vl-impact-entry--last' : '';
   const layoutClass = e.cardLayout ? ` vl-impact-pos-${e.cardLayout}` : '';
-  const card = impactArticleCardHtml(e);
+  const card = impactArticleCardHtml(e, lang, dict);
+  const story = loc(e.story, lang);
+  // Chaque coupure « <br><br> » du récit devient un <p> distinct (avec sa
+  // propre marge) plutôt qu'un simple retour à la ligne à l'intérieur d'un
+  // unique <p> : sans ça, les entrées sans cardLayout s'affichaient comme un
+  // seul bloc de texte compact, beaucoup plus dense que celles scindées
+  // autour de la carte.
+  const paras = story.split('<br><br>').map((p) => p.trim()).filter(Boolean);
   let body;
   if (e.cardLayout === 'bottom-right' || e.cardLayout === 'bottom-left') {
     // La carte est insérée au milieu du récit (entre l'avant-dernier et le
     // dernier paragraphe) pour que le dernier paragraphe s'enroule autour
     // d'elle, plutôt que de la reléguer sous un bloc de texte plein cadre.
-    const sep = '<br><br>';
-    const idx = e.cardSplit === 'last' ? (e.story || '').lastIndexOf(sep) : (e.story || '').indexOf(sep);
-    const lead = idx >= 0 ? e.story.slice(0, idx) : '';
-    const tail = idx >= 0 ? e.story.slice(idx + sep.length) : (e.story || '');
-    body = (lead ? `<p class="vl-impact-story">${lead}</p>` : '')
+    const splitAt = e.cardSplit === 'last' ? Math.max(paras.length - 1, 1) : 1;
+    const lead = paras.slice(0, splitAt);
+    const tail = paras.slice(splitAt);
+    body = lead.map((p) => `<p class="vl-impact-story">${p}</p>`).join('')
       + card
-      + `<p class="vl-impact-story">${tail}</p>`;
+      + tail.map((p) => `<p class="vl-impact-story">${p}</p>`).join('');
   } else {
-    body = card + `<p class="vl-impact-story">${e.story || ''}</p>`;
+    body = card + paras.map((p) => `<p class="vl-impact-story">${p}</p>`).join('');
   }
   return `<div class="vl-impact-entry${sideClass}${offsetClass}${sepClass}${lastClass}${layoutClass}" style="--col:${col};--row:${row};">`
     + `<div class="vl-impact-entry-body">`
@@ -459,28 +504,36 @@ function impactEntryHtml(e, col, row, isLast) {
     + `</div></div>`;
 }
 
-function impactColumnHtml(id, project, entries, col) {
-  const label = (project && project.label) || id;
+function impactColumnHtml(id, project, entries, col, lang, dict) {
+  const label = (project && loc(project.label, lang)) || id;
   const href = project && project.href;
-  const link = href ? `<a class="vl-impact-col-link" href="${escapeHtml(href)}">Voir le projet<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>` : '';
+  const link = href ? `<a class="vl-impact-col-link" href="${escapeHtml(href)}">${dict['vl-view-project']}<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>` : '';
   let html = `<div class="vl-impact-col-head" style="--col:${col};--row:1;"><h3>${escapeHtml(label)}</h3>${link}</div>`;
   html += entries.length
-    ? entries.map((e, i) => impactEntryHtml(e, col, i + 2, i === entries.length - 1)).join('')
-    : `<p class="vl-impact-empty" style="--col:${col};--row:2;">Aucune actu reliée à ce projet pour l'instant.</p>`;
+    ? entries.map((e, i) => impactEntryHtml(e, col, i + 2, i === entries.length - 1, lang, dict)).join('')
+    : `<p class="vl-impact-empty" style="--col:${col};--row:2;">${dict['vl-impact-empty']}</p>`;
   return html;
 }
 
-function renderImpact(data) {
+function renderImpact(data, lang) {
   const mount = document.getElementById('vl-impact-cols');
   if (!mount) return;
+  const dict = I18N[lang] || I18N.fr;
   const projects = data.projects || {};
   const entries = Array.isArray(data.entries) ? data.entries : [];
   const byProject = {};
   for (const e of entries) (byProject[e.project] || (byProject[e.project] = [])).push(e);
   for (const id of Object.keys(byProject)) byProject[id].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
   mount.innerHTML = Object.keys(projects)
-    .map((id, i) => impactColumnHtml(id, projects[id], byProject[id] || [], i + 1))
+    .map((id, i) => impactColumnHtml(id, projects[id], byProject[id] || [], i + 1, lang, dict))
     .join('');
+}
+
+// Ré-affiche le contenu dynamique déjà chargé dans la langue active — appelée
+// au premier rendu et à chaque changement de langue (voir initLangSwitch).
+function renderDynamic() {
+  if (veilleData) dumpAll(veilleData, currentLang);
+  if (impactData) renderImpact(impactData, currentLang);
 }
 
 async function initVeille() {
@@ -488,18 +541,22 @@ async function initVeille() {
   try {
     const res = await fetch('js/veille-data.json', { cache: 'no-cache' });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+    veilleData = await res.json();
     status.style.display = 'none';
-    dumpAll(data);
+    dumpAll(veilleData, currentLang);
   } catch (err) {
-    status.textContent = 'Erreur de chargement : ' + err.message;
+    const dict = I18N[currentLang] || I18N.fr;
+    status.textContent = `${dict['vl-load-error-prefix']} ${err.message}`;
     console.error('Veille:', err);
   }
   // Section indépendante du flux : une panne ici ne doit jamais faire
   // disparaître les actualités déjà affichées au-dessus.
   try {
     const res = await fetch('js/veille-impact.json', { cache: 'no-cache' });
-    if (res.ok) renderImpact(await res.json());
+    if (res.ok) {
+      impactData = await res.json();
+      renderImpact(impactData, currentLang);
+    }
   } catch (err) {
     console.error('Veille (impact):', err);
   }
@@ -521,6 +578,8 @@ async function initVeille() {
     btn.dataset.lang = lang;
     LANGS.forEach((l) => { flags[l].classList.toggle('is-active', l === lang); });
     applyTranslations(lang);
+    currentLang = lang;
+    renderDynamic();
   }
 
   apply('fr');
@@ -683,6 +742,7 @@ async function initVeille() {
   if (!contact) return;
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
+  const updated = document.querySelector('.vl-updated');
 
   // --contact-slope est une clamp() : parseFloat sur la custom property échouerait.
   // On la fait résoudre par le moteur de layout via une sonde hors-écran.
@@ -714,6 +774,7 @@ async function initVeille() {
   function update() {
     toggle(backToTop, 'right');
     toggle(pageTag, 'left');
+    toggle(updated, 'left');
   }
 
   update();

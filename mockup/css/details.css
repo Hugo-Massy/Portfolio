@@ -932,6 +932,9 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   margin-bottom:calc(clamp(320px, 42vw, 620px) * 0.5 - clamp(160px, 22vw, 360px));
 }
 .dp-foot p{color:var(--text-dim); font-size:15px;}
+/* deux sorties possibles côte à côte (accueil + page sœur) : .dp-foot est une
+   colonne, il faut donc une rangée dédiée pour ne pas les empiler. */
+.dp-foot-actions{display:flex; flex-wrap:wrap; justify-content:center; gap:12px;}
 /* le texte et le bouton ne restent affichés que tant que le bras de l'avatar les
    désigne (cf. initContactAvatarGrow dans js/details.js) : ils se cachent avec lui. */
 .dp-foot p, .dp-foot .btn{transition:opacity .3s ease, transform .3s ease;}

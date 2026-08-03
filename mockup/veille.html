@@ -95,12 +95,12 @@
 
 <main id="veille-hero" class="vl-raw">
   <header class="vl-head">
-    <h1>La <span class="accent">veille</span> derrière chaque menace.</h1>
-    <p class="vl-lede">Les actualités <strong>cybersécurité les plus marquantes</strong>, agrégées automatiquement depuis le <strong>CERT-FR</strong> et la presse spécialisée.</p>
+    <h1 data-i18n="vl-h1">La <span class="accent">veille</span> derrière chaque menace.</h1>
+    <p class="vl-lede" data-i18n="vl-lede">Les actualités <strong>cybersécurité les plus marquantes</strong>, agrégées automatiquement depuis le <strong>CERT-FR</strong> et la presse spécialisée.</p>
     <div class="hero-cta">
-      <a class="btn btn-primary" href="#vl-top">Voir les actus</a>
+      <a class="btn btn-primary" href="#vl-top" data-i18n="vl-hero-cta-actus">Voir les actus</a>
       <a class="btn btn-ghost" href="#vl-grid">
-        <span>Tout le flux</span>
+        <span data-i18n="vl-hero-cta-flux">Tout le flux</span>
         <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
       </a>
     </div>
@@ -119,7 +119,7 @@
       </a>
     </div>
   </header>
-  <div id="vl-status">Chargement de la veille…</div>
+  <div id="vl-status" data-i18n="vl-loading">Chargement de la veille…</div>
   <div id="vl-showcase" class="vl-showcase-track">
     <div class="vl-showcase-pin">
       <section id="vl-top"></section>
@@ -130,7 +130,7 @@
 
   <section id="vl-impact" class="vl-impact">
     <header class="vl-impact-head">
-      <h2>Ce que ces actus <span class="accent">changent vraiment</span> pour mes projets.</h2>
+      <h2 data-i18n="vl-impact-h2">Ce que ces actus <span class="accent">changent vraiment</span> pour mes projets.</h2>
     </header>
     <div class="vl-impact-cols" id="vl-impact-cols"></div>
   </section>
@@ -139,10 +139,16 @@
        l'avatar de #contact déborde vers le haut, et se cache quand son bras le désigne. -->
   <div class="dp-foot">
     <p data-i18n="dp-foot-lede">Envie de voir le reste ?</p>
-    <a class="btn btn-primary" href="index.html">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
-      <span data-i18n="dp-foot-cta">Retour à l'accueil</span>
-    </a>
+    <div class="dp-foot-actions">
+      <a class="btn btn-primary" href="index.html">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M11 18l-6-6 6-6"/></svg>
+        <span data-i18n="dp-foot-cta">Retour à l'accueil</span>
+      </a>
+      <a class="btn btn-ghost" href="details.html">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+        <span data-i18n="details-link-cta">Voir les détails</span>
+      </a>
+    </div>
   </div>
 </main>
 

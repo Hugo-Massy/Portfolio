@@ -74,7 +74,11 @@
   position:fixed; left:22px; bottom:22px; z-index:50;
   margin:0; font-family:var(--mono); font-size:10px; color:var(--text-faint);
   pointer-events:none;
+  transition:color .25s ease;
 }
+/* Au-dessus de l'aplat bleu de #contact, le gris faible disparaît : on passe en blanc
+   (même bascule .is-on-dark que .page-tag et .back-to-top, pilotée par veille.js). */
+.vl-updated.is-on-dark{color:rgba(255,255,255,.75);}
 @media(max-width:640px){
   .vl-updated{left:14px; bottom:14px; font-size:11px;}
 }
@@ -366,7 +370,7 @@
 .vl-impact-entry.vl-impact-pos-bottom-left .vl-impact-card{ float:left; margin:16px 24px 0 0; }
 .vl-impact-card:not([href]):hover{ transform:none; border-color:var(--border); box-shadow:var(--shadow-card); }
 .vl-impact-story{
-  margin:0 0 16px; font-size:13.5px; line-height:1.75; color:var(--text); text-align:justify;
+  margin:0 0 22px; font-size:13.5px; line-height:1.8; color:var(--text); text-align:left;
   overflow-wrap:break-word;
 }
 .vl-impact-entry-body > .vl-impact-story:last-child{ margin-bottom:0; }
