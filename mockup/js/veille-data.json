@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-03T10:04:12.593Z",
+  "generatedAt": "2026-08-03T11:24:49.891Z",
   "windowDays": 3,
-  "count": 25,
+  "count": 26,
   "sources": [
     {
       "name": "CERT-FR",
@@ -56,6 +56,43 @@
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
+      "title": "Chinese Threat Actor Uses Leaked DarkSword Kit to Deploy GHOSTBLADE on iOS",
+      "link": "https://thehackernews.com/2026/08/chinese-threat-actor-uses-leaked.html",
+      "date": "2026-08-03T10:49:06.000Z",
+      "summary": "An unknown Chinese-threat actor has been observed running a campaign targeting Apple iOS devices by leveraging a publicly leaked version of the DarkSword exploit kit. Attack surface management platform Censys said it identified the threa…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "AWS",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": "assets/veille/top-8.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "PNLD Breach Exposes U.K. Police and Government Contact Details on Dark Web",
+      "link": "https://thehackernews.com/2026/08/pnld-breach-exposes-uk-police-and.html",
+      "date": "2026-08-03T09:13:56.000Z",
+      "summary": "The Police National Legal Database (PNLD) has confirmed that police, government and customer contact information was compromised and published on the dark web. The data included names, organisations and work email addresses belonging to…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": "assets/veille/top-2.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
       "title": "Thermo Fisher Patches Flaw That Could Make DNA File Tampering Nearly Undetectable",
       "link": "https://thehackernews.com/2026/08/thermo-fisher-patches-flaw-that-could.html",
       "date": "2026-08-03T08:05:30.000Z",
@@ -95,7 +132,7 @@
         "supervision"
       ],
       "severity": "info",
-      "image": "assets/veille/top-8.jpg"
+      "image": "assets/veille/top-10.jpg"
     },
     {
       "source": "The Hacker News",
@@ -164,7 +201,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-4.jpg"
+      "image": "assets/veille/top-5.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -179,7 +216,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-7.jpg"
+      "image": "assets/veille/top-9.jpg"
     },
     {
       "source": "The Hacker News",
@@ -194,7 +231,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -279,7 +316,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-9.jpg"
+      "image": null
     },
     {
       "source": "BleepingComputer",
@@ -294,7 +331,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-2.jpg"
+      "image": "assets/veille/top-3.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -338,7 +375,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -452,7 +489,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-10.jpg"
+      "image": null
     },
     {
       "source": "BleepingComputer",
@@ -515,7 +552,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "The Hacker News",
@@ -533,28 +570,6 @@
       },
       "tags": [
         "Phishing"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Chinese Hacker Commands DeepSeek via Telegram to Launch Autonomous Attacks",
-      "link": "https://thehackernews.com/2026/07/chinese-hacker-commands-deepseek-via.html",
-      "date": "2026-07-31T11:21:27.000Z",
-      "summary": "Palo Alto Networks' Unit 42 says a Chinese-speaking threat actor used DeepSeek through the open-source Hermes Agent framework to launch attacks autonomously. After an initial Telegram instruction, the agent found internet-facing systems…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "Exploit"
       ],
       "projects": [],
       "severity": "info",
