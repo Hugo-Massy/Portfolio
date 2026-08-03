@@ -88,6 +88,23 @@ function sourcePlaceholderHtml(it, extraClass) {
   return `<span class="vl-img vl-img-placeholder ${extraClass}" aria-hidden="true">${escapeHtml(initial)}</span>`;
 }
 
+// Libellés des projets (id → { fr, en, es }), fournis par le build : les items
+// ne transportent que les identifiants.
+let PROJECT_LABELS = {};
+
+// Bandeau « ce que cette actu touche chez moi ». C'est la différence entre une
+// revue de presse et une veille exploitée : on ne montre pas seulement qu'on
+// lit, mais quel système déployé est concerné. Affiché avant les tags
+// techniques, qui restent, eux, du simple étiquetage de sujet.
+function projectsHtml(it) {
+  const ids = Array.isArray(it.projects) ? it.projects : [];
+  if (!ids.length) return '';
+  const chips = ids
+    .map((id) => `<li>${escapeHtml((PROJECT_LABELS[id] && PROJECT_LABELS[id].fr) || id)}</li>`)
+    .join('');
+  return `<div class="vl-projs"><span class="vl-projs-label">Concerne</span><ul>${chips}</ul></div>`;
+}
+
 // Rendu soigné d'une ligne du flux retenu (top 10) : même langage visuel que
 // les cartes du top 3, mais en ligne compacte plutôt qu'en carte.
 function listItemHtml(it, rank) {
@@ -112,6 +129,7 @@ function listItemHtml(it, rank) {
     + `<div class="vl-list-head"><h3>${escapeHtml(it.title || '')}</h3><span class="vl-list-date">${escapeHtml(dateLabel || '')}</span></div>`
     + `<p class="vl-list-meta">${escapeHtml(it.source || '')}</p>`
     + `<p class="vl-list-summary">${escapeHtml(cleanSummary(it.summary))}</p>`
+    + projectsHtml(it)
     + (tags || link ? `<div class="vl-list-foot">${tags}${link}</div>` : '')
     + `</div></${tag}>`;
 }
@@ -140,6 +158,7 @@ function topItemHtml(it, rank) {
     + `<h3>${escapeHtml(it.title || '')}</h3>`
     + `<p class="vl-top-meta">${escapeHtml(it.source || '')}</p>`
     + `<p class="vl-top-summary">${escapeHtml(cleanSummary(it.summary))}</p>`
+    + projectsHtml(it)
     + tags
     + link
     + `</div></${tag}>`;
@@ -161,6 +180,7 @@ function wireImages(container) {
 }
 
 function dumpAll(data) {
+  PROJECT_LABELS = data.projects || {};
   const meta = document.getElementById('vl-meta');
   // Date de génération lisible (fr) plutôt que l'horodatage ISO brut.
   let genDate = data.generatedAt;
@@ -376,6 +396,75 @@ function initShowcaseScrub(meta, top) {
   }
 }
 
+// ------------------------------------------------------- Bloc « Impact » --
+// Contrairement au flux ci-dessus (généré par build-veille.js), ce contenu est
+// écrit à la main dans veille-impact.json : une poignée d'actus qu'on a
+// choisies parce qu'elles ont eu une conséquence réelle sur un projet, avec
+// l'analyse (constaté / fait / pourquoi) qu'aucun script ne peut produire.
+// Carte de l'actu source, au même langage visuel que les cartes du flux
+// ci-dessus (.vl-top-card) — mêmes classes, sans puce de rang (ces entrées
+// sont chronologiques, pas classées par importance).
+function impactArticleCardHtml(e) {
+  const img = e.image
+    ? `<figure class="vl-img"><img src="${escapeHtml(e.image)}" alt="" decoding="async"><span class="vl-img-spinner" aria-hidden="true"></span></figure>`
+    : sourcePlaceholderHtml({ source: (e.source && e.source.label) || '' }, '');
+  let dateLabel = e.date;
+  const parsed = Date.parse(e.date);
+  if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const hasLink = e.source && e.source.link;
+  const link = hasLink
+    ? `<span class="vl-top-link">Lire l'article<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
+    : '';
+  const tag = hasLink ? 'a' : 'article';
+  const href = hasLink ? ` href="${escapeHtml(e.source.link)}" target="_blank" rel="noopener noreferrer"` : '';
+  return `<${tag} class="vl-top-card vl-impact-card"${href}>${img}`
+    + `<div class="vl-top-card-body">`
+    + `<div class="vl-top-card-head"><span class="vl-top-rank"></span><span class="vl-top-date">${escapeHtml(dateLabel || '')}</span></div>`
+    + `<h3>${escapeHtml(e.title || '')}</h3>`
+    + `<p class="vl-top-meta">${escapeHtml((e.source && e.source.label) || '')}</p>`
+    + `<p class="vl-top-summary">${escapeHtml(cleanSummary(e.summary))}</p>`
+    + link
+    + `</div></${tag}>`;
+}
+
+function impactEntryHtml(e) {
+  return `<li class="vl-impact-entry">`
+    + `<div class="vl-impact-entry-dot" aria-hidden="true"></div>`
+    + `<div class="vl-impact-entry-body">`
+    + impactArticleCardHtml(e)
+    + `<dl class="vl-impact-entry-facts">`
+    + `<div><dt>Constaté</dt><dd>${escapeHtml(e.check || '')}</dd></div>`
+    + `<div><dt>Ce que j'ai fait</dt><dd>${escapeHtml(e.action || '')}</dd></div>`
+    + `<div><dt>Pourquoi ça compte</dt><dd>${escapeHtml(e.why || '')}</dd></div>`
+    + `</dl></div></li>`;
+}
+
+function impactColumnHtml(id, project, entries) {
+  const label = (project && project.label) || id;
+  const href = project && project.href;
+  const link = href ? `<a class="vl-impact-col-link" href="${escapeHtml(href)}">Voir le projet<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>` : '';
+  const body = entries.length
+    ? `<ol class="vl-impact-timeline">${entries.map(impactEntryHtml).join('')}</ol>`
+    : `<p class="vl-impact-empty">Aucune actu reliée à ce projet pour l'instant.</p>`;
+  return `<div class="vl-impact-col">`
+    + `<div class="vl-impact-col-head"><h3>${escapeHtml(label)}</h3>${link}</div>`
+    + body
+    + `</div>`;
+}
+
+function renderImpact(data) {
+  const mount = document.getElementById('vl-impact-cols');
+  if (!mount) return;
+  const projects = data.projects || {};
+  const entries = Array.isArray(data.entries) ? data.entries : [];
+  const byProject = {};
+  for (const e of entries) (byProject[e.project] || (byProject[e.project] = [])).push(e);
+  for (const id of Object.keys(byProject)) byProject[id].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+  mount.innerHTML = Object.keys(projects)
+    .map((id) => impactColumnHtml(id, projects[id], byProject[id] || []))
+    .join('');
+}
+
 async function initVeille() {
   const status = document.getElementById('vl-status');
   try {
@@ -387,6 +476,14 @@ async function initVeille() {
   } catch (err) {
     status.textContent = 'Erreur de chargement : ' + err.message;
     console.error('Veille:', err);
+  }
+  // Section indépendante du flux : une panne ici ne doit jamais faire
+  // disparaître les actualités déjà affichées au-dessus.
+  try {
+    const res = await fetch('js/veille-impact.json', { cache: 'no-cache' });
+    if (res.ok) renderImpact(await res.json());
+  } catch (err) {
+    console.error('Veille (impact):', err);
   }
 }
 

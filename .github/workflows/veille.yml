@@ -31,12 +31,19 @@ jobs:
       - name: Générer la veille
         run: node mockup/tools/build-veille.js
 
+      - name: Compléter les images du bloc Impact
+        # veille-impact.json est écrit à la main (voir le fichier) : ce script
+        # ne touche que son champ `image`, pour les entrées qui n'en ont pas
+        # encore — jamais le flux principal ni les fichiers déjà renseignés.
+        run: node mockup/tools/build-veille-impact.js
+
       - name: Committer si le contenu a changé
         run: |
-          # On suit aussi les images rapatriées (assets/veille/) : le JSON y
-          # référence des chemins locaux, il faut donc committer les fichiers
-          # avec, sinon les vignettes du top 10 pointent dans le vide.
-          git add -A mockup/js/veille-data.json mockup/assets/veille
+          # On suit aussi les images rapatriées (assets/veille/ pour le flux,
+          # assets/veille-impact/ pour le bloc Impact) : les JSON y référencent
+          # des chemins locaux, il faut donc committer les fichiers avec,
+          # sinon les vignettes pointent dans le vide.
+          git add -A mockup/js/veille-data.json mockup/assets/veille mockup/js/veille-impact.json mockup/assets/veille-impact
           if git diff --cached --quiet; then
             echo "Aucun changement — rien à committer."
             exit 0

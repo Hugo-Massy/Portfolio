@@ -83,11 +83,22 @@ const PILLARS = {
   },
 };
 
-// Résonance avec les projets concrets du portfolio (bonus de contexte).
+// Résonance avec les DEUX projets dont je maintiens réellement la surface
+// d'attaque au quotidien : c'est sur ceux-là qu'une actu se traduit en action
+// concrète (vérifier une version, patcher, revoir une exposition). Les
+// mots-clés couvrent la stack telle qu'elle est réellement déployée — la
+// supervision Zabbix/Grafana fait partie du homelab, pas d'un projet à part.
 const PROJECTS = [
-  { id: 'massy-innove', label: { fr: 'Massy Innove — IA souveraine', en: 'Massy Innove — sovereign AI', es: 'Massy Innove — IA soberana' }, test: /\b(mistral|llm|ia|ai|intelligence artificielle|argon2|souverain|sovereign)\b/i },
-  { id: 'homelab',      label: { fr: 'Homelab', en: 'Homelab', es: 'Homelab' }, test: /\b(nextcloud|debian|cloudflare tunnel|self-?host|homelab)\b/i },
-  { id: 'supervision',  label: { fr: 'Supervision 24/7', en: '24/7 monitoring', es: 'Supervisión 24/7' }, test: /\b(zabbix|grafana|prometheus|monitoring|supervision|uptime)\b/i },
+  {
+    id: 'massy-innove',
+    label: { fr: 'Massy Innove — IA souveraine', en: 'Massy Innove — sovereign AI', es: 'Massy Innove — IA soberana' },
+    test: /\b(mistral|llm|gpt|chatgpt|openai|anthropic|claude|copilot|ia|ai|intelligence artificielle|artificial intelligence|prompt injection|jailbreak|argon2|bcrypt|hachage|hashing|rate[- ]?limit|souverain|sovereign|rgpd|gdpr|suricata)\b/i,
+  },
+  {
+    id: 'homelab',
+    label: { fr: 'Homelab perso', en: 'Personal homelab', es: 'Homelab personal' },
+    test: /\b(nextcloud|debian|ubuntu|linux|homelab|self-?hosted?|cloudflare|zabbix|grafana|prometheus|monitoring|supervision|uptime|synology|proxmox|fail2ban|openssh|ssh|nginx|apache|reverse proxy|docker|systemd|sudo|samba|wireguard|vpn|backup|sauvegarde)\b/i,
+  },
 ];
 
 // --------------------------------------------------------------------------
@@ -135,10 +146,12 @@ function pickImage(block) {
 // Fallback réseau : quand le flux n'expose aucune image, on va chercher la balise
 // Open Graph (og:image) — présente sur la quasi-totalité des pages d'articles —
 // à défaut twitter:image. Réservé au top 3 pour rester à ≤ 3 requêtes en plus.
-async function fetchOgImage(url) {
+const BOT_UA = 'PortfolioVeilleBot/1.0 (+https://github.com/Hugo-Massy/Portfolio)';
+
+async function fetchOgImage(url, userAgent = BOT_UA) {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'PortfolioVeilleBot/1.0 (+https://github.com/Hugo-Massy/Portfolio)' },
+      headers: { 'User-Agent': userAgent },
       redirect: 'follow',
     });
     if (!res.ok) return '';
@@ -214,19 +227,22 @@ function severityOf(source, item) {
   return 'info';
 }
 
-// Téléchargement local d'une image : on rapatrie les octets dans assets/veille/
-// pour SERVIR l'image en même origine. Le navigateur n'a alors plus à joindre un
+// Téléchargement local d'une image : on rapatrie les octets dans destDir pour
+// SERVIR l'image en même origine. Le navigateur n'a alors plus à joindre un
 // hôte externe (fini les blocages proxy / anti-hotlink / indispos). Renvoie le
-// chemin web relatif à veille.html, ou '' en cas d'échec.
+// chemin web relatif à mockup/ (donc à veille.html), dérivé de destDir — PAS
+// codé en dur, pour rester correct quand la fonction est réutilisée sur un
+// autre dossier (voir build-veille-impact.js, qui écrit dans
+// assets/veille-impact/ plutôt que assets/veille/). Ou '' en cas d'échec.
 const IMG_EXT_BY_TYPE = {
   'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/png': 'png',
   'image/webp': 'webp', 'image/gif': 'gif', 'image/avif': 'avif',
 };
 
-async function downloadImage(url, destDir, base) {
+async function downloadImage(url, destDir, base, userAgent = BOT_UA) {
   try {
     const res = await fetch(url, {
-      headers: { 'User-Agent': 'PortfolioVeilleBot/1.0 (+https://github.com/Hugo-Massy/Portfolio)' },
+      headers: { 'User-Agent': userAgent },
       redirect: 'follow',
     });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -238,7 +254,8 @@ async function downloadImage(url, destDir, base) {
     }
     const filename = `${base}.${ext}`;
     fs.writeFileSync(path.join(destDir, filename), Buffer.from(await res.arrayBuffer()));
-    return `assets/veille/${filename}`;
+    const relDir = path.relative(path.join(__dirname, '..'), destDir).split(path.sep).join('/');
+    return `${relDir}/${filename}`;
   } catch (err) {
     console.warn(`    ⚠ téléchargement image échoué (${err.message}) — repli sur l'URL distante`);
     return '';
@@ -367,6 +384,9 @@ async function main() {
     count: windowed.length,
     sources: SOURCES.map((s) => ({ name: s.name, type: s.type, kind: s.kind })),
     pillars: Object.fromEntries(Object.entries(PILLARS).map(([k, v]) => [k, v.label])),
+    // Libellés des projets, pour que le front n'ait pas à les redéclarer :
+    // les items ne portent que les identifiants.
+    projects: Object.fromEntries(PROJECTS.map((p) => [p.id, p.label])),
     items: windowed,
   };
 
@@ -379,4 +399,11 @@ async function main() {
   }
 }
 
-main().catch((err) => { console.error(err); process.exit(1); });
+// Exécuté en CLI (GitHub Actions, cron) → on lance la collecte. Requis comme
+// module → on n'expose que la corrélation, pour pouvoir la rejouer sur le JSON
+// déjà généré sans retoucher aux flux ni aux images.
+if (require.main === module) {
+  main().catch((err) => { console.error(err); process.exit(1); });
+}
+
+module.exports = { PILLARS, PROJECTS, correlate, fetchOgImage, downloadImage };

@@ -124,6 +124,22 @@
   color:var(--accent-dark); background:var(--accent-soft);
   padding:3px 8px; border-radius:999px;
 }
+/* Rattachement à un projet déployé — volontairement plus fort que les tags de
+   sujet : c'est l'information qui prouve la veille exploitée, pas seulement
+   lue. Puce pleine + libellé "Concerne", partagé par les cartes et les lignes. */
+.vl-projs{
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-top:2px;
+}
+.vl-projs-label{
+  font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
+  color:var(--text-faint);
+}
+.vl-projs ul{display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0; list-style:none;}
+.vl-projs li{
+  font-family:var(--mono); font-size:10px; letter-spacing:.03em;
+  color:#fff; background:var(--accent);
+  padding:3px 9px; border-radius:999px; white-space:nowrap;
+}
 .vl-list-link{
   display:inline-flex; align-items:center; gap:6px; flex:none; margin-left:auto;
   font-family:var(--sans); font-size:12.5px; font-weight:600; color:var(--accent);
@@ -286,4 +302,71 @@
   font-size:13px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em;
   color:var(--text-faint);
   margin:96px 0 16px; padding-top:24px;
+}
+
+/* --- Bloc « Impact » : chaque entrée reprend la carte d'actu du flux
+   ci-dessus (.vl-top-card, sans puce de rang), alignée le long d'une timeline
+   par projet — l'article reste identifiable au premier coup d'œil, l'analyse
+   (constaté / fait / pourquoi) vient en dessous, dans le même bloc. --- */
+.vl-impact{
+  margin-top:120px; padding-top:56px;
+}
+.vl-impact-head{ max-width:640px; margin:0 auto 48px; text-align:center; }
+.vl-impact-kicker{
+  font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--accent); margin:0 0 12px;
+}
+.vl-impact-head h2{
+  font-size:32px; line-height:1.25; font-weight:700; margin:0 0 14px; color:var(--text);
+}
+.vl-impact-head h2 .accent{ color:var(--accent); }
+.vl-impact-lede{ font-size:15px; line-height:1.6; color:var(--text-dim); margin:0; }
+
+.vl-impact-cols{
+  display:grid; grid-template-columns:repeat(2, 1fr); gap:48px; align-items:start;
+}
+@media(max-width:800px){ .vl-impact-cols{grid-template-columns:1fr; gap:40px;} }
+
+.vl-impact-col-head{
+  display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+  padding-bottom:14px; margin-bottom:24px; border-bottom:1px solid var(--border);
+}
+.vl-impact-col-head h3{ font-size:18px; font-weight:700; margin:0; color:var(--text); }
+.vl-impact-col-link{
+  display:inline-flex; align-items:center; gap:5px; flex:none;
+  font-family:var(--sans); font-size:12.5px; font-weight:600; color:var(--accent);
+  text-decoration:none;
+}
+.vl-impact-col-link svg{ transition:transform .18s ease; }
+.vl-impact-col-link:hover svg{ transform:translateX(3px); }
+
+.vl-impact-empty{ font-size:13px; color:var(--text-faint); font-style:italic; }
+
+/* Timeline verticale : un fil continu, chaque entrée pointée par un repère. */
+.vl-impact-timeline{
+  position:relative; margin:0; padding:0 0 0 20px; list-style:none;
+}
+.vl-impact-timeline::before{
+  content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1px;
+  background:var(--border);
+}
+.vl-impact-entry{ position:relative; padding-bottom:32px; }
+.vl-impact-entry:last-child{ padding-bottom:0; }
+.vl-impact-entry-dot{
+  position:absolute; left:-20px; top:5px; width:11px; height:11px; border-radius:50%;
+  background:var(--bg); border:2px solid var(--accent);
+}
+/* Carte d'actu réutilisée telle quelle (voir .vl-top-card plus haut) ; seul un
+   espacement vers l'analyse qui suit est ajouté ici. La puce de rang, vide
+   dans ce contexte, conserve juste l'alignement à droite de la date. */
+.vl-impact-card{ margin-bottom:16px; cursor:default; }
+.vl-impact-card:not([href]):hover{ transform:none; border-color:var(--border); box-shadow:var(--shadow-card); }
+.vl-impact-entry-facts{ margin:0; display:flex; flex-direction:column; gap:10px; }
+.vl-impact-entry-facts > div{ display:flex; flex-direction:column; gap:2px; }
+.vl-impact-entry-facts dt{
+  font-family:var(--mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--text-faint); margin:0;
+}
+.vl-impact-entry-facts dd{
+  font-size:13px; line-height:1.55; color:var(--text-dim); margin:0;
 }
