@@ -116,29 +116,24 @@
    droite sur la même ligne (plutôt que sous les tags). */
 .vl-list-foot{
   display:flex; align-items:center; justify-content:space-between; gap:12px;
-  margin-top:2px;
 }
-.vl-list-tags{display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0; list-style:none;}
-.vl-list-tags li{
-  font-family:var(--mono); font-size:10px; letter-spacing:.03em; text-transform:uppercase;
-  color:var(--accent-dark); background:var(--accent-soft);
-  padding:3px 8px; border-radius:999px;
+/* Rangée combinée « projet concerné » + tags de sujet : tout sur une seule
+   ligne qui s'enroule si besoin, plutôt que deux blocs empilés. Le chip projet
+   reste plus appuyé (fond plein) que les tags de sujet (fond léger) — c'est
+   l'information qui prouve la veille exploitée, pas seulement lue. */
+.vl-tags-row{
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-top:6px;
 }
-/* Rattachement à un projet déployé — volontairement plus fort que les tags de
-   sujet : c'est l'information qui prouve la veille exploitée, pas seulement
-   lue. Puce pleine + libellé "Concerne", partagé par les cartes et les lignes. */
-.vl-projs{
-  display:flex; align-items:center; flex-wrap:wrap; gap:6px; margin-top:2px;
-}
-.vl-projs-label{
-  font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase;
-  color:var(--text-faint);
-}
-.vl-projs ul{display:flex; flex-wrap:wrap; gap:6px; margin:0; padding:0; list-style:none;}
-.vl-projs li{
+.vl-list-foot .vl-tags-row{ margin-top:0; }
+.vl-proj-chip{
   font-family:var(--mono); font-size:10px; letter-spacing:.03em;
   color:#fff; background:var(--accent);
   padding:3px 9px; border-radius:999px; white-space:nowrap;
+}
+.vl-tag-chip{
+  font-family:var(--mono); font-size:10px; letter-spacing:.03em; text-transform:uppercase;
+  color:var(--accent-dark); background:var(--accent-soft);
+  padding:3px 8px; border-radius:999px; white-space:nowrap;
 }
 .vl-list-link{
   display:inline-flex; align-items:center; gap:6px; flex:none; margin-left:auto;
@@ -248,7 +243,7 @@
   border:none; border-radius:0; border-bottom:1px solid var(--border);
 }
 .vl-top-card-body{ display:flex; flex-direction:column; flex:1; min-height:0; padding:16px 18px 18px; gap:8px; }
-/* Rang + date sur une même ligne, rang à gauche, date à droite. */
+/* Rang (ou source, dans le bloc Impact) + date sur une même ligne, à gauche/droite. */
 .vl-top-card-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
 .vl-top-rank{
   font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.04em;
@@ -267,14 +262,6 @@
 .vl-top-summary{
   margin:2px 0 0; font-size:13px; line-height:1.55; color:var(--text-dim);
   display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; overflow:hidden;
-}
-.vl-top-tags{
-  display:flex; flex-wrap:wrap; gap:6px; margin:4px 0 0; padding:0; list-style:none;
-}
-.vl-top-tags li{
-  font-family:var(--mono); font-size:10px; letter-spacing:.03em; text-transform:uppercase;
-  color:var(--accent-dark); background:var(--accent-soft);
-  padding:3px 8px; border-radius:999px;
 }
 .vl-top-link{
   display:inline-flex; align-items:center; gap:6px; margin-top:auto; padding-top:10px;
@@ -309,25 +296,33 @@
    par projet — l'article reste identifiable au premier coup d'œil, l'analyse
    (constaté / fait / pourquoi) vient en dessous, dans le même bloc. --- */
 .vl-impact{
+  position:relative; z-index:1; background:var(--bg);
   margin-top:120px; padding-top:56px;
 }
-.vl-impact-head{ max-width:640px; margin:0 auto 48px; text-align:center; }
-.vl-impact-kicker{
-  font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
-  color:var(--accent); margin:0 0 12px;
-}
+.vl-impact-head{ max-width:720px; margin:0 auto 120px; text-align:center; }
 .vl-impact-head h2{
-  font-size:32px; line-height:1.25; font-weight:700; margin:0 0 14px; color:var(--text);
+  font-size:42px; line-height:1.2; font-weight:700; margin:0; color:var(--text);
 }
+@media(max-width:800px){ .vl-impact-head h2{ font-size:30px; } }
 .vl-impact-head h2 .accent{ color:var(--accent); }
-.vl-impact-lede{ font-size:15px; line-height:1.6; color:var(--text-dim); margin:0; }
 
+/* Grille partagée par les deux colonnes projet : chaque en-tête/entrée est
+   placé explicitement via --col/--row (posés en style inline par veille.js),
+   pas par ordre du DOM. Deux entrées au même --row, dans des colonnes
+   différentes, occupent donc la même ligne de grille et partagent sa hauteur
+   — leur texte démarre à la même hauteur, indépendamment de ce qui précède
+   dans la colonne voisine. */
 .vl-impact-cols{
-  display:grid; grid-template-columns:repeat(2, 1fr); gap:48px; align-items:start;
+  display:grid; grid-template-columns:repeat(2, 1fr); column-gap:48px; row-gap:0;
+  align-items:start;
 }
-@media(max-width:800px){ .vl-impact-cols{grid-template-columns:1fr; gap:40px;} }
+@media(max-width:800px){
+  .vl-impact-cols{grid-template-columns:1fr; gap:40px;}
+  .vl-impact-col-head, .vl-impact-entry, .vl-impact-empty{ grid-column:1; grid-row:auto; }
+}
 
 .vl-impact-col-head{
+  grid-column:var(--col); grid-row:var(--row);
   display:flex; align-items:baseline; justify-content:space-between; gap:12px;
   padding-bottom:14px; margin-bottom:24px; border-bottom:1px solid var(--border);
 }
@@ -340,33 +335,49 @@
 .vl-impact-col-link svg{ transition:transform .18s ease; }
 .vl-impact-col-link:hover svg{ transform:translateX(3px); }
 
-.vl-impact-empty{ font-size:13px; color:var(--text-faint); font-style:italic; }
+.vl-impact-empty{ grid-column:var(--col); grid-row:var(--row); font-size:13px; color:var(--text-faint); font-style:italic; }
 
-/* Timeline verticale : un fil continu, chaque entrée pointée par un repère. */
-.vl-impact-timeline{
-  position:relative; margin:0; padding:0 0 0 20px; list-style:none;
-}
-.vl-impact-timeline::before{
-  content:''; position:absolute; left:5px; top:6px; bottom:6px; width:1px;
-  background:var(--border);
-}
-.vl-impact-entry{ position:relative; padding-bottom:32px; }
-.vl-impact-entry:last-child{ padding-bottom:0; }
-.vl-impact-entry-dot{
-  position:absolute; left:-20px; top:5px; width:11px; height:11px; border-radius:50%;
-  background:var(--bg); border:2px solid var(--accent);
+.vl-impact-entry{ grid-column:var(--col); grid-row:var(--row); position:relative; padding-bottom:40px; }
+.vl-impact-entry--last{ padding-bottom:0; }
+/* Séparateur posé sur toute entrée qui n'ouvre pas sa colonne (calculé côté JS
+   via son rang dans le projet, pas via nth-child qui mélangerait désormais
+   les deux colonnes puisqu'elles partagent le même parent de grille). Un
+   petit repère centré plutôt qu'un trait plein cadre : sur deux colonnes de
+   largeurs différentes, deux traits fins côte à côte lisaient comme deux
+   fragments disjoints plutôt qu'une séparation voulue. */
+.vl-impact-entry--sep{ padding-top:48px; }
+/* Le vide visuel entre deux entrées = padding-bottom (40px) de l'entrée
+   précédente + padding-top (48px) de celle-ci, la frontière de grille se
+   trouvant exactement à la jonction (40px après le haut du vide). Pour
+   centrer la barre dans ce vide de 88px, il faut donc la placer à 44px du
+   haut du vide, soit seulement 4px après cette frontière (44 - 40). */
+.vl-impact-entry--sep::before{
+  content:''; position:absolute; top:-6px; left:0; right:0; margin:0 auto;
+  width:28px; height:3px; border-radius:2px; background:var(--accent); opacity:.45;
 }
 /* Carte d'actu réutilisée telle quelle (voir .vl-top-card plus haut) ; seul un
    espacement vers l'analyse qui suit est ajouté ici. La puce de rang, vide
    dans ce contexte, conserve juste l'alignement à droite de la date. */
-.vl-impact-card{ margin-bottom:16px; cursor:default; }
+.vl-impact-entry-body::after{ content:''; display:table; clear:both; }
+.vl-impact-card{ float:left; width:220px; max-width:220px; margin:0 20px 12px 0; cursor:default; }
+.vl-impact-entry--right .vl-impact-card{ float:right; margin:4px 0 12px 24px; }
+.vl-impact-entry--offset .vl-impact-card{ margin-top:20px; }
+.vl-impact-entry.vl-impact-pos-bottom-right .vl-impact-card{ float:right; margin:16px 0 0 24px; }
+.vl-impact-entry.vl-impact-pos-bottom-left .vl-impact-card{ float:left; margin:16px 24px 0 0; }
 .vl-impact-card:not([href]):hover{ transform:none; border-color:var(--border); box-shadow:var(--shadow-card); }
-.vl-impact-entry-facts{ margin:0; display:flex; flex-direction:column; gap:10px; }
-.vl-impact-entry-facts > div{ display:flex; flex-direction:column; gap:2px; }
-.vl-impact-entry-facts dt{
-  font-family:var(--mono); font-size:10px; letter-spacing:.05em; text-transform:uppercase;
-  color:var(--text-faint); margin:0;
+.vl-impact-story{
+  margin:0 0 16px; font-size:13.5px; line-height:1.75; color:var(--text); text-align:justify;
+  overflow-wrap:break-word;
 }
-.vl-impact-entry-facts dd{
-  font-size:13px; line-height:1.55; color:var(--text-dim); margin:0;
+.vl-impact-entry-body > .vl-impact-story:last-child{ margin-bottom:0; }
+@media(max-width:560px){
+  .vl-impact-card, .vl-impact-entry--right .vl-impact-card{
+    float:none; width:auto; max-width:320px; margin:0 0 16px;
+  }
 }
+.vl-impact-story strong{ color:var(--accent); font-weight:700; }
+
+/* Rappel de pied + #contact (repris de details.css). Ici le dernier paragraphe
+   d'analyse du bloc Impact arrive juste au-dessus : on double le blanc avant le
+   rappel de retour pour détacher la clôture de la page du contenu. */
+.vl-raw .dp-foot{ padding-top:clamp(230px, 26vh, 330px); }

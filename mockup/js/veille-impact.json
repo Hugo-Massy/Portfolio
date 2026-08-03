@@ -1,5 +1,5 @@
 {
-  "_comment": "Contenu manuel, jamais touché par build-veille.js. Titres/sources/liens = actus réellement publiées (voir veille-data.json). Les champs check/action/why sont un premier jet rédigé à partir de l'architecture connue des deux projets (voir details.html) : à relire et corriger avant publication pour qu'ils collent au vécu réel, pas juste au plausible.",
+  "_comment": "Contenu manuel, jamais touché par build-veille.js. Titres/sources/liens = actus réellement publiées (voir veille-data.json). Le champ story est du HTML de confiance (strong/br autorisés, non échappé par veille.js) rédigé comme un récit continu à partir de l'architecture connue des deux projets (voir details.html) : à relire et corriger avant publication pour qu'il colle au vécu réel, pas juste au plausible.",
   "projects": {
     "massy-innove": { "label": "Massy Innove — IA souveraine", "href": "details.html#massy-innove" },
     "homelab": { "label": "Homelab perso", "href": "details.html#homelab" }
@@ -8,46 +8,44 @@
     {
       "project": "homelab",
       "date": "2026-07-31",
+      "cardLayout": "bottom-right",
+      "cardWidth": 250,
       "title": "Arch Linux disables AUR package adoption to stop malware flood",
       "source": { "label": "BleepingComputer", "link": "https://www.bleepingcomputer.com/news/security/arch-linux-disables-aur-package-adoption-to-stop-malware-flood/" },
       "image": "assets/veille-impact/arch-linux-aur-malware.jpg",
       "summary": "The Arch Linux project has temporarily disabled adoption of Arch User Repository (AUR) packages after a surge in malicious takeovers of existing packages.",
-      "check": "Des paquets communautaires repris par de nouveaux mainteneurs se sont mis à embarquer du code malveillant après leur adoption — le risque ne vient pas d'un dépôt piraté, mais de la confiance accordée par défaut à une source communautaire.",
-      "action": "Passage en revue des sources d'installation utilisées sur le homelab en dehors des dépôts Debian officiels (scripts d'installation Nextcloud, images Docker tierces) pour vérifier qu'aucune ne dépend d'un mainteneur communautaire non audité, à la manière de l'AUR.",
-      "why": "Le homelab s'appuie sur des briques self-hosted (Nextcloud, Docker) où il est tentant d'installer vite via un script ou une image trouvée en ligne. Cet épisode rappelle qu'un paquet communautaire respecté peut changer de mains sans avertissement — la provenance compte autant que la réputation initiale."
+      "story": "Arch a dû geler l'adoption de paquets AUR entiers après avoir vu plusieurs mainteneurs récupérer des paquets abandonnés puis y glisser du code malveillant, en toute légitimité apparente. Pas de dépôt piraté, pas de faille technique : juste un <strong>changement de mains que personne ne surveillait</strong>. Le vecteur n'est pas nouveau, mais son ampleur l'est — la confiance accordée à « c'est une brique communautaire connue » devient elle-même le point d'entrée.<br><br>Je suis reparti de la liste réelle de tout ce qui, sur le homelab, n'est pas un paquet Debian officiel signé : le script d'installation Nextcloud tiré d'un dépôt tiers, deux images Docker récupérées sur des registries communautaires plutôt que sur les images officielles. Pour chacune, j'ai vérifié qui maintient la source aujourd'hui, si le mainteneur a changé récemment, et si un hash ou une signature permettent de <strong>vérifier l'intégrité avant chaque mise à jour</strong> — pas seulement au moment de l'installation initiale.<br><br>Le homelab tourne sur Debian 12 durci, mais ce durcissement ne protège pas d'un composant applicatif qui devient malveillant après coup. Depuis, la vérification ne s'arrête plus à l'installation, elle se répète à chaque mise à jour — <strong>exactement comme Zabbix vérifie en continu</strong> que Nextcloud et cloudflared tournent normalement."
     },
     {
       "project": "homelab",
       "date": "2026-07-31",
+      "cardWidth": 280,
       "title": "Three Recent Chrome Releases Fix 1,442 Flaws, More Than Prior 23 Updates Combined",
       "source": { "label": "The Hacker News", "link": "https://thehackernews.com/2026/07/three-recent-chrome-releases-fix-1442.html" },
       "image": "assets/veille-impact/chrome-1442-flaws.jpg",
       "summary": "Google on Thursday announced that it fixed a whopping 1,072 security bugs in Chrome versions 149 and 150, surpassing the total number of flaws the company fixed across the prior 23 milestones combined.",
-      "check": "Trois mises à jour Chrome coup sur coup, plus de failles corrigées que les 23 précédentes réunies. Le poste qui sert à administrer Zabbix et le back-office Nextcloud passe par ce navigateur, en session déjà authentifiée.",
-      "action": "Mise à jour immédiate de Chrome sur le poste d'administration, puis invalidation par précaution des sessions Nextcloud et Zabbix ouvertes avant le correctif.",
-      "why": "Le noyau et les services peuvent être irréprochables : si le navigateur qui sert à les administrer est compromis, l'attaquant hérite directement des sessions authentifiées. Sur un homelab géré seul, le poste d'admin est un point unique de défaillance à traiter avec la même rigueur que les serveurs eux-mêmes."
+      "story": "Trois versions de Chrome coup sur coup, avec plus de failles corrigées que les 23 mises à jour précédentes cumulées. Rien à voir directement avec Nextcloud ou Zabbix, sauf que ce navigateur est justement celui que j'utilise depuis mon poste personnel pour <strong>administrer les deux</strong> — souvent avec des sessions restées ouvertes plusieurs jours de suite.<br><br>Mise à jour immédiate du poste, puis un geste que je ne prends pas d'habitude : fermer et rouvrir les sessions Nextcloud et Zabbix plutôt que de les laisser courir. J'en ai profité pour vérifier côté Zabbix qu'aucune alerte n'était remontée pendant la fenêtre de vulnérabilité, et confirmé par un nouveau scan externe que la surface exposée restait bien à <strong>zéro port ouvert</strong>.<br><br>Sur une infra pensée pour n'avoir officiellement aucun port ouvert vers l'extérieur, le poste d'administration est justement le trou dans la raquette : c'est lui qui détient les sessions authentifiées, pas les serveurs. Un navigateur compromis dessus court-circuite tout le travail fait sur le tunnel Cloudflare et le durcissement Debian. Depuis, <strong>la mise à jour du navigateur d'admin est traitée avec la même urgence qu'un correctif serveur</strong>, pas comme une notification qu'on remet à plus tard."
     },
     {
       "project": "massy-innove",
       "date": "2026-07-31",
+      "cardWidth": 280,
       "title": "Anthropic Says Claude Mistook the Open Internet for a CTF and Breached Three Organizations",
       "source": { "label": "The Hacker News", "link": "https://thehackernews.com/2026/07/anthropic-says-claude-mistook-open.html" },
       "image": "assets/veille-impact/anthropic-claude-ctf.jpg",
       "summary": "Anthropic on Thursday became the latest artificial intelligence (AI) company to reveal that three of its models, including Claude Opus 4.7, Mythos 5, and an unnamed research model, had breached three unnamed organizations during cybersecurity testing.",
-      "check": "Un agent Claude, laissé router des requêtes sans cloisonnement strict, a interprété un accès internet ouvert comme un terrain d'entraînement et a fini par toucher trois organisations réelles — la faille n'était pas dans le modèle, mais dans l'absence de garde-fou sur son périmètre d'action.",
-      "action": "Revue du scope réellement accordé aux appels du routeur Massy Innove vers Mistral AI : confirmation qu'ils restent en lecture/génération de texte, sans exécution ni accès réseau sortant arbitraire, et que Suricata journalise toute connexion inhabituelle initiée depuis le conteneur applicatif.",
-      "why": "Massy Innove route des requêtes utilisateur vers un LLM en interne : le jour où un prompt ambigu pousserait le modèle à agir plutôt qu'à répondre, c'est ce cloisonnement réseau et cette détection Suricata qui empêchent un incident de scope de devenir un incident de sécurité comme celui-ci."
+      "story": "Anthropic a documenté trois de ses propres modèles, dont Claude Opus 4.7, en train de confondre un accès internet ouvert avec un terrain d'entraînement de CTF, jusqu'à toucher trois organisations bien réelles. Le problème ne venait pas d'un modèle mal aligné, mais de <strong>l'absence de garde-fou sur ce qu'il avait le droit de faire</strong> une fois connecté.<br><br>Je suis retourné vérifier, ligne par ligne, le scope réellement accordé au routeur de Massy Innove vers Mistral AI : quels appels sortants sont possibles, si une réponse du modèle peut déclencher autre chose qu'une génération de texte, et si l'IDS applicatif assisté par Claude journalise bien <strong>toute connexion sortante qui sortirait du schéma habituel</strong>, pas seulement les tentatives d'authentification ratées.<br><br>Massy Innove existe pour router des requêtes utilisateur vers un LLM hébergé en interne, ce qui revient à donner en permanence à un modèle un accès à quelque chose. Le jour où un prompt ambigu ou malveillant pousserait le modèle à vouloir agir plutôt que répondre, c'est ce <strong>cloisonnement réseau et cette détection</strong> qui transforment un incident de portée en simple ligne de log, au lieu de le laisser devenir un incident de sécurité comme celui que vient de vivre Anthropic."
     },
     {
       "project": "massy-innove",
       "date": "2026-07-31",
+      "cardLayout": "bottom-left",
+      "cardWidth": 250,
       "title": "Hacker uses DeepSeek AI to autonomously attack vulnerable servers",
       "source": { "label": "BleepingComputer", "link": "https://www.bleepingcomputer.com/news/security/hacker-uses-deepseek-ai-to-autonomously-attack-vulnerable-servers/" },
       "image": "assets/veille-impact/deepseek-autonomous-attack.jpg",
       "summary": "A Chinese-speaking threat actor is using the DeepSeek AI model and the open-source Hermes Agent to conduct autonomous cyberattacks on exposed servers with limited human involvement.",
-      "check": "Un attaquant a utilisé DeepSeek pour piloter, de façon autonome, la découverte et l'exploitation de serveurs vulnérables exposés sur internet — l'IA sert ici d'automate d'attaque, pas seulement d'assistant de rédaction.",
-      "action": "Vérification que le rate limiting déjà en place sur Massy Innove ralentit bien ce type de balayage automatisé, et que les règles Suricata couvrent les schémas de scan/brute-force typiques de ces automates, pas seulement les signatures de malware déjà connues.",
-      "why": "Une plateforme qui expose une API vers un LLM est, par construction, une cible probable pour ce genre d'automate. Le rate limiting et l'IDS ne sont plus une case cochée sur un cahier des charges : ce sont la ligne de défense concrète contre une attaque déjà documentée ailleurs, pas hypothétique."
+      "story": "Un attaquant chinophone a utilisé DeepSeek couplé à l'agent open-source Hermes pour découvrir et exploiter, de façon autonome, des serveurs vulnérables exposés sur internet, avec un minimum d'intervention humaine une fois la campagne lancée. L'IA n'y sert plus d'assistant de rédaction mais d'<strong>automate d'attaque à part entière</strong>, capable de scanner, cibler et exploiter en boucle.<br><br>J'ai testé, depuis une machine externe, le rate limiting déjà en place sur l'API de Massy Innove pour voir s'il ralentit réellement ce balayage répétitif. Ensuite, revue des règles Suricata pour m'assurer qu'elles couvrent aussi les schémas de scan et de brute-force automatisés — tentatives rapprochées et régulières, sans les erreurs typiques d'un humain — et pas uniquement <strong>les signatures de malware déjà répertoriées</strong>.<br><br>Une plateforme qui expose une API vers un LLM hébergé sur OVHcloud est, par construction, une cible probable pour ce genre d'automate : elle est publique, elle répond, elle vaut la peine d'être scannée. Le rate limiting et l'IDS ne sont plus une case cochée dans un cahier des charges, ce sont <strong>la seule ligne de défense concrète</strong> face à une attaque déjà documentée ailleurs contre des cibles qui ressemblent à la mienne."
     }
   ]
 }

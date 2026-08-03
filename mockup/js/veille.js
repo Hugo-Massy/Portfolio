@@ -92,17 +92,21 @@ function sourcePlaceholderHtml(it, extraClass) {
 // ne transportent que les identifiants.
 let PROJECT_LABELS = {};
 
-// Bandeau « ce que cette actu touche chez moi ». C'est la différence entre une
-// revue de presse et une veille exploitée : on ne montre pas seulement qu'on
-// lit, mais quel système déployé est concerné. Affiché avant les tags
-// techniques, qui restent, eux, du simple étiquetage de sujet.
-function projectsHtml(it) {
-  const ids = Array.isArray(it.projects) ? it.projects : [];
-  if (!ids.length) return '';
-  const chips = ids
-    .map((id) => `<li>${escapeHtml((PROJECT_LABELS[id] && PROJECT_LABELS[id].fr) || id)}</li>`)
-    .join('');
-  return `<div class="vl-projs"><span class="vl-projs-label">Concerne</span><ul>${chips}</ul></div>`;
+// Ligne combinée « projet concerné » + tags de sujet, sur une seule rangée qui
+// s'enroule si besoin. Le chip projet reste plus appuyé (fond plein) que les
+// tags de sujet (fond léger) : c'est la différence entre une revue de presse
+// et une veille exploitée, on ne montre pas seulement qu'on lit, mais quel
+// système déployé est concerné.
+function tagsRowHtml(it) {
+  const projIds = Array.isArray(it.projects) ? it.projects : [];
+  const projChips = projIds.length
+    ? projIds.map((id) => `<span class="vl-proj-chip">${escapeHtml((PROJECT_LABELS[id] && PROJECT_LABELS[id].fr) || id)}</span>`).join('')
+    : '';
+  const tagChips = Array.isArray(it.tags) && it.tags.length
+    ? it.tags.map((t) => `<span class="vl-tag-chip">${escapeHtml(t)}</span>`).join('')
+    : '';
+  if (!projChips && !tagChips) return '';
+  return `<div class="vl-tags-row">${projChips}${tagChips}</div>`;
 }
 
 // Rendu soigné d'une ligne du flux retenu (top 10) : même langage visuel que
@@ -111,9 +115,7 @@ function listItemHtml(it, rank) {
   let dateLabel = it.date;
   const parsed = Date.parse(it.date);
   if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const tags = Array.isArray(it.tags) && it.tags.length
-    ? `<ul class="vl-list-tags">${it.tags.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
-    : '';
+  const tagsRow = tagsRowHtml(it);
   const link = it.link
     ? `<span class="vl-list-link">Lire l'article<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
     : '';
@@ -129,8 +131,7 @@ function listItemHtml(it, rank) {
     + `<div class="vl-list-head"><h3>${escapeHtml(it.title || '')}</h3><span class="vl-list-date">${escapeHtml(dateLabel || '')}</span></div>`
     + `<p class="vl-list-meta">${escapeHtml(it.source || '')}</p>`
     + `<p class="vl-list-summary">${escapeHtml(cleanSummary(it.summary))}</p>`
-    + projectsHtml(it)
-    + (tags || link ? `<div class="vl-list-foot">${tags}${link}</div>` : '')
+    + (tagsRow || link ? `<div class="vl-list-foot">${tagsRow}${link}</div>` : '')
     + `</div></${tag}>`;
 }
 
@@ -144,9 +145,7 @@ function topItemHtml(it, rank) {
   let dateLabel = it.date;
   const parsed = Date.parse(it.date);
   if (isFinite(parsed)) dateLabel = new Date(parsed).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const tags = Array.isArray(it.tags) && it.tags.length
-    ? `<ul class="vl-top-tags">${it.tags.map((t) => `<li>${escapeHtml(t)}</li>`).join('')}</ul>`
-    : '';
+  const tagsRow = tagsRowHtml(it);
   const link = it.link
     ? `<span class="vl-top-link">Lire l'article<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></span>`
     : '';
@@ -158,8 +157,7 @@ function topItemHtml(it, rank) {
     + `<h3>${escapeHtml(it.title || '')}</h3>`
     + `<p class="vl-top-meta">${escapeHtml(it.source || '')}</p>`
     + `<p class="vl-top-summary">${escapeHtml(cleanSummary(it.summary))}</p>`
-    + projectsHtml(it)
-    + tags
+    + tagsRow
     + link
     + `</div></${tag}>`;
 }
@@ -417,39 +415,59 @@ function impactArticleCardHtml(e) {
     : '';
   const tag = hasLink ? 'a' : 'article';
   const href = hasLink ? ` href="${escapeHtml(e.source.link)}" target="_blank" rel="noopener noreferrer"` : '';
-  return `<${tag} class="vl-top-card vl-impact-card"${href}>${img}`
+  const style = e.cardWidth ? ` style="width:${e.cardWidth}px;max-width:${e.cardWidth}px;"` : '';
+  return `<${tag} class="vl-top-card vl-impact-card"${href}${style}>${img}`
     + `<div class="vl-top-card-body">`
-    + `<div class="vl-top-card-head"><span class="vl-top-rank"></span><span class="vl-top-date">${escapeHtml(dateLabel || '')}</span></div>`
+    + `<div class="vl-top-card-head"><span class="vl-top-meta">${escapeHtml((e.source && e.source.label) || '')}</span><span class="vl-top-date">${escapeHtml(dateLabel || '')}</span></div>`
     + `<h3>${escapeHtml(e.title || '')}</h3>`
-    + `<p class="vl-top-meta">${escapeHtml((e.source && e.source.label) || '')}</p>`
     + `<p class="vl-top-summary">${escapeHtml(cleanSummary(e.summary))}</p>`
     + link
     + `</div></${tag}>`;
 }
 
-function impactEntryHtml(e) {
-  return `<li class="vl-impact-entry">`
-    + `<div class="vl-impact-entry-dot" aria-hidden="true"></div>`
+// col/row placent l'entrée dans la grille CSS partagée entre les deux colonnes
+// (voir renderImpact) : deux entrées au même rang, dans des colonnes
+// différentes, partagent ainsi la même ligne et donc la même hauteur de
+// rangée — leur texte démarre à la même hauteur, quelle que soit la longueur
+// du texte de la colonne voisine sur les rangs précédents.
+function impactEntryHtml(e, col, row, isLast) {
+  const rankInCol = row - 2; // rang 0-based de l'entrée dans sa propre colonne
+  const sideClass = rankInCol % 2 === 1 ? ' vl-impact-entry--right' : '';
+  const offsetClass = rankInCol % 4 === 2 ? ' vl-impact-entry--offset' : '';
+  const sepClass = rankInCol > 0 ? ' vl-impact-entry--sep' : '';
+  const lastClass = isLast ? ' vl-impact-entry--last' : '';
+  const layoutClass = e.cardLayout ? ` vl-impact-pos-${e.cardLayout}` : '';
+  const card = impactArticleCardHtml(e);
+  let body;
+  if (e.cardLayout === 'bottom-right' || e.cardLayout === 'bottom-left') {
+    // La carte est insérée au milieu du récit (entre l'avant-dernier et le
+    // dernier paragraphe) pour que le dernier paragraphe s'enroule autour
+    // d'elle, plutôt que de la reléguer sous un bloc de texte plein cadre.
+    const sep = '<br><br>';
+    const idx = e.cardSplit === 'last' ? (e.story || '').lastIndexOf(sep) : (e.story || '').indexOf(sep);
+    const lead = idx >= 0 ? e.story.slice(0, idx) : '';
+    const tail = idx >= 0 ? e.story.slice(idx + sep.length) : (e.story || '');
+    body = (lead ? `<p class="vl-impact-story">${lead}</p>` : '')
+      + card
+      + `<p class="vl-impact-story">${tail}</p>`;
+  } else {
+    body = card + `<p class="vl-impact-story">${e.story || ''}</p>`;
+  }
+  return `<div class="vl-impact-entry${sideClass}${offsetClass}${sepClass}${lastClass}${layoutClass}" style="--col:${col};--row:${row};">`
     + `<div class="vl-impact-entry-body">`
-    + impactArticleCardHtml(e)
-    + `<dl class="vl-impact-entry-facts">`
-    + `<div><dt>Constaté</dt><dd>${escapeHtml(e.check || '')}</dd></div>`
-    + `<div><dt>Ce que j'ai fait</dt><dd>${escapeHtml(e.action || '')}</dd></div>`
-    + `<div><dt>Pourquoi ça compte</dt><dd>${escapeHtml(e.why || '')}</dd></div>`
-    + `</dl></div></li>`;
+    + body
+    + `</div></div>`;
 }
 
-function impactColumnHtml(id, project, entries) {
+function impactColumnHtml(id, project, entries, col) {
   const label = (project && project.label) || id;
   const href = project && project.href;
   const link = href ? `<a class="vl-impact-col-link" href="${escapeHtml(href)}">Voir le projet<svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg></a>` : '';
-  const body = entries.length
-    ? `<ol class="vl-impact-timeline">${entries.map(impactEntryHtml).join('')}</ol>`
-    : `<p class="vl-impact-empty">Aucune actu reliée à ce projet pour l'instant.</p>`;
-  return `<div class="vl-impact-col">`
-    + `<div class="vl-impact-col-head"><h3>${escapeHtml(label)}</h3>${link}</div>`
-    + body
-    + `</div>`;
+  let html = `<div class="vl-impact-col-head" style="--col:${col};--row:1;"><h3>${escapeHtml(label)}</h3>${link}</div>`;
+  html += entries.length
+    ? entries.map((e, i) => impactEntryHtml(e, col, i + 2, i === entries.length - 1)).join('')
+    : `<p class="vl-impact-empty" style="--col:${col};--row:2;">Aucune actu reliée à ce projet pour l'instant.</p>`;
+  return html;
 }
 
 function renderImpact(data) {
@@ -461,7 +479,7 @@ function renderImpact(data) {
   for (const e of entries) (byProject[e.project] || (byProject[e.project] = [])).push(e);
   for (const id of Object.keys(byProject)) byProject[id].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
   mount.innerHTML = Object.keys(projects)
-    .map((id) => impactColumnHtml(id, projects[id], byProject[id] || []))
+    .map((id, i) => impactColumnHtml(id, projects[id], byProject[id] || [], i + 1))
     .join('');
 }
 
@@ -580,6 +598,128 @@ async function initVeille() {
   document.addEventListener('mouseleave', () => { mouse.active = false; });
   window.addEventListener('resize', resize);
   resize(); draw();
+})();
+
+// ------------------------------------------------------------------- Contact --
+// Année courante dans le copyright du pied de page (section contact, dupliquée de l'accueil).
+(function initFooterYear() {
+  const el = document.getElementById('footer-year');
+  if (el) el.textContent = new Date().getFullYear();
+})();
+
+// Avatar de #contact qui grandit progressivement au scroll — repris tel quel de
+// initContactAvatarGrow (js/details.js) : sans #about pour porter le contre-lift, la
+// progression suit simplement la distance restante jusqu'au vrai bas du document, si
+// bien que l'avatar finit sa croissance (et révèle le bras posé sur le pli) pile quand
+// on touche le bas de la page.
+(function initContactAvatarGrow() {
+  const contact = document.getElementById('contact');
+  if (!contact) return;
+  const avatarEls = contact.querySelectorAll('.contact-avatar');
+  const armEl = contact.querySelector('.contact-avatar-arm');
+  // le texte et le bouton du pied de page n'ont de sens que tant que le bras de
+  // l'avatar est visible et semble les désigner : ils se cachent avec le bras.
+  const footEl = document.querySelector('.dp-foot');
+  if (!avatarEls.length) return;
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', '1'));
+    if (armEl) armEl.style.setProperty('--avatar-arm-opacity', '1');
+    if (footEl) footEl.classList.remove('dp-foot-arm-hidden');
+    return;
+  }
+
+  const AVATAR_MIN_SCALE = 0.15;
+  const ARM_REVEAL_START = 0.75;
+  const EASE = 0.35;
+
+  let currentProgress = 0;
+  let rafId = null;
+
+  function targetProgress() {
+    const doc = document.documentElement;
+    const maxScroll = Math.max(doc.scrollHeight - window.innerHeight, 1);
+    const range = Math.max(300, window.innerHeight * 0.9);
+    const start = maxScroll - range;
+    return Math.min(Math.max((window.scrollY - start) / range, 0), 1);
+  }
+
+  function apply() {
+    const scale = AVATAR_MIN_SCALE + currentProgress * (1 - AVATAR_MIN_SCALE);
+    avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', scale.toFixed(3)));
+    const armVisible = currentProgress >= ARM_REVEAL_START;
+    if (armEl) armEl.style.setProperty('--avatar-arm-opacity', armVisible ? 1 : 0);
+    if (footEl) footEl.classList.toggle('dp-foot-arm-hidden', !armVisible);
+    // la teinte claire/foncée de la nav et du bouton "remonter" dépend de la position
+    // de #contact, qui continue de bouger quelques frames après l'arrêt du scroll.
+    window.dispatchEvent(new Event('parallax-tick'));
+  }
+
+  function tick() {
+    const target = targetProgress();
+    currentProgress += (target - currentProgress) * EASE;
+    if (Math.abs(target - currentProgress) < 0.001) currentProgress = target;
+    apply();
+    if (currentProgress !== target) {
+      rafId = requestAnimationFrame(tick);
+    } else {
+      rafId = null;
+    }
+  }
+
+  function onScroll() {
+    if (!rafId) rafId = requestAnimationFrame(tick);
+  }
+
+  apply();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+})();
+
+// Nav de pages et bouton "remonter" passent en blanc au-dessus du bleu de #contact
+// (même principe que initOnDarkNav dans js/details.js, réduit à la seule section
+// contact : c'est le seul aplat foncé de cette page).
+(function initOnDarkOverContact() {
+  const contact = document.getElementById('contact');
+  if (!contact) return;
+  const backToTop = document.querySelector('.back-to-top');
+  const pageTag = document.querySelector('.page-tag');
+
+  // --contact-slope est une clamp() : parseFloat sur la custom property échouerait.
+  // On la fait résoudre par le moteur de layout via une sonde hors-écran.
+  function resolveCSSLength(value) {
+    const probe = document.createElement('div');
+    probe.style.cssText = `position:absolute; visibility:hidden; pointer-events:none; height:${value};`;
+    document.body.appendChild(probe);
+    const px = probe.getBoundingClientRect().height;
+    probe.remove();
+    return px;
+  }
+
+  let slope = resolveCSSLength('var(--contact-slope)');
+
+  // side: 'left' pour la nav de pages, collée au bord gauche, où le pli diagonal
+  // descend le plus bas (cf. clip-path de .contact-fill) ; 'right' pour le reste.
+  function overDark(y, side) {
+    const r = contact.getBoundingClientRect();
+    if (side === 'left') return y > r.top + slope && y < r.bottom;
+    return y > r.top && y < r.bottom;
+  }
+
+  function toggle(el, side) {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    el.classList.toggle('is-on-dark', overDark(r.top + r.height / 2, side));
+  }
+
+  function update() {
+    toggle(backToTop, 'right');
+    toggle(pageTag, 'left');
+  }
+
+  update();
+  window.addEventListener('scroll', update, { passive: true });
+  window.addEventListener('resize', () => { slope = resolveCSSLength('var(--contact-slope)'); update(); });
+  window.addEventListener('parallax-tick', update);
 })();
 
 initVeille();
