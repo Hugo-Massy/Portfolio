@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-08-03T11:24:49.891Z",
+  "generatedAt": "2026-08-03T19:56:08.765Z",
   "windowDays": 3,
-  "count": 26,
+  "count": 29,
   "sources": [
     {
       "name": "CERT-FR",
@@ -51,7 +51,217 @@
       "es": "Desarrollo y Automatización"
     }
   },
+  "projects": {
+    "massy-innove": {
+      "fr": "Massy Innove — IA souveraine",
+      "en": "Massy Innove — sovereign AI",
+      "es": "Massy Innove — IA soberana"
+    },
+    "homelab": {
+      "fr": "Homelab perso",
+      "en": "Personal homelab",
+      "es": "Homelab personal"
+    }
+  },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Fake Roblox Xeno script launcher pushes infostealer, RAT malware",
+      "link": "https://www.bleepingcomputer.com/news/security/fake-roblox-xeno-script-launcher-pushes-infostealer-rat-malware/",
+      "date": "2026-08-03T19:25:10.000Z",
+      "summary": "Fake Xeno Executor installers are infecting unsuspecting Roblox players with malware that provides remote access and steals sensitive information. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "18 Malicious npm Packages Deliver Cross-Platform RAT to Alibaba Tool Users",
+      "link": "https://thehackernews.com/2026/08/18-malicious-npm-packages-deliver-cross.html",
+      "date": "2026-08-03T18:43:53.000Z",
+      "summary": "Cybersecurity researchers have discovered a new set of malicious npm packages that target users of Alibaba developer tools with a cross-platform remote access trojan (RAT) as part of a sophisticated, targeted software supply chain attack…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "Malware",
+        "JavaScript",
+        "Supply chain"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": "assets/veille/top-2.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "N-able warns of N-central auth bypass flaw exploited in attacks",
+      "link": "https://www.bleepingcomputer.com/news/security/n-able-warns-of-n-central-auth-bypass-flaw-exploited-in-attacks/",
+      "date": "2026-08-03T17:00:56.000Z",
+      "summary": "N-able is warning customers that hackers are exploiting an authentication bypass vulnerability (CVE-2026-18577) affecting both hosted and on-premises N-central servers. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Google Password Manager Attacks Could Let Malware Hijack Passkey-Protected Accounts",
+      "link": "https://thehackernews.com/2026/08/google-password-manager-attacks-could.html",
+      "date": "2026-08-03T16:24:47.000Z",
+      "summary": "Malware running as an ordinary user on a Windows machine can sign into a victim's passkey-protected accounts without a fingerprint, a PIN, or anything at all appearing on the victim's screen. Unit 42 detailed three attack paths against C…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Windows Server"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "INC Ransomware Emerges as Dominant Actor Exploiting SonicWall SMA 1000 Flaws",
+      "link": "https://thehackernews.com/2026/08/inc-ransomware-emerges-as-dominant.html",
+      "date": "2026-08-03T16:15:13.000Z",
+      "summary": "The INC Ransomware operation has emerged as the \"dominant threat actor\" exploiting the recently disclosed security flaws in SonicWall Secure Mobile Access (SMA) 1000 series VPN appliances. In a report published over the weekend, Resecuri…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Ransomware",
+        "pfSense/FW",
+        "Exploit"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "info",
+      "image": "assets/veille/top-3.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "ExfilSquad hackers leak info of over 100,000 UK police officers, staff",
+      "link": "https://www.bleepingcomputer.com/news/security/exfilsquad-hackers-leak-info-of-over-100-000-uk-police-officers-staff/",
+      "date": "2026-08-03T15:04:39.000Z",
+      "summary": "A cyberattack on the U.K.'s Police National Legal Database (PNLD) has compromised contact data of more than 100,000 police officers and other criminal justice professionals. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Inside the Underground Business of the Android BTMOB RAT malware",
+      "link": "https://www.bleepingcomputer.com/news/security/inside-the-underground-business-of-btmob-rat/",
+      "date": "2026-08-03T14:45:55.000Z",
+      "summary": "Flare researchers analyzed thousands of underground posts to examine how the BTMOB Android malware operation evolved into a fragmented ecosystem of resellers, source-code vendors, custom versions, and competing sales channels. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": "assets/veille/top-7.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "⚡ Weekly Recap: Rogue AI Models, $88M Bitcoin Theft, Water-System Attacks and Dangling DNS Hijacks",
+      "link": "https://thehackernews.com/2026/08/weekly-recap-rogue-ai-models-88m.html",
+      "date": "2026-08-03T14:03:11.000Z",
+      "summary": "This week kept coming back to permission. A model crossed a boundary. A wallet trusted bad randomness. Webmail kept an intruder around. Public systems, package feeds, hotel networks, and login flows all gave away more than intended. Some…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau",
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "FOMO in the SOC: Where AI Platforms like Claude Actually Fit",
+      "link": "https://thehackernews.com/2026/08/fomo-in-soc-where-ai-platforms-like.html",
+      "date": "2026-08-03T11:30:00.000Z",
+      "summary": "AI is moving incredibly fast, and every security leader is feeling the pressure to keep up. AI platforms like Claude, Codex and Cursor are already helping security teams write detections, investigate alerts, summarize incidents, and auto…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "SOC/EDR",
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "The Hacker News",
       "sourceType": "press",
@@ -59,7 +269,7 @@
       "title": "Chinese Threat Actor Uses Leaked DarkSword Kit to Deploy GHOSTBLADE on iOS",
       "link": "https://thehackernews.com/2026/08/chinese-threat-actor-uses-leaked.html",
       "date": "2026-08-03T10:49:06.000Z",
-      "summary": "An unknown Chinese-threat actor has been observed running a campaign targeting Apple iOS devices by leveraging a publicly leaked version of the DarkSword exploit kit. Attack surface management platform Censys said it identified the threa…",
+      "summary": "An unknown Chinese-speaking threat actor has been observed running a campaign targeting Apple iOS devices by leveraging a publicly leaked version of the DarkSword exploit kit. Attack surface management platform Censys said it identified…",
       "pillar": "infra",
       "pillarLabel": {
         "fr": "Infrastructure & Cloud",
@@ -72,7 +282,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-8.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -87,7 +297,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-2.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
@@ -129,10 +339,10 @@
         "CVE"
       ],
       "projects": [
-        "supervision"
+        "homelab"
       ],
       "severity": "info",
-      "image": "assets/veille/top-10.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -156,6 +366,90 @@
       "projects": [
         "massy-innove"
       ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Papercut (03 août 2026)",
+      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0959/",
+      "date": "2026-08-03T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Papercut. Elles permettent à un attaquant de provoquer une atteinte à la confidentialité des données et un contournement de la politique de sécurité.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Microsoft Edge (03 août 2026)",
+      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0960/",
+      "date": "2026-08-03T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Microsoft Edge. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une atteinte à la confidentialité des données et une atteint…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans Microsoft Office (03 août 2026)",
+      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-0961/",
+      "date": "2026-08-03T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans Microsoft Office. Elle permet à un attaquant de provoquer une exécution de code arbitraire à distance.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "actualité",
+      "title": "Bulletin d'actualité CERTFR-2026-ACT-033 (03 août 2026)",
+      "link": "https://www.cert.ssi.gouv.fr/actualite/CERTFR-2026-ACT-033/",
+      "date": "2026-08-03T00:00:00.000Z",
+      "summary": "Ce bulletin d'actualité du CERT-FR revient sur les vulnérabilités significatives de la semaine passée pour souligner leurs criticités. Il ne remplace pas l'analyse de l'ensemble des avis et alertes publiés par le CERT-FR dans le cadre d'…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
       "severity": "info",
       "image": null
     },
@@ -201,7 +495,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-5.jpg"
+      "image": null
     },
     {
       "source": "BleepingComputer",
@@ -216,7 +510,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-9.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -231,7 +525,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-6.jpg"
+      "image": null
     },
     {
       "source": "BleepingComputer",
@@ -331,7 +625,7 @@
       "tags": [],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-5.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -351,7 +645,9 @@
         "Malware",
         "Debian/Linux"
       ],
-      "projects": [],
+      "projects": [
+        "homelab"
+      ],
       "severity": "info",
       "image": null
     },
@@ -375,205 +671,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-4.jpg"
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "OpenAI says its new GPT 5.6 models are becoming more cost-efficient",
-      "link": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-says-its-new-gpt-56-models-are-becoming-more-cost-efficient/",
-      "date": "2026-07-31T18:52:44.000Z",
-      "summary": "OpenAI says it has reduced the price of two GPT-5.6 models, cutting Luna's API price by 80% and Terra's by 20% as it works to make its models more efficient. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "API",
-        "IA/LLM"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Suspected Chinese-Speaking Hackers Target Central Asian Governments With OctLurk and SilkLurk",
-      "link": "https://thehackernews.com/2026/08/suspected-chinese-speaking-hackers.html",
-      "date": "2026-07-31T18:52:04.000Z",
-      "summary": "A Chinese-speaking threat actor is suspected to be behind a fresh wave of cyber attacks targeting government organizations mainly located in Central Asia, including Afghanistan, Kyrgyzstan, Tajikistan, Uzbekistan, Kazakhstan, and the Syr…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Hacker uses DeepSeek AI to autonomously attack vulnerable servers",
-      "link": "https://www.bleepingcomputer.com/news/security/hacker-uses-deepseek-ai-to-autonomously-attack-vulnerable-servers/",
-      "date": "2026-07-31T17:35:35.000Z",
-      "summary": "A Chinese-speaking threat actor is using the DeepSeek AI model and the open-source Hermes Agent to conduct autonomous cyberattacks on exposed servers with limited human involvement. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM",
-        "Exploit"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "CISA warns of cyberattacks disrupting U.S. water utilities",
-      "link": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-cyberattacks-disrupting-us-water-utilities/",
-      "date": "2026-07-31T16:49:49.000Z",
-      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) is warning of a significant increase in attacks targeting internet-exposed programmable logic controllers (PLCs) in the water and wastewater systems sector. [...]",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "HollowFrame Loader Deploys Matryoshka Backdoor in Spear-Phishing Attack on Law Firm",
-      "link": "https://thehackernews.com/2026/07/hollowframe-loader-deploys-matryoshka.html",
-      "date": "2026-07-31T16:39:31.000Z",
-      "summary": "Cybersecurity researchers have shed light on a previously undocumented Go-based loader framework called HollowFrame and a Rust-based malware family tracked as Matryoshka. According to Blackpoint Cyber, the intrusion sequence begins with…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Malware",
-        "Windows Server"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Cheap Android TV Boxes Pose as Phones and Turn Owners’ Broadband Into Proxies",
-      "link": "https://thehackernews.com/2026/07/cheap-android-tv-boxes-pose-as-phones.html",
-      "date": "2026-07-31T14:45:01.000Z",
-      "summary": "Bitsight says some cheap Android TV boxes have shipped with apps that rewrite their hardware identity to mimic Samsung, Huawei, Xiaomi, or Vivo phones, then click ads on websites run by the same operators. Researchers named the operation…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "ESET tracks rise in malicious AI skills and adaptable malware",
-      "link": "https://www.bleepingcomputer.com/news/security/eset-tracks-rise-in-malicious-ai-skills-and-adaptable-malware/",
-      "date": "2026-07-31T14:01:11.000Z",
-      "summary": "Attackers are adapting established techniques to AI platforms, emerging technologies, and changing user behavior. ESET's new threat report examines the rise of malicious AI skills, AI-assisted malware, ClickFix attacks, record quishing a…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware",
-        "Malware",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Three Recent Chrome Releases Fix 1,442 Flaws, More Than Prior 23 Updates Combined",
-      "link": "https://thehackernews.com/2026/07/three-recent-chrome-releases-fix-1442.html",
-      "date": "2026-07-31T12:51:52.000Z",
-      "summary": "Google on Thursday announced that it fixed a whopping 1,072 security bugs in Chrome versions 149 and 150, surpassing the total number of flaws the company fixed across the prior 23 milestones combined. Both versions were released last mo…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Researchers Report 84 Flaws in 4G and 5G Cores, Including a Session Hijacking Flaw",
-      "link": "https://thehackernews.com/2026/07/researchers-report-84-flaws-in-4g-and.html",
-      "date": "2026-07-31T11:55:00.000Z",
-      "summary": "An academic study has disclosed a \"widespread class\" of security vulnerabilities impacting 4G and 5G core networks that, if successfully exploited, could trigger denial-of-service (DoS) attacks and even session hijacking, allowing an att…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": "assets/veille/top-7.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "6 Reasons Why Device Code Phishing is the Fastest-Growing Threat of 2026",
-      "link": "https://thehackernews.com/2026/07/6-reasons-why-device-code-phishing-is.html",
-      "date": "2026-07-31T11:24:59.000Z",
-      "summary": "Device code phishing - the abuse of the OAuth 2.0 device authorization grant to steal access tokens - has evolved from a niche red-team technique to an industrial-scale threat in under six months. Designed for input-constrained devices l…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
+      "image": "assets/veille/top-6.jpg"
     }
   ]
 }
