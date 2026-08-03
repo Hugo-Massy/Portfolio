@@ -1,18 +1,19 @@
 /* Veille — page mise au même langage visuel que le reste du site (tokens de styles.css). */
-:root{ --vl-peek:310px; }
+:root{ --vl-peek:160px; }
 .vl-raw{
   position:relative; z-index:1;
   max-width:var(--maxw); margin:0 auto; padding:0 16px 60px;
   font-family:var(--sans); color:var(--text); line-height:1.5;
 }
 
-/* --- En-tête calqué sur le hero (.hero de styles.css), avec une variante : la
-   hauteur s'arrête juste avant le haut des cartes du top 3 (qui dépasse ensuite
-   en bas de la vue), de sorte que le titre soit centré entre le haut de page et
-   le haut des cartes plutôt qu'au milieu du 100vh entier. --- */
+/* --- En-tête calqué sur le hero (.hero de styles.css) : plein 100vh, titre
+   centré dans tout le viewport. Le top 3 (piste ci-dessous) est tiré vers le
+   haut par une marge négative égale à --vl-peek pour venir se superposer sur
+   les derniers pixels du hero et « dépasser » par-dessus, sans réduire la
+   hauteur du hero lui-même. --- */
 .vl-head{
   position:relative;
-  min-height:calc(100vh - var(--vl-peek));
+  min-height:100vh;
   display:flex; flex-direction:column; justify-content:center;
   padding:clamp(18px, 3.5vh, 50px) 0;
   margin-bottom:0;
@@ -26,24 +27,30 @@
   font-size:18px; color:var(--text-dim); max-width:600px; margin:0 0 42px;
 }
 @media(max-width:640px){ .vl-head h1{font-size:38px;} }
-@media(max-width:760px){ .vl-head{ min-height:100vh; } }
 
-/* --- Séquence « épinglée » : le top 3 + la phrase de stats restent centrés à
-   l'écran pendant qu'on scrolle à travers une piste plus haute que le viewport
-   (.vl-showcase-track). Le scroll progresse normalement (la barre défile) mais
-   la suite (le flux complet) reste cachée sous la piste tant que l'animation
-   n'est pas terminée ; l'avancement de l'animation est piloté par le scroll. --- */
-.vl-showcase-track{ position:relative; }
+/* --- Séquence « épinglée » : aucun effet de parallax, aucun blocage du scroll.
+   Le pin est en position:sticky ; la piste (.vl-showcase-track) réserve, EN
+   PLUS de la hauteur du pin, une course de scroll (voir scrubLen dans
+   initShowcaseScrub). `top` est posé en JS à (viewport - hauteur pin)/2 : le
+   pin se colle donc — parfaitement centré — pile quand son centre atteint le
+   milieu de l'écran, puis y reste pendant qu'on scrolle à travers la course
+   réservée (le contenu du dessous ne saute jamais, sticky réservant sa place
+   dans le flux). C'est l'avancée dans cette course qui pilote la séquence
+   (mise en avant des cartes du top 3, puis apparition des lignes de stats).
+   Une fois la course épuisée UNE PREMIÈRE FOIS, le pin quitte le pinning pour
+   de bon (.is-done : plus jamais de sticky, même en remontant) — seul l'état
+   final (cartes à plat, stats visibles) reste réversible selon qu'on a
+   dépassé la piste ou non, sans jamais recoller le bloc au centre. --- */
+.vl-showcase-track{ position:relative; z-index:2; margin-top:calc(var(--vl-peek) * -1); }
 .vl-showcase-pin{
-  position:sticky; top:0; height:100vh;
-  display:flex; flex-direction:column; justify-content:center; gap:56px;
-  overflow:hidden;
+  position:sticky; top:0; /* `top` réel posé en JS (layout) */
+  display:flex; flex-direction:column; gap:56px;
+  /* la carte centrale du top 3 est relevée de 36px (transform:translateY, voir
+     .vl-top-grid plus bas) : ce padding lui laisse la place sans que rien ne
+     la rogne en haut. */
+  padding-top:44px;
 }
-/* État final : séquence jouée et dépassée → plus de pin ni de scrub, le bloc
-   reprend un flux normal (un second passage ne re-fige donc plus rien). */
-.vl-showcase-track.is-done .vl-showcase-pin{
-  position:static; height:auto; overflow:visible; gap:56px; padding:120px 0;
-}
+.vl-showcase-track.is-done .vl-showcase-pin{ position:static; }
 
 /* Bloc méta : phrase de stats, sous le top 3 dans la séquence épinglée. */
 .vl-meta{
@@ -269,13 +276,14 @@
   .vl-top-grid .vl-top-card:nth-child(2):hover,
   .vl-top-grid .vl-top-card:nth-child(3):hover{ transform:translateY(-3px); }
   /* Le top 3 empilé dépasse la hauteur d'écran : pas de séquence épinglée en
-     mobile, on repasse en flux normal et les lignes de stats sont visibles. */
-  .vl-showcase-track{ height:auto !important; }
-  .vl-showcase-pin{ position:static; height:auto; overflow:visible; gap:40px; margin:120px 0; }
+     mobile (le JS désactive aussi le pinning sous 760px), on repasse en flux
+     normal et les lignes de stats sont visibles. */
+  .vl-showcase-track{ height:auto !important; margin-top:0; }
+  .vl-showcase-pin{ position:static; overflow:visible; gap:40px; margin:120px 0; padding-top:0; }
   .vl-meta-line{ opacity:1; transform:none; }
 }
 .vl-all-h{
   font-size:13px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em;
   color:var(--text-faint);
-  margin:44px 0 16px; padding-top:24px;
+  margin:96px 0 16px; padding-top:24px;
 }

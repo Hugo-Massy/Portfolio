@@ -133,13 +133,16 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .btn-primary:hover{box-shadow:0 0 0 4px var(--accent-glow); transform:translateY(-1px);}
 .btn-ghost{border-color:var(--border); color:var(--text);}
 .btn-ghost:hover{border-color:var(--accent); color:var(--accent);}
-/* HERO — occupe tout le viewport, contenu centré verticalement */
+/* HERO — occupe exactement le viewport (jamais plus), contenu centré verticalement.
+   height (et non min-height) pour que le hero ne pousse jamais la suite de la page :
+   si le contenu déborde sur un écran très bas, il défile dans le hero lui-même. */
 .hero{
   position:relative;
-  min-height:100vh;
+  height:100vh;
   display:flex; align-items:center;
   padding:clamp(18px, 3.5vh, 50px) 0;
   background:var(--bg);
+  overflow-y:auto;
 }
 .hero .wrap{position:relative; z-index:1; width:100%;}
 .hero-copy{will-change:opacity;}

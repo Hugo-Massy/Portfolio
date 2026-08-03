@@ -227,8 +227,9 @@ function dumpAll(data) {
 // du scroll dans la piste.
 function initShowcaseScrub(meta, top) {
   const track = document.getElementById('vl-showcase');
+  const pin = track && track.querySelector('.vl-showcase-pin');
   const lines = Array.from(meta.querySelectorAll('.vl-meta-line'));
-  if (!track || !lines.length) return;
+  if (!track || !pin || !lines.length) return;
 
   const grid = top && top.querySelector('.vl-top-grid');
   const cards = grid ? Array.from(grid.querySelectorAll('.vl-top-card')) : [];
@@ -247,63 +248,21 @@ function initShowcaseScrub(meta, top) {
   ];
   if (!steps.length) return;
 
-  // Distance de scroll (en px) allouée à chaque étape, plus une marge finale où
-  // tout reste affiché avant que la suite n'apparaisse. La hauteur de la piste
-  // = viewport (pour le pin) + cette distance totale.
+  // Distance de scroll réel (px) allouée à chaque étape, plus une marge finale
+  // où tout reste affiché avant que la suite n'apparaisse. C'est la « course »
+  // pendant laquelle le pin reste figé au centre : la piste réserve cette
+  // hauteur EN PLUS de celle du pin, ce qui fournit le défilement nécessaire
+  // sans jamais bloquer le scroll ni faire sauter le contenu en dessous.
   const PER_STEP = 320;
   const END_HOLD = 260;
   const scrubLen = steps.length * PER_STEP + END_HOLD;
 
-  function sizeTrack() {
-    if (finalized) return;
-    track.style.height = (window.innerHeight + scrubLen) + 'px';
-  }
+  let shown = -1;        // nombre d'étapes actuellement actives (évite les reflows inutiles)
+  let stickyTop = 0;     // valeur de `top` (px) qui centre le pin figé dans le viewport
+  let enabled = false;   // pinning actif (désactivé si écran étroit / pin plus haut que le viewport)
+  let finalized = false; // séquence jouée une première fois jusqu'au bout : le pin ne se re-fige plus jamais
 
-  let shown = -1;     // nombre d'étapes actuellement actives (pour éviter les reflows inutiles)
-  let completed = false; // séquence entièrement jouée au moins une fois
-  let finalized = false; // piste effondrée : plus de pin, plus de scrub
-
-  // Une fois la séquence jouée et la piste entièrement dépassée, on effondre la
-  // piste (fin du pin et de la distance de scrub) pour qu'un second passage ne
-  // re-fige plus la page. Pour éviter tout saut, on mesure le déplacement réel
-  // de l'élément qui suit la piste (le flux complet) avant/après l'effondrement
-  // et on corrige exactement le scroll — le tout avec `scroll-behavior:auto`
-  // pour que la correction soit instantanée (et non une remontée animée).
-  const nextEl = document.getElementById('vl-grid');
-  function finalize() {
-    if (finalized) return;
-    finalized = true;
-    lines.forEach((line) => line.classList.add('is-visible'));
-    cards.forEach((card) => card.classList.remove('is-spotlight'));
-    if (grid) grid.classList.remove('is-showcasing');
-
-    const html = document.documentElement;
-    const prevBehavior = html.style.scrollBehavior;
-    html.style.scrollBehavior = 'auto';
-
-    const anchor = nextEl || track;
-    const before = anchor.getBoundingClientRect().top;
-    track.classList.add('is-done');
-    track.style.height = '';
-    const after = anchor.getBoundingClientRect().top;
-    const shift = after - before; // décalage résiduel non absorbé par le navigateur
-    if (Math.abs(shift) > 0.5) window.scrollBy(0, shift);
-
-    html.style.scrollBehavior = prevBehavior;
-    window.removeEventListener('scroll', onScroll);
-    window.removeEventListener('resize', sizeTrack);
-  }
-
-  function render() {
-    // Distance déjà parcourue dans la phase épinglée : 0 quand le haut de la
-    // piste atteint le haut du viewport, jusqu'à `scrubLen` à la fin du pin.
-    const rect = track.getBoundingClientRect();
-    const scrolled = Math.min(Math.max(-rect.top, 0), scrubLen);
-    // Nombre d'étapes qui doivent être actives à cette progression.
-    const active = Math.min(steps.length, Math.floor(scrolled / PER_STEP));
-    if (active >= steps.length) completed = true;
-    // Séquence jouée ET piste entièrement dépassée vers le haut → on effondre.
-    if (completed && rect.bottom <= 0) { finalize(); return; }
+  function applySteps(active) {
     if (active === shown) return;
     for (let i = 0; i < steps.length; i++) {
       if (i < active) steps[i].on(); else steps[i].off();
@@ -314,16 +273,107 @@ function initShowcaseScrub(meta, top) {
     shown = active;
   }
 
+  // État final « propre » : cartes toutes revenues à plat (mettre les 3 en
+  // spotlight simultané n'aurait pas de sens), lignes de stats affichées.
+  function showFinal() {
+    cards.forEach((c) => c.classList.remove('is-spotlight'));
+    lines.forEach((l) => l.classList.add('is-visible'));
+    if (grid) grid.classList.remove('is-showcasing');
+    shown = steps.length;
+  }
+  function hideAll() {
+    cards.forEach((c) => c.classList.remove('is-spotlight'));
+    lines.forEach((l) => l.classList.remove('is-visible'));
+    if (grid) grid.classList.remove('is-showcasing');
+    shown = -1;
+  }
+
+  // Séquence jouée jusqu'au bout une première fois : le pin quitte le pinning
+  // pour de bon (plus jamais de position:sticky ni de re-figement, même en
+  // remontant) — voir .vl-showcase-track.is-done. On corrige le scroll pour
+  // que la suite du contenu ne saute pas au moment où la piste, devenue
+  // inutile, perd sa hauteur réservée.
+  function finalize() {
+    if (finalized) return;
+    finalized = true;
+    showFinal();
+    track.classList.add('is-done');
+
+    const html = document.documentElement;
+    const prevBehavior = html.style.scrollBehavior;
+    html.style.scrollBehavior = 'auto';
+    const anchor = document.getElementById('vl-grid') || track;
+    const before = anchor.getBoundingClientRect().top;
+    pin.style.top = '';
+    track.style.height = '';
+    const after = anchor.getBoundingClientRect().top;
+    const shift = after - before;
+    if (Math.abs(shift) > 0.5) window.scrollBy(0, shift);
+    html.style.scrollBehavior = prevBehavior;
+  }
+
+  // (Re)mesure : hauteur naturelle du pin → position de gel centrée + hauteur
+  // de la piste (pin + course). Recalculée au resize et quand la taille du pin
+  // change (chargement des images du top 3). Plus aucun effet une fois
+  // finalisé : le pin reste définitivement en flux normal.
+  function layout() {
+    if (finalized) return;
+    const H = pin.offsetHeight;
+    const vh = window.innerHeight;
+    // On ne fige que si l'écran est large (la media query repasse le pin en
+    // flux normal sous 760px) ET si le pin tient dans le viewport une fois
+    // centré (sinon il serait rogné en haut/bas).
+    enabled = window.innerWidth > 760 && H + 24 <= vh;
+    if (!enabled) {
+      pin.style.top = '';
+      track.style.height = '';
+      applySteps(0);
+      return;
+    }
+    stickyTop = Math.max(Math.round((vh - H) / 2), 12);
+    pin.style.top = stickyTop + 'px';
+    track.style.height = (H + scrubLen) + 'px';
+    render();
+  }
+
+  // Le pin (position:sticky) se colle à `stickyTop` — donc centré — pile quand
+  // son centre atteint le milieu de l'écran, puis y reste pendant toute la
+  // course `scrubLen` réservée par la piste. `stuck` mesure l'avancée dans
+  // cette course (0 → scrubLen) et pilote les étapes, dans les deux sens tant
+  // que la séquence n'a pas encore été jouée jusqu'au bout.
+  //
+  // Une fois finalisée, plus de pin ni de course : on affiche simplement
+  // l'état final dès que la piste a été atteinte, et on le retire si l'on
+  // remonte au-dessus — réversible, mais sans jamais recoller le bloc au
+  // centre de l'écran.
+  function render() {
+    if (finalized) {
+      const passed = track.getBoundingClientRect().top <= window.innerHeight * 0.85;
+      if (passed && shown !== steps.length) showFinal();
+      else if (!passed && shown !== -1) hideAll();
+      return;
+    }
+    if (!enabled) return;
+    const trackTopV = track.getBoundingClientRect().top;
+    const stuck = Math.min(Math.max(stickyTop - trackTopV, 0), scrubLen);
+    applySteps(Math.min(steps.length, Math.floor(stuck / PER_STEP)));
+    if (stuck >= scrubLen) finalize();
+  }
+
   let raf = null;
   function onScroll() {
     if (raf) return;
     raf = requestAnimationFrame(() => { raf = null; render(); });
   }
 
-  sizeTrack();
-  window.addEventListener('resize', sizeTrack, { passive: true });
+  layout();
   window.addEventListener('scroll', onScroll, { passive: true });
-  render();
+  window.addEventListener('resize', layout, { passive: true });
+  // La hauteur du pin change quand les images du top 3 se chargent : on
+  // recale alors la position de gel et la course.
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(() => layout()).observe(pin);
+  }
 }
 
 async function initVeille() {
