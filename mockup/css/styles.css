@@ -1408,19 +1408,19 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 /* Camaïeu de bleu — 3 nuances (clair / moyen / profond), même famille que
    l'accent du site. Réparties pour que deux cartes voisines diffèrent. */
 .xp-tile--b1{              /* bleu clair */
-  --tile-bg:#dde7f9; --tile-name:#2a3f80; --tile-accent:#3f5db0;
-  --tile-text:#4b5678; --tile-chip-bg:rgba(255,255,255,.6);
-  --tile-icon-bg:rgba(255,255,255,.65); --tile-shadow:rgba(60,90,180,.35);
+  --tile-bg:#c3d3f0; --tile-name:#2a3f80; --tile-accent:#3f5db0;
+  --tile-text:#3f4b70; --tile-chip-bg:rgba(255,255,255,.6);
+  --tile-icon-bg:rgba(255,255,255,.65); --tile-shadow:rgba(50,80,170,.4);
 }
 .xp-tile--b2{              /* bleu moyen */
-  --tile-bg:#7f9bd4; --tile-name:#233a72; --tile-accent:#35529c;
-  --tile-text:#3f4d74; --tile-chip-bg:rgba(255,255,255,.55);
-  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(50,80,170,.4);
+  --tile-bg:#6c89c6; --tile-name:#1e3364; --tile-accent:#2c4788;
+  --tile-text:#37436a; --tile-chip-bg:rgba(255,255,255,.55);
+  --tile-icon-bg:rgba(255,255,255,.6); --tile-shadow:rgba(40,65,150,.45);
 }
 .xp-tile--b3{              /* bleu profond */
-  --tile-bg:#7f9bd4; --tile-name:#1c2e5c; --tile-accent:#294a91;
-  --tile-text:#33436b; --tile-chip-bg:rgba(255,255,255,.5);
-  --tile-icon-bg:rgba(255,255,255,.55); --tile-shadow:rgba(40,70,150,.45);
+  --tile-bg:#5573ae; --tile-name:#182750; --tile-accent:#233c78;
+  --tile-text:#2c3a60; --tile-chip-bg:rgba(255,255,255,.5);
+  --tile-icon-bg:rgba(255,255,255,.55); --tile-shadow:rgba(30,55,130,.5);
 }
 
 @media(max-width:900px){

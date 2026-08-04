@@ -594,6 +594,67 @@ async function initVeille() {
   });
 })();
 
+// ------------------------------------------------------ Rail de navigation --
+// Repris de initDotRailSpy (js/details.js) : l'indicateur suit la section visible.
+// L'onglet « Top actus » couvre toute la piste de scrub (#vl-showcase) via
+// data-sections, pas seulement le bloc épinglé qu'il vise en href.
+(function initDotRailSpy() {
+  const tabs = document.querySelectorAll('.dot-rail a[href^="#"]');
+  const indicator = document.querySelector('.dot-rail-indicator');
+  if (!tabs.length) return;
+
+  const sectionToTab = new Map();
+  tabs.forEach((tab) => {
+    const ids = [tab.getAttribute('href').slice(1), ...(tab.dataset.sections ? tab.dataset.sections.split(/\s+/) : [])];
+    ids.forEach((id) => {
+      const section = document.getElementById(id);
+      if (section) sectionToTab.set(section, tab);
+    });
+  });
+  if (!sectionToTab.size) return;
+
+  const INDICATOR_TRAVEL_MS = 450;
+  let activateTimer = null;
+
+  function moveIndicatorTo(tab) {
+    if (!indicator) return;
+    indicator.style.top = `${tab.offsetTop + tab.offsetHeight / 2}px`;
+  }
+
+  function activate(tab) {
+    clearTimeout(activateTimer);
+    tabs.forEach((t) => t.classList.remove('is-active'));
+    moveIndicatorTo(tab);
+    activateTimer = setTimeout(() => tab.classList.add('is-active'), INDICATOR_TRAVEL_MS);
+  }
+
+  const observer = new IntersectionObserver((entries) => {
+    // Ignoré tout en bas de page : #contact peut être plus courte que la fenêtre
+    // restante et ne jamais traverser la bande -40%/-55%, cf. checkBottom.
+    if (isAtBottom()) return;
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      const tab = sectionToTab.get(entry.target);
+      if (tab) activate(tab);
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+
+  sectionToTab.forEach((tab, section) => observer.observe(section));
+  moveIndicatorTo(tabs[0]);
+
+  function isAtBottom() {
+    return window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+  }
+  function checkBottom() {
+    if (!isAtBottom()) return;
+    const lastTab = tabs[tabs.length - 1];
+    if (lastTab && !lastTab.classList.contains('is-active')) activate(lastTab);
+  }
+  window.addEventListener('scroll', checkBottom, { passive: true });
+  window.addEventListener('resize', checkBottom);
+  checkBottom();
+})();
+
 // Retour en haut
 (function initBackToTop() {
   const btn = document.querySelector('.back-to-top');
@@ -743,6 +804,8 @@ async function initVeille() {
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
   const updated = document.querySelector('.vl-updated');
+  const railLinks = document.querySelectorAll('.dot-rail a');
+  const indicator = document.querySelector('.dot-rail-indicator');
 
   // --contact-slope est une clamp() : parseFloat sur la custom property échouerait.
   // On la fait résoudre par le moteur de layout via une sonde hors-écran.
@@ -772,6 +835,8 @@ async function initVeille() {
   }
 
   function update() {
+    railLinks.forEach((el) => toggle(el, 'right'));
+    toggle(indicator, 'right');
     toggle(backToTop, 'right');
     toggle(pageTag, 'left');
     toggle(updated, 'left');
