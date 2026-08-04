@@ -653,15 +653,16 @@ async function initVeille() {
     es: btn.querySelector('.flag-es'),
   };
 
-  function apply(lang) {
+  function apply(lang, { persist = true } = {}) {
     btn.dataset.lang = lang;
     LANGS.forEach((l) => { flags[l].classList.toggle('is-active', l === lang); });
     applyTranslations(lang);
     currentLang = lang;
     renderDynamic();
+    if (persist) storeLang(lang);
   }
 
-  apply('fr');
+  apply(getStoredLang() || 'fr', { persist: false });
 
   function updateAtTop() { btn.classList.toggle('is-at-top', window.scrollY <= 10); }
   updateAtTop();

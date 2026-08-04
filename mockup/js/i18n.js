@@ -1038,6 +1038,28 @@ const I18N = {
   },
 };
 
+// Persiste le choix de langue (clé partagée par main.js/details.js/veille.js) pour
+// qu'il survive à la navigation entre les pages du site.
+const LANG_STORAGE_KEY = 'lang';
+const SUPPORTED_LANGS = ['fr', 'en', 'es'];
+
+function getStoredLang() {
+  try {
+    const lang = localStorage.getItem(LANG_STORAGE_KEY);
+    return SUPPORTED_LANGS.includes(lang) ? lang : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeLang(lang) {
+  try {
+    localStorage.setItem(LANG_STORAGE_KEY, lang);
+  } catch {
+    // stockage indisponible (navigation privée...) — la langue reste par défaut
+  }
+}
+
 const HERO_PHRASES = {
   fr: ['consolide', 'assure', 'enrichie', 'renforce', 'solidifie', 'muscle', 'raffermit', 'protège'],
   en: ['strengthens', 'secures', 'enriches', 'reinforces', 'solidifies', 'builds', 'toughens', 'protects'],

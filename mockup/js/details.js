@@ -680,7 +680,7 @@
   });
 })();
 
-// Rail de navigation (dupliqué depuis sections/nav.html) : indicateur qui suit la
+// Rail de navigation (dupliqué depuis la nav de l’accueil (index.html)) : indicateur qui suit la
 // section visible. Les liens qui pointent vers index.html#... n'ont pas de cible sur
 // cette page et sont simplement ignorés par l'observer, sans erreur.
 (function initDotRailSpy() {
@@ -1059,7 +1059,8 @@ function applyTranslations(lang) {
 }
 
 // Sélecteur de langue : bascule FR/EN/ES du bouton drapeau, comme sur l'accueil
-// (initLangSwitch dans main.js), mais toujours en français au chargement de la page.
+// (initLangSwitch dans main.js). La langue choisie est lue depuis le stockage
+// partagé (voir getStoredLang dans i18n.js) pour rester cohérente entre les pages.
 (function initLangSwitch() {
   const btn = document.querySelector('.lang-switch');
   if (!btn) return;
@@ -1071,13 +1072,14 @@ function applyTranslations(lang) {
     es: btn.querySelector('.flag-es'),
   };
 
-  function apply(lang) {
+  function apply(lang, { persist = true } = {}) {
     btn.dataset.lang = lang;
     LANGS.forEach((l) => { flags[l].classList.toggle('is-active', l === lang); });
     applyTranslations(lang);
+    if (persist) storeLang(lang);
   }
 
-  apply('fr');
+  apply(getStoredLang() || 'fr', { persist: false });
 
   function updateAtTop() {
     btn.classList.toggle('is-at-top', window.scrollY <= 10);

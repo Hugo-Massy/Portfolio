@@ -1,6 +1,3 @@
-// Charge chaque section depuis sections/*.html et l'injecte dans son placeholder.
-const SECTIONS = ['nav', 'hero', 'about', 'skills', 'xp', 'refs', 'availability', 'contact'];
-
 // Langue actuellement affichée — lue par TERM_COMMANDS pour produire ses sorties dans
 // la bonne langue, et mise à jour par initLangSwitch (voir applyTranslations).
 let CURRENT_LANG = 'fr';
@@ -25,15 +22,9 @@ function applyTranslations(lang) {
   document.dispatchEvent(new CustomEvent('langchange', { detail: { lang } }));
 }
 
-async function loadSections() {
-  const root = document.getElementById('app');
-  for (const name of SECTIONS) {
-    const res = await fetch(`sections/${name}.html`);
-    const html = await res.text();
-    const slot = document.createElement('div');
-    slot.innerHTML = html;
-    root.append(...slot.children);
-  }
+// Le HTML des sections est directement présent dans index.html (visible sans JS,
+// indexable sans exécution JS) ; cette fonction se contente d'attacher les comportements.
+function initSite() {
   initRevealObserver();
   initXpBentoWave();
   initSkillFloaterObserver();
@@ -148,8 +139,7 @@ function initRefsCarousel() {
 }
 
 // Rend les piliers (.skill-item) et les cartes du bento (.xp-tile) cliquables.
-// La destination se lit dans data-href : tant qu'il est vide, aucun clic ne redirige
-// (comportement demandé pour l'instant). Renseigner data-href suffira à activer le lien.
+// La destination se lit dans data-href ; si l'attribut est vide, le clic ne redirige pas.
 function initClickableCards() {
   const cards = document.querySelectorAll('.skill-item[role="link"], .xp-tile[role="link"]');
   cards.forEach((card) => {
@@ -779,14 +769,15 @@ function initLangSwitch() {
     es: btn.querySelector('.flag-es'),
   };
 
-  function apply(lang) {
+  function apply(lang, { persist = true } = {}) {
     btn.dataset.lang = lang;
     LANGS.forEach((l) => { flags[l].classList.toggle('is-active', l === lang); });
     CURRENT_LANG = lang;
     applyTranslations(lang);
+    if (persist) storeLang(lang);
   }
 
-  apply('fr');
+  apply(getStoredLang() || 'fr', { persist: false });
 
   function updateAtTop() {
     btn.classList.toggle('is-at-top', window.scrollY <= 10);
@@ -1830,7 +1821,7 @@ function initTerminal() {
   });
 }
 
-loadSections();
+initSite();
 
 // Grille de points en fond du hero, qui réagit à la position de la souris (effet magnétique discret).
 function initBackgroundGrid() {
