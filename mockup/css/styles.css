@@ -80,23 +80,42 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
   transition:transform 1.4s cubic-bezier(.65,0,.35,1);
 }
 #preloader.is-hidden{transform:translateY(-100%); pointer-events:none;}
-/* Ciblé par une classe et non par son id : les mêmes règles doivent servir à l'original ET à
-   la copie blanche découpée dans la forme (.preloader-blob-clone), dont les id sont retirés
-   pour ne pas se retrouver en double dans le document. */
-/* Le mot grandit par la largeur du SVG, pas par sa taille de police : le viewBox garde ses
-   proportions, donc "bienvenido" (le plus long des trois) continue de tenir exactement comme
-   avant, sans risque de déborder du cadre. */
-.preloader-word{position:relative; z-index:1; width:min(76vw, 520px); height:auto; max-width:100%;}
-/* Même police que le reste du site ; simple fondu, volontairement lent, entre les mots.
-   Courbe SYMÉTRIQUE (ease-in-out) et non ease-out : avec une courbe type
-   cubic-bezier(.25,.8,.25,1), l'opacité atteint ~70% dès le premier quart du temps, et
-   l'apparition paraît instantanée alors que la durée est bien de 1.2s. */
-.preloader-word text{
-  font-family:var(--sans); font-weight:700; font-size:12px;
-  letter-spacing:0.01em;
+/* Le mot n'est pas écrit avec une police mais DESSINÉ : un tracé unique, rendu en trait et non
+   en aplat. C'est de là que viennent l'épaisseur rigoureusement constante et les extrémités
+   rondes du lettrage — une police, même "monoline", module toujours un peu son trait et ne se
+   laisse pas écrire progressivement. Le SVG peut contenir plusieurs mots, un seul est affiché
+   à la fois (.preloader-word-item) ; il n'y en a qu'un aujourd'hui.
+   Ciblé par une classe et non par son id : les mêmes règles servent à l'original ET à la copie
+   blanche découpée dans la forme (.preloader-blob-clone), dont les id sont retirés.
+   Le fondu porte sur le SVG entier. Courbe SYMÉTRIQUE (ease-in-out) et non ease-out : avec une
+   courbe type cubic-bezier(.25,.8,.25,1), l'opacité atteint ~70% dès le premier quart du temps,
+   et l'apparition paraît instantanée alors que la durée est bien de 1.2s. La taille à l'écran
+   se règle par la largeur, le viewBox met le reste à l'échelle — épaisseur du trait comprise. */
+.preloader-word{
+  position:relative; z-index:1;
+  width:min(42vw, 280px); height:auto; max-width:100%;
+  overflow:visible;
   transition:opacity 1.2s cubic-bezier(.45,0,.55,1);
 }
-#preloader.is-swapping .preloader-word text{opacity:0;}
+#preloader.is-swapping .preloader-word{opacity:0;}
+/* Bascule sèche d'un mot à l'autre : elle a lieu pendant que le SVG entier est invisible,
+   donc aucune transition ici — deux fondus superposés se verraient. */
+.preloader-word-item{display:none;}
+.preloader-word-item.is-current{display:block;}
+.preloader-word path{
+  fill:none;
+  stroke:currentColor;
+  color:var(--accent);
+  /* Épaisseur donnée dans le repère du dessin (viewBox de 1231 × 415) : le trait grossit donc
+     exactement comme le mot, quelle que soit la taille d'affichage. */
+  stroke-width:34;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+/* Le mot est tracé deux fois au même endroit : une trace pâle en dessous, puis le trait plein
+   qui s'écrit par-dessus (voir initPreloaderWord). Sans cette trace, le mot semblerait surgir
+   de nulle part ; avec elle, on lit d'emblée le geste avant qu'il soit fait. */
+.preloader-word-ghost{opacity:0.15;}
 /* Barre de progression, visible pendant le chargement (voir initPreloader : sa largeur
    suit le plus lent des deux — le vrai chargement de la page et un plancher de 3s — pour
    ne jamais afficher 100% avant que le site soit réellement prêt), puis cède la place à
@@ -171,7 +190,7 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
   /* z-index au-dessus de tout le contenu de l'écran (texte, barre, chevrons) : la forme est
      un aplat opaque qui masque ce qu'elle survole, au lieu de le laisser transparaître. */
   position:absolute; top:0; left:0; z-index:2;
-  width:clamp(96px, 11vw, 150px); aspect-ratio:1/1;
+  width:clamp(72px, 8vw, 112px); aspect-ratio:1/1;
   pointer-events:none;
   /* --blob-x/--blob-y = position du curseur, translate(-50%,-50%) recentre le halo dessus */
   transform:translate3d(var(--blob-x, 50vw), var(--blob-y, 50vh), 0) translate(-50%, -50%);
@@ -240,8 +259,9 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
   display:flex; align-items:center; justify-content:center;
 }
 /* Tout ce qui est repris dans la découpe est repeint en blanc, quelle que soit sa couleur
-   d'origine — y compris le mot, dont le remplissage dégradé est écrasé ici. */
-.preloader-blob-clone text{fill:#fff; fill-opacity:1;}
+   d'origine — le mot compris, qui est un tracé et se repeint donc par son trait, pas par son
+   remplissage. La trace pâle, elle, garde son opacité : le blanc doit s'écrire par-dessus. */
+.preloader-blob-clone path{stroke:#fff;}
 .preloader-blob-clone .preloader-mouse,
 .preloader-blob-clone .preloader-scroll-hint{color:#fff;}
 .preloader-blob-clone .preloader-progress{background:rgba(255,255,255,0.35);}

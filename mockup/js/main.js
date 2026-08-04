@@ -1830,14 +1830,14 @@ function initTerminal() {
 // le clavier/lecteur d'écran atteindre un contenu encore masqué derrière lui.
 function initPreloader() {
   const el = document.getElementById('preloader');
-  const base = document.getElementById('preloader-text-base');
-  const wave = document.getElementById('preloader-text-wave');
-  const wavePath = document.getElementById('preloader-wave-path');
+  const word = document.getElementById('preloader-svg');
   const scrollHint = document.getElementById('preloader-scroll-hint');
-  if (!el || !base || !wave) return;
+  if (!el || !word) return;
 
   const app = document.getElementById('app');
-  const GREETINGS = ['bienvenue', 'welcome', 'bienvenido'];
+  // Doit correspondre aux data-word présents dans le SVG (index.html). Le cycle ne démarre
+  // qu'à partir de deux mots : avec un seul, l'écran l'écrit une fois et le laisse en place.
+  const GREETINGS = ['hello'];
   // Rythme volontairement lent et posé (façon Apple) : chaque mot reste longtemps à l'écran.
   const HOLD_MS = 5500;
   // Filet de sécurité si l'évènement "load" ne se déclenche jamais (ressource bloquée...) :
@@ -1852,13 +1852,8 @@ function initPreloader() {
   if (app) app.setAttribute('inert', '');
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (reduce.matches && wavePath) wavePath.setAttribute('begin', 'indefinite');
 
   const stopBlob = initPreloaderBlob(el);
-  // La découpe blanche portée par la forme (voir initPreloaderBlob) contient une copie du mot
-  // et de la barre : tout ce que le JS modifie sur l'original doit l'être aussi sur elle,
-  // sans quoi la forme laisserait voir un autre mot que celui affiché derrière.
-  const mirrorTexts = el.querySelectorAll('.preloader-blob-clone text');
   const progressBars = el.querySelectorAll('.preloader-progress-bar');
 
   // Le changement de mot est déclenché par la fin RÉELLE du fondu de sortie (transitionend),
@@ -1868,10 +1863,8 @@ function initPreloader() {
   function onTextFadeEnd(e) {
     if (e.propertyName !== 'opacity' || !el.classList.contains('is-swapping')) return;
     i = (i + 1) % GREETINGS.length;
-    base.textContent = GREETINGS[i];
-    wave.textContent = GREETINGS[i];
-    mirrorTexts.forEach((t) => { t.textContent = GREETINGS[i]; });
-    // Double rAF : laisse le navigateur peindre une image avec "nouveau texte, opacité
+    showGreeting(el, GREETINGS[i], reduce.matches);
+    // Double rAF : laisse le navigateur peindre une image avec "nouveau mot, opacité
     // encore à 0" avant de redemander opacité 1, sinon les deux changements peuvent se
     // fondre dans la même image et le fondu d'entrée se joue à peine.
     requestAnimationFrame(() => {
@@ -1880,8 +1873,10 @@ function initPreloader() {
       });
     });
   }
-  base.addEventListener('transitionend', onTextFadeEnd);
-  const cycleTimer = reduce.matches ? null : setInterval(() => {
+  word.addEventListener('transitionend', onTextFadeEnd);
+  showGreeting(el, GREETINGS[0], reduce.matches);
+
+  const cycleTimer = (reduce.matches || GREETINGS.length < 2) ? null : setInterval(() => {
     el.classList.add('is-swapping');
   }, HOLD_MS);
 
@@ -1891,7 +1886,7 @@ function initPreloader() {
     hidden = true;
     if (stopBlob) stopBlob();
     if (cycleTimer !== null) clearInterval(cycleTimer);
-    base.removeEventListener('transitionend', onTextFadeEnd);
+    word.removeEventListener('transitionend', onTextFadeEnd);
     window.removeEventListener('keydown', onDismissKey);
     document.documentElement.classList.remove('is-preloading');
     if (app) app.removeAttribute('inert');
@@ -1934,6 +1929,33 @@ function initPreloader() {
   setTimeout(() => { realDone = true; tryFinish(); }, MAX_WAIT_MS);
   setTimeout(() => { minTimeDone = true; tryFinish(); }, MIN_MS);
   tryFinish();
+}
+
+// Affiche un des mots d'accueil et le fait s'écrire. Les trois mots sont des tracés dessinés
+// (voir .preloader-word dans styles.css), tous présents dans le SVG : il n'y a donc pas de
+// texte à remplacer, seulement celui à montrer à choisir.
+// Le geste d'écriture est obtenu en pointillant le trait avec un tiret aussi long que le tracé
+// lui-même, puis en faisant glisser ce tiret : à aucun moment le trait n'est coupé, il est
+// seulement décalé — d'où l'impression d'une main qui avance, et non d'un masque qui s'ouvre.
+// La sélection porte sur data-word et non sur une position : la copie blanche découpée dans la
+// forme (voir initPreloaderBlob) contient les mêmes mots, et bascule ainsi en même temps que
+// l'original, sans quoi la forme laisserait voir un autre mot que celui affiché derrière.
+function showGreeting(el, name, reduce) {
+  const DRAW_MS = 2600;
+  el.querySelectorAll('.preloader-word-item').forEach((item) => {
+    item.classList.toggle('is-current', item.dataset.word === name);
+  });
+  if (reduce) return;
+  el.querySelectorAll(`[data-word="${name}"] .preloader-word-ink`).forEach((ink) => {
+    // Les animations précédentes du même tracé sont annulées : sans ça, chaque passage du mot
+    // en empilerait une de plus, toutes vivantes en même temps.
+    ink.getAnimations().forEach((a) => a.cancel());
+    const len = ink.getTotalLength();
+    ink.animate(
+      [{ strokeDasharray: len, strokeDashoffset: len }, { strokeDasharray: len, strokeDashoffset: 0 }],
+      { duration: DRAW_MS, easing: 'cubic-bezier(.45,0,.35,1)', fill: 'forwards' }
+    );
+  });
 }
 
 // Forme bleue organique (.preloader-blob, voir styles.css) qui suit le curseur sur l'écran de
