@@ -28,6 +28,66 @@
 }
 @media(max-width:640px){ .vl-head h1{font-size:38px;} }
 
+/* Terminal de stats live du hero, à droite du texte — même widget que sur la
+   home/détails (.term-card de styles.css), titre centré façon macOS. */
+.vl-hero-grid .term-bar-title{
+  flex:1; text-align:center; font-family:var(--mono); font-size:12px;
+  color:#566070; letter-spacing:.02em; user-select:none;
+  margin-right:34px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* Bouton 7 j / 30 j : discret (petit, dim par défaut), posé en haut à droite
+   du terminal par-dessus la barre macOS plutôt que d'y prendre une place fixe
+   — il ne doit pas concurrencer le titre centré. */
+.term-view-toggle{
+  position:absolute; top:9px; right:12px; z-index:2;
+  display:flex; gap:2px; padding:2px;
+  border-radius:7px; background:rgba(255,255,255,.04);
+}
+.term-view-toggle button{
+  appearance:none; border:none; background:none; cursor:pointer;
+  padding:3px 7px; border-radius:5px;
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.02em;
+  color:#566070; transition:color .15s ease, background-color .15s ease;
+}
+.term-view-toggle button:hover{ color:#8a93a3; }
+.term-view-toggle button.is-active{ color:#cdd3dc; background:rgba(255,255,255,.08); }
+
+/* Mini bar-charts du terminal : répartition du flux brut par source puis par
+   sévérité — barres horizontales, une teinte par mesure (source = teinte
+   unique, sévérité = échelle statut bas→haut) plutôt qu'un arc-en-ciel par
+   catégorie, l'identité étant déjà portée par le libellé à gauche de chaque
+   barre. */
+.term-chart{ margin:14px 0 0; }
+.term-chart-title{
+  margin:0 0 8px; font-size:11.5px; color:var(--term-text-dim, #7f8a99);
+  letter-spacing:.01em; text-transform:uppercase;
+}
+.term-bars{ display:flex; flex-direction:column; gap:7px; }
+.term-bar-row{
+  display:grid; grid-template-columns:96px 1fr 34px; align-items:center; gap:10px;
+}
+.term-bar-label{
+  font-size:12.5px; color:var(--term-text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.term-bar-track{
+  height:8px; border-radius:4px; background:rgba(255,255,255,.06); overflow:hidden;
+}
+.term-bar-fill{
+  display:block; height:100%; border-radius:4px; background:#6f89d9;
+  transition:width .4s ease;
+}
+.term-bar-fill--high{ background:#e5636b; }
+.term-bar-fill--medium{ background:#f5a35c; }
+.term-bar-fill--info{ background:#7ee787; }
+.term-bar-num{
+  font-size:12.5px; color:var(--term-text-dim, #7f8a99); text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+@media(max-width:420px){
+  .term-bar-row{ grid-template-columns:76px 1fr 30px; gap:8px; }
+}
+
 /* --- Séquence « épinglée » : aucun effet de parallax, aucun blocage du scroll.
    Le pin est en position:sticky ; la piste (.vl-showcase-track) réserve, EN
    PLUS de la hauteur du pin, une course de scroll (voir scrubLen dans
@@ -68,20 +128,6 @@
   transition:transform .7s cubic-bezier(.22,1,.36,1), opacity .55s ease;
 }
 .vl-meta-line.is-visible{ opacity:1; transform:translateY(0); }
-/* Horodatage fixé en bas à gauche, même traitement de coin que .page-tag (top-left),
-   .lang-switch (top-right) et .back-to-top (bottom-right) dans styles.css. */
-.vl-updated{
-  position:fixed; left:22px; bottom:22px; z-index:50;
-  margin:0; font-family:var(--mono); font-size:10px; color:var(--text-faint);
-  pointer-events:none;
-  transition:color .25s ease;
-}
-/* Au-dessus de l'aplat bleu de #contact, le gris faible disparaît : on passe en blanc
-   (même bascule .is-on-dark que .page-tag et .back-to-top, pilotée par veille.js). */
-.vl-updated.is-on-dark{color:rgba(255,255,255,.75);}
-@media(max-width:640px){
-  .vl-updated{left:14px; bottom:14px; font-size:11px;}
-}
 /* Liste du top 10 : lignes façon carte, même langage visuel que le top 3
    (.vl-top-card) mais empilées horizontalement plutôt qu'en grille. */
 .vl-list{display:flex; flex-direction:column; gap:12px;}

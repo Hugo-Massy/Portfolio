@@ -101,6 +101,12 @@ let veilleData = null;
 let impactData = null;
 let currentLang = 'fr';
 
+// Items bruts du terminal (voir dumpAll) et période affichée par les deux
+// mini bar-charts — repris tel quel au changement de langue et au clic sur le
+// bouton 7 j / 30 j (voir initTermRangeToggle), sans re-fetch.
+let termItemsAll = [];
+let termRangeDays = 7;
+
 // Lit un champ qui peut être soit une simple chaîne (contenu factuel non
 // traduit, ex. titre d'article externe), soit un objet { fr, en, es } (texte
 // rédigé par mes soins, ex. récit "Impact").
@@ -199,6 +205,72 @@ function wireImages(container) {
   });
 }
 
+// Une ligne = un libellé + une barre dont la longueur est calée sur 0-100 % de
+// `total` (pas sur le max du groupe, pour que les barres restent comparables
+// d'un graphique à l'autre) + soit un pourcentage soit le chiffre brut.
+function renderTermBars(container, rows, total, showPercent) {
+  if (!container) return;
+  container.innerHTML = rows.map((r) => {
+    const pct = total ? Math.round(r.count / total * 100) : 0;
+    return `<div class="term-bar-row">`
+      + `<span class="term-bar-label">${escapeHtml(r.label)}</span>`
+      + `<span class="term-bar-track"><span class="term-bar-fill${r.cls ? ' ' + r.cls : ''}" style="width:${pct ? Math.max(4, pct) : 0}%"></span></span>`
+      + `<span class="term-bar-num">${showPercent ? `${pct}%` : r.count}</span>`
+      + `</div>`;
+  }).join('');
+}
+
+// (Re)dessine les deux mini bar-charts du terminal à partir de `termItemsAll`,
+// filtré sur `termRangeDays` — appelée au premier rendu, au changement de
+// langue et au clic sur le bouton 7 j / 30 j (voir initTermRangeToggle).
+function renderTermCharts() {
+  const dict = I18N[currentLang] || I18N.fr;
+  const cutoff = Date.now() - termRangeDays * 86400000;
+  const items = termItemsAll.filter((it) => {
+    const t = Date.parse(it.date);
+    return isFinite(t) && t >= cutoff;
+  });
+  const total = items.length;
+
+  const bySource = new Map();
+  for (const it of items) bySource.set(it.source, (bySource.get(it.source) || 0) + 1);
+  renderTermBars(
+    document.getElementById('vl-term-bars-source'),
+    Array.from(bySource.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([label, count]) => ({ label, count })),
+    total,
+    true
+  );
+
+  const bySeverity = { high: 0, medium: 0, info: 0 };
+  for (const it of items) if (bySeverity[it.severity] !== undefined) bySeverity[it.severity]++;
+  renderTermBars(
+    document.getElementById('vl-term-bars-severity'),
+    [
+      { label: dict['vl-sev-high'], count: bySeverity.high, cls: 'term-bar-fill--high' },
+      { label: dict['vl-sev-medium'], count: bySeverity.medium, cls: 'term-bar-fill--medium' },
+      { label: dict['vl-sev-info'], count: bySeverity.info, cls: 'term-bar-fill--info' },
+    ],
+    total
+  );
+}
+
+// Bouton discret 7 j / 30 j en haut à droite du terminal : refiltre les mêmes
+// données côté client (voir renderTermCharts), pas de refetch.
+(function initTermRangeToggle() {
+  const group = document.getElementById('vl-term-range-toggle');
+  if (!group) return;
+  const buttons = Array.from(group.querySelectorAll('button'));
+  group.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn || btn.classList.contains('is-active')) return;
+    buttons.forEach((b) => b.classList.toggle('is-active', b === btn));
+    termRangeDays = Number(btn.dataset.range) || 7;
+    renderTermCharts();
+  });
+})();
+
 function dumpAll(data, lang) {
   const dict = I18N[lang] || I18N.fr;
   const locale = LOCALE[lang] || 'fr-FR';
@@ -209,10 +281,8 @@ function dumpAll(data, lang) {
   const parsed = Date.parse(data.generatedAt);
   if (isFinite(parsed)) {
     const d = new Date(parsed);
-    genDate = d.toLocaleString(locale, { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    genDate = d.toLocaleDateString(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
   }
-  const genEl = document.getElementById('vl-updated');
-  if (genEl) genEl.textContent = `${dict['vl-updated-prefix']} ${genDate}`;
   // Sources dédupliquées par nom (une puce par source, kinds regroupés).
   const byName = new Map();
   for (const s of data.sources || []) {
@@ -232,6 +302,15 @@ function dumpAll(data, lang) {
     return isFinite(t) && (Date.now() - t) / 86400000 <= WINDOW_DAYS;
   });
   const kept = recent.sort((a, b) => importance(b) - importance(a)).slice(0, RETAINED);
+
+  // Terminal de stats live du hero (voir #vl-term-card dans veille.html) : porte
+  // sur TOUT ce qui a été reçu des sources (items), pas seulement la sélection
+  // « top 10 » retenue plus bas — un vrai instantané du flux brut. Le bouton
+  // 7 j / 30 j (voir initTermRangeToggle) ne fait que refiltrer ce même tableau.
+  const termBarTitle = document.getElementById('vl-term-bar-title');
+  if (termBarTitle) termBarTitle.textContent = `${dict['vl-term-updated-label']} : ${genDate}`;
+  termItemsAll = items;
+  renderTermCharts();
 
   meta.innerHTML =
     `<p class="vl-meta-stats">`
@@ -302,7 +381,7 @@ function initShowcaseScrub(meta, top) {
   // hauteur EN PLUS de celle du pin, ce qui fournit le défilement nécessaire
   // sans jamais bloquer le scroll ni faire sauter le contenu en dessous.
   const PER_STEP = 320;
-  const END_HOLD = 260;
+  const END_HOLD = 680;
   const scrubLen = steps.length * PER_STEP + END_HOLD;
 
   let shown = -1;        // nombre d'étapes actuellement actives (évite les reflows inutiles)
@@ -803,7 +882,6 @@ async function initVeille() {
   if (!contact) return;
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
-  const updated = document.querySelector('.vl-updated');
   const railLinks = document.querySelectorAll('.dot-rail a');
   const indicator = document.querySelector('.dot-rail-indicator');
 
@@ -839,7 +917,6 @@ async function initVeille() {
     toggle(indicator, 'right');
     toggle(backToTop, 'right');
     toggle(pageTag, 'left');
-    toggle(updated, 'left');
   }
 
   update();

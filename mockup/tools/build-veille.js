@@ -17,8 +17,9 @@
 const fs = require('fs');
 const path = require('path');
 
-// Fenêtre glissante : on ne conserve que les publications des 3 derniers jours.
-const WINDOW_DAYS = 3;
+// Fenêtre glissante : on ne conserve que les publications des 30 derniers jours
+// (le front bascule ensuite entre une vue 7 j et 30 j sur ces mêmes données).
+const WINDOW_DAYS = 30;
 
 // --------------------------------------------------------------------------
 // Sources — flux RSS publics. `type` sert au style (officiel vs presse).
