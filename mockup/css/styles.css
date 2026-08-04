@@ -63,9 +63,8 @@ a{color:inherit; text-decoration:none;}
 /* PRELOADER — écran plein écran affiché dès le HTML (avant même les polices distantes),
    avec le même principe de "mot liquide" que le hero (cf. initHeroCycle) mais décliné sur
    3 langues (bienvenue/welcome/bienvenido), en écho au sélecteur de langue du site. Une
-   barre de progression (.preloader-progress) affiche le chargement, puis cède la place à
-   une icône souris (.preloader-mouse) + des chevrons (.preloader-scroll-hint) une fois la
-   page prête. Ne se ferme jamais tout seul : seule une interaction de l'utilisateur
+   icône souris (.preloader-mouse) + des chevrons (.preloader-scroll-hint) apparaissent une
+   fois la page prête. Ne se ferme jamais tout seul : seule une interaction de l'utilisateur
    (scroll/clic/touche/molette) l'efface, piloté par initPreloader (js/main.js). #app passe
    en inert tant qu'il est affiché pour ne pas laisser le clavier/lecteur d'écran atteindre
    un contenu encore masqué derrière lui. html.is-preloading bloque le scroll pendant
@@ -120,60 +119,30 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 /* Point du "i" : composante disjointe du tracé (le stylo s'y lève forcément), donc un simple
    rond plein plutôt qu'un bout de trait animé. */
 .preloader-word-dot{fill:var(--accent); stroke:none;}
-/* Barre de progression, visible pendant le chargement (voir initPreloader : sa largeur
-   suit le plus lent des deux — le vrai chargement de la page et un plancher de 3s — pour
-   ne jamais afficher 100% avant que le site soit réellement prêt), puis cède la place à
-   l'icône souris (.preloader-mouse, même emplacement) une fois #preloader.is-ready. */
-.preloader-progress{
-  position:absolute; left:50%; bottom:64px; transform:translateX(-50%);
-  width:120px; height:3px; border-radius:3px; overflow:hidden;
-  background:var(--border);
-  opacity:1; transition:opacity .4s ease;
-}
-#preloader.is-ready .preloader-progress{opacity:0; pointer-events:none;}
-.preloader-progress-bar{
-  width:0; height:100%; border-radius:inherit; background:var(--accent);
-  transition:width .4s cubic-bezier(.25,.8,.25,1);
-  animation:preloader-progress-fill 3s cubic-bezier(.25,.8,.25,1) forwards;
-}
-/* Posée par initPreloader une fois le chargement réel ET le plancher de 3s réunis :
-   coupe l'animation de remplissage et laisse la transition amener la barre à 100%. */
-.preloader-progress-bar.is-done{animation:none; width:100%;}
-@keyframes preloader-progress-fill{
-  from{width:0;}
-  to{width:90%;}
-}
-@media (prefers-reduced-motion: reduce){
-  .preloader-progress-bar{animation:none;}
-}
-/* Icône souris : masquée pendant le chargement, apparaît (fondu) à la place de la barre
-   une fois #preloader.is-ready ; seule la souris respire (cf. scroll-down-bounce), les
-   chevrons en dessous restent fixes. Le fondu d'entrée est retardé (delay) pour laisser
-   la barre finir de disparaître avant que la souris n'apparaisse. */
+/* Icône souris : masquée pendant le chargement, apparaît (fondu) une fois #preloader.is-ready ;
+   seule la souris respire (cf. scroll-down-bounce), les chevrons en dessous restent fixes. */
 .preloader-mouse{
   position:absolute; left:50%; bottom:65px; transform:translateX(-50%);
-  width:18px; height:28px; color:var(--accent);
-  opacity:0; transition:opacity .4s ease .4s;
+  /* Boîte au ratio exact du viewBox (20 × 30) : le svg la remplit alors entièrement, sans la
+     marge que laisserait preserveAspectRatio si les deux ratios divergeaient. */
+  width:20px; height:30px; color:var(--accent);
+  opacity:0; transition:opacity .4s ease;
   animation:preloader-mouse-bounce 2.2s ease-in-out infinite;
 }
 #preloader.is-ready .preloader-mouse{opacity:1;}
+/* Course volontairement courte et lente : l'icône respire, elle ne saute pas. */
 @keyframes preloader-mouse-bounce{
   0%, 100%{transform:translate(-50%, 0);}
-  50%{transform:translate(-50%, 6px);}
-}
-.preloader-wheel{
-  position:absolute; top:5px; left:50%; width:3px; height:6px; margin-left:-1.5px;
-  border-radius:2px; background:currentColor;
+  50%{transform:translate(-50%, 5px);}
 }
 /* Chevrons "scroll pour continuer", posés en bas au centre : n'apparaissent (opacity)
-   qu'une fois #preloader.is-ready, et servent aussi de bouton (voir initPreloader). Même
-   délai que la souris pour apparaître ensemble, après que la barre a disparu. */
+   qu'une fois #preloader.is-ready, et servent aussi de bouton (voir initPreloader). */
 .preloader-scroll-hint{
   position:absolute; left:50%; bottom:40px; transform:translateX(-50%);
   display:flex; align-items:center; justify-content:center;
   padding:0; border:0; background:none;
   color:var(--accent); cursor:pointer;
-  opacity:0; transition:opacity .5s ease .4s;
+  opacity:0; transition:opacity .5s ease;
 }
 #preloader.is-ready .preloader-scroll-hint{opacity:1;}
 .preloader-status{
@@ -193,7 +162,7 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 .preloader-blob{
   /* z-index au-dessus de tout le contenu de l'écran (texte, barre, chevrons) : la forme est
      un aplat opaque qui masque ce qu'elle survole, au lieu de le laisser transparaître. */
-  position:absolute; top:0; left:0; z-index:2;
+  position:absolute; top:0; left:0; z-index:3;
   width:clamp(72px, 8vw, 112px); aspect-ratio:1/1;
   pointer-events:none;
   /* --blob-x/--blob-y = position du curseur, translate(-50%,-50%) recentre le halo dessus */
@@ -266,10 +235,12 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
    d'origine — le mot compris, qui est un tracé et se repeint donc par son trait, pas par son
    remplissage. La trace pâle, elle, garde son opacité : le blanc doit s'écrire par-dessus. */
 .preloader-blob-clone path{stroke:#fff;}
+/* Les points du "i" font exception : ce sont des ronds pleins (voir .preloader-word-dot), donc
+   c'est leur REMPLISSAGE qu'il faut repeindre — la règle sur le trait ci-dessus les laissait
+   bleus, et ils restaient donc visibles en bleu au passage de la forme. */
+.preloader-blob-clone .preloader-word-dot{fill:#fff;}
 .preloader-blob-clone .preloader-mouse,
 .preloader-blob-clone .preloader-scroll-hint{color:#fff;}
-.preloader-blob-clone .preloader-progress{background:rgba(255,255,255,0.35);}
-.preloader-blob-clone .preloader-progress-bar{background:#fff;}
 /* Rayons volontairement dissymétriques (horizontaux / verticaux) : c'est ce décalage entre
    les deux séries qui empêche la forme de retomber sur un cercle ou un ovale régulier. */
 @keyframes preloader-blob-morph{
@@ -281,9 +252,34 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 @media (prefers-reduced-motion: reduce){
   .preloader-blob-shape{animation:none;}
 }
+/* SILLAGE — petites bulles semées par la forme au fil de son déplacement (voir la partie
+   "bulles" de initPreloaderBlob, js/main.js). Elles se figent quasiment là où elles naissent,
+   avec juste ce qu'il faut de dérive pour lire une bulle qui s'échappe, puis s'effacent.
+   Calque au-dessus du mot (z-index) mais SOUS la forme (z-index:3) : les bulles semblent
+   sortir de dessous elle, au lieu de flotter par-dessus. Le JS pose transform/opacity image
+   par image ; aucune animation CSS ici, sinon les deux se disputeraient la même propriété. */
+.preloader-bubbles{
+  position:absolute; inset:0; z-index:2;
+  pointer-events:none;
+  /* Pas de débordement visible : une bulle semée au ras du bord ne doit pas créer de
+     défilement sur un écran qui n'en a pas. */
+  overflow:hidden;
+}
+.preloader-bubble{
+  position:absolute; top:0; left:0;
+  /* Silhouette irrégulière comme celle de la forme, et non un rond parfait : les huit rayons
+     sont tirés au hasard à chaque naissance (--bubble-radius, posée par le JS), sur le même
+     principe de dissymétrie horizontaux/verticaux que @keyframes preloader-blob-morph. La
+     valeur de repli ne sert qu'avant le premier semis. */
+  border-radius:var(--bubble-radius, 50%);
+  /* Même bleu que la forme : les bulles en sont détachées, pas d'une autre matière. */
+  background:var(--accent);
+  opacity:0;
+  will-change:transform, opacity;
+}
 /* Rien à suivre au doigt : inutile d'afficher (ni d'animer) le halo sur tactile. */
 @media (hover: none), (pointer: coarse){
-  .preloader-blob{display:none;}
+  .preloader-blob, .preloader-bubbles{display:none;}
 }
 
 #bg-grid{
