@@ -93,7 +93,7 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
    se règle par la largeur, le viewBox met le reste à l'échelle — épaisseur du trait comprise. */
 .preloader-word{
   position:relative; z-index:1;
-  width:min(42vw, 280px); height:auto; max-width:100%;
+  width:min(62vw, 460px); height:auto; max-width:100%;
   overflow:visible;
   transition:opacity 1.2s cubic-bezier(.45,0,.55,1);
 }
@@ -107,8 +107,9 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
   stroke:currentColor;
   color:var(--accent);
   /* Épaisseur donnée dans le repère du dessin (viewBox de 1231 × 415) : le trait grossit donc
-     exactement comme le mot, quelle que soit la taille d'affichage. */
-  stroke-width:34;
+     exactement comme le mot, quelle que soit la taille d'affichage. Calée sur le ratio
+     épaisseur/hauteur de lettre du tracé source (~13.9/192, soit environ 7%). */
+  stroke-width:18;
   stroke-linecap:round;
   stroke-linejoin:round;
 }
@@ -116,6 +117,9 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
    qui s'écrit par-dessus (voir initPreloaderWord). Sans cette trace, le mot semblerait surgir
    de nulle part ; avec elle, on lit d'emblée le geste avant qu'il soit fait. */
 .preloader-word-ghost{opacity:0.15;}
+/* Point du "i" : composante disjointe du tracé (le stylo s'y lève forcément), donc un simple
+   rond plein plutôt qu'un bout de trait animé. */
+.preloader-word-dot{fill:var(--accent); stroke:none;}
 /* Barre de progression, visible pendant le chargement (voir initPreloader : sa largeur
    suit le plus lent des deux — le vrai chargement de la page et un plancher de 3s — pour
    ne jamais afficher 100% avant que le site soit réellement prêt), puis cède la place à
@@ -2509,4 +2513,52 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 
 @media(max-width:500px){
   .contact-head h2{font-size:28px;}
+}
+
+/* ============================================================
+   CURSEUR PERSONNALISÉ — un point bleu remplace le curseur système, et passe
+   au blanc au-dessus des zones sombres (bandeaux bleus, terminal…). Voir
+   js/cursor.js, qui pose .has-custom-cursor sur <html> : sans JS, ou sur
+   pointeur tactile, le curseur natif reste intact.
+   ============================================================ */
+html.has-custom-cursor, html.has-custom-cursor *{
+  /* !important pour écraser les cursor:pointer/grab posés sur les composants */
+  cursor:none !important;
+}
+/* les champs de saisie gardent leur I-beam : un point ne remplace pas le repère
+   de position du caret */
+html.has-custom-cursor input,
+html.has-custom-cursor textarea,
+html.has-custom-cursor [contenteditable=""],
+html.has-custom-cursor [contenteditable="true"]{cursor:text !important;}
+html.has-custom-cursor select{cursor:default !important;}
+
+.cursor-dot{
+  position:fixed; top:0; left:0; z-index:99999;
+  width:12px; height:12px; border-radius:50%;
+  background:var(--accent);
+  pointer-events:none;
+  opacity:0;
+  /* la position est posée en transform à chaque frame (cf. render()) : seules la
+     couleur et la taille s'animent, jamais le suivi du pointeur — un point qui
+     traîne derrière la souris se lit comme de la latence. */
+  transition:background-color .18s ease, opacity .18s ease, width .18s ease, height .18s ease;
+  will-change:transform;
+}
+.cursor-dot.is-visible{opacity:1;}
+.cursor-dot.is-on-dark{background:#fff;}
+/* survol d'un élément interactif : le point grossit pour signaler la cible (le
+   curseur système n'est plus là pour passer en "main") */
+.cursor-dot.is-hover{width:26px; height:26px; background:transparent; border:2px solid var(--accent);}
+.cursor-dot.is-hover.is-on-dark{background:transparent; border-color:#fff;}
+.cursor-dot.is-down{width:8px; height:8px;}
+/* au-dessus d'un champ texte, le caret natif reprend la main : le point s'efface */
+.cursor-dot.is-hidden-field{opacity:0;}
+
+@media(prefers-reduced-motion:reduce){
+  .cursor-dot{transition:background-color .18s ease, opacity .18s ease;}
+}
+/* pointeur grossier (tactile) : pas de curseur à remplacer */
+@media(hover:none), (pointer:coarse){
+  .cursor-dot{display:none;}
 }

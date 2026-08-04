@@ -1822,8 +1822,8 @@ function initTerminal() {
 }
 
 // Écran de chargement (#preloader, voir index.html/styles.css) : fait patienter le temps que
-// les polices distantes/images soient prêtes en faisant défiler 3 salutations (bonjour/hello/
-// hola, en écho au sélecteur de langue) sur le même principe de "mot liquide" que le hero
+// les polices distantes/images soient prêtes en faisant défiler 3 salutations (bienvenue/welcome/
+// bienvenido, en écho au sélecteur de langue) sur le même principe de "mot liquide" que le hero
 // (cf. initHeroCycle). Ne se ferme JAMAIS tout seul : une fois la page prête, l'icône souris
 // (#preloader-scroll-hint) apparaît, et seule une interaction explicite (scroll/clic/touche/
 // molette) referme l'écran. #app reste inert tant que l'écran est affiché pour ne pas laisser
@@ -1837,7 +1837,7 @@ function initPreloader() {
   const app = document.getElementById('app');
   // Doit correspondre aux data-word présents dans le SVG (index.html). Le cycle ne démarre
   // qu'à partir de deux mots : avec un seul, l'écran l'écrit une fois et le laisse en place.
-  const GREETINGS = ['hello'];
+  const GREETINGS = ['bienvenue', 'welcome', 'bienvenido'];
   // Rythme volontairement lent et posé (façon Apple) : chaque mot reste longtemps à l'écran.
   const HOLD_MS = 5500;
   // Filet de sécurité si l'évènement "load" ne se déclenche jamais (ressource bloquée...) :
