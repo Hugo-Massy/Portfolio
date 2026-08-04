@@ -12,6 +12,51 @@
     </head>
     <body>
 
+        <div id="preloader">
+          <span class="preloader-blob" id="preloader-blob" aria-hidden="true">
+            <span class="preloader-blob-stretch">
+              <span class="preloader-blob-shape">
+                <span class="preloader-blob-knockout">
+                  <span class="preloader-blob-origin">
+                    <div class="preloader-blob-clone" id="preloader-blob-clone"></div>
+                  </span>
+                </span>
+              </span>
+            </span>
+          </span>
+          <svg id="preloader-svg" class="preloader-word" viewBox="0 0 100 20" aria-hidden="true" focusable="false">
+            <defs>
+              <linearGradient id="preloader-gradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#4d6fcb"/>
+                <stop offset="100%" stop-color="#2a3f80"/>
+              </linearGradient>
+              <pattern id="preloader-wave" x="0" y="-0.5" width="100%" height="100%" patternUnits="userSpaceOnUse">
+                <path id="preloader-wave-path" d="M-40 10 Q-30 8 -20 10 T0 10 T20 10 T40 10 T60 10 T80 10 T100 10 T120 10 V20 H-40z" fill="url(#preloader-gradient)">
+                  <animateTransform id="preloader-wave-anim" attributeName="transform" begin="0s" dur="4s" type="translate" from="0,0" to="40,0" repeatCount="indefinite"/>
+                </path>
+              </pattern>
+            </defs>
+            <text id="preloader-text-base" text-anchor="middle" x="50" y="15" fill="#4d6fcb" fill-opacity="0.15">bienvenue</text>
+            <text id="preloader-text-wave" text-anchor="middle" x="50" y="15" fill="url(#preloader-wave)">bienvenue</text>
+          </svg>
+          <div class="preloader-progress" aria-hidden="true">
+            <div class="preloader-progress-bar" id="preloader-progress-bar"></div>
+          </div>
+          <span class="preloader-mouse" aria-hidden="true">
+            <svg viewBox="0 0 18 28" width="18" height="28" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <rect x="1" y="1" width="16" height="26" rx="8"/>
+            </svg>
+            <span class="preloader-wheel" aria-hidden="true"></span>
+          </span>
+          <button type="button" id="preloader-scroll-hint" class="preloader-scroll-hint" aria-label="Entrer sur le site" disabled>
+            <svg class="preloader-chevrons" viewBox="0 0 24 16" width="16" height="11" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 2l8 6 8-6"/>
+              <path d="M4 8l8 6 8-6" opacity=".55"/>
+            </svg>
+          </button>
+          <span class="preloader-status" role="status" aria-live="polite">Chargement du site…</span>
+        </div>
+
         <div id="app">
 <nav class="page-tag" aria-label="Pages du site" data-i18n-attr="aria-label:page-tag-aria">
   <span class="page-tag-item is-current" data-i18n="page-tag-home">Accueil</span>

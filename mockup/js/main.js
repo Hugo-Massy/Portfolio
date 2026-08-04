@@ -1821,6 +1821,260 @@ function initTerminal() {
   });
 }
 
+// Écran de chargement (#preloader, voir index.html/styles.css) : fait patienter le temps que
+// les polices distantes/images soient prêtes en faisant défiler 3 salutations (bonjour/hello/
+// hola, en écho au sélecteur de langue) sur le même principe de "mot liquide" que le hero
+// (cf. initHeroCycle). Ne se ferme JAMAIS tout seul : une fois la page prête, l'icône souris
+// (#preloader-scroll-hint) apparaît, et seule une interaction explicite (scroll/clic/touche/
+// molette) referme l'écran. #app reste inert tant que l'écran est affiché pour ne pas laisser
+// le clavier/lecteur d'écran atteindre un contenu encore masqué derrière lui.
+function initPreloader() {
+  const el = document.getElementById('preloader');
+  const base = document.getElementById('preloader-text-base');
+  const wave = document.getElementById('preloader-text-wave');
+  const wavePath = document.getElementById('preloader-wave-path');
+  const scrollHint = document.getElementById('preloader-scroll-hint');
+  if (!el || !base || !wave) return;
+
+  const app = document.getElementById('app');
+  const GREETINGS = ['bienvenue', 'welcome', 'bienvenido'];
+  // Rythme volontairement lent et posé (façon Apple) : chaque mot reste longtemps à l'écran.
+  const HOLD_MS = 5500;
+  // Filet de sécurité si l'évènement "load" ne se déclenche jamais (ressource bloquée...) :
+  // l'icône finit quand même par apparaître, sans quoi l'écran resterait bloqué pour de bon.
+  const MAX_WAIT_MS = 6000;
+  // Durée plancher affichée par la barre de progression avant de pouvoir cliquer/scroller
+  // pour sortir, même si la page est prête avant (cf. @keyframes preloader-progress-fill,
+  // calée sur la même durée) : jamais moins de 3s, mais plus si le vrai chargement traîne.
+  const MIN_MS = 3000;
+
+  document.documentElement.classList.add('is-preloading');
+  if (app) app.setAttribute('inert', '');
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (reduce.matches && wavePath) wavePath.setAttribute('begin', 'indefinite');
+
+  const stopBlob = initPreloaderBlob(el);
+  // La découpe blanche portée par la forme (voir initPreloaderBlob) contient une copie du mot
+  // et de la barre : tout ce que le JS modifie sur l'original doit l'être aussi sur elle,
+  // sans quoi la forme laisserait voir un autre mot que celui affiché derrière.
+  const mirrorTexts = el.querySelectorAll('.preloader-blob-clone text');
+  const progressBars = el.querySelectorAll('.preloader-progress-bar');
+
+  // Le changement de mot est déclenché par la fin RÉELLE du fondu de sortie (transitionend),
+  // pas par un setTimeout qui devine sa durée : le fondu d'entrée qui suit dure alors
+  // exactement aussi longtemps que celui de sortie, quoi qu'il arrive côté CSS.
+  let i = 0;
+  function onTextFadeEnd(e) {
+    if (e.propertyName !== 'opacity' || !el.classList.contains('is-swapping')) return;
+    i = (i + 1) % GREETINGS.length;
+    base.textContent = GREETINGS[i];
+    wave.textContent = GREETINGS[i];
+    mirrorTexts.forEach((t) => { t.textContent = GREETINGS[i]; });
+    // Double rAF : laisse le navigateur peindre une image avec "nouveau texte, opacité
+    // encore à 0" avant de redemander opacité 1, sinon les deux changements peuvent se
+    // fondre dans la même image et le fondu d'entrée se joue à peine.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        el.classList.remove('is-swapping');
+      });
+    });
+  }
+  base.addEventListener('transitionend', onTextFadeEnd);
+  const cycleTimer = reduce.matches ? null : setInterval(() => {
+    el.classList.add('is-swapping');
+  }, HOLD_MS);
+
+  let hidden = false;
+  function hide() {
+    if (hidden) return;
+    hidden = true;
+    if (stopBlob) stopBlob();
+    if (cycleTimer !== null) clearInterval(cycleTimer);
+    base.removeEventListener('transitionend', onTextFadeEnd);
+    window.removeEventListener('keydown', onDismissKey);
+    document.documentElement.classList.remove('is-preloading');
+    if (app) app.removeAttribute('inert');
+    el.classList.add('is-hidden');
+    el.setAttribute('aria-hidden', 'true');
+    el.addEventListener('transitionend', () => el.remove(), { once: true });
+  }
+
+  // Tant que la page n'est pas prête (is-ready pas encore posée), les interactions n'ont
+  // aucun effet : impossible de "sauter" l'écran avant que le site soit réellement utilisable.
+  function onDismiss() {
+    if (!el.classList.contains('is-ready')) return;
+    hide();
+  }
+  function onDismissKey(e) {
+    if (e.key === 'Tab') return; // laisse le clavier atteindre l'icône normalement
+    onDismiss();
+  }
+  el.addEventListener('wheel', onDismiss, { passive: true });
+  el.addEventListener('touchstart', onDismiss, { passive: true });
+  el.addEventListener('click', onDismiss);
+  window.addEventListener('keydown', onDismissKey);
+
+  // La barre n'atteint 100% (et l'écran ne devient "prêt") que quand les deux conditions
+  // sont réunies : le chargement réel ("load", ou le filet MAX_WAIT_MS) ET le plancher de
+  // temps MIN_MS — la plus lente des deux commande, jamais l'inverse.
+  let realDone = false;
+  let minTimeDone = false;
+  let finished = false;
+  function tryFinish() {
+    if (finished || !realDone || !minTimeDone) return;
+    finished = true;
+    progressBars.forEach((bar) => bar.classList.add('is-done'));
+    el.classList.add('is-ready');
+    if (scrollHint) scrollHint.disabled = false;
+  }
+
+  if (document.readyState === 'complete') realDone = true;
+  else window.addEventListener('load', () => { realDone = true; tryFinish(); }, { once: true });
+  setTimeout(() => { realDone = true; tryFinish(); }, MAX_WAIT_MS);
+  setTimeout(() => { minTimeDone = true; tryFinish(); }, MIN_MS);
+  tryFinish();
+}
+
+// Forme bleue organique (.preloader-blob, voir styles.css) qui suit le curseur sur l'écran de
+// chargement. La position n'est PAS recopiée telle quelle : elle est simulée par un ressort,
+// si bien que la forme traîne derrière la souris et se laisse rattraper — c'est ce retard,
+// plus que la silhouette, qui lui donne son air de matière. Le JS ne pose que des variables
+// CSS (position, axe et taux d'étirement) ; tout le rendu, y compris la découpe blanche du
+// contenu survolé, en découle côté CSS.
+// Renvoie une fonction d'arrêt (la boucle rAF et les écouteurs doivent cesser à la fermeture
+// de l'écran), ou null si la forme n'a pas lieu d'être.
+function initPreloaderBlob(el) {
+  const blob = document.getElementById('preloader-blob');
+  // Décor sans objet au doigt : il n'y a pas de curseur à suivre (cf. la media query jumelle
+  // qui masque le halo côté CSS).
+  if (!blob || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return null;
+
+  // Remplit la découpe blanche (voir .preloader-blob-clone dans styles.css) avec une copie de
+  // tout ce que l'écran affiche : c'est cette copie, rognée par la forme, qui fait apparaître
+  // en blanc ce qu'elle survole. Copier le contenu plutôt que le décrire une seconde fois en
+  // dur évite qu'original et découpe divergent au premier changement de markup.
+  const clone = document.getElementById('preloader-blob-clone');
+  if (clone) {
+    Array.from(el.children).forEach((child) => {
+      // La forme elle-même (sinon la copie se contiendrait) et le texte pour lecteur d'écran
+      // (invisible, et il ne doit surtout pas être annoncé deux fois) restent en dehors.
+      if (child === blob || child.classList.contains('preloader-status')) return;
+      const copy = child.cloneNode(true);
+      // Les id doivent disparaître : la découpe précède l'original dans le document, donc ses
+      // doublons seraient trouvés en premier par getElementById et le JS piloterait la copie
+      // au lieu du vrai écran. Les styles nécessaires passent tous par des classes.
+      if (copy.removeAttribute) copy.removeAttribute('id');
+      if (copy.querySelectorAll) {
+        copy.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'));
+        // Définitions SVG (dégradé, motif animé) inutiles ici puisque tout est repeint en
+        // blanc : autant ne pas faire tourner une seconde fois l'animation du motif.
+        copy.querySelectorAll('defs').forEach((n) => n.remove());
+      }
+      clone.appendChild(copy);
+    });
+  }
+
+  // Raideur du ressort (rad/s) : plus c'est bas, plus la forme est lente et paresseuse.
+  // ~3 la fait dériver très loin derrière, ~14 ne laisse qu'un léger retard sur le curseur.
+  const STIFFNESS = 14;
+  // Écart d'une image à l'autre plafonné : après un onglet en arrière-plan ou une image
+  // sautée, dt peut valoir plusieurs centaines de ms, ce qui ferait diverger l'intégration
+  // (la forme partirait en oscillation). Au pire elle rattrape en quelques images.
+  const MAX_DT = 1 / 30;
+  // Étirement : vitesse (px/s) à laquelle l'allongement est à son maximum, et valeur de cet
+  // allongement (1.2 = 20% plus longue). L'aplatissement en travers vaut exactement l'inverse
+  // de l'allongement, donc la surface ne change jamais — c'est ce qui fait lire une matière
+  // qui se déforme plutôt qu'un objet qui grossit.
+  const REF_SPEED = 2000;
+  const MAX_STRETCH = 1.2;
+  // En dessous, la direction n'est plus qu'un bruit de vitesse quasi nulle : on conserve le
+  // dernier angle connu, sinon l'axe d'étirement partirait dans tous les sens à l'arrêt.
+  const MIN_SPEED = 30;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let targetX = window.innerWidth / 2;
+  let targetY = window.innerHeight / 2;
+  let x = targetX;
+  let y = targetY;
+  // Vitesse courante : c'est elle qui rend le mouvement fluide. Une interpolation simple
+  // (x += (cible - x) * k) repart à pleine vitesse dès que la cible bouge et s'arrête net ;
+  // ici la vitesse doit elle-même monter et redescendre, donc la forme accélère et freine.
+  let vx = 0;
+  let vy = 0;
+  // Tant que la souris n'a pas bougé, on ignore où elle est : le premier mouvement place le
+  // halo d'un coup dessus, au lieu de lui faire traverser l'écran depuis le centre.
+  let placed = false;
+  let raf = 0;
+  let prev = 0;
+  let angle = 0;
+
+  function onMove(e) {
+    targetX = e.clientX;
+    targetY = e.clientY;
+    if (!placed) {
+      placed = true;
+      x = targetX;
+      y = targetY;
+      vx = 0;
+      vy = 0;
+      blob.classList.add('is-active');
+    }
+  }
+  // Curseur sorti de la fenêtre : le halo s'efface et oublie sa position, pour réapparaître
+  // au bon endroit (sans glisser depuis son ancien point) quand la souris revient.
+  function onLeave() {
+    placed = false;
+    blob.classList.remove('is-active');
+  }
+
+  // Ressort à amortissement critique (amortissement = 2·ω) : le plus rapide des réglages qui
+  // n'oscille JAMAIS autour de la cible — la forme rattrape le curseur et s'y pose, sans le
+  // dépasser puis revenir. Intégration en temps réel (dt) et non par image : la course est
+  // identique sur un écran 60 Hz et sur un 144 Hz, là où un facteur fixe par image rendrait
+  // la poursuite deux fois plus rapide sur le second.
+  function frame(now) {
+    const dt = prev ? Math.min((now - prev) / 1000, MAX_DT) : 0;
+    prev = now;
+    if (reduce) {
+      x = targetX;
+      y = targetY;
+    } else if (dt) {
+      const ax = STIFFNESS * STIFFNESS * (targetX - x) - 2 * STIFFNESS * vx;
+      const ay = STIFFNESS * STIFFNESS * (targetY - y) - 2 * STIFFNESS * vy;
+      vx += ax * dt;
+      vy += ay * dt;
+      x += vx * dt;
+      y += vy * dt;
+
+      // La vitesse du ressort sert deux fois : à déplacer la forme, et à la déformer. Comme
+      // elle monte et redescend progressivement, l'étirement suit tout seul le même rythme —
+      // la forme s'allonge en partant, reste tendue tant qu'elle file, puis se relâche en
+      // arrivant, sans qu'aucune transition CSS n'ait à le simuler.
+      const speed = Math.hypot(vx, vy);
+      if (speed > MIN_SPEED) angle = Math.atan2(vy, vx) * 180 / Math.PI;
+      const stretch = 1 + Math.min(speed / REF_SPEED, 1) * (MAX_STRETCH - 1);
+      blob.style.setProperty('--blob-angle', `${angle.toFixed(1)}deg`);
+      blob.style.setProperty('--blob-stretch', stretch.toFixed(3));
+      blob.style.setProperty('--blob-squash', (1 / stretch).toFixed(3));
+    }
+    blob.style.setProperty('--blob-x', `${x.toFixed(1)}px`);
+    blob.style.setProperty('--blob-y', `${y.toFixed(1)}px`);
+    raf = requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('pointermove', onMove, { passive: true });
+  document.documentElement.addEventListener('pointerleave', onLeave);
+  raf = requestAnimationFrame(frame);
+
+  return function stop() {
+    cancelAnimationFrame(raf);
+    window.removeEventListener('pointermove', onMove);
+    document.documentElement.removeEventListener('pointerleave', onLeave);
+  };
+}
+
+initPreloader();
 initSite();
 
 // Grille de points en fond du hero, qui réagit à la position de la souris (effet magnétique discret).

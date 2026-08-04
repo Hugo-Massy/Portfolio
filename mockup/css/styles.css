@@ -36,7 +36,11 @@ html{scroll-behavior:smooth;}
    (voir initAboutParallax dans js/main.js), donc ce bleu reste normalement caché sous
    #contact — il n'apparaît qu'un instant si le lissage n'a pas encore rattrapé un
    scroll très rapide jusqu'en bas. 220px doit rester ≥ MAX_LIFT (js/main.js). */
-#app{position:relative;}
+/* Tant que #preloader est affiché, #app patiente légèrement plus bas (invisible, caché
+   dessous) puis remonte à sa place pile pendant que le rideau se retire (cf. #preloader.is-hidden
+   plus bas) : la page a l'air de "monter" à la rencontre de l'écran qui se retire. */
+#app{position:relative; transition:transform 1.4s cubic-bezier(.65,0,.35,1);}
+html.is-preloading #app{transform:translateY(24px);}
 #app::after{
   content:""; position:absolute; left:0; right:0; bottom:0; height:220px;
   background:var(--accent); z-index:-1; pointer-events:none;
@@ -55,6 +59,208 @@ body{
 img{max-width:100%; display:block;}
 a{color:inherit; text-decoration:none;}
 .wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px;}
+
+/* PRELOADER — écran plein écran affiché dès le HTML (avant même les polices distantes),
+   avec le même principe de "mot liquide" que le hero (cf. initHeroCycle) mais décliné sur
+   3 langues (bienvenue/welcome/bienvenido), en écho au sélecteur de langue du site. Une
+   barre de progression (.preloader-progress) affiche le chargement, puis cède la place à
+   une icône souris (.preloader-mouse) + des chevrons (.preloader-scroll-hint) une fois la
+   page prête. Ne se ferme jamais tout seul : seule une interaction de l'utilisateur
+   (scroll/clic/touche/molette) l'efface, piloté par initPreloader (js/main.js). #app passe
+   en inert tant qu'il est affiché pour ne pas laisser le clavier/lecteur d'écran atteindre
+   un contenu encore masqué derrière lui. html.is-preloading bloque le scroll pendant
+   l'affichage. Sa fermeture (is-hidden) est un rideau qui remonte hors écran (translateY),
+   lentement, pendant que #app remonte à sa place en dessous (cf. plus haut) — les deux
+   mouvements se répondent. */
+html.is-preloading, html.is-preloading body{overflow:hidden;}
+#preloader{
+  position:fixed; inset:0; z-index:999;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--bg);
+  transition:transform 1.4s cubic-bezier(.65,0,.35,1);
+}
+#preloader.is-hidden{transform:translateY(-100%); pointer-events:none;}
+/* Ciblé par une classe et non par son id : les mêmes règles doivent servir à l'original ET à
+   la copie blanche découpée dans la forme (.preloader-blob-clone), dont les id sont retirés
+   pour ne pas se retrouver en double dans le document. */
+/* Le mot grandit par la largeur du SVG, pas par sa taille de police : le viewBox garde ses
+   proportions, donc "bienvenido" (le plus long des trois) continue de tenir exactement comme
+   avant, sans risque de déborder du cadre. */
+.preloader-word{position:relative; z-index:1; width:min(76vw, 520px); height:auto; max-width:100%;}
+/* Même police que le reste du site ; simple fondu, volontairement lent, entre les mots.
+   Courbe SYMÉTRIQUE (ease-in-out) et non ease-out : avec une courbe type
+   cubic-bezier(.25,.8,.25,1), l'opacité atteint ~70% dès le premier quart du temps, et
+   l'apparition paraît instantanée alors que la durée est bien de 1.2s. */
+.preloader-word text{
+  font-family:var(--sans); font-weight:700; font-size:12px;
+  letter-spacing:0.01em;
+  transition:opacity 1.2s cubic-bezier(.45,0,.55,1);
+}
+#preloader.is-swapping .preloader-word text{opacity:0;}
+/* Barre de progression, visible pendant le chargement (voir initPreloader : sa largeur
+   suit le plus lent des deux — le vrai chargement de la page et un plancher de 3s — pour
+   ne jamais afficher 100% avant que le site soit réellement prêt), puis cède la place à
+   l'icône souris (.preloader-mouse, même emplacement) une fois #preloader.is-ready. */
+.preloader-progress{
+  position:absolute; left:50%; bottom:64px; transform:translateX(-50%);
+  width:120px; height:3px; border-radius:3px; overflow:hidden;
+  background:var(--border);
+  opacity:1; transition:opacity .4s ease;
+}
+#preloader.is-ready .preloader-progress{opacity:0; pointer-events:none;}
+.preloader-progress-bar{
+  width:0; height:100%; border-radius:inherit; background:var(--accent);
+  transition:width .4s cubic-bezier(.25,.8,.25,1);
+  animation:preloader-progress-fill 3s cubic-bezier(.25,.8,.25,1) forwards;
+}
+/* Posée par initPreloader une fois le chargement réel ET le plancher de 3s réunis :
+   coupe l'animation de remplissage et laisse la transition amener la barre à 100%. */
+.preloader-progress-bar.is-done{animation:none; width:100%;}
+@keyframes preloader-progress-fill{
+  from{width:0;}
+  to{width:90%;}
+}
+@media (prefers-reduced-motion: reduce){
+  .preloader-progress-bar{animation:none;}
+}
+/* Icône souris : masquée pendant le chargement, apparaît (fondu) à la place de la barre
+   une fois #preloader.is-ready ; seule la souris respire (cf. scroll-down-bounce), les
+   chevrons en dessous restent fixes. Le fondu d'entrée est retardé (delay) pour laisser
+   la barre finir de disparaître avant que la souris n'apparaisse. */
+.preloader-mouse{
+  position:absolute; left:50%; bottom:65px; transform:translateX(-50%);
+  width:18px; height:28px; color:var(--accent);
+  opacity:0; transition:opacity .4s ease .4s;
+  animation:preloader-mouse-bounce 2.2s ease-in-out infinite;
+}
+#preloader.is-ready .preloader-mouse{opacity:1;}
+@keyframes preloader-mouse-bounce{
+  0%, 100%{transform:translate(-50%, 0);}
+  50%{transform:translate(-50%, 6px);}
+}
+.preloader-wheel{
+  position:absolute; top:5px; left:50%; width:3px; height:6px; margin-left:-1.5px;
+  border-radius:2px; background:currentColor;
+}
+/* Chevrons "scroll pour continuer", posés en bas au centre : n'apparaissent (opacity)
+   qu'une fois #preloader.is-ready, et servent aussi de bouton (voir initPreloader). Même
+   délai que la souris pour apparaître ensemble, après que la barre a disparu. */
+.preloader-scroll-hint{
+  position:absolute; left:50%; bottom:40px; transform:translateX(-50%);
+  display:flex; align-items:center; justify-content:center;
+  padding:0; border:0; background:none;
+  color:var(--accent); cursor:pointer;
+  opacity:0; transition:opacity .5s ease .4s;
+}
+#preloader.is-ready .preloader-scroll-hint{opacity:1;}
+.preloader-status{
+  position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+  overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+}
+
+/* Halo bleu de forme organique qui suit le curseur pendant l'écran de chargement (poursuite
+   lissée par initPreloaderBlob, js/main.js). Trois éléments imbriqués parce que trois
+   mouvements se superposent et se disputeraient la même propriété transform :
+     .preloader-blob        → le déplacement seul   (--blob-x/--blob-y, posées par le JS)
+     .preloader-blob-stretch→ l'étirement seul      (--blob-angle/--blob-stretch/--blob-squash)
+     .preloader-blob-shape  → la déformation seule  (border-radius animé + rotation lente)
+   D'où une masse qui se tord en permanence et s'allonge quand elle file, au lieu d'un rond
+   qui glisse. Purement décoratif : pointer-events:none, pour ne pas intercepter le clic qui
+   referme l'écran. */
+.preloader-blob{
+  /* z-index au-dessus de tout le contenu de l'écran (texte, barre, chevrons) : la forme est
+     un aplat opaque qui masque ce qu'elle survole, au lieu de le laisser transparaître. */
+  position:absolute; top:0; left:0; z-index:2;
+  width:clamp(96px, 11vw, 150px); aspect-ratio:1/1;
+  pointer-events:none;
+  /* --blob-x/--blob-y = position du curseur, translate(-50%,-50%) recentre le halo dessus */
+  transform:translate3d(var(--blob-x, 50vw), var(--blob-y, 50vh), 0) translate(-50%, -50%);
+  opacity:0; transition:opacity .6s ease;
+  will-change:transform;
+}
+/* Posée au premier mouvement de souris (et retirée quand le curseur quitte la fenêtre) :
+   le halo n'apparaît pas tant qu'on ne sait pas où est réellement le curseur. */
+.preloader-blob.is-active{opacity:1;}
+/* Étirement dans l'axe du déplacement, piloté par la vitesse réelle du ressort (voir
+   initPreloaderBlob). L'encadrement rotate(θ) … rotate(-θ) applique le scale le long de la
+   direction θ SANS faire pivoter la silhouette elle-même : seul l'axe d'étirement suit le
+   mouvement, la forme ne se met pas à tourner avec la souris. Effet de bord utile, cet
+   encadrement est aussi insensible aux sauts de ±180° de l'angle (étirer selon θ ou θ+180°
+   revient au même), donc aucun à-coup quand le curseur change de sens. */
+.preloader-blob-stretch{
+  display:block; width:100%; height:100%;
+  transform:rotate(var(--blob-angle, 0deg))
+            scale(var(--blob-stretch, 1), var(--blob-squash, 1))
+            rotate(calc(-1 * var(--blob-angle, 0deg)));
+  will-change:transform;
+}
+/* Aplat uni et sans flou : le contour doit rester parfaitement net et la couleur constante,
+   c'est la déformation seule (border-radius animé) qui doit se voir. Bleu soutenu de la charte
+   (--accent), sans aucune transparence — la forme couvre franchement le mot quand elle passe
+   dessus. */
+.preloader-blob-shape{
+  position:relative;
+  display:block; width:100%; height:100%;
+  background:var(--accent);
+  border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;
+  /* Rogne la découpe blanche exactement sur le contour : c'est le MÊME élément qui porte
+     l'aplat bleu et ce rognage, donc les deux coïncident au pixel près, à chaque image de
+     la déformation, sans qu'aucune silhouette ne soit recalculée en double. */
+  overflow:hidden;
+  animation:preloader-blob-morph 9s ease-in-out infinite;
+}
+/* DÉCOUPE — copie de tout le contenu de l'écran, peinte en blanc, placée à l'intérieur de la
+   forme : ce que la forme survole apparaît donc en blanc sur le bleu, avec le même contour
+   qu'elle. Les deux calques intermédiaires annulent les transforms des parents, dans l'ordre
+   inverse, pour que la copie retombe pile sur le contenu réel quelles que soient la position
+   et la déformation du moment. Le résultat est exact par construction (et non approché) :
+   composées, les transforms des parents et leurs inverses valent l'identité. C'est aussi la
+   raison pour laquelle la forme ne tourne plus sur elle-même — il faudrait contre-animer la
+   rotation, donc parier sur deux animations CSS parfaitement en phase, là où tout le reste
+   se déduit des mêmes variables au même instant. */
+.preloader-blob-knockout{
+  position:absolute; inset:0;
+  /* Inverse de .preloader-blob-stretch : mêmes angles, facteurs d'échelle échangés — c'est
+     valable parce que l'aplatissement vaut exactement 1/étirement (cf. initPreloaderBlob). */
+  transform:rotate(var(--blob-angle, 0deg))
+            scale(var(--blob-squash, 1), var(--blob-stretch, 1))
+            rotate(calc(-1 * var(--blob-angle, 0deg)));
+}
+.preloader-blob-origin{
+  position:absolute; inset:0;
+  /* Inverse du déplacement de .preloader-blob : ramène l'origine de la copie sur le coin
+     haut-gauche de l'écran. Le 50% vaut la moitié de la forme et annule son translate(-50%). */
+  transform:translate(calc(50% - var(--blob-x, 50vw)), calc(50% - var(--blob-y, 50vh)));
+}
+/* Reprend la taille et le centrage de #preloader pour que la copie se compose exactement
+   comme l'original (le mot au centre, le reste calé en bas). Aucune barre de défilement
+   pendant le chargement (html.is-preloading), donc 100vw vaut bien la largeur visible. */
+.preloader-blob-clone{
+  position:absolute; top:0; left:0; width:100vw; height:100vh;
+  display:flex; align-items:center; justify-content:center;
+}
+/* Tout ce qui est repris dans la découpe est repeint en blanc, quelle que soit sa couleur
+   d'origine — y compris le mot, dont le remplissage dégradé est écrasé ici. */
+.preloader-blob-clone text{fill:#fff; fill-opacity:1;}
+.preloader-blob-clone .preloader-mouse,
+.preloader-blob-clone .preloader-scroll-hint{color:#fff;}
+.preloader-blob-clone .preloader-progress{background:rgba(255,255,255,0.35);}
+.preloader-blob-clone .preloader-progress-bar{background:#fff;}
+/* Rayons volontairement dissymétriques (horizontaux / verticaux) : c'est ce décalage entre
+   les deux séries qui empêche la forme de retomber sur un cercle ou un ovale régulier. */
+@keyframes preloader-blob-morph{
+  0%, 100%{border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;}
+  25%{border-radius:62% 38% 45% 55% / 55% 62% 38% 45%;}
+  50%{border-radius:38% 62% 55% 45% / 42% 48% 52% 58%;}
+  75%{border-radius:55% 45% 38% 62% / 60% 38% 62% 40%;}
+}
+@media (prefers-reduced-motion: reduce){
+  .preloader-blob-shape{animation:none;}
+}
+/* Rien à suivre au doigt : inutile d'afficher (ni d'animer) le halo sur tactile. */
+@media (hover: none), (pointer: coarse){
+  .preloader-blob{display:none;}
+}
 
 #bg-grid{
   position:absolute; top:0; left:0; right:0; width:100%; height:auto;
