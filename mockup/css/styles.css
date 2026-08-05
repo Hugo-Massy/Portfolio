@@ -63,8 +63,7 @@ a{color:inherit; text-decoration:none;}
 /* PRELOADER — écran plein écran affiché dès le HTML (avant même les polices distantes),
    avec le même principe de "mot liquide" que le hero (cf. initHeroCycle) mais décliné sur
    3 langues (bienvenue/welcome/bienvenido), en écho au sélecteur de langue du site. Une
-   icône souris (.preloader-mouse) + des chevrons (.preloader-scroll-hint) apparaissent une
-   fois la page prête. Ne se ferme jamais tout seul : seule une interaction de l'utilisateur
+   pastille bleue organique (.preloader-scroll-hint) apparaît une fois la page prête. Ne se ferme jamais tout seul : seule une interaction de l'utilisateur
    (scroll/clic/touche/molette) l'efface, piloté par initPreloader (js/main.js). #app passe
    en inert tant qu'il est affiché pour ne pas laisser le clavier/lecteur d'écran atteindre
    un contenu encore masqué derrière lui. html.is-preloading bloque le scroll pendant
@@ -106,9 +105,10 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
   stroke:currentColor;
   color:var(--accent);
   /* Épaisseur donnée dans le repère du dessin (viewBox de 1231 × 415) : le trait grossit donc
-     exactement comme le mot, quelle que soit la taille d'affichage. Calée sur le ratio
-     épaisseur/hauteur de lettre du tracé source (~13.9/192, soit environ 7%). */
-  stroke-width:18;
+     exactement comme le mot, quelle que soit la taille d'affichage. Le ratio épaisseur/hauteur
+     de lettre du tracé source (~13.9/192, soit environ 7%) sert de référence, mais on tient
+     volontairement en dessous : le lettrage se lit plus fin, plus proche d'une écriture. */
+  stroke-width:16.5;
   stroke-linecap:round;
   stroke-linejoin:round;
 }
@@ -119,32 +119,38 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 /* Point du "i" : composante disjointe du tracé (le stylo s'y lève forcément), donc un simple
    rond plein plutôt qu'un bout de trait animé. */
 .preloader-word-dot{fill:var(--accent); stroke:none;}
-/* Icône souris : masquée pendant le chargement, apparaît (fondu) une fois #preloader.is-ready ;
-   seule la souris respire (cf. scroll-down-bounce), les chevrons en dessous restent fixes. */
-.preloader-mouse{
-  position:absolute; left:50%; bottom:65px; transform:translateX(-50%);
-  /* Boîte au ratio exact du viewBox (20 × 30) : le svg la remplit alors entièrement, sans la
-     marge que laisserait preserveAspectRatio si les deux ratios divergeaient. */
-  width:20px; height:30px; color:var(--accent);
-  opacity:0; transition:opacity .4s ease;
-  animation:preloader-mouse-bounce 2.2s ease-in-out infinite;
-}
-#preloader.is-ready .preloader-mouse{opacity:1;}
-/* Course volontairement courte et lente : l'icône respire, elle ne saute pas. */
-@keyframes preloader-mouse-bounce{
-  0%, 100%{transform:translate(-50%, 0);}
-  50%{transform:translate(-50%, 5px);}
-}
-/* Chevrons "scroll pour continuer", posés en bas au centre : n'apparaissent (opacity)
-   qu'une fois #preloader.is-ready, et servent aussi de bouton (voir initPreloader). */
+/* Pastille "scroll pour entrer", posée en bas au centre : n'apparaît qu'une fois
+   #preloader.is-ready, et sert de bouton (voir initPreloader). Aplat accent, chevrons blancs et
+   halo au survol : mêmes règles que .back-to-top, dont elle est le pendant sur l'écran d'accueil
+   — un seul geste à apprendre pour les deux. Sa silhouette, elle, vient de l'écran : rayons
+   dissymétriques et morphing partagés avec .preloader-blob (cf. @keyframes preloader-blob-morph),
+   pour que la pastille soit de la même matière que la forme qui suit le curseur. */
 .preloader-scroll-hint{
-  position:absolute; left:50%; bottom:40px; transform:translateX(-50%);
+  position:absolute; left:50%; bottom:48px; transform:translateX(-50%);
   display:flex; align-items:center; justify-content:center;
-  padding:0; border:0; background:none;
-  color:var(--accent); cursor:pointer;
-  opacity:0; transition:opacity .5s ease;
+  width:46px; height:46px; padding:0; border:0;
+  background:var(--accent); color:#fff; cursor:pointer;
+  /* État de repos de la déformation : la même valeur que le 0% du morphing, sinon la pastille
+     sauterait d'une silhouette à l'autre au démarrage de l'animation. */
+  border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;
+  opacity:0; transition:opacity .5s ease, box-shadow .2s ease;
 }
-#preloader.is-ready .preloader-scroll-hint{opacity:1;}
+/* Deux animations sur le même élément, mais sur deux propriétés distinctes (transform d'un côté,
+   border-radius de l'autre) : elles ne se disputent rien et peuvent donc tourner à des rythmes
+   différents — le rebond court, la déformation lente. */
+#preloader.is-ready .preloader-scroll-hint{
+  opacity:1;
+  animation:preloader-hint-bounce 2.2s ease-in-out infinite,
+            preloader-blob-morph 9s ease-in-out infinite;
+}
+.preloader-scroll-hint:hover{box-shadow:0 0 0 4px var(--accent-glow);}
+/* Rebond vers le BAS, à l'inverse de .back-to-top : les chevrons désignent le bas de l'écran,
+   c'est dans ce sens que le geste attendu va. Le translate(-50%) du centrage doit être réécrit
+   dans chaque image, sinon l'animation l'écraserait et la pastille se décalerait à droite. */
+@keyframes preloader-hint-bounce{
+  0%, 100%{transform:translate(-50%, 0);}
+  50%{transform:translate(-50%, 6px);}
+}
 .preloader-status{
   position:absolute; width:1px; height:1px; padding:0; margin:-1px;
   overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
@@ -239,8 +245,12 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
    c'est leur REMPLISSAGE qu'il faut repeindre — la règle sur le trait ci-dessus les laissait
    bleus, et ils restaient donc visibles en bleu au passage de la forme. */
 .preloader-blob-clone .preloader-word-dot{fill:#fff;}
-.preloader-blob-clone .preloader-mouse,
-.preloader-blob-clone .preloader-scroll-hint{color:#fff;}
+/* La pastille est le seul élément déjà peint en aplat : la repeindre en blanc rendrait ses
+   chevrons blancs invisibles sur elle. Elle s'inverse donc, exactement comme .back-to-top sur
+   fond sombre — disque blanc, chevrons accent. L'override sur les chevrons est nécessaire parce
+   que la règle générale ci-dessus les aurait passés en blanc avec tous les autres tracés. */
+.preloader-blob-clone .preloader-scroll-hint{background:#fff; color:var(--accent);}
+.preloader-blob-clone .preloader-chevrons path{stroke:var(--accent);}
 /* Rayons volontairement dissymétriques (horizontaux / verticaux) : c'est ce décalage entre
    les deux séries qui empêche la forme de retomber sur un cercle ou un ovale régulier. */
 @keyframes preloader-blob-morph{
@@ -251,6 +261,8 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 }
 @media (prefers-reduced-motion: reduce){
   .preloader-blob-shape{animation:none;}
+  /* La pastille reste visible et cliquable : seules sa déformation et son rebond s'arrêtent. */
+  #preloader.is-ready .preloader-scroll-hint{animation:none;}
 }
 /* SILLAGE — petites bulles semées par la forme au fil de son déplacement (voir la partie
    "bulles" de initPreloaderBlob, js/main.js). Elles se figent quasiment là où elles naissent,
@@ -2536,23 +2548,40 @@ html.has-custom-cursor select{cursor:default !important;}
   pointer-events:none;
   opacity:0;
   /* la position est posée en transform à chaque frame (cf. render()) : seules la
-     couleur et la taille s'animent, jamais le suivi du pointeur — un point qui
-     traîne derrière la souris se lit comme de la latence. */
-  transition:background-color .18s ease, opacity .18s ease, width .18s ease, height .18s ease;
+     taille et l'opacité s'animent, jamais le suivi du pointeur — un point qui
+     traîne derrière la souris se lit comme de la latence. La couleur (background-
+     color / border-color) est volontairement exclue : isOverDark() sait au pixel
+     près où finit le bleu, donc le blanc doit apparaître exactement à ce pixel-là,
+     pas en fondu sur 0.18s — un fondu ferait paraître le point clair alors qu'il
+     est encore sur fond bleu, et inversement. */
+  transition:opacity .18s ease, width .18s ease, height .18s ease;
   will-change:transform;
 }
 .cursor-dot.is-visible{opacity:1;}
-.cursor-dot.is-on-dark{background:#fff;}
+/* calque clair superposé au disque bleu : cursor.js lui pose à chaque frame un clip-path
+   correspondant à la portion du point posée sur du sombre. Sur du clair il est découpé à
+   zéro (invisible) ; sur du sombre il couvre tout le point ; à cheval sur une arête, celle-ci
+   traverse le point exactement là où elle traverse le fond — d'où une frontière au pixel
+   près, impossible à obtenir en recolorant le point entier. */
+.cursor-dot-light{
+  position:absolute; inset:0; border-radius:inherit;
+  background:#fff; pointer-events:none;
+  clip-path:polygon(0px 0px, 0px 0px, 0px 0px);
+}
 /* survol d'un élément interactif : le point grossit pour signaler la cible (le
    curseur système n'est plus là pour passer en "main") */
 .cursor-dot.is-hover{width:26px; height:26px; background:transparent; border:2px solid var(--accent);}
-.cursor-dot.is-hover.is-on-dark{background:transparent; border-color:#fff;}
+/* le point n'est plus qu'un anneau : le calque clair doit devenir un anneau lui aussi, et
+   inset:-2px le recale sur la boîte de bordure du point (un enfant absolu se positionne sur
+   la boîte de padding, donc en retrait de la bordure) pour que les deux se superposent
+   exactement — sinon le clip-path, calculé sur la boîte de bordure, serait décalé de 2px. */
+.cursor-dot.is-hover .cursor-dot-light{inset:-2px; background:transparent; border:2px solid #fff;}
 .cursor-dot.is-down{width:8px; height:8px;}
 /* au-dessus d'un champ texte, le caret natif reprend la main : le point s'efface */
 .cursor-dot.is-hidden-field{opacity:0;}
 
 @media(prefers-reduced-motion:reduce){
-  .cursor-dot{transition:background-color .18s ease, opacity .18s ease;}
+  .cursor-dot{transition:opacity .18s ease;}
 }
 /* pointeur grossier (tactile) : pas de curseur à remplacer */
 @media(hover:none), (pointer:coarse){

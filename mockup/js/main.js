@@ -1857,9 +1857,34 @@ function initPreloader() {
   // Le changement de mot est déclenché par la fin RÉELLE du fondu de sortie (transitionend),
   // pas par un setTimeout qui devine sa durée : le fondu d'entrée qui suit dure alors
   // exactement aussi longtemps que celui de sortie, quoi qu'il arrive côté CSS.
+  //
+  // Mais cet évènement est le SEUL à pouvoir retirer .is-swapping, et .is-swapping tient le mot
+  // à opacity:0 : perdu une seule fois, le mot ne revient jamais et l'écran finit vide. Or il se
+  // perd pour de bon dans plusieurs cas ordinaires — onglet passé en arrière-plan pendant le
+  // fondu (requestAnimationFrame ne tourne plus, la classe n'est jamais retirée), transition
+  // interrompue (c'est alors transitioncancel qui est émis, pas transitionend), ou fondu qui
+  // n'a jamais démarré faute de changement d'opacité réel. D'où le garde-fou ci-dessous :
+  // l'évènement reste le chemin nominal, un minuteur rattrape son absence.
+  const FADE_MS = 1200; // doit rester aligné sur la transition de .preloader-word (styles.css)
+  const WATCHDOG_MS = FADE_MS + 400;
   let i = 0;
-  function onTextFadeEnd(e) {
-    if (e.propertyName !== 'opacity' || !el.classList.contains('is-swapping')) return;
+  let watchdog = 0;
+
+  // Lance le fondu de sortie. Ignoré si une bascule est déjà en cours : sans ce filtre, un tic
+  // d'horloge tombant au milieu d'un fondu réarmerait le minuteur et décalerait tout le cycle.
+  function beginSwap() {
+    if (el.classList.contains('is-swapping')) return;
+    el.classList.add('is-swapping');
+    clearTimeout(watchdog);
+    watchdog = setTimeout(finishSwap, WATCHDOG_MS);
+  }
+
+  // Change le mot et relance le fondu d'entrée. Idempotent : appelé soit par le transitionend,
+  // soit par le minuteur si celui-ci n'est pas venu — le premier des deux fait le travail, le
+  // second sort aussitôt puisque .is-swapping n'est alors plus là.
+  function finishSwap() {
+    if (!el.classList.contains('is-swapping')) return;
+    clearTimeout(watchdog);
     i = (i + 1) % GREETINGS.length;
     showGreeting(el, GREETINGS[i], reduce.matches);
     // Double rAF : laisse le navigateur peindre une image avec "nouveau mot, opacité
@@ -1870,13 +1895,23 @@ function initPreloader() {
         el.classList.remove('is-swapping');
       });
     });
+    // Second filet, pour le cas précis de l'onglet caché : les rAF ci-dessus n'y tournent pas,
+    // alors que les minuteurs, eux, continuent (simplement ralentis). Sans lui, revenir sur
+    // l'onglet ne suffirait pas toujours à faire réapparaître le mot.
+    watchdog = setTimeout(() => el.classList.remove('is-swapping'), WATCHDOG_MS);
+  }
+
+  function onTextFadeEnd(e) {
+    // Seul le fondu du SVG lui-même compte : les évènements remontés par ses descendants ne
+    // décrivent pas la bascule.
+    if (e.target !== word || e.propertyName !== 'opacity') return;
+    finishSwap();
   }
   word.addEventListener('transitionend', onTextFadeEnd);
+  word.addEventListener('transitioncancel', onTextFadeEnd);
   showGreeting(el, GREETINGS[0], reduce.matches);
 
-  const cycleTimer = (reduce.matches || GREETINGS.length < 2) ? null : setInterval(() => {
-    el.classList.add('is-swapping');
-  }, HOLD_MS);
+  const cycleTimer = (reduce.matches || GREETINGS.length < 2) ? null : setInterval(beginSwap, HOLD_MS);
 
   let hidden = false;
   function hide() {
@@ -1884,7 +1919,9 @@ function initPreloader() {
     hidden = true;
     if (stopBlob) stopBlob();
     if (cycleTimer !== null) clearInterval(cycleTimer);
+    clearTimeout(watchdog);
     word.removeEventListener('transitionend', onTextFadeEnd);
+    word.removeEventListener('transitioncancel', onTextFadeEnd);
     window.removeEventListener('keydown', onDismissKey);
     document.documentElement.classList.remove('is-preloading');
     if (app) app.removeAttribute('inert');
