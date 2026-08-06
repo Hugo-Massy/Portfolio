@@ -29,9 +29,9 @@ function initSite() {
   initXpBentoWave();
   initSkillFloaterObserver();
   initTerminal();
-  initBackgroundGrid();
   initTabSpy();
   initRailOnDark();
+  initDotRailKnockout();
   initBackToTop();
   initHeroCycle();
   initHeroTermGrow();
@@ -920,6 +920,10 @@ function initHeroCycle() {
         el.classList.add('is-final');
         if (suffix) suffix.remove();
       }
+      // La découpe blanche du blob du hero (js/page-blob.js) travaille sur une COPIE figée de la
+      // page : sans ce signal, elle garderait le mot affiché à l'instant du clone, et montrerait
+      // donc un autre mot que celui du titre dès le premier changement.
+      document.dispatchEvent(new CustomEvent('hero-content-change'));
     }, SWAP_MS);
   }, HOLD_MS);
 }
@@ -948,21 +952,31 @@ function initTabSpy() {
     indicator.style.top = `${y}px`;
   }
 
+  function activate(tab) {
+    // l'indicateur part tout de suite, mais le label n'apparaît qu'une fois qu'il est arrivé
+    clearTimeout(activateTimer);
+    tabs.forEach((t) => t.classList.remove('is-active'));
+    moveIndicatorTo(tab);
+    activateTimer = setTimeout(() => tab.classList.add('is-active'), INDICATOR_TRAVEL_MS);
+  }
+
   const observer = new IntersectionObserver((entries) => {
     entries.forEach((entry) => {
       if (!entry.isIntersecting) return;
       const tab = sectionToTab.get(entry.target);
-      if (!tab) return;
-      // l'indicateur part tout de suite, mais le label n'apparaît qu'une fois qu'il est arrivé
-      clearTimeout(activateTimer);
-      tabs.forEach((t) => t.classList.remove('is-active'));
-      moveIndicatorTo(tab);
-      activateTimer = setTimeout(() => tab.classList.add('is-active'), INDICATOR_TRAVEL_MS);
+      if (tab) activate(tab);
     });
   }, { rootMargin: '-40% 0px -55% 0px' });
 
   sectionToTab.forEach((tab, section) => observer.observe(section));
   moveIndicatorTo(tabs[0]);
+
+  // Au clic, l'indicateur part immédiatement au lieu d'attendre que le scroll (fluide, donc
+  // lent) fasse franchir à la section la bande centrale surveillée par l'observer — sans ça,
+  // le point mettait plusieurs centaines de ms à réagir après le clic.
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => activate(tab));
+  });
 }
 
 // Résout une longueur CSS (clamp(), calc(), var()...) en px réels, en la posant sur une
@@ -986,49 +1000,46 @@ window.addEventListener('resize', () => {
   contactSlope = resolveCSSLength('var(--contact-slope)');
 });
 
-// Vrai si le point d'ordonnée y tombe sur la vague bleue de .section-divider-bar plutôt
-// que sur le fond clair — cf. son clip-path : polygon(0 13px, 100% 117px, 100% 100%,
-// 0 calc(100% - var(--wave-h) * 0.4)). La pente est inversée entre les deux bords : au
-// bord droit (x=100%, là où vivent le rail et le bouton), le bleu va de 117px sous le
-// haut jusqu'au tout bas ; au bord gauche (x=0, là où vit page-tag), il va de 13px sous
-// le haut jusqu'à "wave-h * 0.4" avant le bas.
-function isOverAboutWave(about, y, side) {
+// Les fonctions ci-dessous donnent, à l'abscisse x, l'ordonnée EXACTE (interpolée sur le
+// clip-path réel, pas approchée à un bord) des lignes qui séparent fond clair et fond bleu en
+// bas de page. Elles servent au test binaire "ce point est-il sur fond sombre ?" pour les
+// éléments qu'on ne peut que teinter d'un bloc (points du rail, page-tag). Les boutons ronds,
+// eux, ne passent pas par là : ils sont réellement découpés le long du vrai fond, par recopie
+// de celui-ci plutôt que par calcul (cf. initButtonKnockout, js/knockout.js).
+
+// .section-divider-bar : polygon(0 13px, 100% 117px, 100% 100%, 0 calc(100% - wave-h*0.4)).
+// Bord haut : de 13px (x=0) à 117px (x=100%) ; bord bas : de "hauteur - wave-h*0.4" à la
+// hauteur pleine.
+function isOverAboutWave(about, x, y) {
   const rect = about.getBoundingClientRect();
-  if (side === 'left') {
-    const top = rect.top + 13;
-    const bottom = rect.top + rect.height - waveH * 0.4;
-    return y > top && y < bottom;
-  }
-  const top = rect.top + 117;
-  const bottom = rect.top + rect.height;
+  const f = Math.min(1, Math.max(0, (x - rect.left) / rect.width));
+  const top = rect.top + 13 + f * (117 - 13);
+  const bottom = rect.top + rect.height - waveH * 0.4 * (1 - f);
   return y > top && y < bottom;
 }
 
-// Vrai si le point d'ordonnée y tombe sur le bloc bleu de #contact — cf. son clip-path :
-// polygon(0 var(--contact-slope), 100% 0, 100% 100%, 0 100%). Au bord droit (x=100%, rail
-// et bouton), la diagonale du haut touche 0 : le bleu couvre toute la hauteur. Au bord
-// gauche (x=0, page-tag), le bleu ne commence qu'à "contact-slope" sous le haut.
-function isOverContactBlue(contact, y, side) {
+// .contact-fill : polygon(0 contact-slope, 100% 0, 100% 100%, 0 100%). Bord haut : de
+// "contact-slope" (x=0) à 0 (x=100%) ; le bord bas reste la hauteur pleine.
+function isOverContactBlue(contact, x, y) {
   const rect = contact.getBoundingClientRect();
-  if (side === 'left') {
-    return y > rect.top + contactSlope && y < rect.bottom;
-  }
-  return y > rect.top && y < rect.bottom;
+  const f = Math.min(1, Math.max(0, (x - rect.left) / rect.width));
+  return y > rect.top + contactSlope * (1 - f) && y < rect.bottom;
 }
 
 // Regroupe les deux zones sombres du bas de page (vague #about + bloc #contact) : un
 // point en est "sur fond sombre" s'il tombe sur l'une ou l'autre.
-function isOverDarkZone(about, contact, y, side) {
-  return isOverAboutWave(about, y, side) || (contact && isOverContactBlue(contact, y, side));
+function isOverDarkZone(about, contact, x, y) {
+  return isOverAboutWave(about, x, y) || (contact && isOverContactBlue(contact, x, y));
 }
 
-// Bascule chaque point du rail sur des teintes claires quand la vague bleue passe sous lui,
-// pour qu'il reste lisible (sinon ses points/labels gris se fondent dans le bleu). Chaque
-// point est testé indépendamment : selon sa hauteur sur le rail, certains peuvent être sur
-// la vague bleue pendant que d'autres n'y sont pas.
+// Bascule le LABEL de chaque point du rail (texte, pas la pastille) sur des teintes claires
+// quand la vague bleue passe sous lui, pour qu'il reste lisible. Chaque point est testé
+// indépendamment : selon sa hauteur sur le rail, certains peuvent être sur la vague bleue
+// pendant que d'autres n'y sont pas. La pastille elle-même (.dot-core) et l'indicateur ne
+// basculent plus d'un bloc : initButtonKnockout (cf. initDotRailKnockout ci-dessous) les
+// découpe au pixel près le long du vrai fond, comme .back-to-top.
 function initRailOnDark() {
   const rail = document.querySelector('.dot-rail');
-  const indicator = document.querySelector('.dot-rail-indicator');
   const dots = document.querySelectorAll('.dot-rail a');
   const pageTag = document.querySelector('.page-tag');
   const about = document.getElementById('about');
@@ -1038,15 +1049,11 @@ function initRailOnDark() {
   function update() {
     dots.forEach((dot) => {
       const r = dot.getBoundingClientRect();
-      dot.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'right'));
+      dot.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
     });
-    if (indicator) {
-      const r = indicator.getBoundingClientRect();
-      indicator.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'right'));
-    }
     if (pageTag) {
       const r = pageTag.getBoundingClientRect();
-      pageTag.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'left'));
+      pageTag.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
     }
   }
 
@@ -1056,9 +1063,21 @@ function initRailOnDark() {
   window.addEventListener('parallax-tick', update);
 }
 
+// Pastilles du rail + indicateur de section active : découpés au pixel près le long du vrai
+// fond, exactement comme .back-to-top (cf. js/knockout.js). Remplace l'ancien basculement de
+// classe .is-on-dark d'un bloc, imprécis dès qu'un point chevauche la frontière.
+function initDotRailKnockout() {
+  document.querySelectorAll('.dot-rail .dot-core').forEach((core) => {
+    initButtonKnockout(core, '.section-divider-bar, .contact-fill');
+  });
+  const indicator = document.querySelector('.dot-rail-indicator');
+  if (indicator) initButtonKnockout(indicator, '.section-divider-bar, .contact-fill');
+}
+
 // Affiche le bouton "remonter en haut" dès qu'on a quitté le hero (et jusqu'en bas de page,
-// quelle que soit la section affichée), et inverse ses couleurs (fond blanc/icône bleue) quand
-// il se trouve sur la vague bleue, pour rester lisible dans les deux cas.
+// quelle que soit la section affichée). Ses couleurs, elles, ne basculent plus d'un bloc :
+// initButtonKnockout le découpe au pixel près le long du vrai fond (cf. js/knockout.js).
+// .is-on-dark ne subsiste ici que pour la teinte du halo de survol.
 function initBackToTop() {
   const btn = document.querySelector('.back-to-top');
   const about = document.getElementById('about');
@@ -1066,10 +1085,12 @@ function initBackToTop() {
   const hero = document.getElementById('hero');
   if (!btn || !about || !hero) return;
 
+  initButtonKnockout(btn, '.section-divider-bar, .contact-fill');
+
   function update() {
     btn.classList.toggle('is-visible', window.scrollY > hero.offsetHeight * 0.5);
     const r = btn.getBoundingClientRect();
-    btn.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.top + r.height / 2, 'right'));
+    btn.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
   }
 
   update();
@@ -1839,7 +1860,7 @@ function initPreloader() {
   // qu'à partir de deux mots : avec un seul, l'écran l'écrit une fois et le laisse en place.
   const GREETINGS = ['bienvenue', 'welcome', 'bienvenido'];
   // Rythme volontairement lent et posé (façon Apple) : chaque mot reste longtemps à l'écran.
-  const HOLD_MS = 5500;
+  const HOLD_MS = 7500;
   // Filet de sécurité si l'évènement "load" ne se déclenche jamais (ressource bloquée...) :
   // l'icône finit quand même par apparaître, sans quoi l'écran resterait bloqué pour de bon.
   const MAX_WAIT_MS = 6000;
@@ -1865,7 +1886,7 @@ function initPreloader() {
   // interrompue (c'est alors transitioncancel qui est émis, pas transitionend), ou fondu qui
   // n'a jamais démarré faute de changement d'opacité réel. D'où le garde-fou ci-dessous :
   // l'évènement reste le chemin nominal, un minuteur rattrape son absence.
-  const FADE_MS = 1200; // doit rester aligné sur la transition de .preloader-word (styles.css)
+  const FADE_MS = 1800; // doit rester aligné sur la transition de .preloader-word (styles.css)
   const WATCHDOG_MS = FADE_MS + 400;
   let i = 0;
   let watchdog = 0;
@@ -1928,6 +1949,11 @@ function initPreloader() {
     el.classList.add('is-hidden');
     el.setAttribute('aria-hidden', 'true');
     el.addEventListener('transitionend', () => el.remove(), { once: true });
+    // Retirer .is-preloading enlève aussi le translateY(24px) de #app : tout ce qui est en
+    // position:fixed À L'INTÉRIEUR de #app (la nav de page) se résolvait contre cette transform
+    // et retrouve maintenant sa place définitive. js/page-blob.js s'en sert pour replacer la
+    // copie qu'il en tient (cf. positionFixedCopies).
+    document.dispatchEvent(new CustomEvent('preloader-hidden'));
   }
 
   // Tant que la page n'est pas prête (is-ready pas encore posée), les interactions n'ont
@@ -1975,7 +2001,7 @@ function initPreloader() {
 // forme (voir initPreloaderBlob) contient les mêmes mots, et bascule ainsi en même temps que
 // l'original, sans quoi la forme laisserait voir un autre mot que celui affiché derrière.
 function showGreeting(el, name, reduce) {
-  const DRAW_MS = 2600;
+  const DRAW_MS = 3600;
   el.querySelectorAll('.preloader-word-item').forEach((item) => {
     item.classList.toggle('is-current', item.dataset.word === name);
   });
@@ -2276,195 +2302,3 @@ function initPreloaderBlob(el) {
 
 initPreloader();
 initSite();
-
-// Grille de points en fond du hero, qui réagit à la position de la souris (effet magnétique discret).
-function initBackgroundGrid() {
-  const canvas = document.getElementById('bg-grid');
-  const container = canvas ? canvas.closest('.hero') : null;
-  const copy = container ? container.querySelector('.hero-copy') : null;
-  const navRail = document.querySelector('.dot-rail');
-  if (!canvas || !container) return;
-  const ctx = canvas.getContext('2d');
-
-  const SPACING = 38;
-  const BASE_RADIUS = 1.2;
-  const REACT_RADIUS = 140;
-  const MAX_OFFSET = 10;
-  const MAX_SCALE = 2.4;
-  const FEATHER_IN = 40;
-  const FEATHER_OUT = 90;
-  const MIN_ALPHA = 0.04;
-  const ROUND_RADIUS = 10;
-  // la grille ne se révèle qu'autour du curseur : rayon plein visible, puis fondu jusqu'à 0
-  const REVEAL_RADIUS = 160;
-  const REVEAL_FEATHER = 140;
-  const EXCLUSION_SELECTOR = 'h1, .lede, .btn, .social-row a';
-  // déborde sous le hero pour que la grille continue derrière le bord diagonal de la section
-  // "about" (.section-divider-bar), au lieu de s'arrêter pile au bas du hero.
-  const EXTRA_BELOW = 140;
-  const BASE_COLOR = '37,70,200';
-
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let width = 0;
-  let height = 0;
-  let points = [];
-  let exclusionRects = [];
-  const mouse = { x: -9999, y: -9999, active: false };
-
-  function smoothstep(edge0, edge1, value) {
-    const t = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
-    return t * t * (3 - 2 * t);
-  }
-
-  // Distance signée à un rectangle à coins arrondis (SDF) — négative à l'intérieur, 0 sur le bord, positive à l'extérieur.
-  function distToRoundedRect(px, py, rect, radius) {
-    const halfW = (rect.right - rect.left) / 2;
-    const halfH = (rect.bottom - rect.top) / 2;
-    const r = Math.min(radius, halfW, halfH);
-    const cx = (rect.left + rect.right) / 2;
-    const cy = (rect.top + rect.bottom) / 2;
-    const dx = Math.abs(px - cx) - (halfW - r);
-    const dy = Math.abs(py - cy) - (halfH - r);
-    return Math.min(Math.max(dx, dy), 0) + Math.hypot(Math.max(dx, 0), Math.max(dy, 0)) - r;
-  }
-
-  // Récupère un rectangle par ligne visuelle (pas un seul bloc englobant tout un paragraphe multi-lignes).
-  function getLineRects(el) {
-    const range = document.createRange();
-    range.selectNodeContents(el);
-    return Array.from(range.getClientRects());
-  }
-
-  function updateExclusionRect() {
-    exclusionRects = [];
-    const containerRect = container.getBoundingClientRect();
-    const pad = 3;
-    if (copy) {
-      copy.querySelectorAll(EXCLUSION_SELECTOR).forEach((el) => {
-        getLineRects(el).forEach((r) => {
-          if (r.width < 1 || r.height < 1) return;
-          exclusionRects.push({
-            left: r.left - containerRect.left - pad,
-            top: r.top - containerRect.top - pad,
-            right: r.right - containerRect.left + pad,
-            bottom: r.bottom - containerRect.top + pad,
-          });
-        });
-      });
-    }
-    // le rail de nav est fixed (sa position relative au hero bouge au scroll) : on
-    // l'exclut en plus du texte, pour qu'il bénéficie du même halo feathered que le h1.
-    if (navRail) {
-      const r = navRail.getBoundingClientRect();
-      if (r.width >= 1 && r.height >= 1) {
-        exclusionRects.push({
-          left: r.left - containerRect.left - pad,
-          top: r.top - containerRect.top - pad,
-          right: r.right - containerRect.left + pad,
-          bottom: r.bottom - containerRect.top + pad,
-        });
-      }
-    }
-  }
-
-  function buildPoints() {
-    points = [];
-    for (let y = SPACING / 2; y < height; y += SPACING) {
-      for (let x = SPACING / 2; x < width; x += SPACING) {
-        points.push({ x, y, rgb: BASE_COLOR });
-      }
-    }
-  }
-
-  function resize() {
-    const rect = container.getBoundingClientRect();
-    width = rect.width;
-    height = rect.height + EXTRA_BELOW;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    buildPoints();
-    updateExclusionRect();
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-
-    for (const p of points) {
-      let alpha = 1;
-      if (exclusionRects.length) {
-        let minDist = Infinity;
-        for (const rect of exclusionRects) {
-          const dist = distToRoundedRect(p.x, p.y, rect, ROUND_RADIUS);
-          if (dist < minDist) minDist = dist;
-        }
-        alpha = MIN_ALPHA + (1 - MIN_ALPHA) * smoothstep(-FEATHER_IN, FEATHER_OUT, minDist);
-      }
-      let dx = 0;
-      let dy = 0;
-      let scale = 1;
-      let reveal = 0;
-
-      if (mouse.active) {
-        const distX = p.x - mouse.x;
-        const distY = p.y - mouse.y;
-        const dist = Math.hypot(distX, distY);
-        reveal = 1 - smoothstep(REVEAL_RADIUS - REVEAL_FEATHER, REVEAL_RADIUS, dist);
-        if (dist < REACT_RADIUS) {
-          const force = 1 - dist / REACT_RADIUS;
-          const angle = Math.atan2(distY, distX);
-          dx = Math.cos(angle) * force * MAX_OFFSET;
-          dy = Math.sin(angle) * force * MAX_OFFSET;
-          scale = 1 + force * (MAX_SCALE - 1);
-        }
-      }
-
-      alpha *= reveal;
-      if (alpha <= 0.01) continue;
-
-      const r = BASE_RADIUS * scale;
-      const fill = `rgba(${p.rgb},${0.6 * alpha})`;
-
-      ctx.beginPath();
-      ctx.arc(p.x + dx, p.y + dy, r, 0, Math.PI * 2);
-      ctx.fillStyle = fill;
-      ctx.fill();
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  let lastClientX = -9999;
-  let lastClientY = -9999;
-
-  function updateMouseFromClient() {
-    const rect = container.getBoundingClientRect();
-    mouse.x = lastClientX - rect.left;
-    mouse.y = lastClientY - rect.top;
-  }
-
-  // Écoute sur window (et non sur .hero) pour rester réactif même quand le curseur quitte
-  // brièvement la zone ; les coords sont reconverties en repère local via updateMouseFromClient.
-  window.addEventListener('mousemove', (e) => {
-    lastClientX = e.clientX;
-    lastClientY = e.clientY;
-    updateMouseFromClient();
-    mouse.active = true;
-  }, { passive: true });
-  document.addEventListener('mouseleave', () => {
-    mouse.active = false;
-  });
-  window.addEventListener('scroll', () => {
-    if (mouse.active) updateMouseFromClient();
-    if (navRail) updateExclusionRect();
-  }, { passive: true });
-  window.addEventListener('resize', resize);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(resize);
-  }
-
-  resize();
-  draw();
-}

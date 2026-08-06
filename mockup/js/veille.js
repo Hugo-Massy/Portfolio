@@ -733,71 +733,34 @@ async function initVeille() {
   window.addEventListener('scroll', checkBottom, { passive: true });
   window.addEventListener('resize', checkBottom);
   checkBottom();
+
+  // Au clic, l'indicateur part immédiatement au lieu d'attendre que le scroll (fluide, donc
+  // lent) fasse franchir à la section la bande centrale surveillée par l'observer — sans ça,
+  // le point mettait plusieurs centaines de ms à réagir après le clic.
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => activate(tab));
+  });
 })();
 
-// Retour en haut
+// Retour en haut. Le bouton passe devant le bloc bleu de #contact en bas de page : il y est
+// découpé au pixel près le long de sa diagonale, par recopie de celle-ci (cf. js/knockout.js).
 (function initBackToTop() {
   const btn = document.querySelector('.back-to-top');
   if (!btn) return;
+  initButtonKnockout(btn, '.contact-fill');
   function update() { btn.classList.toggle('is-visible', window.scrollY > window.innerHeight * 0.5); }
   update();
   window.addEventListener('scroll', update, { passive: true });
 })();
 
-// ------------------------------------------------------- Fond quadrillé (bg) --
-// Repris à l'identique de la page détails (initDetailsBgGrid) : grille de points
-// révélée autour du curseur, fixée au viewport.
-(function initVeilleBgGrid() {
-  const canvas = document.getElementById('dp-bg-grid');
-  if (!canvas) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const ctx = canvas.getContext('2d');
-
-  const SPACING = 38, BASE_RADIUS = 1.2, REACT_RADIUS = 140, MAX_OFFSET = 10;
-  const MAX_SCALE = 2.4, REVEAL_RADIUS = 160, REVEAL_FEATHER = 140, BASE_COLOR = '37,70,200';
-
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let width = 0, height = 0, points = [];
-  const mouse = { x: -9999, y: -9999, active: false };
-
-  const smoothstep = (e0, e1, v) => { const t = Math.min(Math.max((v - e0) / (e1 - e0), 0), 1); return t * t * (3 - 2 * t); };
-
-  function buildPoints() {
-    points = [];
-    for (let y = SPACING / 2; y < height; y += SPACING)
-      for (let x = SPACING / 2; x < width; x += SPACING) points.push({ x, y });
-  }
-  function resize() {
-    width = window.innerWidth; height = window.innerHeight;
-    canvas.width = width * dpr; canvas.height = height * dpr;
-    canvas.style.width = `${width}px`; canvas.style.height = `${height}px`;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0); buildPoints();
-  }
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-    if (mouse.active) {
-      for (const p of points) {
-        const dx0 = p.x - mouse.x, dy0 = p.y - mouse.y, dist = Math.hypot(dx0, dy0);
-        const reveal = 1 - smoothstep(REVEAL_RADIUS - REVEAL_FEATHER, REVEAL_RADIUS, dist);
-        if (reveal <= 0.01) continue;
-        let dx = 0, dy = 0, scale = 1;
-        if (dist < REACT_RADIUS) {
-          const force = 1 - dist / REACT_RADIUS, angle = Math.atan2(dy0, dx0);
-          dx = Math.cos(angle) * force * MAX_OFFSET; dy = Math.sin(angle) * force * MAX_OFFSET;
-          scale = 1 + force * (MAX_SCALE - 1);
-        }
-        ctx.beginPath();
-        ctx.arc(p.x + dx, p.y + dy, BASE_RADIUS * scale, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${BASE_COLOR},${0.6 * reveal})`;
-        ctx.fill();
-      }
-    }
-    requestAnimationFrame(draw);
-  }
-  window.addEventListener('mousemove', (e) => { mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true; }, { passive: true });
-  document.addEventListener('mouseleave', () => { mouse.active = false; });
-  window.addEventListener('resize', resize);
-  resize(); draw();
+// Pastilles du rail + indicateur de section active : même découpe au pixel près que
+// .back-to-top ci-dessus (cf. js/knockout.js).
+(function initDotRailKnockout() {
+  document.querySelectorAll('.dot-rail .dot-core').forEach((core) => {
+    initButtonKnockout(core, '.contact-fill');
+  });
+  const indicator = document.querySelector('.dot-rail-indicator');
+  if (indicator) initButtonKnockout(indicator, '.contact-fill');
 })();
 
 // ------------------------------------------------------------------- Contact --
@@ -877,14 +840,14 @@ async function initVeille() {
 
 // Nav de pages et bouton "remonter" passent en blanc au-dessus du bleu de #contact
 // (même principe que initOnDarkNav dans js/details.js, réduit à la seule section
-// contact : c'est le seul aplat foncé de cette page).
+// contact : c'est le seul aplat foncé de cette page). Les pastilles du rail et l'indicateur
+// sont, eux, découpés au pixel près par initButtonKnockout plus bas (comme .back-to-top).
 (function initOnDarkOverContact() {
   const contact = document.getElementById('contact');
   if (!contact) return;
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
   const railLinks = document.querySelectorAll('.dot-rail a');
-  const indicator = document.querySelector('.dot-rail-indicator');
 
   // --contact-slope est une clamp() : parseFloat sur la custom property échouerait.
   // On la fait résoudre par le moteur de layout via une sonde hors-écran.
@@ -915,7 +878,6 @@ async function initVeille() {
 
   function update() {
     railLinks.forEach((el) => toggle(el, 'right'));
-    toggle(indicator, 'right');
     toggle(backToTop, 'right');
     toggle(pageTag, 'left');
   }

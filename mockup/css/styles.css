@@ -87,13 +87,13 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
    blanche découpée dans la forme (.preloader-blob-clone), dont les id sont retirés.
    Le fondu porte sur le SVG entier. Courbe SYMÉTRIQUE (ease-in-out) et non ease-out : avec une
    courbe type cubic-bezier(.25,.8,.25,1), l'opacité atteint ~70% dès le premier quart du temps,
-   et l'apparition paraît instantanée alors que la durée est bien de 1.2s. La taille à l'écran
+   et l'apparition paraît instantanée alors que la durée est bien de 1.8s. La taille à l'écran
    se règle par la largeur, le viewBox met le reste à l'échelle — épaisseur du trait comprise. */
 .preloader-word{
   position:relative; z-index:1;
   width:min(62vw, 460px); height:auto; max-width:100%;
   overflow:visible;
-  transition:opacity 1.2s cubic-bezier(.45,0,.55,1);
+  transition:opacity 1.8s cubic-bezier(.45,0,.55,1);
 }
 #preloader.is-swapping .preloader-word{opacity:0;}
 /* Bascule sèche d'un mot à l'autre : elle a lieu pendant que le SVG entier est invisible,
@@ -261,8 +261,13 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 }
 @media (prefers-reduced-motion: reduce){
   .preloader-blob-shape{animation:none;}
-  /* La pastille reste visible et cliquable : seules sa déformation et son rebond s'arrêtent. */
-  #preloader.is-ready .preloader-scroll-hint{animation:none;}
+  /* La pastille reste visible et cliquable : seules sa déformation et son rebond s'arrêtent.
+     Même chose pour ses deux pendants (.scroll-down, .back-to-top), qui partagent le morphing. */
+  #preloader.is-ready .preloader-scroll-hint,
+  .scroll-down,
+  .back-to-top.is-visible,
+  .dot-rail .dot-core,
+  .dot-rail-indicator{animation:none;}
 }
 /* SILLAGE — petites bulles semées par la forme au fil de son déplacement (voir la partie
    "bulles" de initPreloaderBlob, js/main.js). Elles se figent quasiment là où elles naissent,
@@ -294,9 +299,212 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
   .preloader-blob, .preloader-bubbles{display:none;}
 }
 
-#bg-grid{
-  position:absolute; top:0; left:0; right:0; width:100%; height:auto;
-  z-index:0; pointer-events:none; display:block;
+/* BLOB DU HERO — voir js/page-blob.js. Reprend telle quelle la mécanique de
+   .preloader-blob (déplacement / étirement / déformation sur trois calques imbriqués,
+   cf. le commentaire au-dessus de .preloader-blob plus haut dans ce fichier), avec un
+   calque de plus : le viewport fixe qui sert de repère à toute la chaîne, puisqu'il n'y a
+   plus de #preloader (fixed, inset:0) pour le fournir gratuitement une fois la page en
+   navigation normale.
+   La fenêtre reste plein écran pour cette raison même, et c'est un clip-path posé en JS
+   (recalculé sur la position écran du hero) qui limite la forme au hero — rogner plutôt que
+   redimensionner évite d'avoir à défalquer l'origine du hero dans les deux calques qui
+   composent la découpe. */
+.page-blob-viewport{
+  position:fixed; inset:0; z-index:40; pointer-events:none; overflow:hidden;
+}
+.page-blob{
+  position:absolute; top:0; left:0; z-index:3;
+  width:clamp(72px, 8vw, 112px); aspect-ratio:1/1;
+  pointer-events:none;
+  transform:translate3d(var(--pgblob-x, 50vw), var(--pgblob-y, 50vh), 0) translate(-50%, -50%);
+  opacity:0; transition:opacity .6s ease;
+  will-change:transform;
+}
+.page-blob.is-active{opacity:1;}
+.page-blob-stretch{
+  display:block; width:100%; height:100%;
+  transform:rotate(var(--pgblob-angle, 0deg))
+            scale(var(--pgblob-stretch, 1), var(--pgblob-squash, 1))
+            rotate(calc(-1 * var(--pgblob-angle, 0deg)));
+  will-change:transform;
+}
+.page-blob-shape{
+  position:relative;
+  display:block; width:100%; height:100%;
+  background:var(--accent);
+  border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;
+  overflow:hidden;
+  /* La copie de la page qu'il rogne fait toute la hauteur du document (voir .page-blob-clone
+     plus bas) : sans ce confinement explicite, un navigateur peut repeindre cette copie
+     entière — bien plus grande que les ~100px réellement visibles — à chaque défilement
+     (qui décale .page-blob-clone-shift), ce qui saccade tout le scroll sur les pages
+     longues. contain:paint garantit que rien ne peint hors de cette boîte, et autorise donc
+     le moteur de rendu à ignorer tout ce que le rognage masque déjà. */
+  contain:paint;
+  animation:preloader-blob-morph 9s ease-in-out infinite;
+}
+.page-blob-knockout{
+  position:absolute; inset:0;
+  transform:rotate(var(--pgblob-angle, 0deg))
+            scale(var(--pgblob-squash, 1), var(--pgblob-stretch, 1))
+            rotate(calc(-1 * var(--pgblob-angle, 0deg)));
+}
+.page-blob-origin{
+  position:absolute; inset:0;
+  transform:translate(calc(50% - var(--pgblob-x, 50vw)), calc(50% - var(--pgblob-y, 50vh)));
+}
+/* Fenêtre à la taille du viewport : la copie du contenu de la page est posée dedans, rognée à
+   ce qui est réellement visible à l'écran.
+   Les dimensions réelles sont posées en px par syncCloneSize() (js/page-blob.js), depuis
+   clientWidth/clientHeight — la barre de défilement doit en être exclue, sous peine de décaler
+   toute la copie ; voir le commentaire de cette fonction. Les valeurs ci-dessous ne sont qu'un
+   repli avant le premier passage du JS.
+   Surtout pas de pourcentage ici : les parents de ce calque (.page-blob-origin, -knockout,
+   -shape) mesurent tous la taille du BLOB (~112px), un % y écraserait donc toute la copie de la
+   page dans une colonne de 112px — le blob n'aurait plus l'air que d'un disque bleu opaque. */
+.page-blob-clone{
+  position:absolute; top:0; left:0; width:100vw; height:100vh;
+  overflow:hidden;
+}
+/* Décale la copie de -scrollY : la page défile (contrairement à l'écran de chargement, fixe),
+   ce calque en plus recadre donc la copie sur ce que montre réellement le viewport courant.
+   PAS de will-change:transform ici, malgré la tentation : il promeut la copie sur son propre
+   calque de composition, où son texte est rastérisé une fois puis déplacé en bloc, alors que
+   l'original est rendu directement à sa position — les deux ne tombent alors plus exactement au
+   même endroit (décalage sub-pixel), et la découpe se met à « baver » sur le texte qu'elle
+   recouvre. Le coût de peinture, lui, est déjà borné par le clip-path du hero et le contain:paint
+   de .page-blob-shape : la zone réellement repeinte fait la taille de la forme, pas de la page. */
+.page-blob-clone-shift{
+  transform:translateY(calc(-1 * var(--pgblob-scroll-y, 0px)));
+}
+/* Tout le texte de la copie (titres, paragraphes, liens…) repasse en blanc — les icônes en
+   trait (stroke="currentColor") suivent d'elles-mêmes, currentColor obligeant. */
+.page-blob-clone, .page-blob-clone *{color:#fff !important;}
+/* Et tous les FONDS de la copie disparaissent : la copie ne doit apporter que du texte blanc
+   par-dessus le bleu du blob. Sans ça, le fond blanc de la page (et celui des cartes, sections,
+   encarts…) serait recopié tel quel et repeindrait l'intérieur du blob en blanc — la forme
+   n'aurait plus l'air bleue du tout. Les quelques aplats qu'on inverse volontairement sont
+   rétablis juste en dessous, avec une spécificité supérieure. */
+.page-blob-clone *{background-color:transparent !important; box-shadow:none !important;}
+/* Les images ne peuvent pas s'inverser, et leur src a été retiré côté JS (cf. rebuildClone) :
+   sans ça leur texte alternatif s'afficherait en blanc au milieu de la forme. */
+.page-blob-clone img, .page-blob-clone picture, .page-blob-clone video{opacity:0 !important;}
+/* Bordures et filets (boutons fantômes, cartes, séparateurs) : blancs eux aussi, sinon ils
+   resteraient gris pâle et se verraient sur le bleu. */
+.page-blob-clone *{border-color:#fff !important; outline-color:#fff !important;}
+/* Les blocs .reveal sont forcés à leur état d'arrivée. Au repos ils portent translateY(16px)
+   (cf. .reveal plus haut), retiré par la classe .is-visible que pose l'observer au moment où le
+   bloc entre à l'écran. Or la copie fige les classes telles qu'elles étaient au moment du clone :
+   si elle est prise avant que l'observer n'ait agi, tout le contenu du hero y reste décalé de
+   16px vers le bas. Et ce qui passe sous la forme est de toute façon à l'écran, donc révélé. */
+.page-blob-clone .reveal{opacity:1 !important; transform:none !important; transition:none !important;}
+/* ICÔNES — celles dessinées en currentColor suivent déjà la règle color:#fff plus haut. Restent
+   celles dont la couleur est écrite en dur dans le SVG (drapeaux du sélecteur de langue, pastilles
+   rouge/jaune/verte du terminal, logos) : on ne force que les attributs réellement présents, et
+   jamais "none" — repeindre un fill="none" transformerait une icône au trait en aplat blanc. */
+.page-blob-clone svg [fill]:not([fill="none"]):not([fill="currentColor"]){fill:#fff !important;}
+.page-blob-clone svg [stroke]:not([stroke="none"]):not([stroke="currentColor"]){stroke:#fff !important;}
+.page-blob-clone .preloader-word-dot{fill:#fff;}
+/* SURVOL REJOUÉ — la copie n'est jamais survolée, donc aucune règle :hover ne l'atteint (voir
+   syncHover dans js/page-blob.js, qui lui pose .pgblob-hover). Sans ces règles, survoler un
+   élément sous la forme donnerait deux états différents : l'original se déplie/se soulève, la
+   copie reste au repos, et la découpe blanche cesse de recouvrir ce qu'elle devrait.
+   Seuls les survols d'éléments du HERO sont repris — la forme est confinée au hero, ceux des
+   cartes, du bento ou du calendrier ne passeront jamais dessous. Ces règles DOIVENT rester
+   alignées sur les :hover d'origine plus haut dans ce fichier : c'est une duplication assumée,
+   faute pour CSS de savoir appliquer un état de survol à un autre élément que celui pointé. */
+/* NAV DE PAGE dans la copie — elle reprend les teintes de sa variante sur fond sombre
+   (.page-tag.is-on-dark plus haut), état de survol compris. Le tiret de chaque entrée est un
+   ::before : la règle générale qui rend les fonds transparents ne l'atteint pas (`*` ne matche
+   pas les pseudo-éléments), il faut donc le repeindre explicitement. */
+.page-blob-clone .page-tag-item{color:rgba(255,255,255,.7) !important;}
+.page-blob-clone .page-tag-item::before{background:rgba(255,255,255,.7) !important;}
+.page-blob-clone .page-tag-item.is-current{color:#fff !important; font-weight:600 !important;}
+.page-blob-clone .page-tag-item.is-current::before{background:#fff !important;}
+/* :not(.is-current) comme dans l'originale : l'entrée de la page courante ne réagit pas au survol. */
+.page-blob-clone .page-tag-item:not(.is-current).pgblob-hover{color:#fff !important;}
+.page-blob-clone .page-tag-item:not(.is-current).pgblob-hover::before{background:#fff !important;}
+/* RAIL DE NAVIGATION dans la copie — mêmes teintes que sa variante sur fond sombre
+   (.dot-rail a.is-on-dark plus haut). Les pastilles et l'indicateur passent en blanc plein ;
+   la découpe blanche que initButtonKnockout (js/knockout.js) leur ajoute pour les aplats bleus
+   de la page n'a plus lieu d'être ici — elle ferait un second calque par-dessus le premier. */
+.page-blob-clone .dot-rail .dot-core{background:#fff !important;}
+.page-blob-clone .dot-rail-indicator{background:#fff !important;}
+.page-blob-clone .btn-knockout{display:none !important;}
+.page-blob-clone .dot-rail .dot-label{color:rgba(255,255,255,.85) !important;}
+.page-blob-clone .dot-rail a.is-active .dot-label{color:#fff !important;}
+/* Le point de la section active est transparent (c'est l'indicateur qui le représente) : sans
+   ça sa copie blanche doublerait l'indicateur. Même raison que .dot-rail a.is-active .dot-core
+   plus haut, à reproduire ici puisque la copie repeint les fonds. */
+.page-blob-clone .dot-rail a.is-active .dot-core{background:transparent !important;}
+/* Scopé au <a> survolé (a.pgblob-hover) et NON à un ancêtre quelconque : syncHover marque toute
+   la lignée, comme le fait :hover, donc .dot-rail lui-même porte la classe dès qu'un de ses
+   points est survolé. Un sélecteur en « .pgblob-hover .dot-label » dépliait alors TOUS les labels
+   du rail d'un coup. Ces règles doivent être scopées exactement comme leurs originales
+   (.dot-rail a:hover .dot-label), sinon la lignée marquée les fait déborder. */
+.page-blob-clone .dot-rail a.pgblob-hover .dot-label{max-width:140px !important; opacity:1 !important; color:#fff !important;}
+.page-blob-clone .dot-rail a.pgblob-hover .dot-core{transform:translateX(-2px) scale(1.3) !important;}
+.page-blob-clone .btn-primary.pgblob-hover{transform:translateY(-1px) !important;}
+/* Halo de survol, rétabli malgré le box-shadow:none général posé plus haut sur la copie (qui
+   sert, lui, à ne pas recopier les ombres portées sombres des cartes — elles feraient des taches
+   dans le bleu). Même géométrie que l'original (0 0 0 4px) pour que le halo tombe au pixel près
+   au même endroit, mais dans sa teinte inversée : c'est celle que le site emploie déjà pour ces
+   mêmes pastilles sur fond sombre, cf. .back-to-top.is-on-dark:hover. */
+.page-blob-clone .btn-primary.pgblob-hover,
+.page-blob-clone .scroll-down.pgblob-hover{box-shadow:0 0 0 4px rgba(255,255,255,.3) !important;}
+/* Scopé au lien survolé, comme son originale (.social-row a:hover svg) : en « .pgblob-hover svg »
+   la règle aurait rendu opaque TOUTE icône descendant d'un ancêtre marqué, donc pratiquement
+   toutes celles de la page dès qu'on survole quoi que ce soit. */
+.page-blob-clone .social-row a.pgblob-hover svg{opacity:1 !important;}
+.page-blob-clone .lang-switch.pgblob-hover{opacity:1 !important;}
+/* Aplats déjà peints en couleur (bandeaux bleus, pastilles, boutons, terminal…) : mêmes
+   règles d'inversion que .preloader-blob-clone — fond blanc, contenu repeint en accent —
+   sinon leur icône/texte blanc resterait invisible sur leur propre fond, ou la copie
+   blanche disparaîtrait sur un bandeau déjà bleu. Liste reprise de FILL_SELECTOR
+   (cursor.js) pour les bandeaux, plus les pastilles/boutons déjà en aplat accent. */
+.page-blob-clone .back-to-top,
+.page-blob-clone .scroll-down,
+.page-blob-clone .dot-rail .dot-core,
+.page-blob-clone .dot-rail-indicator,
+.page-blob-clone .lang-switch,
+.page-blob-clone .btn-primary,
+.page-blob-clone .contact-fill,
+.page-blob-clone .section-divider-bar,
+.page-blob-clone .dp-blue-block-fill,
+.page-blob-clone .dp-stack-banner{background:#fff !important; color:var(--accent) !important;}
+/* Ombre portée neutralisée sur la copie : sur le bandeau, filter:drop-shadow suit la découpe en
+   polygone et déborderait donc EN DEHORS du blanc, en un halo sombre le long de la diagonale —
+   pile à l'endroit où la forme s'arrête, où il se lirait comme un liseré parasite. */
+.page-blob-clone .section-divider-bar,
+.page-blob-clone .contact-fill,
+.page-blob-clone .dp-stack-banner{filter:none !important;}
+/* Le terminal porte z-index:100, au-dessus de la fenêtre du blob (40) : le vrai recouvre donc
+   toujours la forme à cet endroit, et sa copie ne peut jamais être vue. La peindre (en blanc,
+   comme les autres aplats) ne servait à rien et se retournait contre nous : au moindre écart
+   d'alignement, c'est un grand rectangle blanc plein qui apparaissait dans la forme, à côté du
+   vrai terminal. visibility (et non display) pour qu'elle continue d'occuper sa cellule de
+   grille — la retirer du flux décalerait le reste du hero dans la copie. */
+.page-blob-clone .term-card{visibility:hidden !important;}
+.page-blob-clone .back-to-top *,
+.page-blob-clone .scroll-down *,
+.page-blob-clone .dot-rail .dot-core *,
+.page-blob-clone .dot-rail-indicator *,
+.page-blob-clone .lang-switch *,
+.page-blob-clone .btn-primary *{color:var(--accent) !important;}
+.page-blob-bubbles{
+  position:absolute; inset:0; z-index:2;
+  pointer-events:none;
+  overflow:hidden;
+}
+.page-blob-bubble{
+  position:absolute; top:0; left:0;
+  border-radius:var(--bubble-radius, 50%);
+  background:var(--accent);
+  opacity:0;
+  will-change:transform, opacity;
+}
+@media (hover: none), (pointer: coarse){
+  .page-blob-viewport{display:none;}
 }
 /* rythme vertical exprimé en vh pour rester cohérent avec le hero plein écran */
 section{padding:clamp(96px, 16vh, 168px) 0;}
@@ -308,14 +516,25 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   transition:opacity .6s ease, transform .6s ease;
 }
 .reveal.is-visible{opacity:1; transform:translateY(0);}
+/* `none` et non `translateY(0)` pour le conteneur du hero, et la nuance est tout sauf cosmétique :
+   les deux donnent le même rendu, mais translateY(0) reste UNE TRANSFORM, et toute transform crée
+   un contexte d'empilement. Le z-index du terminal (cf. .hero .term-card) s'y trouvait enfermé, et
+   vis-à-vis de la page c'était ce conteneur — en z-index:auto — qui comptait : la forme du hero
+   (.page-blob-viewport, z-index:40) passait donc devant le terminal quoi qu'on écrive.
+   `transform:none` ne crée pas de contexte, le terminal se compare enfin directement à la forme.
+   Ciblé sur le seul conteneur du hero : les autres blocs .reveal gardent leur comportement. */
+.hero .wrap.reveal.is-visible{transform:none;}
 .d1{transition-delay:.05s} .d2{transition-delay:.15s} .d3{transition-delay:.25s} .d4{transition-delay:.35s}
 
 /* NAV — rail de points fixé sur le bord droit, un point par section ; le label
    ne se révèle qu'au survol/à l'état actif pour rester très léger */
 .dot-rail{
-  position:fixed; top:50%; right:22px; z-index:50;
+  /* Sous la forme du hero (.page-blob-viewport, 40), comme .page-tag et pour la même raison :
+     c'est ce qui permet à la forme de le RECOUVRIR, donc de le découper au pixel près via la
+     copie blanche qu'elle transporte. Reste au-dessus du contenu ordinaire de la page. */
+  position:fixed; top:50%; right:22px; z-index:35;
   transform:translateY(-50%);
-  display:flex; flex-direction:column; align-items:flex-end; gap:18px;
+  display:flex; flex-direction:column; align-items:flex-end; gap:17px;
 }
 .dot-rail a{
   position:relative;
@@ -334,34 +553,56 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   width:16px; height:16px; flex-shrink:0;
   display:flex; align-items:center; justify-content:center;
 }
-.dot-rail .dot::before{
-  content:''; width:8px; height:8px; border-radius:50%;
+/* silhouette molle et morphing partagés avec .back-to-top / .scroll-down / le préchargeur
+   (cf. @keyframes preloader-blob-morph) : les points du rail sont de la même matière que le
+   reste des pastilles du site, juste réduits à leur plus petite taille. Chaque point démarre
+   son cycle à un moment différent (animation-delay négatif) pour respirer indépendamment
+   des autres plutôt que de morpher tous à l'unisson.
+   .dot-core est un VRAI élément (plus un ::before) : initButtonKnockout (js/knockout.js) lui
+   ajoute un enfant, il lui faut donc un vrai nœud à découper — même principe pixel-exact que
+   .back-to-top, appliqué ici à chaque point plutôt qu'à un test "clair/sombre" sur son centre.
+   overflow:hidden rogne cette découpe sur sa silhouette (molle et animée) plutôt qu'un rond. */
+.dot-rail .dot-core{
+  width:8px; height:8px; position:relative; overflow:hidden;
+  border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;
   background:rgba(77,111,203,0.45);
-  box-shadow:0 0 0 0 var(--accent-glow);
   transform:translateX(-0.5px);
-  transition:background .2s ease, transform .2s ease, box-shadow .2s ease;
+  transition:background .2s ease, transform .2s ease;
+  animation:preloader-blob-morph 9s ease-in-out infinite;
 }
+.dot-rail a:nth-of-type(2) .dot-core{animation-delay:-1.3s;}
+.dot-rail a:nth-of-type(3) .dot-core{animation-delay:-2.6s;}
+.dot-rail a:nth-of-type(4) .dot-core{animation-delay:-3.9s;}
+.dot-rail a:nth-of-type(5) .dot-core{animation-delay:-5.2s;}
+.dot-rail a:nth-of-type(6) .dot-core{animation-delay:-6.5s;}
+.dot-rail a:nth-of-type(7) .dot-core{animation-delay:-7.8s;}
 .dot-rail a:hover .dot-label{max-width:140px; opacity:1;}
-.dot-rail a:hover .dot::before{transform:translateX(-2px) scale(1.3); background:var(--accent);}
-.dot-rail a.is-active .dot::before{background:transparent;}
+.dot-rail a:hover .dot-core{transform:translateX(-2px) scale(1.3); background:var(--accent);}
+.dot-rail a.is-active .dot-core{background:transparent;}
+/* le point actif est transparent (c'est l'indicateur qui le représente) : sans ça, sa copie
+   blanche de découpe resterait peinte par-dessus et doublerait le blob quand la section
+   active chevauche la vague bleue. */
+.dot-rail a.is-active .dot-core .btn-knockout{opacity:0;}
 .dot-rail a.is-active .dot-label{max-width:140px; opacity:1; color:var(--text); font-weight:500;}
-/* petit point qui voyage le long du rail quand on passe d'une section à l'autre */
+/* petit point qui voyage le long du rail quand on passe d'une section à l'autre : même
+   silhouette molle, animée indépendamment de la piste qu'il traverse, et découpée au pixel
+   près de la même façon (cf. js/main.js, details.js, veille.js pour l'appel côté JS) */
 .dot-rail-indicator{
-  position:absolute; right:4.6px; width:8px; height:8px; border-radius:50%;
-  background:var(--accent); box-shadow:0 0 0 4px var(--accent-glow);
+  position:absolute; right:1.5px; width:13px; height:13px; overflow:hidden;
+  border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;
+  background:var(--accent);
   transform:translateY(-50%); z-index:1; pointer-events:none;
   transition:top .45s cubic-bezier(.65,0,.35,1);
+  animation:preloader-blob-morph 9s ease-in-out infinite;
 }
-/* sur la vague bleue (.section-divider-bar), chaque point bascule indépendamment sur
-   des teintes claires pour rester lisible — basculé via JS (initRailOnDark), point par point */
+/* le label texte, lui, reste un simple basculement de couleur (pas de découpe possible sur
+   du texte) — basculé via JS (initRailOnDark / initOnDarkAdaptation), point par point */
 .dot-rail a.is-on-dark .dot-label{color:rgba(255,255,255,.85);}
 .dot-rail a.is-on-dark:hover .dot-label{color:#fff;}
-.dot-rail a.is-on-dark .dot::before{background:#fff; box-shadow:0 0 0 0 rgba(255,255,255,.3);}
-.dot-rail a.is-on-dark:hover .dot::before{background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.3);}
-.dot-rail a.is-on-dark.is-active .dot::before{background:transparent;}
 .dot-rail a.is-on-dark.is-active .dot-label{color:#fff;}
-.dot-rail-indicator.is-on-dark{background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.3);}
-.dot-rail.is-on-dark .dot-rail-indicator{background:#fff; box-shadow:0 0 0 4px rgba(255,255,255,.3);}
+/* copie blanche posée par initButtonKnockout : mêmes règles que .back-to-top .btn-knockout,
+   génériques pour s'appliquer à n'importe quel hôte (points du rail, indicateur, boutons) */
+.btn-knockout{position:absolute; width:0; height:0; pointer-events:none;}
 .btn{
   font-family:var(--sans); font-weight:600; font-size:14px;
   padding:13px 24px; border-radius:9px; display:inline-flex; align-items:center; gap:8px;
@@ -372,13 +613,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .btn-ghost{border-color:var(--border); color:var(--text);}
 .btn-ghost:hover{border-color:var(--accent); color:var(--accent);}
 /* HERO — occupe le viewport, contenu centré verticalement.
-   min-height (et pas height + overflow-y:auto) : le hero ne doit PAS être un
-   conteneur de scroll, sinon le canvas #bg-grid — dessiné volontairement 140px
-   plus bas que le hero (EXTRA_BELOW dans js/main.js) — y crée en permanence une
-   barre de défilement verticale, plus une horizontale (overflow-y:auto force
-   overflow-x à auto), et son débordement sous la vague se retrouve rogné.
-   Sur un écran très bas, le hero grandit et pousse la suite plutôt que de
-   piéger son contenu dans un scroll interne. */
+   min-height (et pas height + overflow-y:auto) : sur un écran très bas, le hero grandit et
+   pousse la suite plutôt que de piéger son contenu dans un scroll interne. */
 .hero{
   position:relative;
   min-height:100vh;
@@ -386,7 +622,22 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   padding:clamp(18px, 3.5vh, 50px) 0;
   background:var(--bg);
 }
-.hero .wrap{position:relative; z-index:1; width:100%;}
+/* Pas de z-index ici, volontairement. Il valait 1 pour passer au-dessus du canvas de la grille
+   de points (#bg-grid, z-index:0), supprimé depuis. Or `position:relative` + `z-index` fait de
+   cet élément un CONTEXTE D'EMPILEMENT : le z-index:100 du terminal s'y trouvait alors enfermé,
+   et vis-à-vis du reste de la page c'était le 1 de .wrap qui comptait — donc le terminal passait
+   sous la forme du hero (.page-blob-viewport, z-index:40) au lieu de la recouvrir. Sans
+   z-index, .wrap n'est plus un contexte d'empilement et le terminal se compare directement aux
+   autres calques de la page (cf. .hero .term-card juste en dessous). */
+.hero .wrap{position:relative; width:100%;}
+/* Le terminal doit passer AU-DESSUS de la forme du hero (40) — c'est un bloc opaque, la forme
+   doit filer dessous — mais rester SOUS le rail (50), le bouton de remontée (50) et le
+   sélecteur de langue (60), exactement comme avant : son ancien 100 était neutralisé par le
+   contexte d'empilement de .wrap, il se retrouverait sinon devant eux.
+   Ciblé sous .hero pour ne concerner que l'accueil et la page détails : sur la page veille le
+   terminal n'est pas enfermé dans un tel contexte (.vl-head n'a pas de z-index), il se compare
+   déjà directement et n'a donc rien à corriger. */
+.hero .term-card{z-index:45;}
 .hero-copy{will-change:opacity;}
 /* hauteur de la zone de vague, réutilisée par #about (margin/padding) et les calques de vague */
 :root{ --wave-h: clamp(120px, 14vw, 320px); }
@@ -409,12 +660,16 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .scroll-down{
   /* posée bas, sur la vague colorée (la crête culmine à ≈0.55×wave-h au-dessus du bas du hero). */
   position:absolute; left:50%; bottom:calc(var(--wave-h) * 0.12); z-index:20;
-  width:44px; height:44px; border-radius:50%;
+  width:44px; height:44px;
   display:flex; align-items:center; justify-content:center;
   transform:translateX(-50%);
   border:1px solid var(--accent); background:var(--accent); color:#ffffff;
   transition:box-shadow .2s ease, transform .2s ease, opacity .3s ease;
-  animation:scroll-down-bounce 2.2s ease-in-out infinite;
+  /* Même silhouette molle et le même morphing que .preloader-scroll-hint, pour que ce bouton
+     et son pendant sur l'écran de chargement soient perçus comme le même geste. */
+  border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;
+  animation:scroll-down-bounce 2.2s ease-in-out infinite,
+            preloader-blob-morph 9s ease-in-out infinite;
 }
 .scroll-down:hover{box-shadow:0 0 0 4px var(--accent-glow);}
 .scroll-down.is-hidden{opacity:0; pointer-events:none;}
@@ -428,7 +683,12 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 /* Étiquette légère en haut à gauche listant les pages du site : la page courante
    est affichée en texte simple, les autres sont des liens vers ces pages. */
 .page-tag{
-  position:fixed; top:22px; left:22px; z-index:60;
+  /* z-index sous celui de la forme du hero (.page-blob-viewport, 40) : c'est ce qui permet à
+     celle-ci de la RECOUVRIR, donc de la découper au pixel près via la copie blanche qu'elle
+     transporte, au lieu de la laisser posée par-dessus avec sa couleur d'origine. Reste
+     au-dessus du contenu ordinaire de la page (non positionné), et les autres habillages
+     flottants (rail 50, remontée 50, langue 60) occupent d'autres coins. */
+  position:fixed; top:22px; left:22px; z-index:35;
   display:flex; flex-direction:column; align-items:flex-start; gap:4px;
   font-family:var(--mono); font-size:12px; font-weight:500;
   letter-spacing:.02em; color:var(--text-faint);
@@ -442,7 +702,11 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .page-tag-item:not(.is-current):hover::before{background:var(--accent);}
 
 /* Sur fond bleu (vague #about, #contact, bloc bleu des 4 piliers), les teintes grises
-   se fondent dans le bleu : on bascule en blanc, comme le reste du rail (is-on-dark). */
+   se fondent dans le bleu : on bascule en blanc, comme le reste du rail (is-on-dark).
+   Ne concerne QUE ces aplats-là, posés au fil du défilement par initRailOnDark (js/main.js).
+   La forme bleue du hero, elle, ne passe pas par cette bascule d'un bloc : elle découpe la nav
+   au pixel près (la nav est sous elle, cf. son z-index, et js/page-blob.js en pose une copie
+   blanche à l'intérieur de la forme). */
 .page-tag.is-on-dark .page-tag-item{color:rgba(255,255,255,.7);}
 .page-tag.is-on-dark .page-tag-item::before{background:rgba(255,255,255,.7);}
 .page-tag.is-on-dark .page-tag-item:not(.is-current):hover{color:#fff;}
@@ -475,24 +739,43 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .lang-switch{top:14px; right:14px;}
 }
 
-/* bouton "remonter en haut" — n'apparaît que pendant le scroll sur la section "à propos" ;
-   fond accent/icône blanche par défaut, inversé (fond blanc/icône accent) quand il se
-   trouve sur la vague bleue, pour rester lisible dans les deux cas (cf. is-on-dark du rail) */
+/* bouton "remonter en haut" — n'apparaît que pendant le scroll sur la section "à propos".
+   Toujours peint en aplat accent/icône blanche : l'inversion sur fond bleu n'est plus un
+   basculement de tout le bouton (faux dès qu'il chevauche la frontière) mais une découpe
+   pixel-exacte, cf. .btn-knockout plus bas et initButtonKnockout dans js/knockout.js. */
 .back-to-top{
   position:fixed; right:22px; bottom:22px; z-index:50;
-  width:44px; height:44px; border-radius:50%;
+  width:44px; height:44px;
   display:flex; align-items:center; justify-content:center;
   background:var(--accent); color:#fff;
   opacity:0; pointer-events:none;
   transition:opacity .25s ease, background .2s ease, color .2s ease, box-shadow .2s ease;
+  /* Même silhouette molle et le même morphing que .preloader-scroll-hint : les trois boutons
+     de défilement du site (préchargeur, bas de hero, remonter en haut) partagent la même matière. */
+  border-radius:44% 56% 62% 38% / 48% 42% 58% 52%;
+  /* Rogne .btn-knockout exactement sur cette silhouette (l'overflow suit le border-radius, donc
+     le morphing compris) : la copie du fond qu'elle contient déborde très largement du bouton,
+     c'est ce rognage qui la réduit à la pastille. */
+  overflow:hidden;
 }
 .back-to-top.is-visible{
   opacity:1; pointer-events:auto;
-  animation:back-to-top-bounce 2.2s ease-in-out infinite;
+  animation:back-to-top-bounce 2.2s ease-in-out infinite,
+            preloader-blob-morph 9s ease-in-out infinite;
 }
 .back-to-top:hover{box-shadow:0 0 0 4px var(--accent-glow);}
-.back-to-top.is-on-dark{background:#fff; color:var(--accent);}
+/* L'aplat du bouton ne bascule PLUS en blanc sur fond bleu : c'est la découpe (.btn-knockout)
+   qui s'en charge, au pixel près et non pour le bouton entier. .is-on-dark ne sert donc plus
+   qu'à la couleur du halo de survol. */
 .back-to-top.is-on-dark:hover{box-shadow:0 0 0 4px rgba(255,255,255,.3);}
+/* Copie blanche des aplats bleus de la page, posée par initButtonKnockout (js/knockout.js) à
+   la position viewport exacte des originaux, et rognée par l'overflow:hidden du bouton.
+   Boîte de taille nulle : elle ne sert que de repère, ses enfants sont tous positionnés en
+   absolu à leurs coordonnées viewport. */
+.back-to-top .btn-knockout{
+  position:absolute; width:0; height:0;
+  pointer-events:none;
+}
 @keyframes back-to-top-bounce{
   0%, 100%{transform:translateY(0);}
   50%{transform:translateY(-6px);}

@@ -19,13 +19,6 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    on le rend transparent pour que la ligne décorative reste visible dès le haut. */
 #dp-hero{background:transparent;}
 
-/* Quadrillage de points réactif au curseur (voir #bg-grid dans styles.css) : ici fixé
-   au viewport plutôt que confiné à une section, pour couvrir toute la page détails. */
-#dp-bg-grid{
-  position:fixed; inset:0; width:100vw; height:100vh;
-  z-index:-1; pointer-events:none; display:block;
-}
-
 /* --- Ligne décorative sinueuse, tracée au fil du scroll --- */
 .dp-bg-line{
   display:none;

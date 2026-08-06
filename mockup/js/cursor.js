@@ -32,7 +32,18 @@
   // pas intercepter les clics), donc elementsFromPoint ne les voit JAMAIS. On les teste
   // séparément, à la géométrie (cf. surfaceCoversPoint plus bas).
   const FILL_SELECTOR = '.contact-fill, .section-divider-bar, .dp-blue-block-fill, .dp-stack-banner';
-  const fills = Array.from(document.querySelectorAll(FILL_SELECTOR));
+  // Ces aplats sont RECOPIÉS ailleurs dans le document, avec leurs classes — c'est même le
+  // principe de ces copies : garder la classe, donc le même clip-path, sans le réécrire nulle
+  // part (cf. initButtonKnockout dans js/knockout.js, qui glisse un aplat miniature dans chaque
+  // pastille du rail et dans le bouton « remonter » ; idem pour les fenêtres de découpe du blob
+  // et de l'écran de chargement). Un querySelectorAll nu les ramasse donc AUSSI, et chacune est
+  // alors prise pour un vrai bandeau : leur géométrie, mesurée dans le repère du bouton qui les
+  // héberge, produit des aplats fantômes de quelques dizaines de px, décalés des vrais. Sur la
+  // forme du hero, qui s'arrête au bord haut du bleu (cf. polygons ci-dessous), ça se voyait
+  // comme une diagonale invisible qui la tranchait en plein vol.
+  const COPY_ROOT_SELECTOR = '.btn-knockout, .page-blob-clone, .preloader-blob-clone';
+  const fills = Array.from(document.querySelectorAll(FILL_SELECTOR))
+    .filter((el) => !el.closest(COPY_ROOT_SELECTOR));
 
   // Champs de saisie : on y rend la main au curseur système (le I-beam et le caret sont
   // des repères qu'un point ne remplace pas).
@@ -235,6 +246,43 @@
     return out;
   }
 
+  // Sutherland–Hodgman à nouveau, mais en rabotant par les arêtes d'un polygone quelconque au
+  // lieu des quatre côtés d'une boîte. Sert à limiter la silhouette de la forme du hero à la zone
+  // qu'elle peint vraiment (cf. window.PageBlobShape), dont le bord bas épouse la diagonale du
+  // bandeau bleu et n'est donc pas rectangulaire.
+  // Valable parce que ce contour est convexe : il naît de l'intersection de demi-plans (les bords
+  // du hero, et le bleu le plus haut à chaque abscisse). Son parcours est horaire dans un repère
+  // écran (y vers le bas), d'où le « à l'intérieur = produit vectoriel positif ».
+  function clipToPolygon(poly, clip) {
+    let out = poly;
+    for (let c = 0, d = clip.length - 1; c < clip.length; d = c++) {
+      const a = clip[d];
+      const b = clip[c];
+      const side = (p) => (b[0] - a[0]) * (p[1] - a[1]) - (b[1] - a[1]) * (p[0] - a[0]);
+      const cut = (p, q) => {
+        const sp = side(p);
+        const t = sp / (sp - side(q));
+        return [p[0] + t * (q[0] - p[0]), p[1] + t * (q[1] - p[1])];
+      };
+      const input = out;
+      out = [];
+      for (let i = 0; i < input.length; i++) {
+        const cur = input[i];
+        const prev = input[(i + input.length - 1) % input.length];
+        const curIn = side(cur) >= 0;
+        const prevIn = side(prev) >= 0;
+        if (curIn) {
+          if (!prevIn) out.push(cut(prev, cur));
+          out.push(cur);
+        } else if (prevIn) {
+          out.push(cut(prev, cur));
+        }
+      }
+      if (!out.length) return null;
+    }
+    return out;
+  }
+
   function polygonArea(pts) {
     let a = 0;
     for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
@@ -243,31 +291,64 @@
     return Math.abs(a) / 2;
   }
 
-  /* ---------- écran de préchargement ---------- */
+  // Partagé avec js/page-blob.js, qui doit savoir si le curseur est arrivé sur un aplat bleu pour
+  // y escamoter sa forme. Le test exact vit ici (géométrie des clip-path en polygone, rotations,
+  // longueurs en clamp()/calc()) : l'exposer évite d'en entretenir une seconde version ailleurs.
+  window.BlueSurfaces = {
+    covers(px, py) {
+      return fills.some((fill) => surfaceCoversPoint(fill, px, py));
+    },
+    // Contours réellement peints en bleu, en coordonnées écran — un polygone par aplat. C'est le
+    // POLYGONE de découpe et non le rectangle englobant : .section-divider-bar occupe toute la
+    // hauteur de #about, mais son bleu ne commence qu'à la diagonale de son clip-path, de 13 à
+    // 117px plus bas selon l'abscisse. Les bandeaux inclinés de la page détails
+    // (.dp-stack-banner) sont eux rendus dans leur repère tourné.
+    // Renvoyés en un seul appel, car chacun coûte une mesure de mise en page : l'appelant les
+    // récupère une fois par image et échantillonne dessus autant qu'il veut.
+    polygons() {
+      const out = [];
+      for (const fill of fills) {
+        const poly = surfacePolygon(fill);
+        if (poly) out.push(poly);
+      }
+      return out;
+    },
+  };
 
-  // Écran de préchargement (#preloader, index.html) : une forme bleue organique
-  // (.preloader-blob) suit le curseur avec un léger retard "ressort" (voir initPreloaderBlob
-  // dans main.js) et le recouvre. Elle est en pointer-events:none (purement décorative), donc
-  // absente d'elementsFromPoint comme les autres calques ; mais contrairement aux bandeaux, sa
-  // position suit le pointeur en continu plutôt que le scroll, donc on la teste séparément.
+  /* ---------- formes bleues qui suivent le curseur ---------- */
+
+  // Deux formes bleues organiques suivent le curseur avec un léger retard "ressort" et le
+  // recouvrent : celle de l'écran de préchargement (.preloader-blob, cf. initPreloaderBlob dans
+  // main.js) et celle du hero (.page-blob, cf. js/page-blob.js). Toutes deux sont en
+  // pointer-events:none (purement décoratives), donc absentes d'elementsFromPoint comme les
+  // autres calques ; mais contrairement aux bandeaux, leur position suit le pointeur en continu
+  // plutôt que le scroll, donc on les teste séparément.
   const preloaderBlob = document.querySelector('.preloader-blob');
   const preloaderBlobShape = document.querySelector('.preloader-blob-shape');
+  const pageBlob = document.querySelector('.page-blob');
+  const pageBlobShape = document.querySelector('.page-blob-shape');
+  // Zone où la forme du hero est RÉELLEMENT peinte : son contour de rognage, tel que page-blob.js
+  // vient de le poser. On ne le redevine pas ici — une première version prenait le rectangle du
+  // hero, alors que le bord bas de ce contour épouse la diagonale du bandeau bleu et remonte donc
+  // largement à l'intérieur de ce rectangle. Le point du curseur virait au blanc dans tout
+  // l'espace entre les deux, là où plus rien n'est peint.
+  function pageBlobClipPoly() {
+    return (window.PageBlobShape && window.PageBlobShape.clip()) || null;
+  }
 
-  function preloaderBlobRect() {
-    if (!preloaderBlob || !preloaderBlobShape || !preloaderBlob.classList.contains('is-active')) {
-      return null;
-    }
-    const r = preloaderBlobShape.getBoundingClientRect();
+  // Boîte réellement peinte par une forme, ou null si elle est inactive (la classe is-active
+  // n'est posée qu'une fois le curseur localisé, cf. les deux modules).
+  function blobRect(el, shape) {
+    if (!el || !shape || !el.classList.contains('is-active')) return null;
+    const r = shape.getBoundingClientRect();
     return r.width && r.height ? r : null;
   }
 
-  // border-radius donne au blob un contour organique irrégulier plutôt qu'un cercle parfait,
-  // mais une ellipse inscrite dans sa boîte réelle (post-transform, donc étirement compris) en
+  // border-radius donne aux blobs un contour organique irrégulier plutôt qu'un cercle parfait,
+  // mais une ellipse inscrite dans leur boîte réelle (post-transform, donc étirement compris) en
   // est une approximation largement assez fidèle. On l'échantillonne en polygone pour la
   // traiter comme les autres surfaces.
-  function preloaderBlobPolygon() {
-    const r = preloaderBlobRect();
-    if (!r) return null;
+  function ellipsePolygon(r) {
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
     const rx = r.width / 2;
@@ -280,12 +361,37 @@
     return pts;
   }
 
-  function insidePreloaderBlob(x, y) {
-    const r = preloaderBlobRect();
-    if (!r) return false;
+  function insideEllipse(r, x, y) {
     const nx = (x - (r.left + r.width / 2)) / (r.width / 2);
     const ny = (y - (r.top + r.height / 2)) / (r.height / 2);
     return nx * nx + ny * ny <= 1;
+  }
+
+  function preloaderBlobPolygon() {
+    const r = blobRect(preloaderBlob, preloaderBlobShape);
+    return r ? ellipsePolygon(r) : null;
+  }
+
+  function insidePreloaderBlob(x, y) {
+    const r = blobRect(preloaderBlob, preloaderBlobShape);
+    return r ? insideEllipse(r, x, y) : false;
+  }
+
+  // Silhouette du blob du hero, rabotée sur son contour de rognage — c'est exactement la portion
+  // peinte à l'écran, donc l'arête que suivra la découpe du point.
+  function pageBlobPolygon() {
+    const r = blobRect(pageBlob, pageBlobShape);
+    if (!r) return null;
+    const poly = ellipsePolygon(r);
+    const clip = pageBlobClipPoly();
+    return clip ? clipToPolygon(poly, clip) : poly;
+  }
+
+  function insidePageBlob(x, y) {
+    const r = blobRect(pageBlob, pageBlobShape);
+    if (!r || !insideEllipse(r, x, y)) return false;
+    const clip = pageBlobClipPoly();
+    return clip ? pointInPolygon(clip, x, y) : true;
   }
 
   /* ---------- luminance du fond sous le pointeur ---------- */
@@ -322,6 +428,7 @@
   // On renvoie l'élément plutôt qu'un booléen : c'est sa géométrie qui découpera le point.
   function darkSurfaceAt(x, y) {
     if (insidePreloaderBlob(x, y)) return 'blob';
+    if (insidePageBlob(x, y)) return 'page-blob';
     const stack = document.elementsFromPoint(x, y);
     for (const el of stack) {
       if (el === document.body || el === document.documentElement) break;
@@ -365,7 +472,9 @@
     let best = null;
     let bestArea = 0;
     for (const surface of darkSurfacesAround(box)) {
-      const poly = surface === 'blob' ? preloaderBlobPolygon() : surfacePolygon(surface);
+      const poly = surface === 'blob' ? preloaderBlobPolygon()
+        : surface === 'page-blob' ? pageBlobPolygon()
+        : surfacePolygon(surface);
       if (!poly) continue;
       const clipped = clipToBox(poly, box);
       if (!clipped) continue;
@@ -433,4 +542,8 @@
   window.addEventListener('scroll', schedule, { passive: true });
   window.addEventListener('resize', schedule);
   window.addEventListener('parallax-tick', schedule);
+  // La forme du hero se déplace avec du retard sur la souris (ressort) : elle peut donc venir
+  // recouvrir le point alors que le pointeur, lui, ne bouge plus. Émis par js/page-blob.js
+  // uniquement tant qu'elle se déplace vraiment.
+  window.addEventListener('blob-tick', schedule);
 })();

@@ -2,99 +2,6 @@
 // de la page d'accueil) : révélation des blocs au scroll, et surlignage de l'entrée
 // active dans le sommaire latéral au fil du défilement.
 
-// Quadrillage de points réactif au curseur, repris du hero de l'accueil (initBackgroundGrid
-// dans js/main.js) mais fixé au viewport pour couvrir toute la page détails plutôt qu'une
-// seule section — pas d'exclusion de zones de texte ici, le curseur révèle la grille partout.
-(function initDetailsBgGrid() {
-  const canvas = document.getElementById('dp-bg-grid');
-  if (!canvas) return;
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  const ctx = canvas.getContext('2d');
-
-  const SPACING = 38;
-  const BASE_RADIUS = 1.2;
-  const REACT_RADIUS = 140;
-  const MAX_OFFSET = 10;
-  const MAX_SCALE = 2.4;
-  const REVEAL_RADIUS = 160;
-  const REVEAL_FEATHER = 140;
-  const BASE_COLOR = '37,70,200';
-
-  let dpr = Math.min(window.devicePixelRatio || 1, 2);
-  let width = 0;
-  let height = 0;
-  let points = [];
-  const mouse = { x: -9999, y: -9999, active: false };
-
-  function smoothstep(edge0, edge1, value) {
-    const t = Math.min(Math.max((value - edge0) / (edge1 - edge0), 0), 1);
-    return t * t * (3 - 2 * t);
-  }
-
-  function buildPoints() {
-    points = [];
-    for (let y = SPACING / 2; y < height; y += SPACING) {
-      for (let x = SPACING / 2; x < width; x += SPACING) {
-        points.push({ x, y });
-      }
-    }
-  }
-
-  function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    buildPoints();
-  }
-
-  function draw() {
-    ctx.clearRect(0, 0, width, height);
-
-    if (mouse.active) {
-      for (const p of points) {
-        const distX = p.x - mouse.x;
-        const distY = p.y - mouse.y;
-        const dist = Math.hypot(distX, distY);
-        const reveal = 1 - smoothstep(REVEAL_RADIUS - REVEAL_FEATHER, REVEAL_RADIUS, dist);
-        if (reveal <= 0.01) continue;
-
-        let dx = 0, dy = 0, scale = 1;
-        if (dist < REACT_RADIUS) {
-          const force = 1 - dist / REACT_RADIUS;
-          const angle = Math.atan2(distY, distX);
-          dx = Math.cos(angle) * force * MAX_OFFSET;
-          dy = Math.sin(angle) * force * MAX_OFFSET;
-          scale = 1 + force * (MAX_SCALE - 1);
-        }
-
-        ctx.beginPath();
-        ctx.arc(p.x + dx, p.y + dy, BASE_RADIUS * scale, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${BASE_COLOR},${0.6 * reveal})`;
-        ctx.fill();
-      }
-    }
-
-    requestAnimationFrame(draw);
-  }
-
-  // Le canvas est fixé au viewport : les coordonnées souris (clientX/Y) s'y reportent
-  // directement, sans conversion par rapport à un conteneur qui défile.
-  window.addEventListener('mousemove', (e) => {
-    mouse.x = e.clientX;
-    mouse.y = e.clientY;
-    mouse.active = true;
-  }, { passive: true });
-  document.addEventListener('mouseleave', () => { mouse.active = false; });
-  window.addEventListener('resize', resize);
-
-  resize();
-  draw();
-})();
-
 // Année courante dans le copyright du pied de page (section contact, dupliquée de l'accueil).
 (function initFooterYear() {
   const el = document.getElementById('footer-year');
@@ -743,6 +650,13 @@
   window.addEventListener('scroll', checkBottom, { passive: true });
   window.addEventListener('resize', checkBottom);
   checkBottom();
+
+  // Au clic, l'indicateur part immédiatement au lieu d'attendre que le scroll (fluide, donc
+  // lent) fasse franchir à la section la bande centrale surveillée par l'observer — sans ça,
+  // le point mettait plusieurs centaines de ms à réagir après le clic.
+  tabs.forEach((tab) => {
+    tab.addEventListener('click', () => activate(tab));
+  });
 })();
 
 // Bouton "remonter en haut" : visible dès qu'on a quitté l'en-tête de la page.
@@ -760,16 +674,17 @@
   window.addEventListener('resize', update);
 })();
 
-// Adaptation à la couleur de fond : quand le rail de nav (points + indicateur), le bouton
+// Adaptation à la couleur de fond : quand le rail de nav (labels des points), le bouton
 // "remonter en haut" ou page-tag passent devant un bandeau bleu (#contact, le bloc bleu
 // des 4 piliers de compétences, ou les deux rubans inclinés de la section stack), ils
 // basculent en teintes claires (classe .is-on-dark, stylée dans styles.css) pour rester lisibles.
+// Les pastilles du rail et l'indicateur, eux, sont découpés au pixel près (initDotRailKnockout
+// plus bas), plus besoin d'un basculement de classe imprécis sur leur couleur de fond.
 (function initOnDarkAdaptation() {
   const contact = document.getElementById('contact');
   const blueBlock = document.querySelector('.dp-blue-block');
   const stackBanners = Array.from(document.querySelectorAll('.dp-stack-banner'));
   const railLinks = document.querySelectorAll('.dot-rail a');
-  const indicator = document.querySelector('.dot-rail-indicator');
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
   if (!contact && !blueBlock && !stackBanners.length) return;
@@ -825,25 +740,36 @@
     return Math.abs(localX) <= el.offsetWidth / 2 && Math.abs(localY) <= el.offsetHeight / 2;
   }
 
-  // side: 'right' pour les éléments proches du bord droit (rail, bouton), 'left' pour
-  // ceux proches du bord gauche (page-tag) — la pente est inversée entre les deux bords
-  // (voir clip-path de .dp-blue-block-fill et .contact-fill dans details.css).
-  function overDarkZone(x, y, side) {
+  // clip-path de .contact-fill: polygon(0 slope, 100% 0, 100% 100%, 0 100%) — bord haut de
+  // "slope" (x=0) à 0 (x=100%), bord bas constant.
+  function contactTopY(x) {
+    const r = contact.getBoundingClientRect();
+    const f = Math.min(1, Math.max(0, (x - r.left) / r.width));
+    return r.top + contactSlope * (1 - f);
+  }
+  // .dp-blue-block-fill déborde en pleine largeur de viewport (left:50% + width:100vw +
+  // translateX(-50%)) : son repère horizontal 0..100% correspond donc à 0..innerWidth, pas à
+  // la largeur (limitée par .wrap) de .dp-blue-block lui-même — seul le vertical (top/bottom,
+  // non affecté par ce débord) peut être lu sur son rect. clip-path: polygon(0 slope, 100% 0,
+  // 100% 100%-slope, 0 100%).
+  function blueTopY(x) {
+    const r = blueBlock.getBoundingClientRect();
+    const f = Math.min(1, Math.max(0, x / window.innerWidth));
+    return r.top + blueSlope * (1 - f);
+  }
+  function blueBottomY(x) {
+    const r = blueBlock.getBoundingClientRect();
+    const f = Math.min(1, Math.max(0, x / window.innerWidth));
+    return r.bottom - blueSlope * f;
+  }
+
+  function overDarkZone(x, y) {
     if (contact) {
       const r = contact.getBoundingClientRect();
-      if (side === 'left') {
-        if (y > r.top + contactSlope && y < r.bottom) return true;
-      } else if (y > r.top && y < r.bottom) {
-        return true;
-      }
+      if (y > contactTopY(x) && y < r.bottom) return true;
     }
     if (blueBlock) {
-      const r = blueBlock.getBoundingClientRect();
-      if (side === 'left') {
-        if (y > r.top + blueSlope && y < r.bottom) return true;
-      } else if (y > r.top && y < r.bottom - blueSlope) {
-        return true;
-      }
+      if (y > blueTopY(x) && y < blueBottomY(x)) return true;
     }
     for (const banner of stackBanners) {
       if (insideBanner(banner, x, y)) return true;
@@ -851,19 +777,28 @@
     return false;
   }
 
-  function toggle(el, side) {
+  function toggle(el) {
     if (!el) return;
     const r = el.getBoundingClientRect();
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
-    el.classList.toggle('is-on-dark', overDarkZone(cx, cy, side));
+    el.classList.toggle('is-on-dark', overDarkZone(cx, cy));
   }
 
+  // Le bouton rond, lui, n'est pas teinté d'un bloc : il est découpé au pixel près le long du
+  // vrai fond, par recopie de celui-ci (cf. initButtonKnockout, js/knockout.js). .is-on-dark ne
+  // lui sert plus que pour la teinte du halo de survol.
+  if (backToTop) initButtonKnockout(backToTop, '.contact-fill, .dp-blue-block-fill, .dp-stack-banner');
+  document.querySelectorAll('.dot-rail .dot-core').forEach((core) => {
+    initButtonKnockout(core, '.contact-fill, .dp-blue-block-fill, .dp-stack-banner');
+  });
+  const indicator = document.querySelector('.dot-rail-indicator');
+  if (indicator) initButtonKnockout(indicator, '.contact-fill, .dp-blue-block-fill, .dp-stack-banner');
+
   function update() {
-    railLinks.forEach((el) => toggle(el, 'right'));
-    toggle(indicator, 'right');
-    toggle(backToTop, 'right');
-    toggle(pageTag, 'left');
+    railLinks.forEach((el) => toggle(el));
+    toggle(backToTop);
+    toggle(pageTag);
   }
 
   update();
