@@ -28,7 +28,14 @@
     if (!btn) return;
     // Pas de sortie anticipée si la page n'a aucun de ces aplats : la forme du hero, elle, est
     // toujours là (cf. la copie plus bas), et c'est elle qui découpe le bouton dans ce cas.
-    const sources = Array.from(document.querySelectorAll(selector));
+    // .closest('.btn-knockout') exclut les clones posés par un appel précédent (initDotRailKnockout
+    // en boucle plusieurs boutons sur le même selecteur) : le clone GARDE la classe de sa source
+    // (voir plus bas, nécessaire au clip-path), donc sans ce filtre il se re-qualifierait lui-même
+    // comme source au tour suivant — duplication qui double à chaque bouton traité et finit par
+    // empiler des dizaines d'aplats légèrement désalignés dans une boîte de quelques px.
+    const sources = Array.from(document.querySelectorAll(selector)).filter(
+      (el) => !el.closest('.btn-knockout')
+    );
 
     const layer = document.createElement('span');
     layer.className = 'btn-knockout';
