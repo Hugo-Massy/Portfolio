@@ -169,6 +169,11 @@
     rebuildFixedCopies();
     collectTransformed();
     collectSticky();
+    collectClassPairs();
+    // Les classes pilotées au scroll sont posées dans la foulée : sans ça, la copie fraîchement
+    // reconstruite repart de l'état figé du clonage (lignes de stats à opacity:0, par exemple)
+    // jusqu'à la première frame qui la synchronisera.
+    syncClasses();
     hoverMarked = [];
     // Après insertion, le temps que le navigateur applique les styles et crée les animations.
     requestAnimationFrame(syncCloneAnimations);
@@ -489,19 +494,48 @@
     }
   }
 
-  /* ---------- recopie d'une classe pilotée par le scroll ---------- */
+  /* ---------- recopie des classes pilotées par le scroll ---------- */
 
-  // .dp-foot-arm-hidden (basculée par initContactAvatarGrow, js/veille.js et js/details.js, à
-  // chaque image tant que l'avatar de #contact grandit) échappe à syncTransforms : la classe ne
-  // pose ni transform ni height en ligne, l'effet (opacity/translateY) vient d'une règle CSS sur
-  // .dp-foot-arm-hidden elle-même (cf. details.css). Sans ce recopiage, la copie garde la classe
-  // qu'elle avait au clonage — le texte "Envie de voir le reste ?" pouvait donc rester visible
-  // (ou invisible) sous la forme alors que le vrai, lui, avait basculé entre-temps.
-  const footEl = document.querySelector('.dp-foot');
-  function syncFootArm() {
-    if (!footEl) return;
-    const copy = counterpartOf(footEl);
-    if (copy) copy.classList.toggle('dp-foot-arm-hidden', footEl.classList.contains('dp-foot-arm-hidden'));
+  // Certains effets ne passent NI par un style en ligne (donc invisibles pour syncTransforms) NI
+  // par le survol (syncHover) : c'est une classe, posée en JS au fil du défilement, qui déclenche
+  // une règle CSS. La copie, elle, fige la classe telle qu'elle était AU MOMENT DU CLONAGE — et
+  // comme ces règles jouent sur l'opacité, une copie prise au mauvais moment reste durablement
+  // invisible. La forme ne peint alors qu'un disque bleu plein, sans le moindre texte blanc
+  // découpé : pas un décalage (l'alignement peut être parfait), mais bien du contenu ABSENT.
+  //
+  //   - .vl-meta-line / .is-visible — les lignes de la phrase de stats de la page veille sont à
+  //     opacity:0 au repos et ne sont révélées qu'une à une par le scrub (applySteps dans
+  //     js/veille.js). Le premier clonage a lieu bien avant, donc la copie était figée à
+  //     opacity:0 : le texte « Les 10 actualités… » ne passait jamais en blanc sous la forme.
+  //   - .dp-foot / .dp-foot-arm-hidden — basculée par initContactAvatarGrow (js/veille.js et
+  //     js/details.js) à chaque image tant que l'avatar de #contact grandit.
+  //
+  // Rien à faire pour .is-spotlight / .is-showcasing (cartes du top 3) : elles passent devant la
+  // forme (z-index, cf. .vl-showcase-pin dans veille.css), leur copie n'est donc jamais visible.
+  const SYNCED_CLASSES = [
+    { selector: '.vl-meta-line', cls: 'is-visible' },
+    { selector: '.dp-foot', cls: 'dp-foot-arm-hidden' },
+  ];
+  let classPairs = [];
+
+  function collectClassPairs() {
+    classPairs = [];
+    for (const { selector, cls } of SYNCED_CLASSES) {
+      document.querySelectorAll(selector).forEach((src) => {
+        if (src.closest(EXCLUDE_SELECTOR)) return;
+        const copy = counterpartOf(src);
+        if (copy) classPairs.push({ src, copy, cls });
+      });
+    }
+  }
+
+  // Une lecture et (rarement) une écriture de classe par élément suivi — quelques-uns par page,
+  // sans aucune mesure de mise en page : négligeable par image.
+  function syncClasses() {
+    for (const { src, copy, cls } of classPairs) {
+      const on = src.classList.contains(cls);
+      if (copy.classList.contains(cls) !== on) copy.classList.toggle(cls, on);
+    }
   }
 
   function syncHover(target) {
@@ -652,7 +686,7 @@
     // Le figement dépend directement du défilement : c'est ici qu'il bouge, et la boucle
     // d'animation peut très bien être à l'arrêt (rien à peindre) au moment où il le fait.
     syncSticky();
-    syncFootArm();
+    syncClasses();
 
     // SEULE limite de la forme : le BORD HAUT DU BLEU, qu'elle ne doit jamais dépasser. Elle est
     // libre partout au-dessus — toute la largeur de la fenêtre, jusqu'en haut — et n'est plus
@@ -718,7 +752,7 @@
   // chaque image tant qu'il anime, donc à une cadence largement suffisante pour rester en phase —
   // appelé directement ici, sans passer par une file requestAnimationFrame, pour ne perdre aucune
   // image de la synchronisation même quand frame() est arrêtée.
-  window.addEventListener('parallax-tick', () => { syncTransforms(); syncSticky(); syncFootArm(); });
+  window.addEventListener('parallax-tick', () => { syncTransforms(); syncSticky(); syncClasses(); });
 
   /* ---------- sillage de bulles (identique à initPreloaderBlob, js/main.js) ---------- */
 
@@ -895,7 +929,7 @@
     syncRailIndicator();
     syncTransforms();
     syncSticky();
-    syncFootArm();
+    syncClasses();
 
     // Le curseur personnalisé (js/cursor.js) s'inverse en blanc sur la forme : il doit donc se
     // recalculer quand c'est ELLE qui bouge sous une souris immobile — le ressort met encore
