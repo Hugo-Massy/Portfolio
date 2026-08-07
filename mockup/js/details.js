@@ -607,7 +607,11 @@
   if (!sectionToTab.size) return;
 
   const INDICATOR_TRAVEL_MS = 450;
+  // Le label ne reste pas affiché : il se montre à l'arrivée de l'indicateur puis s'efface,
+  // pour ne laisser que la pastille (le survol le rappelle, cf. .dot-rail a:hover .dot-label).
+  const LABEL_HOLD_MS = 1500;
   let activateTimer = null;
+  let labelTimer = null;
 
   function moveIndicatorTo(tab) {
     if (!indicator) return;
@@ -616,9 +620,13 @@
 
   function activate(tab) {
     clearTimeout(activateTimer);
-    tabs.forEach((t) => t.classList.remove('is-active'));
+    clearTimeout(labelTimer);
+    tabs.forEach((t) => t.classList.remove('is-active', 'is-label-on'));
     moveIndicatorTo(tab);
-    activateTimer = setTimeout(() => tab.classList.add('is-active'), INDICATOR_TRAVEL_MS);
+    activateTimer = setTimeout(() => {
+      tab.classList.add('is-active', 'is-label-on');
+      labelTimer = setTimeout(() => tab.classList.remove('is-label-on'), LABEL_HOLD_MS);
+    }, INDICATOR_TRAVEL_MS);
   }
 
   const observer = new IntersectionObserver((entries) => {

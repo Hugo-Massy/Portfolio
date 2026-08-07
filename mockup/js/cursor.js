@@ -401,6 +401,137 @@
     return clip ? pointInPolygon(clip, x, y) : true;
   }
 
+  /* ---------- images décoratives (avatar de #contact) ---------- */
+
+  // Comme les aplats, ces <img> sont en pointer-events:none : elementsFromPoint ne les voit
+  // jamais. Et contrairement à une carte ou un terminal, elles n'ont pas de background-color —
+  // opaqueBackground n'a donc rien à en dire non plus, et le point restait bleu sur toute
+  // l'illustration de #contact, où il disparaît (costume bleu nuit comme sweat blanc).
+  // Demande explicite : le point doit être blanc sur TOUTE la silhouette de l'avatar, pas
+  // seulement ses zones sombres — on ne teste donc pas la luminance ici, juste l'opacité du
+  // pixel (transparent = hors de l'illustration détourée, laisse voir le fond de la page).
+  const IMAGE_SELECTOR = '.contact-avatar';
+  // Résolution de travail du masque : l'avatar est affiché au plus à ~620px de large
+  // (--avatar-w, styles.css), au-delà on paierait de la mémoire pour une finesse que l'écran
+  // ne restitue pas.
+  const MASK_MAX_SIZE = 640;
+
+  const imageSurfaces = Array.from(document.querySelectorAll(IMAGE_SELECTOR))
+    .filter((el) => !el.closest(COPY_ROOT_SELECTOR))
+    .map((el) => ({ el, mask: null, painted: false, failed: false, waiting: false }));
+
+  // `opaque`, la grille 0/1 qui sert au test de survol, et `url`, la même grille encodée en PNG
+  // (blanc opaque là où l'illustration l'est, transparent ailleurs), donnée telle quelle au
+  // mask-image du calque clair. Rejouer la silhouette en polygone n'aurait aucun sens ici : le
+  // contour d'une illustration détourée n'est pas fait d'arêtes droites, contrairement à tous
+  // les aplats du site (cf. darkSurfacesAround, qui ne sonde que cinq points parce qu'il compte
+  // là-dessus). Le masque CSS, lui, la découpe au pixel près sans qu'on ait à en décrire la
+  // géométrie.
+  function buildMask(img) {
+    const scale = Math.min(1, MASK_MAX_SIZE / Math.max(img.naturalWidth, img.naturalHeight));
+    const w = Math.max(1, Math.round(img.naturalWidth * scale));
+    const h = Math.max(1, Math.round(img.naturalHeight * scale));
+    const canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    ctx.drawImage(img, 0, 0, w, h);
+    let src;
+    // Page ouverte en file:// : le canevas est teinté et la lecture jette. On abandonne
+    // silencieusement — le point garde alors son comportement d'avant sur l'avatar.
+    try {
+      src = ctx.getImageData(0, 0, w, h);
+    } catch (err) {
+      return null;
+    }
+    const opaque = new Uint8Array(w * h);
+    const out = ctx.createImageData(w, h);
+    for (let i = 0, p = 0; i < opaque.length; i++, p += 4) {
+      if (src.data[p + 3] < 128) continue;
+      opaque[i] = 1;
+      out.data[p] = 255;
+      out.data[p + 1] = 255;
+      out.data[p + 2] = 255;
+      out.data[p + 3] = 255;
+    }
+    ctx.putImageData(out, 0, 0);
+    return { w, h, opaque, url: canvas.toDataURL('image/png') };
+  }
+
+  // Les deux avatars portent loading="lazy" : au premier passage du curseur ils peuvent très
+  // bien n'être pas encore décodés. On construit donc le masque à la demande, et on redemande
+  // une frame une fois l'image arrivée (le pointeur, lui, a pu s'immobiliser entre-temps).
+  function ensureMask(s) {
+    if (s.mask || s.failed) return s.mask;
+    if (!s.el.complete || !s.el.naturalWidth) {
+      if (!s.waiting) {
+        s.waiting = true;
+        s.el.addEventListener('load', () => {
+          s.waiting = false;
+          ensureMask(s);
+          schedule();
+        }, { once: true });
+        s.el.addEventListener('error', () => { s.failed = true; }, { once: true });
+      }
+      return null;
+    }
+    s.mask = buildMask(s.el);
+    if (!s.mask) s.failed = true;
+    return s.mask;
+  }
+
+  // opacity est relue une fois par frame et non à chaque sonde : .contact-avatar-arm la fait
+  // varier en continu (--avatar-arm-opacity, piloté par initContactAvatarGrow), et
+  // getComputedStyle est justement ce qu'on s'interdit d'appeler cinq fois par point.
+  function refreshImagePaint() {
+    for (const s of imageSurfaces) {
+      const cs = getComputedStyle(s.el);
+      s.painted = cs.display !== 'none' && cs.visibility !== 'hidden' && parseFloat(cs.opacity) >= 0.5;
+    }
+  }
+
+  // Vrai si l'illustration `s` peint réellement (x, y) — pixel opaque du détourage, pas
+  // seulement dans sa boîte englobante rectangulaire.
+  function imageHitAt(s, x, y) {
+    if (!s.painted) return false;
+    const r = s.el.getBoundingClientRect();
+    if (!r.width || !r.height) return false;
+    if (x < r.left || x >= r.right || y < r.top || y >= r.bottom) return false;
+    const mask = ensureMask(s);
+    if (!mask) return false;
+    const u = Math.min(mask.w - 1, Math.floor(((x - r.left) / r.width) * mask.w));
+    const v = Math.min(mask.h - 1, Math.floor(((y - r.top) / r.height) * mask.h));
+    return !!mask.opaque[v * mask.w + u];
+  }
+
+  // Surface image qui peint (x, y), ou undefined si aucune ne l'atteint (le point garde alors
+  // son comportement d'avant : test des aplats/fonds, puis bleu par défaut). Parcours à l'envers
+  // de l'ordre du document : le bras au repos est écrit après le corps et se peint donc dessus.
+  function imageSurfaceAt(x, y) {
+    for (let i = imageSurfaces.length - 1; i >= 0; i--) {
+      if (imageHitAt(imageSurfaces[i], x, y)) return imageSurfaces[i];
+    }
+    return undefined;
+  }
+
+  // Aire (approchée) de la portion de l'image sous le point : une grille régulière suffit, elle
+  // ne sert qu'à départager plusieurs surfaces candidates, jamais à découper quoi que ce soit.
+  const MASK_AREA_STEPS = 6;
+  function maskAreaInBox(s, box) {
+    const w = box.right - box.left;
+    const h = box.bottom - box.top;
+    let hits = 0;
+    for (let i = 0; i < MASK_AREA_STEPS; i++) {
+      for (let j = 0; j < MASK_AREA_STEPS; j++) {
+        const px = box.left + ((i + 0.5) / MASK_AREA_STEPS) * w;
+        const py = box.top + ((j + 0.5) / MASK_AREA_STEPS) * h;
+        if (imageHitAt(s, px, py)) hits++;
+      }
+    }
+    return (hits / (MASK_AREA_STEPS * MASK_AREA_STEPS)) * w * h;
+  }
+
   /* ---------- luminance du fond sous le pointeur ---------- */
 
   // Couleur de fond opaque de l'élément, ou null s'il est (quasi) transparent : dans ce cas
@@ -435,6 +566,10 @@
   // On renvoie l'élément plutôt qu'un booléen : c'est sa géométrie qui découpera le point.
   function darkSurfaceAt(x, y) {
     if (insidePreloaderBlob(x, y)) return 'blob';
+    // Avant la forme du hero : #contact est promu au-dessus de sa fenêtre (z-index 41 contre 40,
+    // cf. styles.css), donc l'avatar la recouvre entièrement (silhouette détourée, cf. plus haut).
+    const image = imageSurfaceAt(x, y);
+    if (image !== undefined) return image;
     if (insidePageBlob(x, y)) return 'page-blob';
     const stack = document.elementsFromPoint(x, y);
     for (const el of stack) {
@@ -475,10 +610,49 @@
   // Pose sur le calque clair la portion du point qui recouvre du sombre, en coordonnées
   // locales au point. C'est ici que se joue la précision : l'arête donnée au clip-path est
   // celle de la zone sombre elle-même, pas une approximation au centre du curseur.
+  // Découpe par masque, réservée aux surfaces image (cf. buildMask) : le clip-path est neutralisé
+  // et c'est le PNG du masque, recalé sur la position et la taille écran de l'image, qui décide
+  // pixel par pixel de ce qui reste blanc. -webkit- en plus du standard pour Safari.
+  // L'URL du masque est volumineuse (data:) : on ne la réécrit que lorsque l'image gagnante
+  // change, seuls la position et la taille bougent d'une frame à l'autre.
+  let maskedSurface = null;
+  function applyImageMask(s, box) {
+    const r = s.el.getBoundingClientRect();
+    light.style.clipPath = 'none';
+    for (const prefix of ['', '-webkit-']) {
+      if (maskedSurface !== s) light.style.setProperty(`${prefix}mask-image`, `url("${s.mask.url}")`);
+      light.style.setProperty(`${prefix}mask-repeat`, 'no-repeat');
+      light.style.setProperty(`${prefix}mask-position`, `${(r.left - box.left).toFixed(2)}px ${(r.top - box.top).toFixed(2)}px`);
+      light.style.setProperty(`${prefix}mask-size`, `${r.width.toFixed(2)}px ${r.height.toFixed(2)}px`);
+    }
+    maskedSurface = s;
+  }
+  function clearImageMask() {
+    if (!maskedSurface) return;
+    maskedSurface = null;
+    for (const prefix of ['', '-webkit-']) {
+      for (const prop of ['image', 'repeat', 'position', 'size']) {
+        light.style.removeProperty(`${prefix}mask-${prop}`);
+      }
+    }
+  }
+
   function applyLightClip(box) {
     let best = null;
+    let bestImage = null;
     let bestArea = 0;
     for (const surface of darkSurfacesAround(box)) {
+      // Les surfaces image ne se décrivent pas en polygone : elles se départagent à l'aire comme
+      // les autres, mais c'est un masque et non un clip-path qui les découpera (cf. applyImageMask).
+      if (imageSurfaces.includes(surface)) {
+        const area = maskAreaInBox(surface, box);
+        if (area > bestArea) {
+          best = null;
+          bestImage = surface;
+          bestArea = area;
+        }
+        continue;
+      }
       const poly = surface === 'blob' ? preloaderBlobPolygon()
         : surface === 'page-blob' ? pageBlobPolygon()
         : surfacePolygon(surface);
@@ -490,9 +664,15 @@
       // clip-path ne prend qu'un polygone, on garde donc celle qui en couvre le plus.
       if (area > bestArea) {
         best = clipped;
+        bestImage = null;
         bestArea = area;
       }
     }
+    if (bestImage) {
+      applyImageMask(bestImage, box);
+      return;
+    }
+    clearImageMask();
     if (!best) {
       light.style.clipPath = EMPTY_CLIP;
       return;
@@ -516,6 +696,8 @@
     // (survol, clic), et c'est sa taille réelle à cette frame qui doit servir de repère.
     const r = dot.getBoundingClientRect();
     if (!r.width || !r.height) return;
+    // Une seule lecture de style par image décorative et par frame, avant les cinq sondes.
+    refreshImagePaint();
     // elementsFromPoint + getComputedStyle coûtent cher : on ne les évalue qu'une fois par
     // frame, jamais à chaque événement pointermove (qui peut tirer plus vite que l'écran).
     applyLightClip({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });

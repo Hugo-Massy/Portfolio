@@ -601,7 +601,11 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    blanche de découpe resterait peinte par-dessus et doublerait le blob quand la section
    active chevauche la vague bleue. */
 .dot-rail a.is-active .dot-core .btn-knockout{opacity:0;}
-.dot-rail a.is-active .dot-label{max-width:140px; opacity:1; color:var(--text); font-weight:500;}
+/* le label de la section active ne s'affiche que le temps de se faire lire : .is-label-on est
+   posée à l'activation puis retirée 1,5s plus tard (cf. initTabSpy, js/main.js / details.js /
+   veille.js). Passé ce délai il ne reste que la pastille ; le survol le rappelle. */
+.dot-rail a.is-active.is-label-on .dot-label{max-width:140px; opacity:1; color:var(--text); font-weight:500;}
+.dot-rail a.is-active .dot-label{color:var(--text); font-weight:500;}
 /* petit point qui voyage le long du rail quand on passe d'une section à l'autre : même
    silhouette molle, animée indépendamment de la piste qu'il traverse, et découpée au pixel
    près de la même façon (cf. js/main.js, details.js, veille.js pour l'appel côté JS) */
@@ -2758,8 +2762,21 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 /* hauteur du point bas de la diagonale (bord gauche) — sert au clip ET au padding
    du contenu, pour qu'il reste toujours sous la diagonale */
 :root{ --contact-slope: clamp(160px, 22vw, 360px); }
+/* z-index:41 — l'avatar ci-dessous déborde vers le HAUT, hors de la section, dans le blanc où
+   la forme du hero circule librement (elle n'est bornée que par le bord supérieur du bleu, cf.
+   updateScroll dans js/page-blob.js). Sans promotion, la forme peint un aplat bleu par-dessus
+   l'illustration, et sa copie de découpe ne peut rien y rattraper : .page-blob-clone img
+   {opacity:0 !important} masque TOUTES les images, il n'y a donc rien à rogner à cet endroit.
+   Promotion de la section ENTIÈRE et non du seul .contact-avatar : isolation:isolate juste en
+   dessous crée un contexte d'empilement, un z-index posé sur l'image n'en sortirait pas.
+   41 passe devant .page-blob-viewport (40) en restant sous le rail / le retour en haut (50) et
+   le sélecteur de langue (60). Aucun ancêtre en position:sticky ici (#contact est enfant direct
+   de <body>), la promotion s'applique donc réellement. Le reste de la section ne bouge pas : le
+   bleu de .contact-fill borne déjà la forme, qui ne le recouvre jamais.
+   js/cursor.js dépend de cet ordre (cf. darkSurfaceAt, qui teste l'avatar AVANT la forme). */
 .contact{
   position:relative;
+  z-index:41;
   isolation:isolate;
   text-align:right;
   color:#fff;
