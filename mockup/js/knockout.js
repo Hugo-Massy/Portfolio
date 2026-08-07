@@ -26,8 +26,9 @@
   // selector : les aplats bleus de la page à recopier
   window.initButtonKnockout = function initButtonKnockout(btn, selector) {
     if (!btn) return;
+    // Pas de sortie anticipée si la page n'a aucun de ces aplats : la forme du hero, elle, est
+    // toujours là (cf. la copie plus bas), et c'est elle qui découpe le bouton dans ce cas.
     const sources = Array.from(document.querySelectorAll(selector));
-    if (!sources.length) return;
 
     const layer = document.createElement('span');
     layer.className = 'btn-knockout';
@@ -61,6 +62,112 @@
       }
       return { src, fill, iconCopy };
     });
+
+    /* ---------- copie de la forme du hero (js/page-blob.js) ---------- */
+
+    // La forme bleue qui suit le curseur est un aplat comme les autres du point de vue du
+    // bouton : elle passe SOUS lui (z-index 40 contre 50), donc sans rien de plus le bouton
+    // reste accent par-dessus elle et la frontière disparaît — un rond bleu sur du bleu, alors
+    // que tout le reste du site s'inverse au contact de l'accent. Elle mérite donc la même
+    // découpe que les bandeaux ci-dessus, mais elle ne peut pas passer par le même chemin :
+    //   - elle n'existe pas encore quand ce module s'initialise (page-blob.js est chargé APRÈS
+    //     main/veille/details.js), d'où l'accrochage paresseux dans sync() ;
+    //   - sa géométrie change à chaque image (ressort, étirement, morphing) : la mesurer au
+    //     getBoundingClientRect() comme les bandeaux ne donnerait que sa boîte englobante, donc
+    //     un rectangle là où c'est justement son contour organique qu'on veut suivre.
+    // On recopie donc sa STRUCTURE et non sa mesure : mêmes classes (donc mêmes transforms,
+    // même silhouette, même morphing), pilotées par les mêmes variables --pgblob-* recopiées à
+    // chaque image. Le résultat est exact par construction, comme la découpe que la forme
+    // transporte elle-même.
+    const BLOB_VARS = ['--pgblob-x', '--pgblob-y', '--pgblob-angle', '--pgblob-stretch', '--pgblob-squash'];
+    // page-blob.js ne s'installe que sur pointeur fin : ailleurs, inutile de le chercher à
+    // chaque image pour ne jamais le trouver.
+    const canBlob = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    let blobSrc = null;      // la vraie forme
+    let blobView = null;     // sa fenêtre, qui porte le rognage sur le bord haut du bleu
+    let blobCopy = null;     // la copie posée dans le bouton
+    let blobClip = null;     // calque NON transformé qui rejoue ce rognage sur la copie
+    let blobIcon = null;
+
+    function attachBlob() {
+      blobView = document.getElementById('page-blob-viewport');
+      blobSrc = blobView && blobView.querySelector(':scope > .page-blob');
+      if (!blobSrc) return;
+
+      // Le rognage de la forme (clip-path posé par updateScroll, en coordonnées écran) doit être
+      // rejoué ici, sinon le bouton s'inverserait là où la forme est en réalité coupée — c'est-à-
+      // dire dès qu'elle arrive sur le bleu de #contact, juste sous le bouton. Il est posé sur un
+      // calque à part et NON transformé : un clip-path s'applique dans le repère de l'élément
+      // avant sa propre transform, le mettre sur la copie elle-même le ferait voyager avec elle.
+      // Boîte de taille nulle comme .btn-knockout : les coordonnées du polygone sont en px depuis
+      // son coin haut-gauche, que la couche a déjà calé sur celui du viewport.
+      blobClip = document.createElement('span');
+      blobClip.className = 'btn-knockout-blob-clip';
+      layer.appendChild(blobClip);
+
+      // Même arborescence que la vraie forme (cf. page-blob.js) : déplacement, étirement,
+      // déformation, puis les deux calques qui annulent les deux premiers — c'est ce qui ramène
+      // l'origine de leur contenu sur le coin haut-gauche de l'écran, et permet d'y poser l'icône
+      // à ses coordonnées viewport telles quelles. La découpe de page (.page-blob-clone) n'a en
+      // revanche rien à faire ici : dans le bouton, la forme ne doit apporter qu'un aplat blanc.
+      blobCopy = document.createElement('span');
+      blobCopy.className = 'page-blob';
+      blobCopy.innerHTML =
+        '<span class="page-blob-stretch"><span class="page-blob-shape">' +
+        '<span class="page-blob-knockout"><span class="page-blob-origin"></span></span>' +
+        '</span></span>';
+      blobClip.appendChild(blobCopy);
+
+      if (icon) {
+        blobIcon = icon.cloneNode(true);
+        blobIcon.removeAttribute('id');
+        blobIcon.style.cssText += ';position:absolute; color:var(--accent);';
+        blobCopy.querySelector('.page-blob-origin').appendChild(blobIcon);
+      }
+
+      // Le morphing (preloader-blob-morph, 9s) DESSINE la silhouette : une copie insérée
+      // maintenant démarrerait son cycle à cet instant et serait donc déphasée par rapport à
+      // l'originale — deux contours différents au même moment, et la découpe déborderait. On
+      // aligne son startTime sur celui de l'original, qui partage la même horloge : les deux
+      // restent alors en phase indéfiniment. Même procédé que syncCloneAnimations (page-blob.js).
+      requestAnimationFrame(() => {
+        const srcShape = blobSrc.querySelector('.page-blob-shape');
+        const copyShape = blobCopy.querySelector('.page-blob-shape');
+        if (!srcShape || !copyShape || !srcShape.getAnimations) return;
+        const morph = (el) => el.getAnimations().find((a) => a.animationName === 'preloader-blob-morph');
+        const s = morph(srcShape);
+        const c = morph(copyShape);
+        if (s && c && s.startTime !== null) c.startTime = s.startTime;
+      });
+    }
+
+    // Uniquement des lectures et écritures de chaînes, sans aucune mesure de mise en page :
+    // négligeable par image. `ir` vient de sync(), qui a déjà mesuré l'icône.
+    function syncBlob(ir) {
+      if (!canBlob) return;
+      if (!blobCopy) {
+        attachBlob();
+        if (!blobCopy) return;
+      }
+      for (const v of BLOB_VARS) {
+        const val = blobSrc.style.getPropertyValue(v);
+        if (blobCopy.style.getPropertyValue(v) !== val) blobCopy.style.setProperty(v, val);
+      }
+      // .is-active porte l'apparition en fondu de la forme (opacity) : la copie doit s'allumer
+      // et s'éteindre avec elle, sans quoi elle resterait posée sur le bouton après la sortie
+      // du curseur de la fenêtre.
+      blobCopy.classList.toggle('is-active', blobSrc.classList.contains('is-active'));
+      const clip = blobView.style.clipPath;
+      if (blobClip.style.clipPath !== clip) blobClip.style.clipPath = clip;
+
+      if (!blobIcon || !ir) return;
+      // Coordonnées viewport telles quelles : le calque qui héberge l'icône a vu ses ancêtres
+      // annuler déplacement et étirement, son origine est donc exactement celle de l'écran.
+      blobIcon.style.width = `${ir.width}px`;
+      blobIcon.style.height = `${ir.height}px`;
+      blobIcon.style.left = `${ir.left}px`;
+      blobIcon.style.top = `${ir.top}px`;
+    }
 
     // Toutes les mesures d'abord, toutes les écritures ensuite : intercaler les deux forcerait
     // le navigateur à recalculer la mise en page à chaque copie, et ce à chaque frame.
@@ -112,6 +219,11 @@
         iconCopy.style.top = `${h / 2 + ly - ir.height / 2}px`;
         iconCopy.style.transform = angle ? `rotate(${-angle}rad)` : 'none';
       });
+
+      // Après les aplats, donc peinte par-dessus eux : là où la forme chevauche un bandeau, les
+      // deux sont blancs de toute façon, mais c'est SON icône accent qui doit gagner (la sienne
+      // est rognée sur sa silhouette, celle du bandeau sur la diagonale).
+      syncBlob(ir);
     }
 
     // Replacé à chaque frame, et non au scroll : le bouton rebondit et se déforme en continu

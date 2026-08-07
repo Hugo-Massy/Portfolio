@@ -143,6 +143,13 @@
    normale de la forme du hero, qui doit continuer à la traverser. */
 .vl-meta{
   position:sticky; top:0; /* `top` réel posé en JS (layout) */
+  /* SEULE SOURCE DE VÉRITÉ de l'écart avec le top 3 : initShowcaseScrub (js/veille.js) lit cette
+     marge pour en déduire le `top` sticky de #vl-meta et la hauteur réservée par la piste. Avant,
+     l'écart n'existait qu'en JS (META_GAP) et n'était donc appliqué QUE pendant le figement : une
+     fois la séquence jouée (.is-done, retour au flux normal) il retombait à zéro, et la phrase
+     remontait coller aux cartes — il ne restait pour l'en séparer que le vide laissé par la carte
+     centrale, relevée de 36px. */
+  margin-top:96px;
   display:flex; flex-direction:column; align-items:center; gap:20px;
   width:100%; text-align:center;
 }

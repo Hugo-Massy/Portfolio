@@ -621,6 +621,22 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 /* copie blanche posée par initButtonKnockout : mêmes règles que .back-to-top .btn-knockout,
    génériques pour s'appliquer à n'importe quel hôte (points du rail, indicateur, boutons) */
 .btn-knockout{position:absolute; width:0; height:0; pointer-events:none;}
+/* COPIE DE LA FORME DU HERO DANS LA DÉCOUPE — posée par initButtonKnockout (js/knockout.js).
+   Elle reprend TELLES QUELLES les classes de la vraie forme (.page-blob & co, plus haut) : ses
+   transforms, sa silhouette et son morphing sont donc écrits à un seul endroit, et la copie s'en
+   déduit des mêmes variables --pgblob-* au même instant, recopiées à chaque image. Seul l'aplat
+   change de couleur : ici la forme ne sert pas à peindre du bleu mais à inverser en blanc le
+   bouton qu'elle recouvre, exactement comme le fait un bandeau bleu de la page.
+   Le calque de rognage rejoue le clip-path de #page-blob-viewport ; sa boîte est nulle comme
+   celle de .btn-knockout, les coordonnées du polygone étant en px depuis son coin haut-gauche,
+   déjà calé sur celui de l'écran. */
+.btn-knockout-blob-clip{position:absolute; left:0; top:0; width:0; height:0;}
+.btn-knockout .page-blob-shape{background:#fff;}
+/* will-change neutralisé : la vraie forme le mérite (elle bouge seule à chaque image), mais
+   chaque hôte découpé — bouton de remontée, indicateur, et chaque pastille du rail — en porte
+   désormais une copie, et autant de calques de composition promus pour une silhouette de
+   quelques dizaines de px n'apporterait rien. */
+.btn-knockout .page-blob{will-change:auto;}
 .btn{
   font-family:var(--sans); font-weight:600; font-size:14px;
   padding:13px 24px; border-radius:9px; display:inline-flex; align-items:center; gap:8px;

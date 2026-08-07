@@ -325,8 +325,15 @@
   // plutôt que le scroll, donc on les teste séparément.
   const preloaderBlob = document.querySelector('.preloader-blob');
   const preloaderBlobShape = document.querySelector('.preloader-blob-shape');
-  const pageBlob = document.querySelector('.page-blob');
-  const pageBlobShape = document.querySelector('.page-blob-shape');
+  // Cherchée DANS SA FENÊTRE, et par chemin direct : la forme du hero est elle aussi recopiée
+  // ailleurs dans le document (initButtonKnockout en glisse une dans chaque bouton découpé, cf.
+  // COPY_ROOT_SELECTOR juste au-dessus pour les aplats), et ces copies-là précèdent l'originale
+  // dans l'ordre du document — .back-to-top est écrit dans le HTML, la fenêtre de la forme est
+  // ajoutée en fin de <body> par page-blob.js. Un querySelector nu ramenait donc la copie logée
+  // dans le bouton, dont la position mesurée n'a rien à voir avec celle de la vraie forme.
+  const pageBlobViewport = document.getElementById('page-blob-viewport');
+  const pageBlob = pageBlobViewport && pageBlobViewport.querySelector(':scope > .page-blob');
+  const pageBlobShape = pageBlob && pageBlob.querySelector(':scope > .page-blob-stretch > .page-blob-shape');
   // Zone où la forme du hero est RÉELLEMENT peinte : son contour de rognage, tel que page-blob.js
   // vient de le poser. On ne le redevine pas ici — une première version prenait le rectangle du
   // hero, alors que le bord bas de ce contour épouse la diagonale du bandeau bleu et remonte donc

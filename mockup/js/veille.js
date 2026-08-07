@@ -448,12 +448,17 @@ function initShowcaseScrub(meta, top) {
     html.style.scrollBehavior = prevBehavior;
   }
 
-  // Écart entre le pin et #vl-meta au repos (avant que le figement ne s'active) — ancien
-  // `gap:56px` du flex qui les regroupait quand #vl-meta était encore un enfant de
-  // .vl-showcase-pin (cf. le commentaire de .vl-showcase-pin dans veille.css pour pourquoi ce
-  // n'est plus le cas). #vl-meta est désormais sticky de façon indépendante ; ce nombre sert à
-  // recalculer, ici en JS, l'écart que le flex donnait gratuitement avant.
-  const META_GAP = 56;
+  // Écart entre le pin et #vl-meta — successeur du `gap` du flex qui les regroupait quand
+  // #vl-meta était encore un enfant de .vl-showcase-pin (cf. le commentaire de .vl-showcase-pin
+  // dans veille.css pour pourquoi ce n'est plus le cas). #vl-meta étant désormais sticky de façon
+  // indépendante, cet écart doit être rejoué ici pour le figement.
+  //
+  // LU sur la marge réelle de #vl-meta plutôt qu'écrit en dur : c'est elle qui l'applique en flux
+  // normal (avant le figement, et définitivement après .is-done), et une constante qui la
+  // dupliquerait dériverait tôt ou tard — l'écart valant alors une chose pendant le figement et
+  // une autre une fois la séquence jouée, avec un saut visible au passage. Relu à chaque mesure :
+  // la marge peut changer avec la largeur (media queries).
+  const metaGap = () => parseFloat(getComputedStyle(meta).marginTop) || 0;
 
   // (Re)mesure : hauteur naturelle du pin + #vl-meta → position de gel centrée (l'ENSEMBLE des
   // deux, comme avant leur séparation) et hauteur de la piste (ensemble + course). Recalculée
@@ -463,7 +468,8 @@ function initShowcaseScrub(meta, top) {
     if (finalized) return;
     const topH = pin.offsetHeight;
     const metaH = meta.offsetHeight;
-    const H = topH + META_GAP + metaH;
+    const gap = metaGap();
+    const H = topH + gap + metaH;
     const vh = window.innerHeight;
     // On ne fige que si l'écran est large (la media query repasse le pin en
     // flux normal sous 760px) ET si le pin tient dans le viewport une fois
@@ -480,7 +486,7 @@ function initShowcaseScrub(meta, top) {
     pin.style.top = stickyTop + 'px';
     // #vl-meta se colle juste sous le pin — même écart que l'ancien gap flex — pour rester
     // visuellement groupée avec lui, sans en être un enfant (cf. veille.css).
-    meta.style.top = (stickyTop + topH + META_GAP) + 'px';
+    meta.style.top = (stickyTop + topH + gap) + 'px';
     track.style.height = (H + scrubLen) + 'px';
     render();
   }
