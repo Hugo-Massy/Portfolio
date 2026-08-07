@@ -423,14 +423,18 @@
   // déplacement exact que le figement produit sur l'original. Même mécanique que
   // syncTransforms/syncRailIndicator juste au-dessus.
   //
-  // .vl-showcase-pin (le top 3 épinglé de la page veille) N'EST PLUS ICI : il passe maintenant
-  // devant la forme (.vl-showcase-track, z-index:41 dans veille.css — au-dessus des 40 de
-  // .page-blob-viewport), qui ne le recouvre donc plus jamais. Recaler sa copie n'aurait plus
-  // aucun effet visible, pour un mécanisme qui restait fragile : la piste qui le porte change
-  // aussi de HAUTEUR au fil du scrub (voir la synchronisation de `height` dans syncTransforms
-  // ci-dessus, elle conservée car #vl-grid/#vl-impact/#contact, eux, continuent de défiler sous
-  // la forme et doivent rester à la bonne place verticale).
-  const STICKY_SELECTOR = '.about-card, .xp-bento-stick';
+  // .vl-showcase-pin (le top 3 épinglé de la page veille) EST DE RETOUR ICI, après un aller-
+  // retour : #vl-top et .vl-top-card (veille.css) portent bien z-index:41, au-dessus des 40 de
+  // .page-blob-viewport — et ça suffit à faire passer .vl-list-item et .vl-impact-card
+  // (ailleurs sur la page, hors de tout ancêtre position:sticky) devant la forme, testé et
+  // confirmé. Mais SOUS .vl-showcase-pin (position:sticky) précisément, ce z-index reste sans
+  // effet : Chrome ne fait apparemment pas remonter un z-index positif au-delà d'un ancêtre
+  // sticky jusqu'au contexte racine, même avec le z-index:auto de cet ancêtre qui, sur le
+  // papier, ne devrait créer aucun contexte d'empilement — vérifié en forçant temporairement
+  // .vl-showcase-pin en position:static : la forme redevenait alors correctement invisible sous
+  // les cartes, confirmant que le SEUL sticky est en cause, pas la géométrie. Puisque retirer le
+  // sticky briserait l'animation de la piste, .vl-showcase-pin garde son recalage de copie ici.
+  const STICKY_SELECTOR = '.vl-showcase-pin, .about-card, .xp-bento-stick';
   let stickyPairs = [];
 
   // Ordonnée d'un nœud de la copie dans son repère de mise en page, en remontant la chaîne des

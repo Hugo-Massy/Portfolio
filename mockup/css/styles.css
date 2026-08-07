@@ -495,9 +495,11 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
    Ces sélecteurs DOIVENT rester alignés sur STICKY_SELECTOR (js/page-blob.js) : une règle sans
    son pendant JS fige la copie au repos (elle ne suit plus), l'inverse laisse le sticky
    s'appliquer dans la copie ET s'y ajouter au recalage.
-   .vl-showcase-pin (page veille) n'y figure plus : il passe désormais devant la forme du hero
-   (.vl-showcase-track, z-index:41 dans veille.css) plutôt que de se faire découper par elle,
-   sa copie n'a donc plus besoin d'être recalée — cf. le commentaire de STICKY_SELECTOR. */
+   .vl-showcase-pin (page veille) EST de retour ici : son z-index (via #vl-top/.vl-top-card,
+   veille.css) ne suffit pas à le faire passer devant la forme du hero SOUS un ancêtre
+   position:sticky — un comportement Chrome vérifié en pratique, cf. le commentaire de
+   STICKY_SELECTOR. Sa copie a donc de nouveau besoin d'être recalée. */
+.page-blob-clone .vl-showcase-pin,
 .page-blob-clone .about-card,
 .page-blob-clone .xp-bento-stick{position:static !important;}
 .page-blob-clone .back-to-top *,

@@ -315,12 +315,19 @@
 .vl-top-grid .vl-top-card:nth-child(2):hover, .vl-top-grid .vl-top-card:nth-child(2).is-spotlight{ transform:rotate(-3deg) translateY(-3px); }
 .vl-top-grid .vl-top-card:nth-child(3):hover, .vl-top-grid .vl-top-card:nth-child(3).is-spotlight{ transform:rotate(3deg) translateY(-3px); }
 /* Pendant la mise en avant séquentielle du top 3 (scroll figé sur .vl-meta),
-   les cartes non concernées s'estompent pour accentuer celle en cours. */
+   les cartes non concernées s'estompent pour accentuer celle en cours.
+   filter SEUL, sans opacity : la carte doit rester 100% OPAQUE — elle passe devant la forme du
+   hero (z-index:41 sur .vl-top-card, au-dessus des 40 de .page-blob-viewport dans styles.css)
+   précisément pour ne jamais la laisser transparaître. Une opacity réduite rouvrait un hublot sur
+   le bleu derrière elle (mélange visible, texte fantomatique) dès que le blob passait dessous —
+   correctement positionné en z-index, mais rendu visible par transparence malgré tout. brightness
+   en plus de saturate pour retrouver un estompage comparable à l'ancien opacity:.5 sans jamais
+   rendre la carte translucide. */
 .vl-top-grid.is-showcasing .vl-top-card{
-  transition:transform .65s cubic-bezier(.22,1,.36,1), box-shadow .65s ease, border-color .65s ease, opacity .55s ease, filter .55s ease;
-  opacity:.5; filter:saturate(.6);
+  transition:transform .65s cubic-bezier(.22,1,.36,1), box-shadow .65s ease, border-color .65s ease, filter .55s ease;
+  filter:saturate(.6) brightness(.94);
 }
-.vl-top-grid.is-showcasing .vl-top-card.is-spotlight{ opacity:1; filter:none; }
+.vl-top-grid.is-showcasing .vl-top-card.is-spotlight{ filter:none; }
 /* Image en bandeau plein cadre en haut de la carte */
 .vl-top-card .vl-img{
   margin:0; max-width:none; width:100%; aspect-ratio:16/9;
