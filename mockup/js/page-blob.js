@@ -698,7 +698,14 @@
     const polys = window.BlueSurfaces ? window.BlueSurfaces.polygons() : [];
 
     const left = 0;
-    const right = window.innerWidth;
+    // clientWidth, PAS innerWidth : les aplats bleus (.contact-fill & co) sont mesurés via
+    // getBoundingClientRect(), qui s'arrête au bord réel du document — hors scrollbar verticale.
+    // innerWidth, lui, l'inclut. L'écart (~15px selon les navigateurs) créait une colonne sans
+    // aucun bleu détecté juste avant ce bord, où la frontière retombait au maxBottom avant de
+    // remonter brutalement dès la vraie largeur — un point rentrant dans un contour que
+    // clipToPolygon (plus bas dans js/cursor.js) suppose pourtant convexe. Un seul point rentrant
+    // suffit à lui faire rejeter la totalité du blob, bien au-delà de cette colonne.
+    const right = document.documentElement.clientWidth;
     // Sans aucun bleu dans une colonne (page veille, bandeau hors champ), rien ne borne la forme :
     // elle va jusqu'au bas de la fenêtre.
     const maxBottom = window.innerHeight;
