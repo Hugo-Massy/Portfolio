@@ -108,14 +108,18 @@
    de bon (.is-done : plus jamais de sticky, même en remontant) — seul l'état
    final (cartes à plat, stats visibles) reste réversible selon qu'on a
    dépassé la piste ou non, sans jamais recoller le bloc au centre. --- */
-/* z-index au-dessus de la forme du hero (.page-blob-viewport, 40 dans styles.css) : le top 3
-   et le pin épinglé passent donc DEVANT elle plutôt que de se faire découper en blanc au
-   travers. Même principe que .hero .term-card (styles.css) — évite d'avoir à répliquer dans la
-   copie la mise en page du pin (position:sticky, hauteur de piste qui grandit puis s'effondre
-   au fil du scrub) : ces mécaniques sont trop mouvantes pour qu'un simple recalage de la copie
-   reste fiable, la forme n'a donc plus besoin de savoir ce qui s'y passe. Reste sous le rail/
-   bouton remonter (50) et le sélecteur de langue (60), qui doivent toujours dominer. */
-.vl-showcase-track{ position:relative; z-index:41; margin-top:calc(var(--vl-peek) * -1); }
+/* PAS de z-index élevé ici : .vl-showcase-track et .vl-showcase-pin restent de simples
+   conteneurs, sans le promouvoir EUX au-dessus de la forme du hero — sans quoi #vl-meta (la
+   phrase de stats, texte simple, enfant de .vl-showcase-pin au même titre que #vl-top) se
+   retrouverait promue avec les cartes qu'elle encadre, et cesserait de recevoir la découpe
+   blanche normale de la forme (elle resterait dans sa couleur de texte habituelle par-dessus
+   l'aplat bleu, illisible). C'est chaque .vl-top-card (styles plus bas), et elle seule, qui passe
+   devant la forme — pas un conteneur partagé avec du texte voisin. position:relative SANS
+   z-index ne crée aucun contexte d'empilement (la règle ne s'applique qu'avec z-index ≠ auto),
+   .vl-showcase-pin (position:sticky, même z-index:auto) non plus : les cartes du top 3, à
+   l'intérieur, se comparent donc bien DIRECTEMENT à la forme du hero, malgré ces deux ancêtres
+   communs avec #vl-meta. */
+.vl-showcase-track{ position:relative; margin-top:calc(var(--vl-peek) * -1); }
 .vl-showcase-pin{
   position:sticky; top:0; /* `top` réel posé en JS (layout) */
   display:flex; flex-direction:column; gap:56px;
@@ -145,7 +149,9 @@
 /* Liste du top 10 : lignes façon carte, même langage visuel que le top 3
    (.vl-top-card) mais empilées horizontalement plutôt qu'en grille. */
 .vl-list{display:flex; flex-direction:column; gap:12px;}
+/* z-index au-dessus de la forme du hero : même raison que .vl-top-card plus bas. */
 .vl-list-item{
+  position:relative; z-index:41;
   display:flex; align-items:flex-start; gap:16px;
   padding:18px 20px; border:none; list-style:none;
   background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
@@ -265,8 +271,13 @@
 
 /* Le top 3 suit directement le hero réduit (voir --vl-peek sur .vl-head) : son
    haut dépasse dans la première vue, sous un titre centré entre le haut de page
-   et le haut des cartes. */
-#vl-top{ position:relative; z-index:1; }
+   et le haut des cartes.
+   z-index relevé à 41 (au lieu du 1 d'origine) : position:relative + z-index fait de cet
+   élément un CONTEXTE D'EMPILEMENT, qui plafonnerait sinon les .vl-top-card qu'il contient à ce
+   rang 1 — sous la forme du hero (.page-blob-viewport, 40 dans styles.css) — quel que soit LEUR
+   propre z-index (41, cf. .vl-top-card). #vl-meta, à qui la découpe blanche doit rester normale,
+   n'est pas concerné : c'est un FRÈRE de #vl-top (même parent .vl-showcase-pin), pas un enfant. */
+#vl-top{ position:relative; z-index:41; }
 
 /* Top 3 : 3 cartes façon podium, même langage visuel que le reste du site
    (tokens de styles.css : --bg-elev, --border, --shadow-card, --accent…). */
@@ -274,7 +285,16 @@
   display:grid; grid-template-columns:repeat(3, 1fr); gap:40px;
   align-items:stretch; padding:8px 24px 24px;
 }
+/* z-index AU-DESSUS de la forme du hero (.page-blob-viewport, 40 dans styles.css) — cette carte
+   passe devant elle, plutôt que de se faire découper en blanc au travers. Même principe que
+   .hero .term-card (styles.css). Ciblé sur la carte elle-même (comme .vl-list-item plus bas), et
+   non sur un conteneur ancêtre partagé : #vl-meta, .vl-all-h et les titres de colonne du bloc
+   Impact sont de simple texte voisin des cartes, pas des cartes — les promouvoir avec elles leur
+   ferait perdre la découpe blanche normale de la forme (texte illisible, dans sa couleur
+   habituelle, par-dessus l'aplat bleu). Reste sous le rail/bouton remonter (50) et le sélecteur
+   de langue (60), qui doivent toujours dominer. */
 .vl-top-card{
+  position:relative; z-index:41;
   border:none; padding:0; overflow:hidden; list-style:none;
   display:flex; flex-direction:column;
   background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
@@ -349,9 +369,6 @@
   .vl-showcase-pin{ position:static; overflow:visible; gap:40px; margin:120px 0; padding-top:0; }
   .vl-meta-line{ opacity:1; transform:none; }
 }
-/* Même raison que .vl-showcase-track ci-dessus : la liste (« le reste du top ») passe devant
-   la forme du hero plutôt que sous elle, pour ne plus dépendre de l'alignement de sa copie. */
-#vl-grid{ position:relative; z-index:41; }
 .vl-all-h{
   font-size:13px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em;
   color:var(--text-faint);
@@ -362,10 +379,15 @@
    ci-dessus (.vl-top-card, sans puce de rang), alignée le long d'une timeline
    par projet — l'article reste identifiable au premier coup d'œil, l'analyse
    (constaté / fait / pourquoi) vient en dessous, dans le même bloc. --- */
-/* Même raison que .vl-showcase-track plus haut : ces cartes (.vl-top-card réutilisée telle
-   quelle, cf. impactColumnHtml dans js/veille.js) passent devant la forme du hero. */
+/* PAS de z-index ici (contrairement à #vl-top ci-dessus) : cette section mélange, à l'intérieur
+   de #vl-impact-cols, des cartes (.vl-top-card, à promouvoir) ET du texte voisin (le <h3> de
+   chaque .vl-impact-col-head) qu'il ne faut PAS priver de la découpe blanche normale de la
+   forme. Un z-index ici piègerait les deux ensemble dans un même contexte d'empilement — c'est
+   pourquoi la promotion se fait plus bas, directement sur .vl-top-card, qui n'a besoin d'aucun
+   z-index sur ses ancêtres (.vl-impact-cols, .vl-impact-col-head) pour s'en extraire : aucun
+   d'eux ne pose de z-index, donc aucun ne crée le contexte qui la piégerait. */
 .vl-impact{
-  position:relative; z-index:41; background:var(--bg);
+  position:relative; background:var(--bg);
   margin-top:120px; padding-top:56px;
 }
 .vl-impact-head{ max-width:720px; margin:0 auto 120px; text-align:center; }
