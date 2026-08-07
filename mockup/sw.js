@@ -15,17 +15,14 @@
 // CACHE_NAME est versionné à la main : le faire changer (v2 → v3...) force le remplacement
 // intégral du cache au prochain déploiement, plutôt que de laisser d'anciens fichiers s'y
 // attarder indéfiniment. À BUMPER À CHAQUE MISE EN LIGNE d'un contenu modifié.
-const CACHE_NAME = 'portfolio-cache-v3';
+const CACHE_NAME = 'portfolio-cache-v4';
 
 // Coquille minimale : ce sans quoi une page ne peut pas s'afficher du tout.
 const PRECACHE_URLS = [
   'index.html',
   'details.html',
   'veille.html',
-  // styles.css est demandé avec ET sans paramètre de cache-busting selon la page
-  // (index.html porte "?v=2", pas les autres) : ce sont deux entrées de cache distinctes.
   'css/styles.css',
-  'css/styles.css?v=2',
   'css/details.css',
   'css/veille.css',
   'js/i18n.js',

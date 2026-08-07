@@ -485,6 +485,21 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
    vrai terminal. visibility (et non display) pour qu'elle continue d'occuper sa cellule de
    grille — la retirer du flux décalerait le reste du hero dans la copie. */
 .page-blob-clone .term-card{visibility:hidden !important;}
+/* ÉLÉMENTS FIGÉS (position:sticky) — remis à leur place de REPOS dans la copie, puis recalés
+   par collectSticky/syncSticky (js/page-blob.js), qui leur applique par image le déplacement
+   exact que le figement produit sur l'original. Voir le commentaire de ces fonctions : le
+   figement ne réagit qu'à un défilement réel, or la copie ne défile pas (son défilement est
+   simulé par un translateY sur .page-blob-clone-shift), donc laissé tel quel il ne s'y
+   déclenche jamais — la copie dérivait de l'original pendant tout le figement, et la forme
+   tranchait un aplat blanc le long de ce décalage.
+   Ces sélecteurs DOIVENT rester alignés sur STICKY_SELECTOR (js/page-blob.js) : une règle sans
+   son pendant JS fige la copie au repos (elle ne suit plus), l'inverse laisse le sticky
+   s'appliquer dans la copie ET s'y ajouter au recalage.
+   .vl-showcase-pin (page veille) n'y figure plus : il passe désormais devant la forme du hero
+   (.vl-showcase-track, z-index:41 dans veille.css) plutôt que de se faire découper par elle,
+   sa copie n'a donc plus besoin d'être recalée — cf. le commentaire de STICKY_SELECTOR. */
+.page-blob-clone .about-card,
+.page-blob-clone .xp-bento-stick{position:static !important;}
 .page-blob-clone .back-to-top *,
 .page-blob-clone .scroll-down *,
 .page-blob-clone .dot-rail .dot-core *,

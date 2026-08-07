@@ -335,6 +335,14 @@ function dumpAll(data, lang) {
   grid.innerHTML = `<h2 class="vl-all-h">${dict['vl-rest-of-top'].replace('{count}', kept.length).replace('{days}', WINDOW_DAYS)}</h2>`
     + `<div class="vl-list">${rest.map((it, i) => listItemHtml(it, `#${i + top3.length + 1}`, lang, dict, locale)).join('')}</div>`;
   wireImages(grid);
+  // js/page-blob.js clone la page une seule fois, tôt (requestIdleCallback), pour peindre
+  // la découpe blanche sous la forme du hero. Ce flux arrive par fetch, DONC APRÈS ce premier
+  // clonage : sans ce signal, la copie restait figée sur la page quasi vide d'avant le
+  // chargement (juste "Chargement de la veille…"), bien plus courte que la page réelle une
+  // fois #vl-top/#vl-grid remplis — tout ce qui suit se retrouvait donc décalé verticalement
+  // entre l'original et sa copie, et la forme tranchait un aplat blanc sans rapport avec le
+  // contenu réellement survolé, n'importe où sous ce point de divergence.
+  document.dispatchEvent(new Event('veille-content-change'));
 }
 
 // ---------------------------------------- Séquence épinglée pilotée au scroll --
@@ -606,6 +614,9 @@ function renderImpact(data, lang) {
   mount.innerHTML = Object.keys(projects)
     .map((id, i) => impactColumnHtml(id, projects[id], byProject[id] || [], i + 1, lang, dict))
     .join('');
+  // Même raison que dans dumpAll : ce contenu arrive par fetch, après le premier clonage de
+  // js/page-blob.js.
+  document.dispatchEvent(new Event('veille-content-change'));
 }
 
 // Ré-affiche le contenu dynamique déjà chargé dans la langue active — appelée
@@ -617,27 +628,32 @@ function renderDynamic() {
 
 async function initVeille() {
   const status = document.getElementById('vl-status');
-  try {
-    const res = await fetch('js/veille-data.json', { cache: 'no-cache' });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    veilleData = await res.json();
+  // Les deux flux sont indépendants : on les lance en parallèle plutôt
+  // qu'en série, et une panne sur l'un ne doit jamais faire disparaître
+  // le contenu déjà affiché par l'autre.
+  const [newsResult, impactResult] = await Promise.allSettled([
+    fetch('js/veille-data.json').then(res => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.json();
+    }),
+    fetch('js/veille-impact.json').then(res => (res.ok ? res.json() : null))
+  ]);
+
+  if (newsResult.status === 'fulfilled') {
+    veilleData = newsResult.value;
     status.style.display = 'none';
     dumpAll(veilleData, currentLang);
-  } catch (err) {
+  } else {
     const dict = I18N[currentLang] || I18N.fr;
-    status.textContent = `${dict['vl-load-error-prefix']} ${err.message}`;
-    console.error('Veille:', err);
+    status.textContent = `${dict['vl-load-error-prefix']} ${newsResult.reason.message}`;
+    console.error('Veille:', newsResult.reason);
   }
-  // Section indépendante du flux : une panne ici ne doit jamais faire
-  // disparaître les actualités déjà affichées au-dessus.
-  try {
-    const res = await fetch('js/veille-impact.json', { cache: 'no-cache' });
-    if (res.ok) {
-      impactData = await res.json();
-      renderImpact(impactData, currentLang);
-    }
-  } catch (err) {
-    console.error('Veille (impact):', err);
+
+  if (impactResult.status === 'fulfilled' && impactResult.value) {
+    impactData = impactResult.value;
+    renderImpact(impactData, currentLang);
+  } else if (impactResult.status === 'rejected') {
+    console.error('Veille (impact):', impactResult.reason);
   }
 }
 

@@ -168,6 +168,7 @@
     });
     rebuildFixedCopies();
     collectTransformed();
+    collectSticky();
     hoverMarked = [];
     // Après insertion, le temps que le navigateur applique les styles et crée les animations.
     requestAnimationFrame(syncCloneAnimations);
@@ -375,22 +376,121 @@
   // Les porteurs sont trouvés par leur style en ligne plutôt que codés en dur (#about et ses
   // suivants) : la liste exacte est une décision de initAboutParallax, et la dupliquer ici
   // reviendrait à devoir la tenir en phase avec elle.
+  //
+  // `height` est recopiée pour la même raison, et le défaut qu'elle corrige est bien pire qu'un
+  // simple décalage local : la piste du carrousel épinglé de la page veille (.vl-showcase-track)
+  // reçoit une hauteur en ligne de plus de 3000px pendant la séquence, que initShowcaseScrub
+  // RETIRE d'un coup une fois la séquence jouée (finalize). La copie, elle, garde la valeur figée
+  // au clonage : elle reste donc ~2280px plus haute que la vraie page, et tout ce qui suit la
+  // piste — #vl-grid, #vl-impact et surtout l'aplat bleu de #contact, repeint en blanc dans la
+  // copie — se retrouve décalé d'autant. D'où un grand bloc blanc invisible en plein milieu de
+  // la page, qui fait blanchir la forme là où il n'y a rien. Mesuré : 2280px d'écart pendant
+  // toute la seconde ou deux que met le ResizeObserver plus bas à reconstruire la copie.
+  // Recopier la hauteur par image supprime cette latence — le filet ne sert plus qu'aux cas
+  // qu'on n'a pas prévus.
+  const INLINE_LAYOUT_SELECTOR = '[style*="transform"], [style*="height"]';
   let transformPairs = [];
   function collectTransformed() {
     transformPairs = [];
-    document.querySelectorAll('[style*="transform"]').forEach((src) => {
+    document.querySelectorAll(INLINE_LAYOUT_SELECTOR).forEach((src) => {
       if (src.closest(EXCLUDE_SELECTOR)) return;
       const copy = counterpartOf(src);
       if (copy) transformPairs.push({ src, copy });
     });
   }
 
-  // Deux lectures et deux écritures de chaînes par section concernée (trois ou quatre), sans
+  // Quelques lectures et écritures de chaînes par élément concerné (trois ou quatre), sans
   // aucune mesure de mise en page : négligeable par image.
   function syncTransforms() {
     for (const { src, copy } of transformPairs) {
       if (copy.style.transform !== src.style.transform) copy.style.transform = src.style.transform;
+      if (copy.style.height !== src.style.height) copy.style.height = src.style.height;
     }
+  }
+
+  /* ---------- recalage des éléments en position:sticky ---------- */
+
+  // Un élément figé (position:sticky) ne peut pas fonctionner dans la copie, et c'est
+  // structurel : le figement ne réagit qu'au défilement RÉEL d'un ancêtre, or la copie ne
+  // défile jamais — js/page-blob.js y simule le défilement par un translateY sur
+  // .page-blob-clone-shift, qu'un sticky ignore complètement. La copie restait donc à sa
+  // position de repos pendant que l'original, lui, se figeait à l'écran : les deux dérivaient
+  // l'un par rapport à l'autre pendant tout le figement, et la forme tranchait un aplat blanc
+  // le long de ce décalage.
+  //
+  // On REJOUE ce figement : la feuille de style repasse la copie en position:static — donc à sa
+  // place de repos, celle qu'elle occuperait sans figement — et on lui applique ici le
+  // déplacement exact que le figement produit sur l'original. Même mécanique que
+  // syncTransforms/syncRailIndicator juste au-dessus.
+  //
+  // .vl-showcase-pin (le top 3 épinglé de la page veille) N'EST PLUS ICI : il passe maintenant
+  // devant la forme (.vl-showcase-track, z-index:41 dans veille.css — au-dessus des 40 de
+  // .page-blob-viewport), qui ne le recouvre donc plus jamais. Recaler sa copie n'aurait plus
+  // aucun effet visible, pour un mécanisme qui restait fragile : la piste qui le porte change
+  // aussi de HAUTEUR au fil du scrub (voir la synchronisation de `height` dans syncTransforms
+  // ci-dessus, elle conservée car #vl-grid/#vl-impact/#contact, eux, continuent de défiler sous
+  // la forme et doivent rester à la bonne place verticale).
+  const STICKY_SELECTOR = '.about-card, .xp-bento-stick';
+  let stickyPairs = [];
+
+  // Ordonnée d'un nœud de la copie dans son repère de mise en page, en remontant la chaîne des
+  // offsetParent jusqu'à .page-blob-clone (seul ancêtre positionné). Ne tient compte d'AUCUNE
+  // transform — ni celle qui simule le défilement sur .page-blob-clone-shift, ni celles que
+  // syncTransforms recopie : c'est bien la position « au repos » qu'on veut ici.
+  function staticTopOf(node) {
+    let y = 0;
+    for (let n = node; n && n !== cloneBox; n = n.offsetParent) y += n.offsetTop;
+    return y;
+  }
+
+  function collectSticky() {
+    stickyPairs = [];
+    document.querySelectorAll(STICKY_SELECTOR).forEach((src) => {
+      if (src.closest(EXCLUDE_SELECTOR)) return;
+      const copy = counterpartOf(src);
+      if (!copy || !copy.parentElement || !src.parentElement) return;
+      // Décalage de l'élément DANS SON PARENT, au repos. Mesuré une fois par reconstruction (la
+      // mise en page ne bouge pas entre deux) plutôt que par image : une remontée d'offsetTop
+      // force un recalcul de mise en page.
+      const offsetInParent = staticTopOf(copy) - staticTopOf(copy.parentElement);
+      stickyPairs.push({ src, copy, offsetInParent });
+    });
+  }
+
+  // Déplacement dû au figement = écart actuel entre l'élément et son parent, moins l'écart
+  // qu'ils ont au repos. Vaut 0 tant que l'élément n'est pas figé, et croît exactement comme le
+  // figement pendant qu'il l'est.
+  //
+  // Mesuré RELATIVEMENT AU PARENT, et non en coordonnées de document, parce que les deux
+  // subissent à l'identique les transforms de leurs ancêtres — qui s'annulent donc dans la
+  // soustraction. Un calcul en coordonnées de document, lui, absorbait le translateY du parallax
+  // de #about (jusqu'à --about-lift, 220px) : la copie le recevait alors DEUX FOIS, une fois par
+  // l'ancêtre que recopie syncTransforms et une fois par ce recalage, et la carte d'identité
+  // comme le bento de l'accueil dérivaient d'autant. STICKY_SELECTOR ne contient plus d'élément
+  // de la page veille (cf. plus haut), le défaut n'y était donc de toute façon plus observable.
+  function syncSticky() {
+    for (const p of stickyPairs) {
+      const d = p.src.getBoundingClientRect().top
+        - p.src.parentElement.getBoundingClientRect().top
+        - p.offsetInParent;
+      const t = Math.abs(d) < 0.5 ? '' : `translateY(${d.toFixed(1)}px)`;
+      if (p.copy.style.transform !== t) p.copy.style.transform = t;
+    }
+  }
+
+  /* ---------- recopie d'une classe pilotée par le scroll ---------- */
+
+  // .dp-foot-arm-hidden (basculée par initContactAvatarGrow, js/veille.js et js/details.js, à
+  // chaque image tant que l'avatar de #contact grandit) échappe à syncTransforms : la classe ne
+  // pose ni transform ni height en ligne, l'effet (opacity/translateY) vient d'une règle CSS sur
+  // .dp-foot-arm-hidden elle-même (cf. details.css). Sans ce recopiage, la copie garde la classe
+  // qu'elle avait au clonage — le texte "Envie de voir le reste ?" pouvait donc rester visible
+  // (ou invisible) sous la forme alors que le vrai, lui, avait basculé entre-temps.
+  const footEl = document.querySelector('.dp-foot');
+  function syncFootArm() {
+    if (!footEl) return;
+    const copy = counterpartOf(footEl);
+    if (copy) copy.classList.toggle('dp-foot-arm-hidden', footEl.classList.contains('dp-foot-arm-hidden'));
   }
 
   function syncHover(target) {
@@ -442,6 +542,34 @@
   // souvent, mais il porte z-index:100 : la forme (40) ne passe jamais dessus, sa copie périmée
   // n'est donc jamais visible et ne vaut pas une reconstruction.
   document.addEventListener('hero-content-change', scheduleRebuild);
+  // Émis par js/veille.js (dumpAll/renderImpact) une fois le flux chargé par fetch — donc bien
+  // après le premier clonage (idle, ci-dessus).
+  document.addEventListener('veille-content-change', scheduleRebuild);
+
+  // FILET GÉNÉRAL — tout ce qui change la HAUTEUR du document décale verticalement, dans la
+  // copie, l'intégralité de ce qui se trouve en dessous : le contenu ne tombe plus sur son
+  // original, et la forme tranche alors un aplat blanc franc n'importe où, sans rapport avec
+  // ce qu'elle survole vraiment. La page veille en donnait quatre exemples à elle seule (flux
+  // chargé par fetch, hauteur de piste du scrub posée puis reprise par layout(), même piste
+  // libérée par finalize(), images du top 3 qui arrivent), et chacun a d'abord été traité à la
+  // main avant qu'il ne devienne clair qu'ils n'étaient qu'un seul et même défaut.
+  //
+  // Un ResizeObserver sur <body> les attrape TOUS d'un coup, sans que chaque endroit qui
+  // modifie la mise en page ait à penser à prévenir ce module — ce qu'aucune liste
+  // d'évènements ne peut garantir sur la durée. Et contrairement au MutationObserver écarté
+  // plus haut, il ne réagit pas au contenu qui s'anime en permanence (frappe du terminal, mot
+  // du hero) : ces animations ne changent pas la hauteur du document, donc il reste muet.
+  // Aucune boucle de rétroaction possible : la copie vit dans une fenêtre position:fixed, hors
+  // du flux, elle ne compte donc pas dans la hauteur de <body>.
+  if (window.ResizeObserver) {
+    let lastBodyH = 0;
+    new ResizeObserver((entries) => {
+      const h = entries[0].contentRect.height;
+      if (Math.abs(h - lastBodyH) < 1) return;
+      lastBodyH = h;
+      scheduleRebuild();
+    }).observe(document.body);
+  }
   window.addEventListener('resize', scheduleRebuild);
 
   /* ---------- décalage de scroll (aligne la copie sur ce qui est réellement affiché) ---------- */
@@ -510,6 +638,10 @@
     // redimensionnement (transform d'un ancêtre, cf. plus haut) : on la revalide ici, où une
     // lecture de mise en page est de toute façon déjà faite pour le hero.
     positionFixedCopies();
+    // Le figement dépend directement du défilement : c'est ici qu'il bouge, et la boucle
+    // d'animation peut très bien être à l'arrêt (rien à peindre) au moment où il le fait.
+    syncSticky();
+    syncFootArm();
 
     // SEULE limite de la forme : le BORD HAUT DU BLEU, qu'elle ne doit jamais dépasser. Elle est
     // libre partout au-dessus — toute la largeur de la fenêtre, jusqu'en haut — et n'est plus
@@ -564,6 +696,18 @@
   // le rognage resterait sur la position d'il y a quelques images et la forme mordrait sur le
   // bleu. Émis une fois par image par initAboutParallax, et seulement tant qu'il anime.
   window.addEventListener('parallax-tick', scheduleScrollUpdate);
+  // syncTransforms/syncSticky tournent normalement dans frame(), la boucle à ressort du blob —
+  // mais cette boucle s'arrête dès qu'il n'y a plus rien à peindre (!shapeVisible, cf. frame()),
+  // ce qui arrive facilement pendant un lissage de parallax (la souris n'a pas forcément bougé).
+  // Sans ce second appel, la copie de #about (et de tout ce que le parallax entraîne avec lui)
+  // retardait alors sur l'original pendant tout le lissage — mesuré jusqu'à 48px d'écart en plein
+  // milieu du mouvement — et la forme tranchait un aplat blanc le long de cet écart, ou décalait
+  // la copie de .about-card/.xp-bento-stick recalée par syncSticky (qui hérite du retard de
+  // l'ancêtre transformé sous lequel elle vit). initAboutParallax dispatche cet évènement à
+  // chaque image tant qu'il anime, donc à une cadence largement suffisante pour rester en phase —
+  // appelé directement ici, sans passer par une file requestAnimationFrame, pour ne perdre aucune
+  // image de la synchronisation même quand frame() est arrêtée.
+  window.addEventListener('parallax-tick', () => { syncTransforms(); syncSticky(); syncFootArm(); });
 
   /* ---------- sillage de bulles (identique à initPreloaderBlob, js/main.js) ---------- */
 
@@ -739,6 +883,8 @@
     blob.style.setProperty('--pgblob-y', `${y.toFixed(1)}px`);
     syncRailIndicator();
     syncTransforms();
+    syncSticky();
+    syncFootArm();
 
     // Le curseur personnalisé (js/cursor.js) s'inverse en blanc sur la forme : il doit donc se
     // recalculer quand c'est ELLE qui bouge sous une souris immobile — le ressort met encore

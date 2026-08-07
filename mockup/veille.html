@@ -187,9 +187,15 @@
 
 <!-- Section contact, dupliquée depuis la section contact de l’accueil (index.html) -->
 <section class="contact" id="contact">
-  <img class="contact-avatar" src="assets/avatar-contact.png" alt="" aria-hidden="true" loading="lazy">
+  <picture>
+    <source type="image/webp" srcset="assets/avatar-contact.webp">
+    <img class="contact-avatar" src="assets/avatar-contact.png" alt="" aria-hidden="true" loading="lazy">
+  </picture>
   <div class="contact-fill" aria-hidden="true"></div>
-  <img class="contact-avatar contact-avatar-arm" src="assets/avatar-contact arm rest-detoure.png" alt="" aria-hidden="true" loading="lazy">
+  <picture>
+    <source type="image/webp" srcset="assets/avatar-contact%20arm%20rest-detoure.webp">
+    <img class="contact-avatar contact-avatar-arm" src="assets/avatar-contact arm rest-detoure.png" alt="" aria-hidden="true" loading="lazy">
+  </picture>
   <div class="wrap contact-wrap">
 
     <div class="contact-head">
@@ -222,12 +228,12 @@
   </div>
 </section>
 
-<script src="js/i18n.js"></script>
-<script src="js/knockout.js"></script>
-<script src="js/veille.js"></script>
-<script src="js/dot-rail-magnet.js"></script>
-<script src="js/page-blob.js"></script>
-<script src="js/cursor.js"></script>
-<script src="js/preload-pages.js"></script>
+<script src="js/i18n.js" defer></script>
+<script src="js/knockout.js" defer></script>
+<script src="js/veille.js" defer></script>
+<script src="js/dot-rail-magnet.js" defer></script>
+<script src="js/page-blob.js" defer></script>
+<script src="js/cursor.js" defer></script>
+<script src="js/preload-pages.js" defer></script>
 </body>
 </html>

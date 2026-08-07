@@ -36,15 +36,33 @@
   let stretch = 0;
   let velStretch = 0;
   let prevTop = indicator.offsetTop;
+  // Le blob passe l'écrasante majorité du temps parfaitement immobile et rond (souris loin
+  // du rail, aucun déplacement en cours) : plutôt que de recalculer un rAF à 60fps en continu
+  // du chargement à la fermeture de l'onglet, on suspend la boucle dès que tout est "posé"
+  // (déformations quasi nulles, aucun mouvement récent) et on ne la relance que sur un
+  // événement pertinent (mousemove, ou début du trajet du blob le long du rail).
+  let running = false;
+  const SETTLE_EPS = 0.001;
+
+  function wake() {
+    if (running) return;
+    running = true;
+    requestAnimationFrame(tick);
+  }
 
   window.addEventListener('mousemove', (e) => {
     mouse.x = e.clientX;
     mouse.y = e.clientY;
+    wake();
   }, { passive: true });
   document.documentElement.addEventListener('mouseleave', () => {
     mouse.x = -9999;
     mouse.y = -9999;
+    wake();
   });
+  // Déclenché par la transition CSS sur `top` quand le scroll-spy / un clic change de section :
+  // il faut rejouer le squash & stretch pendant tout le trajet.
+  indicator.addEventListener('transitionstart', wake);
 
   function tick() {
     // Centre réel (non transformé) du blob : offsetLeft/offsetTop sont relatifs à son
@@ -82,8 +100,19 @@
       `rotate(${angle}rad) translate(${tx.toFixed(2)}px,0) ` +
       `scale(${sx.toFixed(3)}, ${sy.toFixed(3)}) rotate(${-angle}rad)`;
 
+    // Tout est retombé à (quasi) zéro et rien ne bouge plus le long du rail : on arrête la
+    // boucle plutôt que de continuer à consommer une frame pour ne rien changer. `wake()`
+    // la relancera dès qu'un événement pertinent se reproduit.
+    const settled =
+      targetStretch === 0 && stretch < SETTLE_EPS &&
+      speed === 0 && velStretch < SETTLE_EPS;
+    if (settled) {
+      running = false;
+      return;
+    }
+
     requestAnimationFrame(tick);
   }
 
-  requestAnimationFrame(tick);
+  wake();
 })();

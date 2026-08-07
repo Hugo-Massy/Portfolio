@@ -19,6 +19,17 @@
 (function initPagePreload() {
   if (!('serviceWorker' in navigator)) return;
 
+  // Respecte les préférences data de l'utilisateur : ce préchargement télécharge tout le site
+  // (~85 ressources, plusieurs Mo) en arrière-plan. Sur connexion lente/plafonnée ou en mode
+  // "économie de données", ce coût n'a rien de justifié pour un premier visiteur — la
+  // navigation restera simplement normale (chaque page se charge à la demande), sans le confort
+  // "hors ligne / instantané" que ce préchargement apporte sur une bonne connexion.
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (conn) {
+    if (conn.saveData) return;
+    if (typeof conn.effectiveType === 'string' && /^(slow-2g|2g|3g)$/.test(conn.effectiveType)) return;
+  }
+
   // Fichiers « source » qu'on lit pour y trouver des références à d'autres ressources.
   const SOURCES = [
     'index.html', 'details.html', 'veille.html',

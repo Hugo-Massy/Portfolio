@@ -1,7 +1,14 @@
 /* Veille — page mise au même langage visuel que le reste du site (tokens de styles.css). */
 :root{ --vl-peek:160px; }
+/* Pas de z-index ici, volontairement — même raison que sur .hero de l'accueil (cf. le
+   commentaire au-dessus de .hero .wrap dans styles.css). `position:relative` + `z-index` fait
+   de cet élément un CONTEXTE D'EMPILEMENT, dans lequel le z-index:100 du terminal se retrouvait
+   enfermé : vis-à-vis du reste de la page c'était le 1 de .vl-raw qui comptait, donc le
+   terminal passait SOUS la forme du hero (.page-blob-viewport, z-index:40) au lieu de la
+   recouvrir. Et comme la copie du terminal est volontairement masquée dans la découpe
+   (.page-blob-clone .term-card), la forme n'y peignait plus qu'un aplat bleu opaque. */
 .vl-raw{
-  position:relative; z-index:1;
+  position:relative;
   max-width:var(--maxw); margin:0 auto; padding:0 16px 60px;
   font-family:var(--sans); color:var(--text); line-height:1.5;
 }
@@ -101,7 +108,14 @@
    de bon (.is-done : plus jamais de sticky, même en remontant) — seul l'état
    final (cartes à plat, stats visibles) reste réversible selon qu'on a
    dépassé la piste ou non, sans jamais recoller le bloc au centre. --- */
-.vl-showcase-track{ position:relative; z-index:2; margin-top:calc(var(--vl-peek) * -1); }
+/* z-index au-dessus de la forme du hero (.page-blob-viewport, 40 dans styles.css) : le top 3
+   et le pin épinglé passent donc DEVANT elle plutôt que de se faire découper en blanc au
+   travers. Même principe que .hero .term-card (styles.css) — évite d'avoir à répliquer dans la
+   copie la mise en page du pin (position:sticky, hauteur de piste qui grandit puis s'effondre
+   au fil du scrub) : ces mécaniques sont trop mouvantes pour qu'un simple recalage de la copie
+   reste fiable, la forme n'a donc plus besoin de savoir ce qui s'y passe. Reste sous le rail/
+   bouton remonter (50) et le sélecteur de langue (60), qui doivent toujours dominer. */
+.vl-showcase-track{ position:relative; z-index:41; margin-top:calc(var(--vl-peek) * -1); }
 .vl-showcase-pin{
   position:sticky; top:0; /* `top` réel posé en JS (layout) */
   display:flex; flex-direction:column; gap:56px;
@@ -335,6 +349,9 @@
   .vl-showcase-pin{ position:static; overflow:visible; gap:40px; margin:120px 0; padding-top:0; }
   .vl-meta-line{ opacity:1; transform:none; }
 }
+/* Même raison que .vl-showcase-track ci-dessus : la liste (« le reste du top ») passe devant
+   la forme du hero plutôt que sous elle, pour ne plus dépendre de l'alignement de sa copie. */
+#vl-grid{ position:relative; z-index:41; }
 .vl-all-h{
   font-size:13px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em;
   color:var(--text-faint);
@@ -345,8 +362,10 @@
    ci-dessus (.vl-top-card, sans puce de rang), alignée le long d'une timeline
    par projet — l'article reste identifiable au premier coup d'œil, l'analyse
    (constaté / fait / pourquoi) vient en dessous, dans le même bloc. --- */
+/* Même raison que .vl-showcase-track plus haut : ces cartes (.vl-top-card réutilisée telle
+   quelle, cf. impactColumnHtml dans js/veille.js) passent devant la forme du hero. */
 .vl-impact{
-  position:relative; z-index:1; background:var(--bg);
+  position:relative; z-index:41; background:var(--bg);
   margin-top:120px; padding-top:56px;
 }
 .vl-impact-head{ max-width:720px; margin:0 auto 120px; text-align:center; }
