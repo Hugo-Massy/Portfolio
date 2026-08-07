@@ -440,6 +440,7 @@ function initShowcaseScrub(meta, top) {
     const anchor = document.getElementById('vl-grid') || track;
     const before = anchor.getBoundingClientRect().top;
     pin.style.top = '';
+    meta.style.top = '';
     track.style.height = '';
     const after = anchor.getBoundingClientRect().top;
     const shift = after - before;
@@ -447,13 +448,22 @@ function initShowcaseScrub(meta, top) {
     html.style.scrollBehavior = prevBehavior;
   }
 
-  // (Re)mesure : hauteur naturelle du pin → position de gel centrée + hauteur
-  // de la piste (pin + course). Recalculée au resize et quand la taille du pin
-  // change (chargement des images du top 3). Plus aucun effet une fois
-  // finalisé : le pin reste définitivement en flux normal.
+  // Écart entre le pin et #vl-meta au repos (avant que le figement ne s'active) — ancien
+  // `gap:56px` du flex qui les regroupait quand #vl-meta était encore un enfant de
+  // .vl-showcase-pin (cf. le commentaire de .vl-showcase-pin dans veille.css pour pourquoi ce
+  // n'est plus le cas). #vl-meta est désormais sticky de façon indépendante ; ce nombre sert à
+  // recalculer, ici en JS, l'écart que le flex donnait gratuitement avant.
+  const META_GAP = 56;
+
+  // (Re)mesure : hauteur naturelle du pin + #vl-meta → position de gel centrée (l'ENSEMBLE des
+  // deux, comme avant leur séparation) et hauteur de la piste (ensemble + course). Recalculée
+  // au resize et quand la taille du pin change (chargement des images du top 3). Plus aucun
+  // effet une fois finalisé : pin et #vl-meta restent définitivement en flux normal.
   function layout() {
     if (finalized) return;
-    const H = pin.offsetHeight;
+    const topH = pin.offsetHeight;
+    const metaH = meta.offsetHeight;
+    const H = topH + META_GAP + metaH;
     const vh = window.innerHeight;
     // On ne fige que si l'écran est large (la media query repasse le pin en
     // flux normal sous 760px) ET si le pin tient dans le viewport une fois
@@ -461,12 +471,16 @@ function initShowcaseScrub(meta, top) {
     enabled = window.innerWidth > 760 && H + 24 <= vh;
     if (!enabled) {
       pin.style.top = '';
+      meta.style.top = '';
       track.style.height = '';
       applySteps(0);
       return;
     }
     stickyTop = Math.max(Math.round((vh - H) / 2), 12);
     pin.style.top = stickyTop + 'px';
+    // #vl-meta se colle juste sous le pin — même écart que l'ancien gap flex — pour rester
+    // visuellement groupée avec lui, sans en être un enfant (cf. veille.css).
+    meta.style.top = (stickyTop + topH + META_GAP) + 'px';
     track.style.height = (H + scrubLen) + 'px';
     render();
   }
@@ -505,11 +519,13 @@ function initShowcaseScrub(meta, top) {
   window.addEventListener('scroll', onScroll, { passive: true });
   window.addEventListener('resize', layout, { passive: true });
   // La hauteur du pin change quand les images du top 3 se chargent : on
-  // recale alors la position de gel et la course.
+  // recale alors la position de gel et la course. #vl-meta observée aussi, pour la même
+  // raison (H, ci-dessus, dépend maintenant des deux, séparément).
   let resizeObserver = null;
   if (typeof ResizeObserver !== 'undefined') {
     resizeObserver = new ResizeObserver(() => layout());
     resizeObserver.observe(pin);
+    resizeObserver.observe(meta);
   }
 
   scrubTeardown = () => {

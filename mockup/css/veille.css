@@ -108,21 +108,26 @@
    de bon (.is-done : plus jamais de sticky, même en remontant) — seul l'état
    final (cartes à plat, stats visibles) reste réversible selon qu'on a
    dépassé la piste ou non, sans jamais recoller le bloc au centre. --- */
-/* PAS de z-index élevé ici : .vl-showcase-track et .vl-showcase-pin restent de simples
-   conteneurs, sans le promouvoir EUX au-dessus de la forme du hero — sans quoi #vl-meta (la
-   phrase de stats, texte simple, enfant de .vl-showcase-pin au même titre que #vl-top) se
-   retrouverait promue avec les cartes qu'elle encadre, et cesserait de recevoir la découpe
-   blanche normale de la forme (elle resterait dans sa couleur de texte habituelle par-dessus
-   l'aplat bleu, illisible). C'est chaque .vl-top-card (styles plus bas), et elle seule, qui passe
-   devant la forme — pas un conteneur partagé avec du texte voisin. position:relative SANS
-   z-index ne crée aucun contexte d'empilement (la règle ne s'applique qu'avec z-index ≠ auto),
-   .vl-showcase-pin (position:sticky, même z-index:auto) non plus : les cartes du top 3, à
-   l'intérieur, se comparent donc bien DIRECTEMENT à la forme du hero, malgré ces deux ancêtres
-   communs avec #vl-meta. */
 .vl-showcase-track{ position:relative; margin-top:calc(var(--vl-peek) * -1); }
+/* z-index AU-DESSUS de la forme du hero (.page-blob-viewport, 40 dans styles.css) : le pin,
+   ÉLÉMENT STICKY LUI-MÊME (pas un descendant qui tenterait de s'en échapper), passe donc devant
+   elle plutôt que de se faire découper en blanc au travers.
+   Une première version posait ce z-index sur #vl-top (descendant de .vl-showcase-pin) plutôt
+   qu'ici : sur le papier équivalent (position:sticky + z-index:auto ne crée aucun contexte
+   d'empilement, donc ne devrait rien piéger), mais en pratique inopérant — vérifié par capture
+   d'écran, PAS par elementsFromPoint qui ignore les éléments pointer-events:none dont fait
+   partie #page-blob-viewport et aurait donné un faux résultat. Un z-index positif sur un
+   DESCENDANT ne remonte apparemment pas au-delà d'un ancêtre position:sticky jusqu'au contexte
+   racine dans ce Chrome, même quand cet ancêtre ne devrait rien piéger d'après la spec ; forcer
+   .vl-showcase-pin en position:static suffisait à faire disparaître le bug, confirmant le
+   sticky comme seul coupable. Le z-index DOIT donc être posé sur l'élément sticky lui-même.
+   #vl-meta n'est PLUS un enfant de .vl-showcase-pin (voir veille.html) précisément à cause de
+   cette contrainte : un enfant d'un ancêtre promu est promu avec lui, sans possibilité d'y
+   échapper (un contexte d'empilement ne laisse aucun de ses enfants "sortir" en dessous de son
+   propre rang) — #vl-meta, simple texte sans fond opaque, doit au contraire rester en dessous
+   de la forme pour continuer à recevoir sa découpe blanche normale. */
 .vl-showcase-pin{
-  position:sticky; top:0; /* `top` réel posé en JS (layout) */
-  display:flex; flex-direction:column; gap:56px;
+  position:sticky; top:0; z-index:41; /* `top` réel posé en JS (layout) */
   /* la carte centrale du top 3 est relevée de 36px (transform:translateY, voir
      .vl-top-grid plus bas) : ce padding lui laisse la place sans que rien ne
      la rogne en haut. */
@@ -130,11 +135,18 @@
 }
 .vl-showcase-track.is-done .vl-showcase-pin{ position:static; }
 
-/* Bloc méta : phrase de stats, sous le top 3 dans la séquence épinglée. */
+/* Bloc méta : phrase de stats, sous le top 3 dans la séquence épinglée.
+   Sticky de façon INDÉPENDANTE de .vl-showcase-pin (dont elle n'est plus un enfant, cf.
+   veille.html et le commentaire de .vl-showcase-pin ci-dessus) : son `top` est calculé en JS
+   (initShowcaseScrub) juste sous celui du pin, pour rester visuellement groupée avec le top 3
+   au figement sans partager son contexte d'empilement — et donc sans perdre la découpe blanche
+   normale de la forme du hero, qui doit continuer à la traverser. */
 .vl-meta{
+  position:sticky; top:0; /* `top` réel posé en JS (layout) */
   display:flex; flex-direction:column; align-items:center; gap:20px;
   width:100%; text-align:center;
 }
+.vl-showcase-track.is-done .vl-meta{ position:static; }
 .vl-meta-stats{
   margin:0 auto; font-size:38px; font-weight:600; line-height:1.35;
   color:var(--text); max-width:820px;

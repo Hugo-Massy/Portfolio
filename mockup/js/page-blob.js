@@ -423,18 +423,25 @@
   // déplacement exact que le figement produit sur l'original. Même mécanique que
   // syncTransforms/syncRailIndicator juste au-dessus.
   //
-  // .vl-showcase-pin (le top 3 épinglé de la page veille) EST DE RETOUR ICI, après un aller-
-  // retour : #vl-top et .vl-top-card (veille.css) portent bien z-index:41, au-dessus des 40 de
-  // .page-blob-viewport — et ça suffit à faire passer .vl-list-item et .vl-impact-card
-  // (ailleurs sur la page, hors de tout ancêtre position:sticky) devant la forme, testé et
-  // confirmé. Mais SOUS .vl-showcase-pin (position:sticky) précisément, ce z-index reste sans
-  // effet : Chrome ne fait apparemment pas remonter un z-index positif au-delà d'un ancêtre
-  // sticky jusqu'au contexte racine, même avec le z-index:auto de cet ancêtre qui, sur le
-  // papier, ne devrait créer aucun contexte d'empilement — vérifié en forçant temporairement
-  // .vl-showcase-pin en position:static : la forme redevenait alors correctement invisible sous
-  // les cartes, confirmant que le SEUL sticky est en cause, pas la géométrie. Puisque retirer le
-  // sticky briserait l'animation de la piste, .vl-showcase-pin garde son recalage de copie ici.
-  const STICKY_SELECTOR = '.vl-showcase-pin, .about-card, .xp-bento-stick';
+  // .vl-showcase-pin (le top 3 épinglé de la page veille) N'EST PAS ICI : un z-index positif posé
+  // sur un DESCENDANT de .vl-showcase-pin (position:sticky) ne remonte apparemment pas, dans ce
+  // Chrome, au-delà de cet ancêtre jusqu'au contexte racine — même avec le z-index:auto de
+  // .vl-showcase-pin, qui sur le papier ne devrait créer aucun contexte d'empilement (vérifié en
+  // forçant temporairement .vl-showcase-pin en position:static : la forme redevenait alors
+  // correctement invisible sous les cartes, confirmant le sticky comme seul coupable). Posé sur
+  // l'ÉLÉMENT STICKY LUI-MÊME, en revanche, le z-index fonctionne : voir .vl-showcase-pin
+  // (veille.css), qui porte maintenant z-index:41 directement.
+  //
+  // .vl-meta, EN REVANCHE, EST ICI — et c'est nouveau : elle est sortie de .vl-showcase-pin
+  // (veille.html) pour ne pas être promue avec lui (elle doit continuer à recevoir la découpe
+  // blanche normale), et tient donc désormais son propre position:sticky (veille.css) pour rester
+  // visuellement groupée avec le pin au figement. Mais ça la rend structurellement identique au
+  // problème que ce module corrige déjà pour .about-card/.xp-bento-stick : sa copie, elle aussi
+  // sticky, ne peut pas se figer dans une fenêtre qui ne défile jamais réellement (le défilement
+  // de la copie est simulé par un translateY sur .page-blob-clone-shift, qu'un sticky ignore).
+  // Repéré à l'usage : sans cette entrée, la copie de #vl-meta dérivait n'importe où, et la forme
+  // ne peignait plus qu'un aplat bleu uni dessus, sans aucun texte blanc découpé.
+  const STICKY_SELECTOR = '.vl-meta, .about-card, .xp-bento-stick';
   let stickyPairs = [];
 
   // Ordonnée d'un nœud de la copie dans son repère de mise en page, en remontant la chaîne des

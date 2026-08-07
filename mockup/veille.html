@@ -153,11 +153,17 @@
     </div>
   </header>
   <div id="vl-status" data-i18n="vl-loading">Chargement de la veille…</div>
+  <!-- #vl-meta est un FRÈRE de .vl-showcase-pin, pas un enfant (contrairement à avant) : la
+       forme du hero doit toujours pouvoir la traverser (découpe blanche normale), alors que
+       .vl-showcase-pin, elle, doit rester devant — voir le commentaire de .vl-showcase-pin
+       dans veille.css pour pourquoi ces deux besoins ne peuvent pas cohabiter sous un ancêtre
+       commun. Les deux restent visuellement groupés au figement grâce à initShowcaseScrub
+       (js/veille.js), qui pose sur #vl-meta un `top` sticky calculé juste sous celui du pin. -->
   <div id="vl-showcase" class="vl-showcase-track">
     <div class="vl-showcase-pin">
       <section id="vl-top"></section>
-      <div id="vl-meta" class="vl-meta">…</div>
     </div>
+    <div id="vl-meta" class="vl-meta">…</div>
   </div>
   <div id="vl-grid"></div>
 
