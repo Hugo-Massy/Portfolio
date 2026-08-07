@@ -617,6 +617,14 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   transition:top .45s cubic-bezier(.65,0,.35,1);
   animation:preloader-blob-morph 9s ease-in-out infinite;
 }
+/* Même bascule de z-index que .page-tag.is-on-dark plus haut, même raison : .contact est passé
+   à z-index:41 (cf. .contact plus bas, isolation:isolate) pour un bug antérieur, ce qui fait
+   désormais peindre son aplat bleu PAR-DESSUS .dot-rail (35 en temps normal, pour la découpe par
+   le blob) dès qu'un point du rail le chevauche — masquant pastilles ET copies de découpe
+   (.btn-knockout, enfants du rail, soumises au même rang d'empilement que leur ancêtre). :has()
+   promeut tout le rail dès qu'UN SEUL de ses liens est is-on-dark, plutôt que de fragmenter la
+   promotion par lien (le rail entier chevauche #contact ou pas, en pratique, vu sa faible hauteur). */
+.dot-rail:has(a.is-on-dark){z-index:42;}
 /* le label texte, lui, reste un simple basculement de couleur (pas de découpe possible sur
    du texte) — basculé via JS (initRailOnDark / initOnDarkAdaptation), point par point */
 .dot-rail a.is-on-dark .dot-label{color:rgba(255,255,255,.85);}
@@ -745,6 +753,15 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    La forme bleue du hero, elle, ne passe pas par cette bascule d'un bloc : elle découpe la nav
    au pixel près (la nav est sous elle, cf. son z-index, et js/page-blob.js en pose une copie
    blanche à l'intérieur de la forme). */
+/* z-index relevé UNIQUEMENT dans cet état : .is-on-dark n'est posé (js/veille.js,
+   js/details.js) que lorsque la nav survole #contact, jamais au-dessus du hero. Or .contact
+   est lui-même passé à z-index:41 (cf. .contact plus bas) pour un bug antérieur (avatar recouvert
+   par le blob) — ce qui, en créant un contexte d'empilement, fait désormais peindre son aplat bleu
+   PAR-DESSUS .page-tag (35 en temps normal, cf. plus haut) au lieu de laisser voir son texte blanc.
+   42 passe devant .contact (41) sans jamais dépasser rail/remontée (50) ni langue (60). Le 35 de
+   base reste inchangé ailleurs, donc la découpe par le blob (qui exige de rester SOUS lui, 40)
+   n'est pas affectée : .is-on-dark et le survol du blob ne sont jamais vrais en même temps. */
+.page-tag.is-on-dark{z-index:42;}
 .page-tag.is-on-dark .page-tag-item{color:rgba(255,255,255,.7);}
 .page-tag.is-on-dark .page-tag-item::before{background:rgba(255,255,255,.7);}
 .page-tag.is-on-dark .page-tag-item:not(.is-current):hover{color:#fff;}
