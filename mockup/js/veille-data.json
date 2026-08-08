@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-07T19:13:42.411Z",
+  "generatedAt": "2026-08-08T07:12:49.349Z",
   "windowDays": 30,
   "count": 112,
   "sources": [
@@ -64,6 +64,112 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Metabase SQLi zero-day exploited in customer data-theft attacks",
+      "link": "https://www.bleepingcomputer.com/news/security/framework-tally-disclose-metabase-data-theft-attacks/",
+      "date": "2026-08-07T20:14:46.000Z",
+      "summary": "A critical Metabase SQL injection vulnerability was exploited in zero-day attacks to breach customer instances in data theft attacks, known to impact Framework and Tally. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-1.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Unlimited Technology Systems breach impacts 3.8 million people",
+      "link": "https://www.bleepingcomputer.com/news/security/unlimited-technology-systems-breach-impacts-38-million-people/",
+      "date": "2026-08-07T19:30:41.000Z",
+      "summary": "Healthcare software company Unlimited Technology Systems reported that more than 3.8 million people were impacted by a data breach incident that occurred in October 2025. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Nearly 800 Malicious npm Packages Deliver Cross-Platform RAT and Infostealer",
+      "link": "https://thehackernews.com/2026/08/nearly-800-malicious-npm-packages.html",
+      "date": "2026-08-07T18:48:17.000Z",
+      "summary": "A cluster of nearly 800 malicious packages has been published to the npm registry as part of a new campaign designed to deliver cross-platform malware targeting Windows, Mac, and Linux systems. \"These packages appear to use AI slop squat…",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Malware",
+        "Windows Server",
+        "Debian/Linux",
+        "JavaScript"
+      ],
+      "projects": [
+        "massy-innove",
+        "homelab"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "ClickFix Attacks Deliver macOS Stealer That Can Drain Crypto Wallets",
+      "link": "https://thehackernews.com/2026/08/clickfix-attacks-deliver-macos-stealer.html",
+      "date": "2026-08-07T18:29:08.000Z",
+      "summary": "ClickFix-style attacks are being used to deliver a Go-based malware capable of stealing cryptocurrency assets, as well as browser-stored passwords, Apple iCloud Keychain data, and cached credentials. The macOS-focused infection chain is…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "UNC6671 Vishing Attacks Target Personal Phones to Steal SaaS Data",
+      "link": "https://thehackernews.com/2026/08/unc6671-vishing-attacks-target-personal.html",
+      "date": "2026-08-07T18:16:13.000Z",
+      "summary": "A recent wave of cyber attacks targeting financial services, private equity, and professional services has been attributed to a data extortion group known as UNC6671. \"UNC6671 continues to rely on voice phishing (vishing) to target enter…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Phishing"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "BleepingComputer",
       "sourceType": "press",
@@ -253,7 +359,7 @@
         "homelab"
       ],
       "severity": "high",
-      "image": "assets/veille/top-2.jpg"
+      "image": "assets/veille/top-3.jpg"
     },
     {
       "source": "The Hacker News",
@@ -871,7 +977,7 @@
         "massy-innove"
       ],
       "severity": "high",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1211,54 +1317,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "COLDCARD security audit phishing attack installs remote access tool",
-      "link": "https://www.bleepingcomputer.com/news/security/coldcard-security-audit-phishing-attack-installs-remote-access-tool/",
-      "date": "2026-08-05T17:49:41.000Z",
-      "summary": "A phishing campaign is exploiting fears surrounding the recently disclosed COLDCARD wallet vulnerability and suspected $88.6 million Bitcoin theft to trick users into installing ScreenConnect remote access software. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "CISA warns of hackers exploiting Langflow, N-central, Apache Tomcat flaws",
-      "link": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-exploiting-langflow-n-central-apache-tomcat-flaws/",
-      "date": "2026-08-05T15:51:33.000Z",
-      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency is giving federal agencies three days to mitigate vulnerabilities in IBM Langflow, N-central, and Apache Tomcat, all actively exploited. [...]",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Nginx",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "high",
-      "image": "assets/veille/top-4.jpg"
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -1506,7 +1564,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-1.jpg"
+      "image": "assets/veille/top-2.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1963,79 +2021,6 @@
         "Windows Server"
       ],
       "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "INC Ransomware Emerges as Dominant Actor Exploiting SonicWall SMA 1000 Flaws",
-      "link": "https://thehackernews.com/2026/08/inc-ransomware-emerges-as-dominant.html",
-      "date": "2026-08-03T16:15:13.000Z",
-      "summary": "The INC Ransomware operation has emerged as the \"dominant threat actor\" exploiting the recently disclosed security flaws in SonicWall Secure Mobile Access (SMA) 1000 series VPN appliances. In a report published over the weekend, Resecuri…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware",
-        "pfSense/FW",
-        "Exploit"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "⚡ Weekly Recap: Rogue AI Models, $88M Bitcoin Theft, Water-System Attacks and Dangling DNS Hijacks",
-      "link": "https://thehackernews.com/2026/08/weekly-recap-rogue-ai-models-88m.html",
-      "date": "2026-08-03T14:03:11.000Z",
-      "summary": "This week kept coming back to permission. A model crossed a boundary. A wallet trusted bad randomness. Webmail kept an intruder around. Public systems, package feeds, hotel networks, and login flows all gave away more than intended. Some…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "FOMO in the SOC: Where AI Platforms like Claude Actually Fit",
-      "link": "https://thehackernews.com/2026/08/fomo-in-soc-where-ai-platforms-like.html",
-      "date": "2026-08-03T11:30:00.000Z",
-      "summary": "AI is moving incredibly fast, and every security leader is feeling the pressure to keep up. AI platforms like Claude, Codex and Cursor are already helping security teams write detections, investigate alerts, summarize incidents, and auto…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "SOC/EDR",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
       "severity": "info",
       "image": null
     },
