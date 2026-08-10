@@ -903,7 +903,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .term-output .cmd{margin-top:3px;}
 .term-output .ok-mark{color:#7ee787; vertical-align:-2px; margin-left:2px;}
 .term-output .error{color:#d9a566;}
-.term-output .ascii{white-space:pre; word-break:normal; line-height:1.35; color:#6f89d9;}
 /* easter egg `matrix` : enchaîne plusieurs patterns visuels en surimpression de la sortie,
    changement net entre chacun, sans transition (voir runMatrixEasterEgg dans js/main.js) */
 .term-matrix-overlay{position:absolute; inset:0; z-index:5; background:#0d1110;}

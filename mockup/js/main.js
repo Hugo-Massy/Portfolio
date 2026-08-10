@@ -1232,13 +1232,8 @@ const TERM_COMMANDS = {
     get desc() { return termDict().neofetch.desc; },
     run: () => termDict().neofetch.lines,
   },
-  banner: {
-    get desc() { return termDict().banner.desc; },
-    run: () => termDict().banner.lines,
-  },
 };
 
-TERM_COMMANDS.banner.runClass = 'ascii';
 TERM_COMMANDS.neofetch.runClass = 'nf';
 TERM_COMMANDS.neofetch.speed = 1;
 
