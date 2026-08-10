@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-09T18:59:34.674Z",
+  "generatedAt": "2026-08-10T08:02:53.545Z",
   "windowDays": 30,
   "count": 112,
   "sources": [
@@ -64,6 +64,29 @@
     }
   },
   "items": [
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI's Next AI Model Astra Shows Cyber Performance Strong Enough to Trigger Pause",
+      "link": "https://thehackernews.com/2026/08/openais-next-ai-model-astra-shows-cyber.html",
+      "date": "2026-08-10T05:50:03.000Z",
+      "summary": "OpenAI has announced that it's pausing some \"internal activities\" involving its upcoming artificial intelligence (AI) model Astra after an internal evaluation found it had made significant advancements in agentic coding and cybersecurity…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "BleepingComputer",
       "sourceType": "press",
@@ -1869,31 +1892,6 @@
         "es": "Desarrollo y Automatización"
       },
       "tags": [
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Google Deletes 3 ADK AI Workflows After Malicious GitHub Issue Could Trigger Privileged Agent",
-      "link": "https://thehackernews.com/2026/08/google-deletes-3-adk-ai-workflows-after.html",
-      "date": "2026-08-04T11:16:23.000Z",
-      "summary": "Google deleted three AI agent workflows from its Agent Development Kit (ADK) Python repository. Pillar Security showed that a public GitHub issue could manipulate a triage agent into triggering a privileged code-fixing agent. The researc…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "Python",
-        "Git",
         "IA/LLM"
       ],
       "projects": [
