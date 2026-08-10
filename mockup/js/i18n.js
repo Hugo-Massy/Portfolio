@@ -1,7 +1,6 @@
 ﻿// Dictionnaires de traduction FR/EN/ES. I18N couvre le HTML statique (clés posées en
 // data-i18n / data-i18n-attr sur les sections), TERM_I18N couvre le contenu généré par
-// le terminal interactif (descriptions et sorties des commandes), HERO_PHRASES couvre
-// le mot qui défile dans le H1 du hero.
+// le terminal interactif (descriptions et sorties des commandes).
 
 const I18N = {
   fr: {
@@ -22,8 +21,7 @@ const I18N = {
     'term-input-aria': 'Terminal interactif — tape une commande',
 
     'hero-h1-prefix': 'Sécuriser, administrer, déployer —',
-    'hero-h1-mid': 'la cyber qui',
-    'hero-h1-suffix': ' le réel',
+    'hero-h1-accent': 'pour ce qui compte vraiment',
     'hero-lede': 'Hugo Menu, étudiant Mastère Spécialisé® Expert en cybersécurité, en alternance DSI Mairie de Massy. Systèmes, réseau, cloud et sécurité — projets déployés et documentés.',
     'hero-cta-contact': 'Me contacter',
     'hero-cta-projects': 'Voir mon expérience',
@@ -366,8 +364,7 @@ const I18N = {
     'term-input-aria': 'Interactive terminal — type a command',
 
     'hero-h1-prefix': 'Secure, administer, deploy —',
-    'hero-h1-mid': 'the cyber that',
-    'hero-h1-suffix': ' reality',
+    'hero-h1-accent': 'for what truly matters',
     'hero-lede': 'Hugo Menu, Mastère Spécialisé® Expert en cybersécurité student, on a work-study program with the Massy City IT department. Systems, networking, cloud and security — deployed and documented projects.',
     'hero-cta-contact': 'Contact me',
     'hero-cta-projects': 'View my experience',
@@ -710,8 +707,7 @@ const I18N = {
     'term-input-aria': 'Terminal interactivo — escribe un comando',
 
     'hero-h1-prefix': 'Asegurar, administrar, desplegar —',
-    'hero-h1-mid': 'la ciber que',
-    'hero-h1-suffix': ' la realidad',
+    'hero-h1-accent': 'para lo que realmente importa',
     'hero-lede': 'Hugo Menu, estudiante de Mastère Spécialisé® Expert en cybersécurité, en formación dual con el departamento de TI del Ayuntamiento de Massy. Sistemas, redes, nube y seguridad — proyectos desplegados y documentados.',
     'hero-cta-contact': 'Contáctame',
     'hero-cta-projects': 'Ver mi experiencia',
@@ -1059,12 +1055,6 @@ function storeLang(lang) {
     // stockage indisponible (navigation privée...) — la langue reste par défaut
   }
 }
-
-const HERO_PHRASES = {
-  fr: ['consolide', 'assure', 'enrichie', 'renforce', 'solidifie', 'muscle', 'raffermit', 'protège'],
-  en: ['strengthens', 'secures', 'enriches', 'reinforces', 'solidifies', 'builds', 'toughens', 'protects'],
-  es: ['consolida', 'asegura', 'enriquece', 'refuerza', 'solidifica', 'fortalece', 'endurece', 'protege'],
-};
 
 const TERM_I18N = {
   fr: {

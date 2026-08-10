@@ -33,7 +33,6 @@ function initSite() {
   initRailOnDark();
   initDotRailKnockout();
   initBackToTop();
-  initHeroCycle();
   initHeroTermGrow();
   initLangSwitch();
   initIdBadgeFlip();
@@ -883,49 +882,6 @@ function initHeroTermGrow() {
     matchByText: matchCategoryByText,
     list: listCategoryNames,
   };
-}
-
-// Fait défiler le mot-clé du titre du Hero, puis s'arrête définitivement sur "protège".
-function initHeroCycle() {
-  const el = document.getElementById('cycle-word');
-  const suffix = document.getElementById('cycle-suffix');
-  if (!el) return;
-
-  const HOLD_MS = 2200;
-  const SWAP_MS = 350;
-  let i = 0;
-  let isFinal = false;
-
-  function phrases() {
-    return HERO_PHRASES[CURRENT_LANG] || HERO_PHRASES.fr;
-  }
-
-  el.textContent = phrases()[0];
-
-  // Si la langue change en cours de cycle, on retraduit juste le mot actuellement
-  // affiché (à la même position dans la nouvelle liste) sans relancer le minuteur.
-  document.addEventListener('langchange', () => {
-    el.textContent = isFinal ? phrases()[phrases().length - 1] : phrases()[i];
-  });
-
-  const timer = setInterval(() => {
-    i += 1;
-    el.classList.add('is-swapping');
-    setTimeout(() => {
-      el.textContent = phrases()[i];
-      el.classList.remove('is-swapping');
-      if (i === phrases().length - 1) {
-        clearInterval(timer);
-        isFinal = true;
-        el.classList.add('is-final');
-        if (suffix) suffix.remove();
-      }
-      // La découpe blanche du blob du hero (js/page-blob.js) travaille sur une COPIE figée de la
-      // page : sans ce signal, elle garderait le mot affiché à l'instant du clone, et montrerait
-      // donc un autre mot que celui du titre dès le premier changement.
-      document.dispatchEvent(new CustomEvent('hero-content-change'));
-    }, SWAP_MS);
-  }, HOLD_MS);
 }
 
 // Cache le bouton de défilement dès qu'on clique dessus ou qu'on scrolle.
@@ -1860,8 +1816,8 @@ function initTerminal() {
 
 // Écran de chargement (#preloader, voir index.html/styles.css) : fait patienter le temps que
 // les polices distantes/images soient prêtes en faisant défiler 3 salutations (bienvenue/welcome/
-// bienvenido, en écho au sélecteur de langue) sur le même principe de "mot liquide" que le hero
-// (cf. initHeroCycle). Ne se ferme JAMAIS tout seul : une fois la page prête, l'icône souris
+// bienvenido, en écho au sélecteur de langue) sur un principe de "mot liquide" (fondu + décalage
+// vertical entre chaque mot). Ne se ferme JAMAIS tout seul : une fois la page prête, l'icône souris
 // (#preloader-scroll-hint) apparaît, et seule une interaction explicite (scroll/clic/touche/
 // molette) referme l'écran. #app reste inert tant que l'écran est affiché pour ne pas laisser
 // le clavier/lecteur d'écran atteindre un contenu encore masqué derrière lui.

@@ -61,7 +61,7 @@ a{color:inherit; text-decoration:none;}
 .wrap{max-width:var(--maxw); margin:0 auto; padding:0 16px;}
 
 /* PRELOADER — écran plein écran affiché dès le HTML (avant même les polices distantes),
-   avec le même principe de "mot liquide" que le hero (cf. initHeroCycle) mais décliné sur
+   avec un principe de "mot liquide" (fondu + décalage vertical) décliné sur
    3 langues (bienvenue/welcome/bienvenido), en écho au sélecteur de langue du site. Une
    pastille bleue organique (.preloader-scroll-hint) apparaît une fois la page prête. Ne se ferme jamais tout seul : seule une interaction de l'utilisateur
    (scroll/clic/touche/molette) l'efface, piloté par initPreloader (js/main.js). #app passe
@@ -711,12 +711,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 :root{ --wave-h: clamp(120px, 14vw, 320px); }
 .hero h1{font-size:50px; line-height:1.15; margin:26px 0 22px; max-width:540px;}
 .hero h1 .accent{color:var(--accent);}
-.cycle-word{
-  display:inline-block; color:var(--accent-dark); font-weight:700;
-  transition:opacity .35s ease, transform .35s ease, filter .35s ease;
-}
-.cycle-word.is-swapping{opacity:0; transform:translateY(6px); filter:blur(2px);}
-.cycle-word.is-final{color:var(--accent-dark);}
 .hero .lede{font-size:18px; color:var(--text-dim); max-width:600px; margin-bottom:42px;}
 .hero-cta{display:flex; gap:16px; flex-wrap:wrap; margin-bottom:48px;}
 .social-row{display:flex; gap:28px; align-items:center;}

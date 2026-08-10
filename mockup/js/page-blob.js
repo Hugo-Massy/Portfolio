@@ -603,7 +603,7 @@
   // suffisait à saccader tout le site, alors qu'il passait inaperçu sur des pages plus légères
   // (veille). Un MutationObserver sur <body> posait le même problème en pire : la page contient
   // du texte qui s'anime déjà en continu (frappe/effacement de "neofetch" dans le terminal au
-  // repos, mot du hero qui défile...), qui le redéclenchait en quasi-permanence.
+  // repos...), qui le redéclenchait en quasi-permanence.
   //
   // La copie n'est donc reconstruite QUE sur des évènements ponctuels et rares — jamais sur une
   // minuterie — et chaque reconstruction est en plus posée en tâche de fond (requestIdleCallback,
@@ -618,11 +618,6 @@
     rebuildTimer = setTimeout(() => idle(rebuildClone), 400);
   }
   document.addEventListener('langchange', scheduleRebuild);
-  // Émis par initHeroCycle (js/main.js) à chaque changement du mot du titre — le seul contenu du
-  // hero qui évolue tout seul ET que la forme peut recouvrir. Le terminal change bien plus
-  // souvent, mais il porte z-index:100 : la forme (40) ne passe jamais dessus, sa copie périmée
-  // n'est donc jamais visible et ne vaut pas une reconstruction.
-  document.addEventListener('hero-content-change', scheduleRebuild);
   // Émis par js/veille.js (dumpAll/renderImpact) une fois le flux chargé par fetch — donc bien
   // après le premier clonage (idle, ci-dessus).
   document.addEventListener('veille-content-change', scheduleRebuild);
