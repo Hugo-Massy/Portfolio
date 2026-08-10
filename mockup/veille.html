@@ -84,6 +84,8 @@
   </span>
 </button>
 
+<div class="scroll-progress" aria-hidden="true"><span class="scroll-progress-fill"></span></div>
+
 <nav class="dot-rail" aria-label="Navigation" data-i18n-attr="aria-label:nav-aria">
   <span class="dot-rail-indicator"></span>
   <a href="#veille-hero" data-sections="vl-hero-head"><span class="dot-label" data-i18n="vl-nav-home">Accueil</span><span class="dot"><span class="dot-core"></span></span></a>
@@ -172,27 +174,39 @@
       <h2 data-i18n="vl-impact-h2">Ce que ces actus <span class="accent">changent vraiment</span> pour mes projets.</h2>
     </header>
     <div class="vl-impact-cols" id="vl-impact-cols"></div>
+
+    <!-- Version mobile : les 4 entrées, jusque-là réparties en 2 colonnes,
+         réunies dans un seul carrousel façon .refs-carousel (citations,
+         accueil) — une entrée active à la fois, glissement horizontal,
+         points de navigation. Piloté par initImpactCarousel (js/veille.js).
+         Basculement avec .vl-impact-cols en CSS (max-width:800px). -->
+    <div class="vl-impact-carousel" id="vl-impact-carousel">
+      <div class="vl-impact-carousel-track" id="vl-impact-carousel-track"></div>
+      <div class="vl-impact-carousel-dots" id="vl-impact-carousel-dots" role="tablist" aria-label="Choisir une actualité"></div>
+    </div>
   </section>
 
-  <!-- Rappel de retour en pied, repris de details.html : occupe le blanc dans lequel
-       l'avatar de #contact déborde vers le haut, et se cache quand son bras le désigne. -->
-  <div class="dp-foot">
-    <p data-i18n="dp-foot-lede">Envie de voir le reste ?</p>
-    <div class="dp-foot-actions">
-      <a class="btn btn-primary" href="index.html">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/> <path d="M19 12H5"/></svg>
-        <span data-i18n="dp-foot-cta">Retour à l'accueil</span>
-      </a>
-      <a class="btn btn-ghost" href="details.html">
-        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/> <path d="m12 5 7 7-7 7"/></svg>
-        <span data-i18n="details-link-cta">Voir les détails</span>
-      </a>
-    </div>
-  </div>
 </main>
 
 <!-- Section contact, dupliquée depuis la section contact de l’accueil (index.html) -->
 <section class="contact" id="contact">
+  <!-- Rappel de retour, structure/CSS identiques à .details-link sur l'accueil (styles.css) :
+       même positionnement absolu dans #contact, même apparition liée au bras de l'avatar. -->
+  <div class="details-link">
+    <div class="details-link-inner">
+      <p data-i18n="dp-foot-lede">Envie de voir le reste ?</p>
+      <div class="details-link-actions">
+        <a class="btn btn-primary" href="index.html">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/> <path d="M19 12H5"/></svg>
+          <span data-i18n="dp-foot-cta">Retour à l'accueil</span>
+        </a>
+        <a class="btn btn-ghost" href="details.html">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/> <path d="m12 5 7 7-7 7"/></svg>
+          <span data-i18n="details-link-cta">Voir les détails</span>
+        </a>
+      </div>
+    </div>
+  </div>
   <picture>
     <source type="image/webp" srcset="assets/avatar-contact.webp">
     <img class="contact-avatar" src="assets/avatar-contact.png" alt="" aria-hidden="true" loading="lazy">
@@ -238,6 +252,7 @@
 <script src="js/frame.js" defer></script>
 <script src="js/knockout.js" defer></script>
 <script src="js/veille.js" defer></script>
+<script src="js/scroll-progress.js" defer></script>
 <script src="js/dot-rail-magnet.js" defer></script>
 <script src="js/page-blob.js" defer></script>
 <script src="js/cursor.js" defer></script>

@@ -110,7 +110,13 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 .dp-tree-file.is-active .dp-ic-file{color:#6f89d9;}
 
 /* --- Colonne principale --- */
-.dp-main{min-width:0;}
+/* padding-bottom : le rappel de retour (.details-link, dans #contact) est positionné en
+   absolu et remonte par-dessus ce qui précède #contact (translateY, styles.css) —
+   exactement comme sur l'accueil, où la section "disponibilité" laisse largement la
+   place avant #contact. Ici le dernier bloc de contenu suivait juste en dessous : sans
+   cette marge, le texte remontait jusque sous les boutons. */
+.dp-main{min-width:0; padding-bottom:440px;}
+@media(max-width:640px){ .dp-main{padding-bottom:280px;} }
 .dp-section{margin-bottom:64px;}
 .dp-section:last-of-type{margin-bottom:40px;}
 .dp-section-head{margin-bottom:28px;}
@@ -915,26 +921,10 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   .dp-stack-groups{grid-template-columns:1fr;}
 }
 
-/* pied de page : rappel de retour. La marge basse ménage l'espace blanc dans lequel
-   l'avatar de #contact déborde vers le haut (ses bras se posent sur le pli diagonal) :
-   sur l'accueil ce débordement recouvre la section précédente, ici il faut le prévoir
-   pour retrouver exactement le même rendu — même calcul que le translateY de .contact-avatar. */
-.dp-foot{
-  display:flex; flex-direction:column; align-items:center; gap:16px;
-  text-align:center; padding:220px 20px 44px;
-  margin-bottom:calc(clamp(320px, 42vw, 620px) * 0.5 - clamp(160px, 22vw, 360px));
-}
-.dp-foot p{color:var(--text-dim); font-size:15px;}
-/* deux sorties possibles côte à côte (accueil + page sœur) : .dp-foot est une
-   colonne, il faut donc une rangée dédiée pour ne pas les empiler. */
-.dp-foot-actions{display:flex; flex-wrap:wrap; justify-content:center; gap:12px;}
-/* le texte et le bouton ne restent affichés que tant que le bras de l'avatar les
-   désigne (cf. initContactAvatarGrow dans js/details.js) : ils se cachent avec lui. */
-.dp-foot p, .dp-foot .btn{transition:opacity .3s ease, transform .3s ease;}
-.dp-foot-arm-hidden p, .dp-foot-arm-hidden .btn{opacity:0; transform:translateY(6px); pointer-events:none;}
-@media(max-width:640px){
-  .dp-foot{margin-bottom:0;}
-}
+/* Le rappel de retour utilise désormais .details-link (styles.css), exactement la même
+   structure/CSS que sur l'accueil — même positionnement absolu dans #contact, même
+   apparition liée à --avatar-arm-opacity (posée par initContactAvatarGrow ci-dessous,
+   js/details.js et js/veille.js). Plus de règles .dp-foot dédiées à maintenir en double. */
 
 
 /* reveal identique au reste du site (initialisé par js/details.js) */

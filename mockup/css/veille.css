@@ -12,6 +12,12 @@
   max-width:var(--maxw); margin:0 auto; padding:0 16px 60px;
   font-family:var(--sans); color:var(--text); line-height:1.5;
 }
+/* Même besoin de dégagement que .dp-main (details.css) : le rappel de retour
+   (.details-link, dans #contact) remonte par-dessus ce qui précède en position
+   absolue — sans cette marge basse, le dernier paragraphe du bloc Impact remontait
+   jusque sous les boutons. */
+.vl-raw{padding-bottom:440px;}
+@media(max-width:640px){ .vl-raw{padding-bottom:280px;} }
 
 /* --- En-tête calqué sur le hero (.hero de styles.css) : plein 100vh, titre
    centré dans tout le viewport. Le top 3 (piste ci-dessous) est tiré vers le
@@ -159,6 +165,7 @@
   color:var(--text); max-width:820px;
 }
 .vl-meta-stats b{font-size:1.4em; font-weight:800; color:var(--accent);}
+@media(max-width:640px){ .vl-meta-stats{ font-size:28px; } }
 .vl-meta-line{
   display:block;
   opacity:0; transform:translateY(60px);
@@ -170,13 +177,56 @@
 .vl-list{display:flex; flex-direction:column; gap:12px;}
 /* z-index au-dessus de la forme du hero : même raison que .vl-top-card plus bas. */
 .vl-list-item{
-  position:relative; z-index:41;
+  position:relative; z-index:41; overflow:hidden;
   display:flex; align-items:flex-start; gap:16px;
   padding:18px 20px; border:none; list-style:none;
   background:var(--bg-elev); border:1px solid var(--border); border-radius:var(--radius);
   box-shadow:var(--shadow-card);
   text-decoration:none; color:inherit; cursor:pointer;
   transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+/* MOBILE UNIQUEMENT — au-dessus de 640px la vignette garde son gabarit par défaut
+   (boîte 16/9 de 210px à gauche du texte, cf. .vl-list-img plus bas) : la largeur y
+   suffit pour la poser à côté du titre. C'est seulement sur téléphone, où elle
+   volait la moitié de la ligne au titre, qu'elle devient un repère décoratif en
+   haut à gauche de la carte, en faible opacité. Pas de masque sur l'image
+   elle-même : elle reste nette jusqu'aux bords haut et gauche (ceux qui touchent le
+   coin de la carte, pas de fondu voulu là), c'est la surcouche blanche (::after) qui
+   l'estompe, uniquement vers le bas et la droite. Sortie du flux
+   (position:absolute) : le gap/flex de .vl-list-item ne joue alors plus qu'entre le
+   rang et le corps de texte. */
+@media(max-width:640px){
+  .vl-list-item .vl-list-img{
+    position:absolute; top:0; left:0; z-index:0;
+    width:45%; height:65%; max-width:none; aspect-ratio:auto;
+    margin:0; border:none; border-radius:0;
+    opacity:.14; pointer-events:none;
+  }
+  .vl-list-item .vl-list-img img{ object-fit:cover; }
+  .vl-list-item .vl-list-img .vl-img-spinner{ display:none; }
+  .vl-list-item .vl-list-img.vl-img-placeholder--logo{
+    width:45%; height:65%; padding:16px; box-sizing:border-box;
+  }
+  /* Passe au-dessus de la vignette (z-index:0 aussi, mais ::after peint après un
+     enfant réel comme .vl-list-img) pour la ramener vers du blanc. Transparente
+     sur le premier tiers (haut/gauche : l'image y reste nette), puis opaque en
+     s'éloignant vers la droite ET vers le bas (deux dégradés additionnés) :
+     c'est seulement là que la transition vers le blanc doit se voir. */
+  .vl-list-item::after{
+    content:''; position:absolute; top:0; left:0; z-index:0;
+    width:45%; height:65%; pointer-events:none;
+    background:#fff;
+    -webkit-mask-image:
+      linear-gradient(to right, transparent 0%, transparent 45%, #000 100%),
+      linear-gradient(to bottom, transparent 0%, transparent 45%, #000 100%);
+    mask-image:
+      linear-gradient(to right, transparent 0%, transparent 45%, #000 100%),
+      linear-gradient(to bottom, transparent 0%, transparent 45%, #000 100%);
+  }
+  .vl-list-item .vl-list-img.vl-img-placeholder:not(.vl-img-placeholder--logo){
+    background:none; font-size:56px;
+  }
+  .vl-list-item .vl-list-rank, .vl-list-item .vl-list-body{ position:relative; z-index:1; }
 }
 .vl-list-item:hover{
   transform:translateY(-2px);
@@ -231,8 +281,26 @@
 .vl-list-link svg{transition:transform .18s ease;}
 .vl-list-item:hover .vl-list-link svg{transform:translateX(3px);}
 @media(max-width:640px){
-  .vl-list-item{padding:14px 16px; gap:12px;}
+  .vl-list-item{padding:12px 14px; gap:10px;}
+  .vl-list-body{gap:4px;}
   .vl-list-head{flex-direction:column; gap:2px;}
+  /* Le titre sur 16px, sans limite de lignes, à côté d'une vignette de
+     108px, prenait à lui seul 4-5 lignes : on resserre la typo et on le
+     plafonne à 3 lignes pour que la carte reste compacte. */
+  .vl-list-head h3{
+    font-size:14px; line-height:1.25;
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .vl-list-date{ font-size:10px; }
+  .vl-list-meta{ font-size:10px; }
+  .vl-list-summary{ font-size:12px; line-height:1.4; }
+  /* Sur mobile la rangée de tags pouvait s'enrouler sur 3 lignes ou plus
+     (projet + plusieurs tags) : on la plafonne à 2 lignes, le reste étant
+     coupé plutôt que de continuer à pousser la carte en hauteur. */
+  .vl-tags-row{ margin-top:4px; gap:4px; max-height:42px; overflow:hidden; }
+  .vl-proj-chip, .vl-tag-chip{ font-size:9px; padding:2px 7px; }
+  .vl-list-foot{ margin-top:6px; }
+  .vl-list-link{ font-size:11.5px; }
 }
 
 /* Vignette du top 3 : boîte 16/9. L'image (posée en absolu, au-dessus) recouvre
@@ -272,16 +340,14 @@
 .vl-list-img.vl-img-placeholder--logo{
   width:210px; height:auto; padding:38px;
 }
-@media(max-width:640px){
-  .vl-list-img.vl-img-placeholder--logo{width:108px; padding:21px;}
-}
-/* Vignette du top 10 : rectangle 16/9, doit passer après .vl-img (même
-   spécificité) pour l'emporter sur sa taille par défaut (16/9, 420px). */
+/* Vignette du top 10 : gabarit par défaut, celui qui s'applique dès 641px — une
+   boîte 16/9 de 210px posée dans le flux, à gauche du texte. Sous 640px seulement,
+   .vl-list-item .vl-list-img (plus haut) la sort du flux pour en faire un fond de
+   carte à faible opacité. */
 .vl-list-img{
   flex:none; margin:0; width:210px; max-width:210px; aspect-ratio:16/9;
   border-radius:8px;
 }
-@media(max-width:640px){ .vl-list-img{width:108px; max-width:108px;} }
 @keyframes vl-spin{to{transform:rotate(360deg);}}
 @media (prefers-reduced-motion:reduce){ .vl-img-spinner{animation-duration:2s;} }
 
@@ -394,6 +460,14 @@
   .vl-showcase-track{ height:auto !important; margin-top:0; }
   .vl-showcase-pin{ position:static; overflow:visible; gap:40px; margin:120px 0; padding-top:0; }
   .vl-meta-line{ opacity:1; transform:none; }
+  /* Cartes du top 3 empilées : le résumé sur 6 lignes + l'image plein cadre
+     faisaient de chaque carte un bloc bien plus haut que large une fois
+     seule par ligne. On resserre padding/typo et on coupe le résumé à 3
+     lignes pour que les 3 cartes tiennent dans une hauteur raisonnable. */
+  .vl-top-card-body{ padding:12px 14px 14px; gap:6px; }
+  .vl-top-card h3{ font-size:15px; }
+  .vl-top-summary{ -webkit-line-clamp:3; font-size:12.5px; }
+  .vl-top-link{ padding-top:6px; }
 }
 .vl-all-h{
   font-size:13px; font-family:var(--mono); text-transform:uppercase; letter-spacing:.06em;
@@ -433,10 +507,6 @@
   display:grid; grid-template-columns:repeat(2, 1fr); column-gap:48px; row-gap:0;
   align-items:start;
 }
-@media(max-width:800px){
-  .vl-impact-cols{grid-template-columns:1fr; gap:40px;}
-  .vl-impact-col-head, .vl-impact-entry, .vl-impact-empty{ grid-column:1; grid-row:auto; }
-}
 
 .vl-impact-col-head{
   grid-column:var(--col); grid-row:var(--row);
@@ -456,6 +526,10 @@
 
 .vl-impact-entry{ grid-column:var(--col); grid-row:var(--row); position:relative; padding-bottom:40px; }
 .vl-impact-entry--last{ padding-bottom:0; }
+/* Sous 800px les 2 colonnes projet cèdent entièrement la place à .vl-impact-carousel
+   (plus bas) : pas la peine de les faire s'empiler, elles disparaissent purement et
+   simplement — voir le bloc "bascule desktop/mobile" après .vl-impact-story. */
+@media(max-width:800px){ .vl-impact-cols{ display:none; } }
 /* Séparateur posé sur toute entrée qui n'ouvre pas sa colonne (calculé côté JS
    via son rang dans le projet, pas via nth-child qui mélangerait désormais
    les deux colonnes puisqu'elles partagent le même parent de grille). Un
@@ -487,14 +561,65 @@
   overflow-wrap:break-word;
 }
 .vl-impact-entry-body > .vl-impact-story:last-child{ margin-bottom:0; }
-@media(max-width:560px){
-  .vl-impact-card, .vl-impact-entry--right .vl-impact-card{
-    float:none; width:auto; max-width:320px; margin:0 0 16px;
-  }
-}
+/* Les réglages ≤560px pour .vl-impact-card/.vl-impact-entry ne sont plus utiles ici :
+   .vl-impact-cols est déjà display:none dès 800px (voir plus haut), remplacée par
+   .vl-impact-carousel ci-dessous, qui reprend le resserrement qui leur était destiné
+   directement sur .vl-impact-card/.vl-top-card-body à l'intérieur des slides. */
 .vl-impact-story strong{ color:var(--accent); font-weight:700; }
 
-/* Rappel de pied + #contact (repris de details.css). Ici le dernier paragraphe
-   d'analyse du bloc Impact arrive juste au-dessus : on double le blanc avant le
-   rappel de retour pour détacher la clôture de la page du contenu. */
-.vl-raw .dp-foot{ padding-top:clamp(230px, 26vh, 330px); }
+/* --- Version mobile du bloc Impact : carrousel, réunissant les 4 entrées (jusque-là
+   réparties en 2 colonnes) façon .refs-carousel (citations, accueil) — une entrée à la
+   fois, glissement horizontal avec les voisines qui dépassent aux bords, points de
+   navigation. Contrairement aux citations (texte court, hauteur fixe + transform JS),
+   ces entrées ont une hauteur variable (image + titre + plusieurs paragraphes
+   d'analyse) : on s'appuie donc sur le scroll-snap natif plutôt que sur des cartes
+   position:absolute à hauteur figée — chaque slide garde sa hauteur de contenu réelle,
+   piloté par initImpactCarousel (js/veille.js) pour les points/le défilement au clic. */
+.vl-impact-carousel{ display:none; }
+@media(max-width:800px){
+  .vl-impact-carousel{ display:block; margin-top:8px; }
+}
+.vl-impact-carousel-track{
+  display:flex; gap:16px; overflow-x:auto; scroll-snap-type:x mandatory;
+  padding:8px 10% 4px; scroll-padding:0 10%;
+  -webkit-overflow-scrolling:touch; scrollbar-width:none;
+}
+.vl-impact-carousel-track::-webkit-scrollbar{ display:none; }
+.vl-impact-slide{
+  flex:0 0 80%; scroll-snap-align:center;
+  opacity:.35; transition:opacity .25s ease;
+}
+.vl-impact-slide.is-active{ opacity:1; }
+.vl-impact-slide-tag{
+  display:inline-block; margin-bottom:12px;
+  font-family:var(--mono); font-size:11px; letter-spacing:.03em; text-transform:uppercase;
+  color:#fff; background:var(--accent);
+  padding:3px 9px; border-radius:999px;
+}
+/* La carte réutilise .vl-top-card/.vl-impact-card (mêmes classes que la version
+   colonnes) : on y annule juste la largeur fixe posée en style inline par
+   impactArticleCardHtml (pensée pour le flottement à côté du texte), inutile ici où
+   la carte est en flux plein cadre dans la slide. */
+.vl-impact-slide .vl-impact-card{
+  width:100% !important; max-width:none !important; float:none !important; margin:0 0 16px !important;
+}
+.vl-impact-slide .vl-top-card-body{ padding:12px 14px 14px; gap:6px; }
+.vl-impact-slide .vl-top-card h3{ font-size:15px; }
+.vl-impact-slide .vl-top-summary{ -webkit-line-clamp:3; font-size:12.5px; }
+.vl-impact-slide .vl-impact-story{ font-size:13px; line-height:1.7; }
+.vl-impact-carousel-dots{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  margin-top:16px;
+}
+.vl-impact-carousel-dot{
+  width:8px; height:8px; padding:0; border:0; border-radius:999px;
+  background:var(--border); cursor:pointer;
+  transition:background .3s ease, width .3s cubic-bezier(.65,0,.35,1);
+}
+.vl-impact-carousel-dot:hover{ background:var(--accent-tint); }
+.vl-impact-carousel-dot.is-on{ background:var(--accent); width:24px; }
+@media(max-width:480px){ .vl-impact-carousel-track{ padding:8px 6% 4px; scroll-padding:0 6%; } .vl-impact-slide{ flex-basis:88%; } }
+
+/* Le rappel de retour utilise désormais .details-link (styles.css), posé DANS #contact
+   comme sur l'accueil : plus de bloc .dp-foot séparé ni de réglage d'écart page-spécifique
+   à maintenir ici, la position est exactement celle de l'accueil par construction. */

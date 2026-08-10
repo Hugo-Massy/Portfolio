@@ -131,7 +131,7 @@
   // Le blob lui-même, le curseur personnalisé (cf. cursor.js) et le préloader (accueil
   // uniquement, fermé ou non) n'ont rien à faire dans leur propre copie.
   const EXCLUDE_SELECTOR = '#page-blob-viewport, .cursor-dot, #preloader, script, canvas';
-  const FIXED_UI_SELECTOR = '.dot-rail, .lang-switch, .back-to-top, .page-tag';
+  const FIXED_UI_SELECTOR = '.dot-rail, .lang-switch, .back-to-top, .page-tag, .scroll-progress';
   // Ceux de ces habillages qui passent SOUS la forme, et dont la copie doit donc être peinte
   // (dans le calque non défilant, cf. rebuildFixedCopies). Les autres restent seulement masqués.
   const FIXED_SELECTOR = '.page-tag, .dot-rail';
@@ -538,14 +538,16 @@
   //     opacity:0 au repos et ne sont révélées qu'une à une par le scrub (applySteps dans
   //     js/veille.js). Le premier clonage a lieu bien avant, donc la copie était figée à
   //     opacity:0 : le texte « Les 10 actualités… » ne passait jamais en blanc sous la forme.
-  //   - .dp-foot / .dp-foot-arm-hidden — basculée par initContactAvatarGrow (js/veille.js et
-  //     js/details.js) à chaque image tant que l'avatar de #contact grandit.
+  //
+  // Le rappel de retour (.details-link, ex-.dp-foot, cf. details.js/veille.js) n'a pas besoin
+  // d'entrée ici : comme sur l'accueil, son apparition passe par --avatar-arm-opacity, posée en
+  // continu à la fois sur l'avatar ET sur #contact (l'ancêtre commun) — la copie de #contact
+  // recopie cette variable à chaque clonage/rebuild, pas besoin d'un suivi image par image.
   //
   // Rien à faire pour .is-spotlight / .is-showcasing (cartes du top 3) : elles passent devant la
   // forme (z-index, cf. .vl-showcase-pin dans veille.css), leur copie n'est donc jamais visible.
   const SYNCED_CLASSES = [
     { selector: '.vl-meta-line', cls: 'is-visible' },
-    { selector: '.dp-foot', cls: 'dp-foot-arm-hidden' },
   ];
   let classPairs = [];
 

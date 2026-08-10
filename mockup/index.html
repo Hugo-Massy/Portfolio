@@ -150,6 +150,8 @@
   </span>
 </button>
 
+<div class="scroll-progress" aria-hidden="true"><span class="scroll-progress-fill"></span></div>
+
 <nav class="dot-rail" aria-label="Navigation" data-i18n-attr="aria-label:nav-aria">
   <span class="dot-rail-indicator"></span>
   <a href="#hero"><span class="dot-label" data-i18n="nav-home">Accueil</span><span class="dot"><span class="dot-core"></span></span></a>
@@ -565,6 +567,14 @@
       </div>
 
     </div>
+
+    <!-- Navigation par points, uniquement visible/active au format téléphone (cf.
+         initSkillsCarousel, js/main.js, et .skills-grid en carrousel dans styles.css).
+         Réutilise le style de point de .refs-dots (carrousel des références) : mêmes
+         pastilles, pas besoin de dupliquer le CSS. -->
+    <nav class="skills-nav" aria-label="Piliers">
+      <div class="refs-dots"></div>
+    </nav>
   </div>
 </section>
 
@@ -971,6 +981,7 @@
         <script src="js/frame.js" defer></script>
         <script src="js/knockout.js" defer></script>
         <script src="js/main.js" defer></script>
+        <script src="js/scroll-progress.js" defer></script>
         <script src="js/dot-rail-magnet.js" defer></script>
         <script src="js/page-blob.js" defer></script>
         <script src="js/cursor.js" defer></script>

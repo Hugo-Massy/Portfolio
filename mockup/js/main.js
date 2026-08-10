@@ -42,8 +42,82 @@ function initSite() {
   initExperienceCta();
   initAvailability();
   initFooterYear();
+  initSkillsCarousel();
   initClickableCards();
   initRefsCarousel();
+}
+
+// Carrousel des 4 piliers (.skill-item), actif uniquement au format téléphone (cf.
+// @media(max-width:500px) sur .skills-grid dans styles.css — à toute autre largeur, les
+// classes posées ici (is-active/is-prev/is-next) n'ont aucun effet visuel, la grille classique
+// reste affichée). Même mécanique que initRefsCarousel juste en dessous, adaptée aux piliers :
+// pas de défilement automatique (ce sont des cartes de contenu/navigation, pas des citations
+// à parcourir passivement), et le clic sur la carte active doit continuer à naviguer vers
+// details.html (cf. initClickableCards, appelé juste après — donc APRÈS dans initSite, pour
+// que ce gestionnaire-ci s'exécute et intercepte le clic en premier sur les cartes voisines).
+function initSkillsCarousel() {
+  const grid = document.querySelector('.skills-grid');
+  if (!grid) return;
+  const cards = Array.from(grid.querySelectorAll('.skill-item'));
+  const dotsWrap = document.querySelector('.skills-nav .refs-dots');
+  if (cards.length < 2 || !dotsWrap) return;
+
+  const n = cards.length;
+  let index = 0;
+  const isCarouselWidth = () => window.matchMedia('(max-width:500px)').matches;
+
+  const dots = cards.map((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'refs-dot';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `Pilier ${i + 1} sur ${n}`);
+    dot.addEventListener('click', () => go(i));
+    dotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  function render() {
+    const prev = (index - 1 + n) % n;
+    const next = (index + 1) % n;
+    cards.forEach((card, i) => {
+      card.classList.remove('is-active', 'is-prev', 'is-next');
+      if (i === index) card.classList.add('is-active');
+      else if (i === prev) card.classList.add('is-prev');
+      else if (i === next) card.classList.add('is-next');
+    });
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('is-on', i === index);
+      dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
+    });
+  }
+
+  function go(i) { index = (i % n + n) % n; render(); }
+
+  // Voisine cliquée → elle passe au centre, SANS déclencher la navigation de
+  // initClickableCards (stopImmediatePropagation, cf. commentaire plus haut) — mais
+  // seulement au format téléphone : à toute autre largeur, is-prev/is-next n'ont pas de sens
+  // visuel et le clic doit continuer à naviguer normalement, comme pour n'importe quel pilier.
+  cards.forEach((card) => {
+    card.addEventListener('click', (e) => {
+      if (!isCarouselWidth()) return;
+      if (card.classList.contains('is-prev')) { e.stopImmediatePropagation(); go(index - 1); }
+      else if (card.classList.contains('is-next')) { e.stopImmediatePropagation(); go(index + 1); }
+    });
+  });
+
+  // glisser tactile / souris sur la scène
+  let startX = null;
+  grid.addEventListener('pointerdown', (e) => { startX = e.clientX; });
+  grid.addEventListener('pointerup', (e) => {
+    if (startX === null) return;
+    const dx = e.clientX - startX;
+    if (Math.abs(dx) > 45) { dx < 0 ? go(index + 1) : go(index - 1); }
+    startX = null;
+  });
+  grid.addEventListener('pointercancel', () => { startX = null; });
+
+  render();
 }
 
 // Carrousel des références : la citation active occupe le centre, ses voisines
@@ -1009,6 +1083,7 @@ function initRailOnDark() {
   const rail = document.querySelector('.dot-rail');
   const dots = document.querySelectorAll('.dot-rail a');
   const pageTag = document.querySelector('.page-tag');
+  const scrollProgress = document.querySelector('.scroll-progress');
   const about = document.getElementById('about');
   const contact = document.getElementById('contact');
   if (!rail || !about || !dots.length) return;
@@ -1021,6 +1096,15 @@ function initRailOnDark() {
     if (pageTag) {
       const r = window.FrameLoop.rect(pageTag);
       pageTag.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
+      // Format téléphone uniquement (cf. @media(max-width:600px) .page-tag.is-scrolled dans
+      // styles.css) : au-delà, la règle CSS ne matche jamais, la classe reste inerte.
+      pageTag.classList.toggle('is-scrolled', window.scrollY > 10);
+    }
+    // Bord plein écran (pas une pastille) : un seul point testé, au milieu de sa largeur, suffit
+    // — quand le haut du viewport touche une zone sombre, il la touche sur toute sa largeur.
+    if (scrollProgress) {
+      const r = window.FrameLoop.rect(scrollProgress);
+      scrollProgress.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
     }
   }
 

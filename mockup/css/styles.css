@@ -31,7 +31,11 @@
 /* le hero reste verrouillé à 100vh et sa console grossit à la molette tant que le
    curseur est au-dessus d'elle (voir initHeroTermGrow dans js/main.js) ; partout
    ailleurs le document défile normalement pour atteindre les sections suivantes */
-html{scroll-behavior:smooth;}
+/* overflow-x posé aussi sur <html> (pas seulement <body>, cf. plus bas) : certains
+   navigateurs mobiles (Safari iOS notamment) laissent le viewport lui-même défiler
+   horizontalement — et avec lui tout élément position:fixed calé en `right:Npx` — dès
+   qu'un descendant déborde, même quand ce débordement est clippé au niveau de <body>. */
+html{scroll-behavior:smooth; overflow-x:clip;}
 /* Filet de sécurité : #contact revient pile à sa position naturelle en bas de page
    (voir initAboutParallax dans js/main.js), donc ce bleu reste normalement caché sous
    #contact — il n'apparaît qu'un instant si le lissage n'a pas encore rattrapé un
@@ -576,6 +580,9 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   transform:translateY(-50%);
   display:flex; flex-direction:column; align-items:flex-end; gap:17px;
 }
+/* Format téléphone : le rail de navigation à points est masqué, comme .term-card
+   plus haut — il n'apporte rien à cette largeur (la page se lit en défilement continu). */
+@media(max-width:600px){.dot-rail{display:none;}}
 .dot-rail a{
   position:relative;
   display:flex; align-items:center;
@@ -785,7 +792,12 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .page-tag.is-on-dark .page-tag-item.is-current{color:#fff; font-weight:600;}
 .page-tag.is-on-dark .page-tag-item.is-current::before{background:#fff;}
 @media(max-width:600px){
-  .page-tag{top:14px; left:14px; font-size:11px; gap:3px;}
+  .page-tag{top:14px; left:14px; font-size:11px; gap:3px; transition:opacity .2s ease, transform .2s ease;}
+  /* Masqué dès le premier pixel de scroll (posé par initRailOnDark / initOnDarkOverContact /
+     initOnDarkAdaptation, cf. js/main.js, js/veille.js, js/details.js) : à cette largeur
+     l'étiquette gêne plus qu'elle n'aide une fois qu'on lit le contenu, et .scroll-progress
+     (juste au-dessus) reprend le relais comme repère de position. */
+  .page-tag.is-scrolled{opacity:0; transform:translateY(-6px); pointer-events:none;}
 }
 
 .lang-switch{
@@ -852,6 +864,35 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   50%{transform:translateY(-6px);}
 }
 
+/* Barre de progression du contenu, collée au bord supérieur de l'écran — uniquement au
+   format téléphone, en remplacement du rail de points (.dot-rail) masqué à cette largeur
+   (cf. @media(max-width:600px){.dot-rail{display:none;}} plus haut) : sur mobile la page se
+   lit en défilement continu, sans repère de section, donc on redonne au moins la progression
+   globale. transform:scaleX plutôt que width : la mise à jour au scroll ne redéclenche qu'un
+   compositing, jamais un recalcul de layout. */
+.scroll-progress{
+  display:none;
+  position:fixed; top:0; left:0; right:0; z-index:70;
+  height:6px;
+  /* piste toujours visible (même à 0% de progression) : sans elle, le repère lui-même
+     disparaît en haut de page puisque le fill est alors réduit à une largeur nulle. */
+  background:rgba(77,111,203,0.12);
+}
+@media(max-width:600px){
+  .scroll-progress{display:block;}
+}
+.scroll-progress-fill{
+  display:block; width:100%; height:100%;
+  background:var(--accent);
+  transform:scaleX(0); transform-origin:0 0;
+  transition:transform .08s linear, background-color .2s ease;
+}
+/* Sur fond bleu (bas de page : #contact, bloc pilier, rubans stack selon la page — même
+   principe que .page-tag.is-on-dark plus haut, posé par initRailOnDark / initOnDarkOverContact
+   / initOnDarkAdaptation), l'accent se fond dans le fond : bascule en blanc. */
+.scroll-progress.is-on-dark{background:rgba(255,255,255,.25);}
+.scroll-progress.is-on-dark .scroll-progress-fill{background:#fff;}
+
 /* HERO terminal layout — la fenêtre reste sombre pour trancher sur le thème clair, et s'aligne sur la hauteur de la colonne de gauche */
 .hero-b-grid{display:grid; grid-template-columns:1.15fr 1fr; gap:28px; align-items:center;}
 @media(max-width:860px){.hero-b-grid{grid-template-columns:1fr; gap:40px;}}
@@ -861,6 +902,11 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   font-family:var(--mono); font-size:14px; overflow:hidden;
   box-shadow:0 24px 60px -12px rgba(10,14,16,0.35), 0 0 0 1px rgba(77,111,203,0.06);
 }
+/* Format téléphone : le terminal (widget déco, contenu non essentiel) est masqué plutôt
+   que réempilé sous le texte — il n'apporte rien à cette largeur et allonge le hero.
+   Doit rester APRÈS la règle .term-card ci-dessus (même spécificité : sinon son
+   display:flex l'emporterait dans l'ordre de la cascade, media query ou pas). */
+@media(max-width:600px){.term-card{display:none;}}
 .term-card::before{
   content:''; position:absolute; top:0; left:0; right:0; height:2px;
   background:linear-gradient(90deg, transparent, var(--accent), transparent); opacity:.5;
@@ -1268,6 +1314,19 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .about-person{margin-bottom:18px;}
   .about-facts{flex-flow:row wrap; gap:10px 22px; padding-top:16px;}
 }
+/* Sur ce même passage en 1 colonne, .about-card (plus de largeur fixe 320px imposée par la
+   grille 2 colonnes) s'étire pour occuper toute la largeur disponible — au format téléphone,
+   ça la fait passer d'une carte d'accès crédible à un pavé plein écran, disproportionné par
+   rapport à son contenu (avatar, textes) resté à la même échelle. On lui redonne sa largeur
+   d'origine, centrée, plutôt que de l'étirer. */
+@media(max-width:600px){
+  .about-card{max-width:320px; margin-left:auto; margin-right:auto;}
+  /* .about-card (order:-1, cf. plus haut) et .about-main sont les deux seuls enfants de
+     .about-grid en 1 colonne : le gap:36px entre eux (pensé pour l'espacement horizontal
+     des 2 colonnes desktop) se lit trop juste une fois vertical, entre le bas de la carte
+     et le paragraphe qui suit. */
+  .about-grid{gap:56px;}
+}
 
 .about-lede{font-size:17px; color:rgba(255,255,255,.72); max-width:780px; margin-bottom:36px;}
 .about-lede strong{color:#fff; font-weight:600;}
@@ -1377,6 +1436,17 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 @media(max-width:760px){
   .about-head h2{font-size:28px;}
   .about-footer{gap:28px;}
+}
+/* Format téléphone uniquement : plus d'air entre le paragraphe d'intro et la timeline qui
+   suit — 32px passait presque inaperçu une fois le texte étiré sur 6 lignes (au lieu de 2-3
+   sur desktop), les deux blocs se lisaient comme collés l'un à l'autre. */
+@media(max-width:600px){
+  .about-main .about-lede{margin-bottom:56px;}
+  /* .about-timeline-head (date + badge RNCP) est en flex-wrap:wrap : le badge ne retombe
+     à la ligne QUE quand date+badge ne tiennent plus côte à côte, ce qui dépend de la
+     longueur de chaque date — d'où le rendu incohérent d'une entrée à l'autre (badge à côté
+     de la date ici, seul sur sa ligne là). On force le badge sous la date à chaque fois. */
+  .about-timeline-head{flex-direction:column; align-items:flex-start; gap:6px;}
 }
 
 /* SKILLS — 4 colonnes icône + titre + texte centré, style épuré */
@@ -1536,9 +1606,63 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .skills-grid{grid-template-columns:repeat(2,1fr); gap:12px;}
   .skill-item-desc{max-width:none;}
 }
+/* Nav par points du carrousel de piliers (format téléphone seulement, cf. plus bas) : masquée
+   par défaut, comme .skills-grid reste une grille classique à toute autre largeur. */
+.skills-nav{display:none;}
+
 @media(max-width:500px){
-  .skills-grid{grid-template-columns:1fr;}
   .skills-head h2{font-size:28px;}
+
+  /* Les 4 piliers passent d'une grille empilée à un carrousel façon .refs-carousel (citations,
+     plus bas dans ce fichier) : une carte active au centre, les voisines qui dépassent aux
+     bords, navigation par points ou clic sur une carte latérale (cf. initSkillsCarousel,
+     js/main.js). Même mécanique, adaptée aux piliers plutôt qu'aux citations. */
+  .skills-grid{
+    display:block; position:relative;
+    height:440px; overflow:hidden;
+    touch-action:pan-y;
+    margin-top:32px;
+  }
+  .skills-nav{display:flex; align-items:center; justify-content:center; margin-top:16px; margin-bottom:40px;}
+
+  /* Spécificité (0,2,0) volontaire — à égalité avec .reveal.is-visible (posée par
+     initRevealObserver, js/main.js, qui garde les piliers opaques une fois entrés dans le
+     viewport) et placée après elle dans ce fichier : sans ce doublon de classe, .reveal.
+     is-visible l'emporterait et les cartes hors-fenêtre (ni active, ni voisine) resteraient
+     visibles au lieu de disparaître. */
+  .skills-grid .skill-item{
+    position:absolute; top:0; left:50%;
+    width:min(320px, 84%);
+    min-height:0; height:100%;
+    margin:0;
+    transform:translate(-50%, 0) scale(0.8);
+    opacity:0; visibility:hidden;
+    transition:transform .55s cubic-bezier(.22,.61,.36,1), opacity .45s ease;
+  }
+  .skills-grid .skill-item.is-active{
+    opacity:1; visibility:visible; z-index:3;
+    transform:translate(-50%, 0) scale(1);
+    cursor:default;
+  }
+  .skills-grid .skill-item.is-prev,
+  .skills-grid .skill-item.is-next{
+    opacity:.22; visibility:visible; z-index:2;
+    filter:grayscale(.5);
+  }
+  .skills-grid .skill-item.is-prev{transform:translate(-142%, 0) scale(0.62);}
+  .skills-grid .skill-item.is-next{transform:translate(42%, 0) scale(0.62);}
+
+  /* .skill-pillar-bg est dimensionné en % de .skill-item (94%/82%, cf. plus haut) : sans
+     réduire cette hauteur, chaque pilier reste aussi haut qu'en grille à 4 colonnes une fois
+     la carte réduite à la taille du carrousel, et écrase le texte sous une colonne démesurée. */
+  .skill-item{padding:28px 24px 32px;}
+  /* Le SVG (viewBox 50×200, preserveAspectRatio="none") s'étire pour remplir EXACTEMENT
+     la boîte 82%×94% qu'on lui donne : sur une carte large (desktop), ce ratio reste
+     proche du 1:4 du viewBox et le pilier garde une silhouette élancée. Une fois la carte
+     réduite sans toucher sa largeur dans les mêmes proportions, la boîte devient presque
+     carrée et le pilier s'écrase (trapu, « goofy »). On réduit la largeur cible pour
+     retrouver un ratio hauteur/largeur proche de 3:1, comme sur desktop. */
+  .skill-pillar-bg{width:52%;}
 }
 
 /* ============================================================
@@ -1691,10 +1815,18 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    de .xp-tile:hover plus haut) : la carte survolée se fige en position avancée. */
 
 /* Mobile / tablette : le bento se réempile en colonne(s) et dépasse l'écran,
-   donc pas de figement au scroll — piste et sticky redeviennent du flux normal. */
+   donc pas de figement au scroll — piste et sticky redeviennent du flux normal.
+   .xp-bento-stick .xp-bento (juste au-dessus) reste sinon actif malgré la désactivation du
+   sticky : plus spécifique (2 classes) que .xp-bento seul, il continue à imposer height:
+   var(--xp-bento-h) (~74vh) et grid-auto-rows:minmax(0, 1fr) — soit 5 rangées écrasées à
+   parts égales dans une hauteur pensée pour l'écran entier en desktop. Toute tuile dont le
+   contenu réel dépasse sa part forcée se fait tronquer par l'overflow:hidden de .xp-tile
+   (cf. .xp-tile--home plus bas, dont la maquette+texte empilés au format téléphone n'ont
+   sinon aucune chance de tenir). */
 @media(max-width:900px){
   .xp-bento-track{ height:auto; }
   .xp-bento-stick{ position:static; min-height:0; display:block; }
+  .xp-bento-stick .xp-bento{ height:auto; grid-auto-rows:230px; }
 }
 @media(prefers-reduced-motion:reduce){
   .xp-bento-track{ height:auto; }
@@ -1844,10 +1976,12 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 @media(max-width:560px){
   .xp-bento{
     grid-template-columns:1fr;
+    /* "avatar" retiré : .xp-avatar-cell est display:none à cette largeur (cf. plus bas) —
+       le laisser dans le template réserverait quand même sa rangée (minmax(230px, auto)
+       impose un plancher de 230px même sans contenu pour la remplir). */
     grid-template-areas:
       "cust"
       "sched"
-      "avatar"
       "send"
       "remind";
   }
@@ -2075,7 +2209,8 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-home-term-dots{ display:flex; gap:6px; }
 .xp-home-term-dots span{ width:9px; height:9px; border-radius:50%; }
 .xp-home-term-title{
-  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+  text-align:center;
   font-family:var(--mono); font-size:11px; color:#566070; letter-spacing:.03em;
 }
 .xp-home-term-body{ padding:13px 14px 16px; }
@@ -2112,6 +2247,77 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .xp-home-result svg{ width:13px; height:13px; flex-shrink:0; }
 .xp-home-result-num{ color:#7ee787; }
+
+/* Format téléphone (.xp-bento en 1 colonne, cf. plus bas) : la maquette de .xp-tile--home est
+   pensée pour déborder en pleine largeur d'une tuile bento LARGE et chevaucher le texte
+   (façon "Scheduling", cf. commentaire plus haut sur .xp-tile--home) — dans une colonne
+   unique, bien plus étroite, les deux se percutent au lieu de se superposer proprement
+   (texte illisible sous la maquette). On abandonne le chevauchement à cette largeur :
+   maquette empilée au-dessus du texte, réduite via transform:scale — les enfants de
+   .xp-home-scene sont positionnés en px absolus les uns par rapport aux autres, la mettre à
+   l'échelle plutôt que recalculer chaque position garde tout proportionné. transform-
+   origin:top left + un .xp-mock--home dimensionné exactement à la taille mise à l'échelle :
+   un transform ne change jamais la boîte réservée dans le flux (toujours 420×340), donc sans
+   ce recadrage .xp-mock--home continuerait de réserver la taille d'origine malgré le rendu
+   visuel réduit.
+   L'avatar de la cellule voisine (.xp-avatar-cell) déborde lui aussi intentionnellement
+   par-dessus cette tuile en desktop (cf. son commentaire plus haut, .xp-avatar-cell). En 1
+   colonne, "avatar" n'est plus à côté de "sched" mais juste EN DESSOUS dans l'empilement du
+   bento, et ce débordement vers le haut venait donc recouvrir le bas de .xp-tile--home — on
+   le masque entièrement à cette largeur plutôt que de le recadrer (demandé explicitement),
+   et son aire "avatar" est retirée de grid-template-areas (cf. plus bas) pour ne pas laisser
+   une rangée vide réservée à sa place. */
+@media(max-width:560px){
+  /* Même sélecteur que .xp-bento-stick .xp-bento (900px, plus haut) : un simple .xp-bento
+     perdrait la bataille de spécificité contre lui et n'aurait aucun effet. */
+  .xp-bento-stick .xp-bento{grid-auto-rows:minmax(230px, auto);}
+
+  /* padding-bottom:clamp(96px, 16vh, 200px) est pensé pour aérer sous un bento desktop
+     large et court — une fois le bento empilé en 1 colonne (donc déjà bien plus haut au
+     total), ce padding s'ajoute par-dessus et laisse un vide disproportionné avant la
+     section suivante. */
+  .xp{padding-bottom:84px;}
+
+  .xp-tile--home{
+    overflow:hidden;
+    display:flex; flex-direction:column; align-items:center;
+    padding:0 20px 26px;
+  }
+  /* position:relative (pas static) sur les deux : .xp-tile--home::before (le pointillé de
+     fond, position:absolute z-index:0) peint sinon par-dessus tout contenu resté en flux
+     normal, quel que soit l'ordre dans le DOM — même bug que .contact-fill/.details-link
+     rencontré plus haut dans ce fichier. relative les garde dans la couche des descendants
+     positionnés (z-index:auto, donc départagés par l'ordre du DOM comme ::before), où ils
+     repeignent correctement par-dessus. */
+  /* inset:auto est INDISPENSABLE : la règle desktop pose left:28px / top:26px pour ancrer le
+     bloc en absolute dans le coin de la tuile. En repassant à position:relative sans les
+     réinitialiser, ces mêmes valeurs cessent d'être un ancrage et deviennent un DÉCALAGE —
+     le texte partait 28px vers la droite et 26px vers le bas, d'où un centrage visuellement
+     faux malgré text-align:center. */
+  .xp-tile--home .xp-tile-body{
+    position:relative; inset:auto;
+    width:100%; max-width:none; margin:14px 0 0; text-align:center;
+    order:2;
+  }
+  .xp-tile--home .xp-mock--home{
+    position:relative; inset:auto; margin:0; overflow:visible;
+    display:block; width:357px; height:289px;
+    order:1;
+    align-self:flex-end;
+    /* .xp-mock--home (357px) est déjà plus large que l'espace intérieur de la tuile à cette
+       largeur : centré ou calé à droite (align-self ci-dessus) se ressemblent presque, débordant
+       des deux côtés et rognés par l'overflow:hidden de .xp-tile--home. translateX pousse plus
+       loin, au-delà du bord droit, pour un décalage réellement visible. */
+    transform:translateX(48px);
+  }
+  .xp-home-scene{
+    transform:scale(0.85);
+    transform-origin:top left;
+    margin-right:0;
+  }
+
+  .xp-avatar-cell{display:none;}
+}
 
 /* 4 · Liste de plugins « tickets » (Plugins GLPI) */
 .xp-mock--list{ display:flex; flex-direction:column; gap:8px; justify-content:flex-end; }
@@ -2184,7 +2390,11 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .xp-cards-col:nth-child(3) .xp-cards-col-inner{ animation-duration:29s; }
 @keyframes xp-cards-scroll{
   from{ transform:translateY(0); }
-  to  { transform:translateY(-516px); }
+  /* 516px = 6 cartes × (72px + 14px de gap), cf. commentaire plus haut — dépend donc de la
+     taille de carte réellement utilisée. Passé en variable (défaut = la taille desktop
+     ci-dessus) pour que la version réduite au format téléphone (plus bas) puisse la
+     recalculer sans dupliquer toute l'animation. */
+  to  { transform:translateY(calc(-1 * var(--xp-cards-loop, 516px))); }
 }
 @media(prefers-reduced-motion:reduce){
   .xp-cards-col-inner{ animation:none; }
@@ -2236,6 +2446,27 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   width:100%; height:100%;
   object-fit:contain;
   filter:none;
+}
+
+/* Format téléphone : les cartes du collage (116×72px, 3 colonnes = 376px de large avant même
+   la rotation) sont pensées pour une tuile bento LARGE — sur une tuile en 1 colonne, bien plus
+   étroite, elles débordent massivement sur le texte au lieu de rester un motif discret à
+   droite (cf. capture). Toutes les dimensions liées (colonnes, hauteur de piste, distance de
+   boucle de l'animation) sont réduites dans les mêmes proportions pour ne rien casser. */
+@media(max-width:560px){
+  .xp-cards-track{
+    grid-template-columns:repeat(3, 78px);
+    gap:9px;
+    height:340px;
+    left:92%;
+  }
+  .xp-card{width:78px; height:48px;}
+  .xp-cards-col-inner{
+    gap:9px;
+    /* 342px = 6 cartes × (48px + 9px de gap), même logique que le calcul desktop
+       (cf. keyframes xp-cards-scroll) mais avec la taille de carte réduite ci-dessus. */
+    --xp-cards-loop:342px;
+  }
 }
 
 /* 6 · Téléphone + notification (Supervision) — vraie maquette iPhone (assets/iphone-frame.png,
@@ -2425,6 +2656,18 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   text-transform:uppercase; color:#a2acb6;
 }
 
+/* Format téléphone : .xp-phone-shell garde sa taille (width:130%, aspect-ratio:474/906 —
+   un vrai écran de téléphone, donc très haut) ; c'est la TUILE qui doit rester d'une hauteur
+   raisonnable, pas la maquette qu'il faut miniaturiser. Sur une tuile en 1 colonne avec
+   grid-auto-rows:auto (cf. plus haut), rien ne plafonnait sa hauteur : la rangée grandissait
+   pour accueillir le téléphone en entier (jusqu'à ~760px), au lieu de le rogner par le bas
+   comme le fait déjà l'overflow:hidden de .xp-tile quand la hauteur EST fixe (desktop). On
+   redonne cette hauteur fixe à .xp-a-remind spécifiquement : le bas du téléphone (le socle,
+   sous les widgets) sort du cadre et se fait rogner net, sans rien réduire. */
+@media(max-width:560px){
+  .xp-a-remind{max-height:270px;}
+}
+
 /* ============================================================
    RÉFÉRENCES — citations de retours (tuteurs, collègues, formateurs), entre
    #xp et #contact. Volontairement épuré : trois cartes (vedette pleine largeur
@@ -2544,6 +2787,26 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
   .ref-card{width:min(500px, 86%);}
   .ref-card.is-prev{transform:translate(-150%, -20px) scale(0.6);}
   .ref-card.is-next{transform:translate(50%, -20px) scale(0.6);}
+}
+/* En dessous de ~580px, la carte (86% du viewport) devient trop étroite pour que la citation
+   la plus longue (refs-q1, ~200 caractères, cf. i18n.js) tienne sur les 4 lignes que
+   .refs-stage prévoit : elle en réclame 7-8. Comme .ref-card est centrée par flexbox dans une
+   .refs-stage à hauteur FIXE et overflow:hidden (nécessaire pour cacher les cartes voisines
+   qui débordent horizontalement), l'excédent était rogné pour moitié en haut (première ligne
+   tronquée, illisible) et pour moitié en bas (rôle de l'auteur disparu). 340px couvre la pire
+   combinaison largeur/langue avec de la marge ; recalculer si une traduction plus longue est
+   ajoutée à refs-q1/refs-q2 dans i18n.js. */
+@media(max-width:600px){
+  .refs-stage{height:340px;}
+  .refs-carousel::before{height:340px;}
+  /* .refs-stage::before/::after (voile dégradé aux extrémités) fait 16% de large — pensé
+     pour la marge entre .ref-card et le bord du stage quand la carte est plafonnée à 500px
+     (donc bien plus étroite que le stage). En dessous de 600px, .ref-card passe à 86% du
+     viewport (cf. plus haut) : la marge réelle n'est plus que ~7% de chaque côté, et le
+     voile à 16% déborde largement SUR le texte de la citation active, qui semble alors
+     s'éclaircir vers les bords plutôt que rester à pleine opacité. */
+  .refs-stage::before,
+  .refs-stage::after{width:6%;}
 }
 @media (prefers-reduced-motion:reduce){
   .ref-card{transition:opacity .2s ease;}
@@ -2784,7 +3047,28 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 .details-link-actions{display:flex; flex-wrap:wrap; justify-content:center; gap:12px;}
 .details-link-actions .btn-ghost{background:var(--bg-elev);}
 @media(max-width:640px){
-  .details-link{position:static; transform:none; margin:0 0 28px; opacity:1;}
+  /* Reste en position:absolute (comme sur desktop) plutôt que static/relative : c'est ce qui
+     le fait peindre dans la couche des descendants POSITIONNÉS de #contact (contexte
+     d'empilement posé par isolation:isolate) — la seule où son z-index:2 peut l'emporter sur
+     le 0 de .contact-fill. En flux normal (static), il peint avant elle et disparaît
+     entièrement sous l'aplat bleu, quelle que soit son opacité.
+     translateY reprend la même idée que le -205px desktop (remonter dans le blanc qui
+     précède #contact plutôt que de tomber après padding-top, en plein dans le pli bleu) mais
+     recalculée à partir de --contact-slope, sans la marge de -20px en plus : la valeur
+     desktop, pensée pour un padding-top bien plus grand à cette largeur, le faisait poper
+     trop haut et trop tôt. opacity n'est PLUS forcé à 1 : --avatar-arm-opacity (posée sur
+     #contact par initAboutParallax, js/main.js) est un calcul de progression de scroll pur —
+     il ne dépend PAS de l'affichage réel de l'avatar/bras (display:none sur mobile, cf.
+     .contact-avatar plus haut), juste de la position dans la page. L'apparition progressive,
+     déclenchée aux mêmes ~75% de la fin du scroll que sur desktop, fonctionne donc déjà. */
+  .details-link{
+    transform:translateY(calc(-1 * (var(--contact-slope) * 0.55 + clamp(16px, 3vh, 32px))));
+    padding:0 20px;
+  }
+  .details-link-inner{gap:10px;}
+  .details-link-inner p{font-size:13px;}
+  .details-link-actions{gap:8px;}
+  .details-link-actions .btn{padding:9px 16px; font-size:12.5px;}
 }
 
 /* ============================================================
@@ -2840,14 +3124,6 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
    taille normale : en dessous, sa découpe devient visible. On le garde masqué tant que
    l'avatar est petit et on ne le révèle qu'en toute fin de croissance. */
 .contact-avatar-arm{ opacity:var(--avatar-arm-opacity, 1); }
-@media(max-width:640px){
-  .contact-avatar{display:none;}
-  .contact{text-align:center;}
-  .contact-head{align-items:center; margin:0 auto 40px; text-align:center;}
-  .contact-head .section-tag{justify-content:center;}
-  .contact-lede{max-width:480px; white-space:normal;}
-  .contact-links{justify-content:center;}
-}
 .contact-wrap{position:relative; z-index:1;}
 
 .contact-head{display:flex; flex-direction:column; align-items:flex-end; margin:0 0 40px auto; text-align:right;}
@@ -2875,6 +3151,26 @@ h1,h2,h3{font-weight:700; letter-spacing:-0.01em;}
 }
 .contact-links a svg{flex:none;}
 .contact-links a:hover{color:#fff;}
+/* Doit rester APRÈS .contact-head / .contact-lede / .contact-links ci-dessus : même
+   spécificité, donc sinon leurs valeurs (nowrap, alignement à droite) l'emporteraient dans
+   l'ordre de la cascade quelle que soit la largeur d'écran (cf. le même bug déjà rencontré
+   sur .term-card, plus haut dans ce fichier). Sans ce recadrage, .contact-lede reste sur une
+   seule ligne (nowrap) plus large que l'écran et déborde du body (overflow-x:clip), coupée
+   des deux côtés. */
+@media(max-width:640px){
+  .contact-avatar{display:none;}
+  .contact{
+    text-align:center;
+    /* Plus d'air sous le pli bleu : .details-link (rappel "Voir les détails / Voir la
+       veille") est posé au-dessus de #contact via translateY négatif (cf. plus haut) et a
+       besoin de cette marge pour ne pas coller au texte qui suit. */
+    padding-top:calc(var(--contact-slope) * 0.55 + clamp(16px, 3vh, 32px) + 70px);
+  }
+  .contact-head{align-items:center; margin:0 auto 40px; text-align:center;}
+  .contact-head .section-tag{justify-content:center;}
+  .contact-lede{max-width:480px; white-space:normal;}
+  .contact-links{justify-content:center;}
+}
 
 .site-footer{
   max-width:var(--maxw); margin:clamp(64px, 10vh, 120px) auto 0;

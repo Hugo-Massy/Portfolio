@@ -624,15 +624,23 @@ function impactColumnHtml(id, project, entries, col, lang, dict) {
   return html;
 }
 
+// Entrées regroupées par projet, chaque groupe trié du plus récent au plus ancien —
+// base commune aux deux rendus du bloc Impact (colonnes desktop et carrousel mobile).
+function groupImpactByProject(entries) {
+  const byProject = {};
+  for (const e of entries) (byProject[e.project] || (byProject[e.project] = [])).push(e);
+  for (const id of Object.keys(byProject)) byProject[id].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+  return byProject;
+}
+
+// Rendu desktop : deux colonnes projet dans la grille partagée (voir .vl-impact-cols
+// dans veille.css). Masqué sous 800px au profit de renderImpactCarousel ci-dessous.
 function renderImpact(data, lang) {
   const mount = document.getElementById('vl-impact-cols');
   if (!mount) return;
   const dict = I18N[lang] || I18N.fr;
   const projects = data.projects || {};
-  const entries = Array.isArray(data.entries) ? data.entries : [];
-  const byProject = {};
-  for (const e of entries) (byProject[e.project] || (byProject[e.project] = [])).push(e);
-  for (const id of Object.keys(byProject)) byProject[id].sort((a, b) => (Date.parse(b.date) || 0) - (Date.parse(a.date) || 0));
+  const byProject = groupImpactByProject(Array.isArray(data.entries) ? data.entries : []);
   mount.innerHTML = Object.keys(projects)
     .map((id, i) => impactColumnHtml(id, projects[id], byProject[id] || [], i + 1, lang, dict))
     .join('');
@@ -641,11 +649,111 @@ function renderImpact(data, lang) {
   document.dispatchEvent(new Event('veille-content-change'));
 }
 
+// Une slide = une entrée, avec un chip reprenant le libellé du projet (rôle tenu par
+// le <h3> de colonne dans la version desktop, absent ici puisque les projets sont
+// mélangés dans un seul flux).
+function impactSlideHtml(e, projectLabel, lang, dict) {
+  const card = impactArticleCardHtml(e, lang, dict);
+  const story = loc(e.story, lang);
+  const paras = story.split('<br><br>').map((p) => p.trim()).filter(Boolean);
+  return `<div class="vl-impact-slide">`
+    + `<span class="vl-impact-slide-tag">${escapeHtml(projectLabel)}</span>`
+    + card
+    + paras.map((p) => `<p class="vl-impact-story">${p}</p>`).join('')
+    + `</div>`;
+}
+
+function renderImpactCarousel(data, lang) {
+  const track = document.getElementById('vl-impact-carousel-track');
+  const dotsWrap = document.getElementById('vl-impact-carousel-dots');
+  if (!track || !dotsWrap) return;
+  const dict = I18N[lang] || I18N.fr;
+  const projects = data.projects || {};
+  const byProject = groupImpactByProject(Array.isArray(data.entries) ? data.entries : []);
+  const slides = [];
+  Object.keys(projects).forEach((id) => {
+    const label = loc(projects[id] && projects[id].label, lang) || id;
+    (byProject[id] || []).forEach((e) => slides.push(impactSlideHtml(e, label, lang, dict)));
+  });
+  track.innerHTML = slides.join('');
+  dotsWrap.innerHTML = '';
+  initImpactCarousel(track, dotsWrap);
+  // Même raison que dans dumpAll : ce contenu arrive par fetch, après le premier clonage de
+  // js/page-blob.js.
+  document.dispatchEvent(new Event('veille-content-change'));
+}
+
+// Navigation du carrousel Impact (mobile) — même esprit que initRefsCarousel
+// (js/main.js, citations de l'accueil) : points cliquables, une entrée "active" à la
+// fois. Contrairement aux citations, pas de transform JS ni de hauteur figée : le
+// scroll-snap natif fait le travail (contenu bien plus long, hauteur variable), on se
+// contente ici de générer les points et de suivre la slide au centre du viewport pour
+// les garder synchronisés.
+function initImpactCarousel(track, dotsWrap) {
+  const slides = Array.from(track.querySelectorAll('.vl-impact-slide'));
+  if (!slides.length) return;
+
+  const dots = slides.map((_, i) => {
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.className = 'vl-impact-carousel-dot';
+    dot.setAttribute('role', 'tab');
+    dot.setAttribute('aria-label', `Actualité ${i + 1} sur ${slides.length}`);
+    dot.addEventListener('click', () => {
+      slides[i].scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    });
+    dotsWrap.appendChild(dot);
+    return dot;
+  });
+
+  function setActive(i) {
+    slides.forEach((s, idx) => s.classList.toggle('is-active', idx === i));
+    dots.forEach((d, idx) => {
+      d.classList.toggle('is-on', idx === i);
+      d.setAttribute('aria-selected', idx === i ? 'true' : 'false');
+    });
+  }
+
+  // La slide active est celle dont le centre est le plus proche du centre de la piste,
+  // mesuré directement au scroll.
+  //
+  // PAS d'IntersectionObserver ici, bien qu'il paraisse taillé pour ça : son callback ne
+  // reçoit QUE les éléments dont la visibilité vient de franchir un seuil, pas l'ensemble
+  // des slides. Comparer les ratios entre ces seules entrées désignait donc la voisine qui
+  // entrait à peine dans le cadre plutôt que celle réellement centrée — c'est-à-dire que la
+  // slide qu'on regardait restait grisée (opacity:.35) pendant que sa voisine passait en
+  // clair. Une comparaison de positions, elle, porte toujours sur les slides EN ENTIER.
+  // Positions lues en coordonnées écran (getBoundingClientRect) plutôt qu'en offsetLeft :
+  // offsetLeft se mesure depuis l'offsetParent, qui n'est pas forcément la piste — le
+  // décalage constant qui en résulterait fausserait la comparaison avec scrollLeft.
+  let rafId = null;
+  function updateActive() {
+    rafId = null;
+    const trackRect = track.getBoundingClientRect();
+    const mid = trackRect.left + trackRect.width / 2;
+    let bestIndex = 0;
+    let bestDistance = Infinity;
+    slides.forEach((slide, i) => {
+      const rect = slide.getBoundingClientRect();
+      const distance = Math.abs(rect.left + rect.width / 2 - mid);
+      if (distance < bestDistance) { bestDistance = distance; bestIndex = i; }
+    });
+    setActive(bestIndex);
+  }
+  function onScroll() {
+    if (rafId === null) rafId = requestAnimationFrame(updateActive);
+  }
+  track.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+
+  updateActive();
+}
+
 // Ré-affiche le contenu dynamique déjà chargé dans la langue active — appelée
 // au premier rendu et à chaque changement de langue (voir initLangSwitch).
 function renderDynamic() {
   if (veilleData) dumpAll(veilleData, currentLang);
-  if (impactData) renderImpact(impactData, currentLang);
+  if (impactData) { renderImpact(impactData, currentLang); renderImpactCarousel(impactData, currentLang); }
 }
 
 async function initVeille() {
@@ -674,6 +782,7 @@ async function initVeille() {
   if (impactResult.status === 'fulfilled' && impactResult.value) {
     impactData = impactResult.value;
     renderImpact(impactData, currentLang);
+    renderImpactCarousel(impactData, currentLang);
   } else if (impactResult.status === 'rejected') {
     console.error('Veille (impact):', impactResult.reason);
   }
@@ -826,14 +935,11 @@ async function initVeille() {
   if (!contact) return;
   const avatarEls = contact.querySelectorAll('.contact-avatar');
   const armEl = contact.querySelector('.contact-avatar-arm');
-  // le texte et le bouton du pied de page n'ont de sens que tant que le bras de
-  // l'avatar est visible et semble les désigner : ils se cachent avec le bras.
-  const footEl = document.querySelector('.dp-foot');
   if (!avatarEls.length) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', '1'));
     if (armEl) armEl.style.setProperty('--avatar-arm-opacity', '1');
-    if (footEl) footEl.classList.remove('dp-foot-arm-hidden');
+    contact.style.setProperty('--avatar-arm-opacity', '1');
     return;
   }
 
@@ -856,8 +962,12 @@ async function initVeille() {
     const scale = AVATAR_MIN_SCALE + currentProgress * (1 - AVATAR_MIN_SCALE);
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', scale.toFixed(3)));
     const armVisible = currentProgress >= ARM_REVEAL_START;
-    if (armEl) armEl.style.setProperty('--avatar-arm-opacity', armVisible ? 1 : 0);
-    if (footEl) footEl.classList.toggle('dp-foot-arm-hidden', !armVisible);
+    const armOpacity = armVisible ? 1 : 0;
+    if (armEl) armEl.style.setProperty('--avatar-arm-opacity', armOpacity);
+    // posée aussi sur #contact (ancêtre commun) pour que .details-link puisse s'aligner
+    // sur la même bascule sans dépendre d'un observer dédié — même technique que
+    // initAboutParallax (js/main.js) sur l'accueil.
+    contact.style.setProperty('--avatar-arm-opacity', armOpacity);
     // la teinte claire/foncée de la nav et du bouton "remonter" dépend de la position
     // de #contact, qui continue de bouger quelques frames après l'arrêt du scroll.
     window.dispatchEvent(new Event('parallax-tick'));
@@ -894,6 +1004,7 @@ async function initVeille() {
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
   const railLinks = document.querySelectorAll('.dot-rail a');
+  const scrollProgress = document.querySelector('.scroll-progress');
 
   // --contact-slope est une clamp() : parseFloat sur la custom property échouerait.
   // On la fait résoudre par le moteur de layout via une sonde hors-écran.
@@ -929,6 +1040,12 @@ async function initVeille() {
     railLinks.forEach((el) => toggle(el, 'right'));
     toggle(backToTop, 'right');
     toggle(pageTag, 'left');
+    // Bord plein écran (pas une pastille) : le pli diagonal de .contact-fill n'a plus
+    // d'incidence une fois que le haut du viewport est passé dessous, donc 'right' suffit.
+    toggle(scrollProgress, 'right');
+    // Format téléphone uniquement (cf. @media(max-width:600px) .page-tag.is-scrolled dans
+    // styles.css) : au-delà, la règle CSS ne matche jamais, la classe reste inerte.
+    if (pageTag) pageTag.classList.toggle('is-scrolled', window.scrollY > 10);
   }
 
   update();

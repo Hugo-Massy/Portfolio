@@ -18,14 +18,11 @@
   if (!contact) return;
   const avatarEls = contact.querySelectorAll('.contact-avatar');
   const armEl = contact.querySelector('.contact-avatar-arm');
-  // le texte et le bouton du pied de page n'ont de sens que tant que le bras de
-  // l'avatar est visible et semble les désigner : ils se cachent avec le bras.
-  const footEl = document.querySelector('.dp-foot');
   if (!avatarEls.length) return;
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', '1'));
     if (armEl) armEl.style.setProperty('--avatar-arm-opacity', '1');
-    if (footEl) footEl.classList.remove('dp-foot-arm-hidden');
+    contact.style.setProperty('--avatar-arm-opacity', '1');
     return;
   }
 
@@ -48,10 +45,12 @@
     const scale = AVATAR_MIN_SCALE + currentProgress * (1 - AVATAR_MIN_SCALE);
     avatarEls.forEach((el) => el.style.setProperty('--avatar-scale', scale.toFixed(3)));
     const armVisible = currentProgress >= ARM_REVEAL_START;
-    if (armEl) {
-      armEl.style.setProperty('--avatar-arm-opacity', armVisible ? 1 : 0);
-    }
-    if (footEl) footEl.classList.toggle('dp-foot-arm-hidden', !armVisible);
+    const armOpacity = armVisible ? 1 : 0;
+    if (armEl) armEl.style.setProperty('--avatar-arm-opacity', armOpacity);
+    // posée aussi sur #contact (ancêtre commun) pour que .details-link puisse s'aligner
+    // sur la même bascule sans dépendre d'un observer dédié — même technique que
+    // initAboutParallax (js/main.js) sur l'accueil.
+    contact.style.setProperty('--avatar-arm-opacity', armOpacity);
   }
 
   function tick() {
@@ -81,7 +80,7 @@
 // du viewport — purement visuel (transform), sans toucher au flow du document.
 //
 // Deux gaps naîtraient de ce lift, qu'on comble sans jamais faire bouger le bas visible de
-// la page (le rappel de pied .dp-foot et #contact restent, eux, TOUJOURS à leur place —
+// la page (le rappel de pied .details-link et #contact restent, eux, TOUJOURS à leur place —
 // c'est ce qui manquait avant : le petit pied glissait visiblement) :
 //   1. juste sous le bloc bleu qui remonte → #experience remonte du même montant, collée
 //      dessous ;
@@ -695,6 +694,7 @@
   const railLinks = document.querySelectorAll('.dot-rail a');
   const backToTop = document.querySelector('.back-to-top');
   const pageTag = document.querySelector('.page-tag');
+  const scrollProgress = document.querySelector('.scroll-progress');
   if (!contact && !blueBlock && !stackBanners.length) return;
 
   // Résout une longueur CSS (clamp(), calc(), var()...) en px réels, en la posant sur une
@@ -808,6 +808,10 @@
     railLinks.forEach((el) => toggle(el));
     toggle(backToTop);
     toggle(pageTag);
+    toggle(scrollProgress);
+    // Format téléphone uniquement (cf. @media(max-width:600px) .page-tag.is-scrolled dans
+    // styles.css) : au-delà, la règle CSS ne matche jamais, la classe reste inerte.
+    if (pageTag) pageTag.classList.toggle('is-scrolled', window.scrollY > 10);
   }
 
   update();
