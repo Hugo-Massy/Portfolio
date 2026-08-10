@@ -15,11 +15,58 @@
 // sans qu'aucune géométrie ne soit redécrite ici.
 (function () {
   // Angle de rotation d'un élément, lu sur sa matrice calculée (les bandeaux de la section
-  // "stack" sont tournés). 0 si l'élément n'est pas tourné.
-  function rotationOf(el) {
-    const t = getComputedStyle(el).transform;
-    const m = t && t.match(/^matrix\(([^,]+),\s*([^,]+),/);
-    return m ? Math.atan2(parseFloat(m[2]), parseFloat(m[1])) : 0;
+  // "stack" sont tournés). 0 si l'élément n'est pas tourné. Mis en cache par image dans
+  // js/frame.js : le même bandeau est mesuré par les neuf boutons découpés de la page.
+  const rotationOf = (el) => window.FrameLoop.rotation(el);
+  const rectOf = (el) => window.FrameLoop.rect(el);
+  const setStyle = (el, prop, value) => window.FrameLoop.setStyle(el, prop, value);
+
+  /* ---------- boucle unique, partagée par tous les boutons découpés ---------- */
+
+  // Une page en compte jusqu'à neuf (les pastilles du rail, son indicateur, le bouton
+  // « remonter », la pastille de défilement), et chacun avait sa propre boucle rAF qui
+  // mesurait puis écrivait. Or une écriture de style oblige le navigateur à recalculer toute
+  // la mise en page avant la lecture suivante : neuf boucles qui s'alternent, c'est neuf
+  // recalculs complets par image au lieu d'un. On les regroupe donc en une seule passe, en
+  // deux temps stricts — TOUTES les mesures, PUIS toutes les écritures — de sorte qu'une
+  // seule mise en page soit calculée pour l'ensemble des boutons.
+  // S'y ajoute le cache de js/frame.js : les aplats bleus sources sont communs à tous ces
+  // boutons, ils ne sont donc mesurés qu'une fois pour les neuf.
+  const instances = [];
+  let loopTask = null;
+
+  // MISE EN VEILLE — la découpe ne doit être refaite que si quelque chose a bougé, et la plupart
+  // du temps rien ne bouge : les pastilles du rail ne se déplacent qu'au défilement. Deux d'entre
+  // elles font exception et animent en continu tant qu'elles sont affichées (.back-to-top rebondit,
+  // .scroll-down se déforme) — mais elles produisent alors une écriture à chaque image, ce qui
+  // suffit à retenir la boucle sans avoir à les distinguer ici. On ne s'endort donc qu'après
+  // quelques images strictement sans changement, marge qui absorbe une frame isolée où tout
+  // retombe pile sur les mêmes valeurs arrondies.
+  const IDLE_FRAMES = 12;
+  let idle = 0;
+
+  function loop() {
+    let any = false;
+    for (const inst of instances) {
+      inst.visible = inst.isVisible();
+      if (!inst.visible) continue;
+      inst.measure();
+      any = true;
+    }
+    let changed = false;
+    for (const inst of instances) {
+      if (inst.visible && inst.paint()) changed = true;
+    }
+    // La boucle s'arrête aussi dès que plus aucun bouton n'est affiché, et le défilement la
+    // relance : c'est aussi le seul évènement qui peut les faire réapparaître.
+    if (!any) return false;
+    idle = changed ? 0 : idle + 1;
+    return idle < IDLE_FRAMES;
+  }
+
+  function startLoop() {
+    idle = 0;
+    if (loopTask) window.FrameLoop.wake(loopTask);
   }
 
   // btn      : le bouton à découper (doit être en overflow:hidden, cf. styles.css)
@@ -149,44 +196,66 @@
     }
 
     // Uniquement des lectures et écritures de chaînes, sans aucune mesure de mise en page :
-    // négligeable par image. `ir` vient de sync(), qui a déjà mesuré l'icône.
+    // négligeable par image. `ir` vient de measure(), qui a déjà mesuré l'icône.
     function syncBlob(ir) {
-      if (!canBlob) return;
+      if (!canBlob) return false;
       if (!blobCopy) {
         attachBlob();
-        if (!blobCopy) return;
+        if (!blobCopy) return false;
       }
+      let changed = false;
       for (const v of BLOB_VARS) {
-        const val = blobSrc.style.getPropertyValue(v);
-        if (blobCopy.style.getPropertyValue(v) !== val) blobCopy.style.setProperty(v, val);
+        if (window.FrameLoop.setVar(blobCopy, v, blobSrc.style.getPropertyValue(v))) changed = true;
       }
       // .is-active porte l'apparition en fondu de la forme (opacity) : la copie doit s'allumer
       // et s'éteindre avec elle, sans quoi elle resterait posée sur le bouton après la sortie
       // du curseur de la fenêtre.
-      blobCopy.classList.toggle('is-active', blobSrc.classList.contains('is-active'));
-      const clip = blobView.style.clipPath;
-      if (blobClip.style.clipPath !== clip) blobClip.style.clipPath = clip;
+      const active = blobSrc.classList.contains('is-active');
+      if (blobCopy.classList.contains('is-active') !== active) {
+        blobCopy.classList.toggle('is-active', active);
+        changed = true;
+      }
+      if (setStyle(blobClip, 'clipPath', blobView.style.clipPath)) changed = true;
 
-      if (!blobIcon || !ir) return;
+      if (!blobIcon || !ir) return changed;
       // Coordonnées viewport telles quelles : le calque qui héberge l'icône a vu ses ancêtres
       // annuler déplacement et étirement, son origine est donc exactement celle de l'écran.
-      blobIcon.style.width = `${ir.width}px`;
-      blobIcon.style.height = `${ir.height}px`;
-      blobIcon.style.left = `${ir.left}px`;
-      blobIcon.style.top = `${ir.top}px`;
+      if (setStyle(blobIcon, 'width', `${ir.width.toFixed(2)}px`)) changed = true;
+      if (setStyle(blobIcon, 'height', `${ir.height.toFixed(2)}px`)) changed = true;
+      if (setStyle(blobIcon, 'left', `${ir.left.toFixed(2)}px`)) changed = true;
+      if (setStyle(blobIcon, 'top', `${ir.top.toFixed(2)}px`)) changed = true;
+      return changed;
+    }
+
+    // Largeurs de bordure du bouton : elles viennent d'une règle CSS statique et ne changent
+    // donc jamais en cours de route. Un getComputedStyle par bouton et par image (neuf par
+    // page) pour relire deux constantes, c'était du travail pur perdu — relu au
+    // redimensionnement seulement, où une unité relative pourrait les faire varier.
+    let borders = null;
+    function readBorders() {
+      const cs = getComputedStyle(btn);
+      borders = {
+        left: parseFloat(cs.borderLeftWidth) || 0,
+        top: parseFloat(cs.borderTopWidth) || 0,
+      };
     }
 
     // Toutes les mesures d'abord, toutes les écritures ensuite : intercaler les deux forcerait
-    // le navigateur à recalculer la mise en page à chaque copie, et ce à chaque frame.
-    function sync() {
-      // --- mesures ---
-      const br = btn.getBoundingClientRect();
-      const cs = getComputedStyle(btn);
-      const ir = icon ? icon.getBoundingClientRect() : null;
-      const geom = parts.map(({ src }) => {
-        const r = src.getBoundingClientRect();
+    // le navigateur à recalculer la mise en page à chaque copie, et ce à chaque frame. Les deux
+    // temps sont ici SÉPARÉS EN DEUX FONCTIONS, appelées par la boucle commune (cf. loop() en
+    // tête de fichier) : la séparation ne vaut que si elle tient aussi entre les boutons, pas
+    // seulement à l'intérieur de chacun.
+    const m = { br: null, ir: null, geom: [] };
+
+    function measure() {
+      m.br = rectOf(btn);
+      m.ir = icon ? rectOf(icon) : null;
+      if (!borders) readBorders();
+      for (let i = 0; i < parts.length; i++) {
+        const src = parts[i].src;
+        const r = rectOf(src);
         const angle = rotationOf(src);
-        return {
+        m.geom[i] = {
           angle,
           // Sur un élément tourné, getBoundingClientRect() donne la boîte ENGLOBANTE, plus
           // grande que la boîte réelle : on repasse alors par offsetWidth/Height (dimensions
@@ -196,22 +265,28 @@
           cx: r.left + r.width / 2,
           cy: r.top + r.height / 2,
         };
-      });
+      }
+    }
 
-      // --- écritures ---
+    // Renvoie vrai si au moins une propriété a réellement changé : c'est ce qui dit à la boucle
+    // commune que ce bouton bouge encore et qu'elle ne peut pas s'endormir.
+    function paint() {
+      const { br, ir, geom } = m;
+      if (!br) return false;
+      let changed = false;
       // Ramène le repère local de la couche sur le coin haut-gauche du viewport : les copies
       // peuvent alors être posées à leurs coordonnées viewport telles quelles. Le bloc
       // contenant d'un enfant absolu est la boîte de PADDING, d'où le retrait des bordures.
-      layer.style.left = `${-(br.left + (parseFloat(cs.borderLeftWidth) || 0))}px`;
-      layer.style.top = `${-(br.top + (parseFloat(cs.borderTopWidth) || 0))}px`;
+      if (setStyle(layer, 'left', `${(-(br.left + borders.left)).toFixed(2)}px`)) changed = true;
+      if (setStyle(layer, 'top', `${(-(br.top + borders.top)).toFixed(2)}px`)) changed = true;
 
       parts.forEach(({ fill, iconCopy }, i) => {
         const { angle, w, h, cx, cy } = geom[i];
-        fill.style.width = `${w}px`;
-        fill.style.height = `${h}px`;
-        fill.style.left = `${cx - w / 2}px`;
-        fill.style.top = `${cy - h / 2}px`;
-        fill.style.transform = angle ? `rotate(${angle}rad)` : 'none';
+        if (setStyle(fill, 'width', `${w.toFixed(2)}px`)) changed = true;
+        if (setStyle(fill, 'height', `${h.toFixed(2)}px`)) changed = true;
+        if (setStyle(fill, 'left', `${(cx - w / 2).toFixed(2)}px`)) changed = true;
+        if (setStyle(fill, 'top', `${(cy - h / 2).toFixed(2)}px`)) changed = true;
+        if (setStyle(fill, 'transform', angle ? `rotate(${angle}rad)` : 'none')) changed = true;
 
         if (!iconCopy || !ir) return;
         // Position de l'icône dans le repère NON tourné de l'aplat, puis rotation inverse pour
@@ -220,17 +295,18 @@
         const dy = ir.top + ir.height / 2 - cy;
         const lx = angle ? dx * Math.cos(angle) + dy * Math.sin(angle) : dx;
         const ly = angle ? -dx * Math.sin(angle) + dy * Math.cos(angle) : dy;
-        iconCopy.style.width = `${ir.width}px`;
-        iconCopy.style.height = `${ir.height}px`;
-        iconCopy.style.left = `${w / 2 + lx - ir.width / 2}px`;
-        iconCopy.style.top = `${h / 2 + ly - ir.height / 2}px`;
-        iconCopy.style.transform = angle ? `rotate(${-angle}rad)` : 'none';
+        if (setStyle(iconCopy, 'width', `${ir.width.toFixed(2)}px`)) changed = true;
+        if (setStyle(iconCopy, 'height', `${ir.height.toFixed(2)}px`)) changed = true;
+        if (setStyle(iconCopy, 'left', `${(w / 2 + lx - ir.width / 2).toFixed(2)}px`)) changed = true;
+        if (setStyle(iconCopy, 'top', `${(h / 2 + ly - ir.height / 2).toFixed(2)}px`)) changed = true;
+        if (setStyle(iconCopy, 'transform', angle ? `rotate(${-angle}rad)` : 'none')) changed = true;
       });
 
       // Après les aplats, donc peinte par-dessus eux : là où la forme chevauche un bandeau, les
       // deux sont blancs de toute façon, mais c'est SON icône accent qui doit gagner (la sienne
       // est rognée sur sa silhouette, celle du bandeau sur la diagonale).
-      syncBlob(ir);
+      if (syncBlob(ir)) changed = true;
+      return changed;
     }
 
     // Replacé à chaque frame, et non au scroll : le bouton rebondit et se déforme en continu
@@ -238,26 +314,31 @@
     // évènements de scroll. Mesurer à chaque frame absorbe ce mouvement sans avoir à
     // contre-animer la couche — deux animations CSS à garder en phase, c'est précisément ce que
     // la découpe de l'écran de chargement s'interdit (cf. .preloader-blob-knockout).
-    // La boucle s'arrête dès que le bouton est masqué, et le scroll la relance : c'est aussi
-    // le seul évènement qui peut le faire réapparaître.
-    let raf = 0;
     // Testé sur l'opacité calculée plutôt que sur une classe : .back-to-top s'affiche via
     // .is-visible, .scroll-down se masque via .is-hidden — l'opacité couvre les deux sans que
     // ce module ait à connaître la convention de chaque bouton.
-    const visible = () => parseFloat(getComputedStyle(btn).opacity) > 0;
-    function loop() {
-      raf = 0;
-      if (!visible()) return;
-      sync();
-      raf = requestAnimationFrame(loop);
-    }
-    function start() {
-      if (!raf && visible()) raf = requestAnimationFrame(loop);
-    }
+    const isVisible = () => parseFloat(getComputedStyle(btn).opacity) > 0;
 
-    sync();
-    start();
-    window.addEventListener('scroll', start, { passive: true });
-    window.addEventListener('resize', start);
+    instances.push({ isVisible, measure, paint, visible: false });
+    // Une seule tâche et un seul jeu d'écouteurs pour tous les boutons : les inscrire par
+    // bouton reviendrait à réveiller neuf fois la même boucle à chaque évènement de défilement.
+    if (!loopTask) {
+      loopTask = window.FrameLoop.add(window.FrameLoop.ORDER.KNOCKOUT, loop);
+      window.addEventListener('scroll', startLoop, { passive: true });
+      window.addEventListener('resize', startLoop);
+      // Le parallax continue de déplacer les aplats bleus pendant plusieurs images après le
+      // dernier évènement de défilement (lissage, cf. initAboutParallax dans js/main.js).
+      window.addEventListener('parallax-tick', startLoop);
+      // La forme du hero, dont chaque bouton porte une copie, se déplace sur mouvement de souris
+      // puis continue quelques images (ressort) : « blob-tick » couvre les deux, et il est émis
+      // par js/page-blob.js AVANT nous dans l'image (cf. ORDER), donc sans tour de retard.
+      window.addEventListener('pointermove', startLoop, { passive: true });
+      window.addEventListener('blob-tick', startLoop);
+    }
+    window.addEventListener('resize', () => { borders = null; });
+
+    measure();
+    paint();
+    startLoop();
   };
 })();

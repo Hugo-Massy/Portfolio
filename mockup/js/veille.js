@@ -910,15 +910,18 @@ async function initVeille() {
 
   // side: 'left' pour la nav de pages, collée au bord gauche, où le pli diagonal
   // descend le plus bas (cf. clip-path de .contact-fill) ; 'right' pour le reste.
+  // Mesures mutualisées avec tout ce qui tourne dans l'image (cf. js/frame.js) : #contact est
+  // remesuré une fois par élément testé, et c'est le même aplat que mesurent déjà la forme du
+  // hero, le point du curseur et les découpes de bouton.
   function overDark(y, side) {
-    const r = contact.getBoundingClientRect();
+    const r = window.FrameLoop.rect(contact);
     if (side === 'left') return y > r.top + slope && y < r.bottom;
     return y > r.top && y < r.bottom;
   }
 
   function toggle(el, side) {
     if (!el) return;
-    const r = el.getBoundingClientRect();
+    const r = window.FrameLoop.rect(el);
     el.classList.toggle('is-on-dark', overDark(r.top + r.height / 2, side));
   }
 
@@ -929,9 +932,12 @@ async function initVeille() {
   }
 
   update();
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', () => { slope = resolveCSSLength('var(--contact-slope)'); update(); });
-  window.addEventListener('parallax-tick', update);
+  // Reporté à la prochaine image plutôt que rejoué à chaque évènement : "scroll" et
+  // "parallax-tick" peuvent tomber plusieurs fois dans la même. Voir js/frame.js.
+  const schedule = window.FrameLoop.throttle(window.FrameLoop.ORDER.SCROLL, update);
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', () => { slope = resolveCSSLength('var(--contact-slope)'); schedule(); });
+  window.addEventListener('parallax-tick', schedule);
 })();
 
 initVeille();

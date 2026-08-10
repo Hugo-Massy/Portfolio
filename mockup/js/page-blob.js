@@ -38,6 +38,13 @@
 
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Mesures mises en cache le temps d'une image et écritures gardées : voir js/frame.js. Les
+  // mêmes aplats bleus sont mesurés ici (frontière du rognage), par le point du curseur et par
+  // chacune des découpes de bouton — une seule mesure sert désormais les trois.
+  const rectOf = (el) => window.FrameLoop.rect(el);
+  const setStyle = (el, prop, value) => window.FrameLoop.setStyle(el, prop, value);
+  const setVar = (el, name, value) => window.FrameLoop.setVar(el, name, value);
+
   /* ---------- construction du DOM ---------- */
 
   const viewport = document.createElement('div');
@@ -286,28 +293,34 @@
 
   // Recopie les styles en ligne que dot-rail-magnet.js réécrit à chaque image. Deux lectures et
   // deux écritures de chaînes, sans aucune mesure de mise en page : négligeable par image.
+  // Renvoie vrai si quelque chose a réellement changé — c'est ce qui dit à la boucle du ressort
+  // que l'indicateur est encore en train de voyager le long du rail (transition CSS sur `top`,
+  // déformation réécrite par js/dot-rail-magnet.js) et qu'elle ne peut donc pas encore
+  // s'endormir, même si la forme, elle, est posée.
   function syncRailIndicator() {
-    if (!railIndicator || !railIndicatorCopy) return;
-    railIndicatorCopy.style.top = railIndicator.style.top;
-    railIndicatorCopy.style.transform = railIndicator.style.transform;
+    if (!railIndicator || !railIndicatorCopy) return false;
+    const a = setStyle(railIndicatorCopy, 'top', railIndicator.style.top);
+    const b = setStyle(railIndicatorCopy, 'transform', railIndicator.style.transform);
+    return a || b;
   }
 
   // Seuls left/top sont posés : la copie porte les mêmes classes que l'original, sa taille
   // naturelle est donc déjà la bonne. Lui imposer une largeur/hauteur mesurée ne ferait
   // qu'ajouter une occasion de diverger.
   function positionFixedCopies() {
+    if (!fixedPairs.length) return;
     const vw = document.documentElement.clientWidth;
     fixedPairs.forEach(({ src, copy, anchorRight }) => {
-      const r = src.getBoundingClientRect();
-      copy.style.top = `${r.top}px`;
+      const r = rectOf(src);
+      setStyle(copy, 'top', `${r.top.toFixed(2)}px`);
       // Le bord ancré est celui qui ne bouge pas quand la largeur change : on le fige, et on
       // laisse l'autre libre, exactement comme l'original (cf. anchorRight à la construction).
       if (anchorRight) {
-        copy.style.left = 'auto';
-        copy.style.right = `${vw - r.right}px`;
+        setStyle(copy, 'left', 'auto');
+        setStyle(copy, 'right', `${(vw - r.right).toFixed(2)}px`);
       } else {
-        copy.style.right = 'auto';
-        copy.style.left = `${r.left}px`;
+        setStyle(copy, 'right', 'auto');
+        setStyle(copy, 'left', `${r.left.toFixed(2)}px`);
       }
     });
   }
@@ -423,10 +436,12 @@
   // Quelques lectures et écritures de chaînes par élément concerné (trois ou quatre), sans
   // aucune mesure de mise en page : négligeable par image.
   function syncTransforms() {
+    let changed = false;
     for (const { src, copy } of transformPairs) {
-      if (copy.style.transform !== src.style.transform) copy.style.transform = src.style.transform;
-      if (copy.style.height !== src.style.height) copy.style.height = src.style.height;
+      if (setStyle(copy, 'transform', src.style.transform)) changed = true;
+      if (setStyle(copy, 'height', src.style.height)) changed = true;
     }
+    return changed;
   }
 
   /* ---------- recalage des éléments en position:sticky ---------- */
@@ -501,13 +516,13 @@
   // comme le bento de l'accueil dérivaient d'autant. STICKY_SELECTOR ne contient plus d'élément
   // de la page veille (cf. plus haut), le défaut n'y était donc de toute façon plus observable.
   function syncSticky() {
+    let changed = false;
     for (const p of stickyPairs) {
-      const d = p.src.getBoundingClientRect().top
-        - p.src.parentElement.getBoundingClientRect().top
-        - p.offsetInParent;
+      const d = rectOf(p.src).top - rectOf(p.src.parentElement).top - p.offsetInParent;
       const t = Math.abs(d) < 0.5 ? '' : `translateY(${d.toFixed(1)}px)`;
-      if (p.copy.style.transform !== t) p.copy.style.transform = t;
+      if (setStyle(p.copy, 'transform', t)) changed = true;
     }
+    return changed;
   }
 
   /* ---------- recopie des classes pilotées par le scroll ---------- */
@@ -548,10 +563,15 @@
   // Une lecture et (rarement) une écriture de classe par élément suivi — quelques-uns par page,
   // sans aucune mesure de mise en page : négligeable par image.
   function syncClasses() {
+    let changed = false;
     for (const { src, copy, cls } of classPairs) {
       const on = src.classList.contains(cls);
-      if (copy.classList.contains(cls) !== on) copy.classList.toggle(cls, on);
+      if (copy.classList.contains(cls) !== on) {
+        copy.classList.toggle(cls, on);
+        changed = true;
+      }
     }
+    return changed;
   }
 
   function syncHover(target) {
@@ -658,8 +678,14 @@
     let min = Infinity;
     for (const poly of polys) {
       for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
-        const [x1, y1] = poly[j];
-        const [x2, y2] = poly[i];
+        // Lecture par indice plutôt que par déstructuration : cette boucle tourne quelques
+        // centaines de fois par image, et chaque déstructuration y allouerait un itérateur.
+        const a = poly[j];
+        const b = poly[i];
+        const x1 = a[0];
+        const y1 = a[1];
+        const x2 = b[0];
+        const y2 = b[1];
         if (x < Math.min(x1, x2) || x > Math.max(x1, x2)) continue;
         // Arête verticale : ses deux extrémités sont candidates, aucune interpolation possible.
         if (x1 === x2) {
@@ -679,20 +705,40 @@
   // omettre arrondirait les angles. Une grille régulière est ajoutée par-dessus pour approcher
   // finement les croisements entre deux aplats, seuls points de rupture que les sommets ne
   // donnent pas.
-  const FRONTIER_STEPS = 64;
+  //
+  // La grille était à 64 pas. C'est beaucoup trop cher pour ce qu'elle apporte, et elle se paie
+  // trois fois : au calcul (chaque pas coûte un parcours de toutes les arêtes de tous les
+  // aplats), à l'écriture (un clip-path de ~70 sommets réécrit sur une fenêtre plein écran qui
+  // contient une copie entière de la page), et au rendu (le moteur doit rogner sur ce contour à
+  // chaque image). Or les SOMMETS, eux, sont exacts et toujours présents : la grille ne sert
+  // qu'aux croisements entre deux aplats, où l'erreur d'un échantillonnage à 20 pas est de
+  // quelques px sur une diagonale — invisible, et seulement là où deux bandeaux se recouvrent
+  // (la page détails, jamais l'accueil ni la veille).
+  const FRONTIER_STEPS = 20;
+  // Réutilisé d'une image à l'autre plutôt que réalloué : cette fonction est appelée à chaque
+  // image pendant tout un lissage de parallax.
+  const frontierXs = [];
   function frontierSamples(polys, left, right) {
-    const xs = [left, right];
-    for (let i = 1; i < FRONTIER_STEPS; i++) xs.push(left + ((right - left) * i) / FRONTIER_STEPS);
+    frontierXs.length = 0;
+    frontierXs.push(left, right);
+    for (let i = 1; i < FRONTIER_STEPS; i++) frontierXs.push(left + ((right - left) * i) / FRONTIER_STEPS);
     for (const poly of polys) {
-      for (const [px] of poly) if (px > left && px < right) xs.push(px);
+      for (const p of poly) {
+        const px = p[0];
+        if (px > left && px < right) frontierXs.push(px);
+      }
     }
-    return xs.sort((a, b) => a - b);
+    return frontierXs.sort((a, b) => a - b);
   }
 
-  let scrollRaf = 0;
+  // Dernier contour écrit dans le clip-path, sous sa forme sérialisée : tant que la frontière du
+  // bleu ne bouge pas (c'est-à-dire tant qu'on ne défile pas et que le parallax est posé), la
+  // réécrire à l'identique ferait re-rogner pour rien une fenêtre plein écran qui contient une
+  // copie entière de la page.
+  let lastClipText = '';
+
   function updateScroll() {
-    scrollRaf = 0;
-    blob.style.setProperty('--pgblob-scroll-y', `${window.scrollY}px`);
+    setVar(blob, '--pgblob-scroll-y', `${window.scrollY}px`);
     // Filet supplémentaire au cas où le ResizeObserver manquerait (ou serait absent) : la
     // fonction ne touche au style que si la mesure a réellement bougé.
     syncCloneSize();
@@ -742,18 +788,31 @@
     shapeVisible = maxY > 0;
     if (!shapeVisible) {
       // Polygone dégénéré plutôt qu'un inset : rien n'est peint, et la forme disparaît d'elle-même.
-      viewport.style.clipPath = 'polygon(0 0, 0 0, 0 0)';
+      if (lastClipText !== 'none') {
+        lastClipText = 'none';
+        viewport.style.clipPath = 'polygon(0 0, 0 0, 0 0)';
+      }
       lastClip = null;
-      return;
+      return false;
     }
-    viewport.style.clipPath = `polygon(${pts.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(', ')})`;
+    const text = `polygon(${pts.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(', ')})`;
+    if (text !== lastClipText) {
+      lastClipText = text;
+      viewport.style.clipPath = text;
+    }
     lastClip = pts;
     // La boucle a pu s'arrêter pendant que rien n'était peint : c'est ici, et nulle part ailleurs,
     // qu'on sait qu'il y a de nouveau quelque chose à animer.
     startLoop();
+    // Un seul passage par réveil : le recalage ne dépend que du défilement et du parallax, tous
+    // deux évènementiels.
+    return false;
   }
+  // Inscrit avant la boucle du ressort (cf. ORDER dans js/frame.js) : c'est lui qui décide si la
+  // forme a encore quelque chose à peindre, et la boucle le lit dans la foulée.
+  const scrollTask = window.FrameLoop.add(window.FrameLoop.ORDER.SCROLL, updateScroll);
   function scheduleScrollUpdate() {
-    if (!scrollRaf) scrollRaf = requestAnimationFrame(updateScroll);
+    window.FrameLoop.wake(scrollTask);
   }
   // Premier calcul déclenché tout en bas du module, et non ici : updateScroll relance la boucle
   // d'animation (startLoop), qui lit des variables déclarées plus loin — les appeler maintenant
@@ -833,8 +892,11 @@
     b.alive = true;
   }
 
+  // Renvoie le nombre de bulles encore en vie : la boucle du ressort ne peut pas s'endormir
+  // tant qu'il en reste une à faire monter et s'effacer, même si la forme, elle, est posée.
   function updateBubbles(dt) {
     const damp = Math.exp(-DRAG * dt);
+    let live = 0;
     for (const b of bubbles) {
       if (!b.alive) continue;
       b.life += dt;
@@ -843,6 +905,7 @@
         b.node.style.opacity = '0';
         continue;
       }
+      live++;
       b.vy -= RISE * dt;
       b.vx *= damp;
       b.vy *= damp;
@@ -856,6 +919,7 @@
         `translate3d(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px, 0) translate(-50%, -50%) ` +
         `rotate(${b.rot.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
     }
+    return live;
   }
 
   /* ---------- ressort à amortissement critique (identique à initPreloaderBlob) ---------- */
@@ -873,9 +937,14 @@
   let vx = 0;
   let vy = 0;
   let placed = false;
-  let raf = 0;
+  let looping = false;
   let prev = 0;
   let angle = 0;
+  // En dessous, la forme est arrivée sur sa cible et n'a plus rien à intégrer : le ressort est
+  // posé, l'étirement est revenu à 1. Un demi-pixel d'écart et 5 px/s de vitesse résiduelle sont
+  // très en dessous de ce qui se voit.
+  const REST_DIST = 0.5;
+  const REST_SPEED = 5;
 
   // La forme suit le curseur PARTOUT sur la page : aucune zone ne l'éteint plus (ni la sortie du
   // hero, ni l'arrivée sur un aplat bleu, ni le défilement). C'est le rognage, et lui seul, qui
@@ -893,31 +962,38 @@
       vy = 0;
       blob.classList.add('is-active');
     }
+    // La souris a bougé : il y a de nouveau une cible à rattraper, même si la boucle s'était
+    // endormie faute de mouvement.
+    startLoop();
   }
   function onLeave() {
     placed = false;
     blob.classList.remove('is-active');
   }
 
-  // Relance la boucle si elle s'était arrêtée faute de zone à peindre.
+  // Relance la boucle si elle s'était arrêtée (faute de zone à peindre, ou parce que tout
+  // était posé).
   function startLoop() {
-    if (!raf) {
-      prev = 0; // repart d'un dt nul plutôt que du temps écoulé pendant l'arrêt
-      raf = requestAnimationFrame(frame);
-    }
+    if (looping) return;
+    looping = true;
+    prev = 0; // repart d'un dt nul plutôt que du temps écoulé pendant l'arrêt
+    window.FrameLoop.wake(blobTask);
+  }
+  function stopLoop() {
+    looping = false;
+    return false;
   }
 
   function frame(now) {
     // Plus rien de peint : on rend la main au navigateur au lieu de continuer à intégrer le
     // ressort et les bulles dans le vide. Le défilement relancera la boucle en revenant.
-    if (!shapeVisible) {
-      raf = 0;
-      return;
-    }
+    if (!shapeVisible) return stopLoop();
     const dt = prev ? Math.min((now - prev) / 1000, MAX_DT) : 0;
     prev = now;
     const fromX = x;
     const fromY = y;
+    let liveBubbles = 0;
+    let speed = 0;
     if (reduce) {
       x = targetX;
       y = targetY;
@@ -929,12 +1005,12 @@
       x += vx * dt;
       y += vy * dt;
 
-      const speed = Math.hypot(vx, vy);
+      speed = Math.hypot(vx, vy);
       if (speed > MIN_SPEED) angle = Math.atan2(vy, vx) * 180 / Math.PI;
       const stretch = 1 + Math.min(speed / REF_SPEED, 1) * (MAX_STRETCH - 1);
-      blob.style.setProperty('--pgblob-angle', `${angle.toFixed(1)}deg`);
-      blob.style.setProperty('--pgblob-stretch', stretch.toFixed(3));
-      blob.style.setProperty('--pgblob-squash', (1 / stretch).toFixed(3));
+      setVar(blob, '--pgblob-angle', `${angle.toFixed(1)}deg`);
+      setVar(blob, '--pgblob-stretch', stretch.toFixed(3));
+      setVar(blob, '--pgblob-squash', (1 / stretch).toFixed(3));
 
       if (placed && bubbles.length) {
         travel += Math.hypot(x - fromX, y - fromY);
@@ -946,32 +1022,61 @@
         }
         if (n === MAX_PER_FRAME) travel = 0;
       }
-      updateBubbles(dt);
+      liveBubbles = updateBubbles(dt);
     }
-    blob.style.setProperty('--pgblob-x', `${x.toFixed(1)}px`);
-    blob.style.setProperty('--pgblob-y', `${y.toFixed(1)}px`);
+    setVar(blob, '--pgblob-x', `${x.toFixed(1)}px`);
+    setVar(blob, '--pgblob-y', `${y.toFixed(1)}px`);
     // Recopié ICI en plus de updateScroll : le "scroll" DOM n'est pas garanti de se déclencher à
     // chaque image pendant un défilement rapide/à l'inertie (les navigateurs peuvent le limiter à
     // moins d'une fois par image sous charge), alors que le défilement RÉEL, lui, continue d'avancer
     // à chaque image via le compositeur. Sans ce second point de synchronisation, le contenu recopié
     // dans la forme retardait de quelques images sur ce qui est réellement affiché à l'écran pendant
     // le scroll — un décalage vertical visible et grandissant tant que l'inertie dure.
-    blob.style.setProperty('--pgblob-scroll-y', `${window.scrollY}px`);
-    syncRailIndicator();
-    syncTransforms();
-    syncSticky();
-    syncClasses();
+    setVar(blob, '--pgblob-scroll-y', `${window.scrollY}px`);
+    // Chacune de ces recopies dit si elle a réellement écrit quelque chose : c'est ce qui décide
+    // de la mise en veille plus bas (cf. le commentaire qui l'accompagne).
+    let busy = syncRailIndicator();
+    if (syncTransforms()) busy = true;
+    if (syncSticky()) busy = true;
+    if (syncClasses()) busy = true;
 
     // Le curseur personnalisé (js/cursor.js) s'inverse en blanc sur la forme : il doit donc se
     // recalculer quand c'est ELLE qui bouge sous une souris immobile — le ressort met encore
     // quelques images à la rattraper après le dernier pointermove. Émis seulement si la forme
     // s'est réellement déplacée : une fois posée, le signal cesse, sinon cursor.js relancerait
     // un elementsFromPoint à chaque image pour un résultat identique.
-    if (Math.hypot(x - fromX, y - fromY) > 0.3) {
+    const moved = Math.hypot(x - fromX, y - fromY);
+    if (moved > 0.3) {
       window.dispatchEvent(new Event('blob-tick'));
     }
-    raf = requestAnimationFrame(frame);
+
+    // MISE EN VEILLE — la souris passe l'essentiel du temps immobile, et cette boucle tournait
+    // pourtant à chaque image du chargement à la fermeture de l'onglet : intégration du ressort,
+    // écriture de cinq variables CSS, recopie des transforms, mesure des éléments figés… pour un
+    // résultat rigoureusement identique d'une image à l'autre. On s'arrête donc dès que plus rien
+    // ne bouge, comme le fait déjà js/dot-rail-magnet.js pour l'indicateur du rail.
+    // Plusieurs choses peuvent encore bouger alors que la forme, elle, est posée — et chacune doit
+    // retenir la boucle :
+    //   - le ressort n'a pas fini de rattraper le curseur (distance ou vitesse résiduelle) ;
+    //   - une bulle du sillage n'a pas fini de monter et de s'effacer ;
+    //   - une des recopies ci-dessus a encore quelque chose à écrire (`busy`), ce qui couvre
+    //     l'indicateur du rail en plein voyage, le parallax en cours de lissage, un élément figé
+    //     qui glisse encore et les classes posées au fil du défilement.
+    // Le réveil est assuré par onMove (la souris), par updateScroll (défilement, redimensionnement,
+    // parallax) et par le premier calcul en bas de module.
+    // (En mouvement réduit, x/y sautent directement sur la cible : les tests de repos sont alors
+    // vrais d'office dès l'image qui suit le saut, et la boucle s'endort tout de suite.)
+    const atRest = Math.abs(targetX - x) < REST_DIST && Math.abs(targetY - y) < REST_DIST
+      && speed < REST_SPEED
+      && moved <= 0.3;
+    if (dt && atRest && !liveBubbles && !busy) return stopLoop();
+    return true;
   }
+
+  // Inscrite dans la boucle partagée AVANT les découpes de bouton et le curseur (cf. ORDER dans
+  // js/frame.js) : ces deux-là consomment les variables --pgblob-* qu'on vient de poser, ils
+  // travaillent donc sur la position de l'image courante et non sur celle de la précédente.
+  const blobTask = window.FrameLoop.add(window.FrameLoop.ORDER.BLOB, frame);
 
   // Zone réellement peinte par la forme, pour js/cursor.js (qui doit y inverser son point en
   // blanc). Une seule source de vérité : c'est le contour effectivement passé au clip-path.

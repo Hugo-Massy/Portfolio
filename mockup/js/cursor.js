@@ -52,13 +52,15 @@
 
   /* ---------- géométrie des calques décoratifs ---------- */
 
-  // Angle de rotation appliqué à l'élément, en radians (0 si aucune rotation) : lu sur la
-  // matrice calculée, dont les deux premiers coefficients sont (cos θ, sin θ).
-  function rotationOf(el) {
-    const t = getComputedStyle(el).transform;
-    const m = t && t.match(/^matrix\(([^,]+),\s*([^,]+),/);
-    return m ? Math.atan2(parseFloat(m[2]), parseFloat(m[1])) : 0;
-  }
+  // Mesure de boîte et angle de rotation, tous deux mis en cache le temps d'une image par
+  // js/frame.js. Le gain n'est pas marginal ici : toViewportPoint est appelé UNE FOIS PAR
+  // POINT du polygone de découpe (quatre à six par aplat), et chacun de ces appels relisait
+  // la boîte ET la matrice du même élément — pour un contour qui, par définition, ne bouge
+  // pas entre deux points de lui-même. S'y ajoutent les cinq sondes du point (cf.
+  // darkSurfacesAround) qui repassent sur les mêmes aplats, et les neuf découpes de bouton
+  // (js/knockout.js) qui les mesurent aussi dans la même image.
+  const rectOf = (el) => window.FrameLoop.rect(el);
+  const rotationOf = (el) => window.FrameLoop.rotation(el);
 
   // Reprojette un point viewport dans le repère local NON tourné de l'élément (origine en
   // haut à gauche de sa boîte de bordure). Le centre de rotation ne bouge pas sous
@@ -67,7 +69,7 @@
   // d'avant rotation (les transforms ne touchent pas la boîte de layout). D'où un test
   // précis sur l'arête réelle, et pas sur la boîte englobante axis-aligned.
   function toLocalPoint(el, x, y) {
-    const r = el.getBoundingClientRect();
+    const r = rectOf(el);
     const dx = x - (r.left + r.width / 2);
     const dy = y - (r.top + r.height / 2);
     const a = rotationOf(el);
@@ -83,7 +85,7 @@
   // Sert à exprimer la forme peinte d'un calque (son polygone de découpe) dans le même
   // repère que le point du curseur, seul moyen de les découper l'un contre l'autre.
   function toViewportPoint(el, p) {
-    const r = el.getBoundingClientRect();
+    const r = rectOf(el);
     const a = rotationOf(el);
     const cos = Math.cos(a);
     const sin = Math.sin(a);
@@ -156,7 +158,14 @@
   // taille ne change pas : resolveLength force une réorganisation du layout à chaque appel,
   // inutile à répéter à chaque frame alors que la forme d'un bandeau ne bouge qu'au resize.
   const clipCache = new WeakMap();
+  // Mémoïsé par image en plus du cache par taille : le cache ci-dessous évite le RECALCUL des
+  // points, mais pas le getComputedStyle qui lit le clip-path — or surfaceCoversPoint appelle
+  // cette fonction pour chacune des cinq sondes du point et pour chaque aplat, soit une
+  // vingtaine de lectures de style par image pour une valeur rigoureusement constante.
   function clipPolygon(el, w, h) {
+    return window.FrameLoop.memo('clipPolygon', el, () => computeClipPolygon(el, w, h));
+  }
+  function computeClipPolygon(el, w, h) {
     const clip = getComputedStyle(el).clipPath;
     // Pas de regex à ancres ")$" ici : un calc()/clamp() dans les coordonnées introduit ses
     // propres parenthèses fermantes avant celle qui termine réellement polygon(...), ce
@@ -178,12 +187,19 @@
   // Contour peint par l'élément, en coordonnées viewport : son polygone de découpe s'il en a
   // un, sinon les quatre coins de sa boîte — dans les deux cas passés par toViewportPoint,
   // donc rotation comprise (les bandeaux .dp-stack-banner sont inclinés).
-  function surfacePolygon(el) {
+  // Mémoïsé par image (js/frame.js) : ce contour est redemandé plusieurs fois dans la même,
+  // et par deux modules différents — une fois par la forme du hero (window.BlueSurfaces
+  // .polygons(), cf. updateScroll dans js/page-blob.js) et une à cinq fois par le point du
+  // curseur, selon le nombre de sondes qui tombent sur le même aplat.
+  function computeSurfacePolygon(el) {
     const w = el.offsetWidth;
     const h = el.offsetHeight;
     if (!w || !h) return null;
     const local = clipPolygon(el, w, h) || [[0, 0], [w, 0], [w, h], [0, h]];
     return local.map((p) => toViewportPoint(el, p));
+  }
+  function surfacePolygon(el) {
+    return window.FrameLoop.memo('surfacePolygon', el, computeSurfacePolygon);
   }
 
   // Lancer de rayon horizontal classique : impair = dedans.
@@ -347,7 +363,7 @@
   // n'est posée qu'une fois le curseur localisé, cf. les deux modules).
   function blobRect(el, shape) {
     if (!el || !shape || !el.classList.contains('is-active')) return null;
-    const r = shape.getBoundingClientRect();
+    const r = rectOf(shape);
     return r.width && r.height ? r : null;
   }
 
@@ -495,7 +511,7 @@
   // seulement dans sa boîte englobante rectangulaire.
   function imageHitAt(s, x, y) {
     if (!s.painted) return false;
-    const r = s.el.getBoundingClientRect();
+    const r = rectOf(s.el);
     if (!r.width || !r.height) return false;
     if (x < r.left || x >= r.right || y < r.top || y >= r.bottom) return false;
     const mask = ensureMask(s);
@@ -617,7 +633,7 @@
   // change, seuls la position et la taille bougent d'une frame à l'autre.
   let maskedSurface = null;
   function applyImageMask(s, box) {
-    const r = s.el.getBoundingClientRect();
+    const r = rectOf(s.el);
     light.style.clipPath = 'none';
     for (const prefix of ['', '-webkit-']) {
       if (maskedSurface !== s) light.style.setProperty(`${prefix}mask-image`, `url("${s.mask.url}")`);
@@ -687,24 +703,32 @@
 
   let x = -100;
   let y = -100;
-  let frame = 0;
 
   function render() {
-    frame = 0;
     dot.style.transform = `translate3d(${x}px, ${y}px, 0) translate(-50%, -50%)`;
     // la boîte est relue après coup plutôt que déduite de x/y : la taille du point s'anime
     // (survol, clic), et c'est sa taille réelle à cette frame qui doit servir de repère.
+    // Volontairement NON mise en cache : le point vient d'être déplacé à la ligne au-dessus,
+    // c'est cette position-là qu'on veut, pas celle d'avant l'écriture.
     const r = dot.getBoundingClientRect();
-    if (!r.width || !r.height) return;
+    if (!r.width || !r.height) return false;
     // Une seule lecture de style par image décorative et par frame, avant les cinq sondes.
     refreshImagePaint();
     // elementsFromPoint + getComputedStyle coûtent cher : on ne les évalue qu'une fois par
     // frame, jamais à chaque événement pointermove (qui peut tirer plus vite que l'écran).
     applyLightClip({ left: r.left, top: r.top, right: r.right, bottom: r.bottom });
+    // Une seule passe par réveil : le point ne bouge que sur évènement (pointermove, scroll,
+    // parallax, déplacement de la forme du hero), jamais de lui-même.
+    return false;
   }
 
+  // Inscrit APRÈS la forme du hero et les découpes de bouton (cf. ORDER dans js/frame.js) :
+  // le point doit mesurer la forme telle qu'elle vient d'être posée dans cette image, et non
+  // celle de l'image précédente. Un « blob-tick » émis pendant l'image le réveille donc à temps
+  // pour être servi dans la même — un tour de retard en moins sur l'ancienne boucle séparée.
+  const task = window.FrameLoop.add(window.FrameLoop.ORDER.CURSOR, render);
   function schedule() {
-    if (!frame) frame = requestAnimationFrame(render);
+    window.FrameLoop.wake(task);
   }
 
   document.addEventListener('pointermove', (e) => {

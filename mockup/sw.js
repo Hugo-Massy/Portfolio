@@ -15,7 +15,7 @@
 // CACHE_NAME est versionné à la main : le faire changer (v2 → v3...) force le remplacement
 // intégral du cache au prochain déploiement, plutôt que de laisser d'anciens fichiers s'y
 // attarder indéfiniment. À BUMPER À CHAQUE MISE EN LIGNE d'un contenu modifié.
-const CACHE_NAME = 'portfolio-cache-v4';
+const CACHE_NAME = 'portfolio-cache-v5';
 
 // Coquille minimale : ce sans quoi une page ne peut pas s'afficher du tout.
 const PRECACHE_URLS = [
@@ -26,6 +26,7 @@ const PRECACHE_URLS = [
   'css/details.css',
   'css/veille.css',
   'js/i18n.js',
+  'js/frame.js',
   'js/knockout.js',
   'js/main.js',
   'js/details.js',

@@ -1019,7 +1019,10 @@ window.addEventListener('resize', () => {
 // Bord haut : de 13px (x=0) à 117px (x=100%) ; bord bas : de "hauteur - wave-h*0.4" à la
 // hauteur pleine.
 function isOverAboutWave(about, x, y) {
-  const rect = about.getBoundingClientRect();
+  // Mesure mutualisée avec tout ce qui tourne dans l'image (cf. js/frame.js) : cette fonction est
+  // appelée une fois par point du rail, et la suivante autant — soit la même quinzaine de mesures
+  // du même #about et du même #contact à chaque passage.
+  const rect = window.FrameLoop.rect(about);
   const f = Math.min(1, Math.max(0, (x - rect.left) / rect.width));
   const top = rect.top + 13 + f * (117 - 13);
   const bottom = rect.top + rect.height - waveH * 0.4 * (1 - f);
@@ -1029,7 +1032,7 @@ function isOverAboutWave(about, x, y) {
 // .contact-fill : polygon(0 contact-slope, 100% 0, 100% 100%, 0 100%). Bord haut : de
 // "contact-slope" (x=0) à 0 (x=100%) ; le bord bas reste la hauteur pleine.
 function isOverContactBlue(contact, x, y) {
-  const rect = contact.getBoundingClientRect();
+  const rect = window.FrameLoop.rect(contact);
   const f = Math.min(1, Math.max(0, (x - rect.left) / rect.width));
   return y > rect.top + contactSlope * (1 - f) && y < rect.bottom;
 }
@@ -1056,19 +1059,23 @@ function initRailOnDark() {
 
   function update() {
     dots.forEach((dot) => {
-      const r = dot.getBoundingClientRect();
+      const r = window.FrameLoop.rect(dot);
       dot.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
     });
     if (pageTag) {
-      const r = pageTag.getBoundingClientRect();
+      const r = window.FrameLoop.rect(pageTag);
       pageTag.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
     }
   }
 
   update();
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  window.addEventListener('parallax-tick', update);
+  // Reporté à la prochaine image plutôt que rejoué à chaque évènement : "scroll" et
+  // "parallax-tick" peuvent tomber plusieurs fois dans la même, et rien ne sert de rebasculer
+  // deux fois les mêmes classes. Voir js/frame.js.
+  const schedule = window.FrameLoop.throttle(window.FrameLoop.ORDER.SCROLL, update);
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  window.addEventListener('parallax-tick', schedule);
 }
 
 // Pastilles du rail + indicateur de section active : découpés au pixel près le long du vrai
@@ -1097,14 +1104,15 @@ function initBackToTop() {
 
   function update() {
     btn.classList.toggle('is-visible', window.scrollY > hero.offsetHeight * 0.5);
-    const r = btn.getBoundingClientRect();
+    const r = window.FrameLoop.rect(btn);
     btn.classList.toggle('is-on-dark', isOverDarkZone(about, contact, r.left + r.width / 2, r.top + r.height / 2));
   }
 
   update();
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
-  window.addEventListener('parallax-tick', update);
+  const schedule = window.FrameLoop.throttle(window.FrameLoop.ORDER.SCROLL, update);
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
+  window.addEventListener('parallax-tick', schedule);
 }
 
 // Anime les blocs .reveal lorsqu'ils entrent dans le viewport (motion discret, pas au chargement).

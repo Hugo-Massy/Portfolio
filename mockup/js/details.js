@@ -729,15 +729,13 @@
   // touchent pas le layout box). On peut donc reprojeter le point testé dans le repère
   // local non tourné du ruban et faire un test rectangle classique, précis au pixel près
   // sur l'arête diagonale plutôt que sur la boîte englobante.
-  function bannerAngleRad(el) {
-    const t = getComputedStyle(el).transform;
-    const m = t && t.match(/^matrix\(([^,]+),\s*([^,]+),/);
-    if (!m) return 0;
-    return Math.atan2(parseFloat(m[2]), parseFloat(m[1]));
-  }
+  // Angle et boîte mis en cache le temps d'une image (cf. js/frame.js) : insideBanner est
+  // appelée pour chaque ruban ET pour chaque élément testé (points du rail, nav, bouton
+  // « remonter »), soit une dizaine de fois par image sur la même poignée de rubans.
+  const bannerAngleRad = (el) => window.FrameLoop.rotation(el);
 
   function insideBanner(el, x, y) {
-    const r = el.getBoundingClientRect();
+    const r = window.FrameLoop.rect(el);
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
     const angle = bannerAngleRad(el);
@@ -751,7 +749,7 @@
   // clip-path de .contact-fill: polygon(0 slope, 100% 0, 100% 100%, 0 100%) — bord haut de
   // "slope" (x=0) à 0 (x=100%), bord bas constant.
   function contactTopY(x) {
-    const r = contact.getBoundingClientRect();
+    const r = window.FrameLoop.rect(contact);
     const f = Math.min(1, Math.max(0, (x - r.left) / r.width));
     return r.top + contactSlope * (1 - f);
   }
@@ -761,19 +759,19 @@
   // non affecté par ce débord) peut être lu sur son rect. clip-path: polygon(0 slope, 100% 0,
   // 100% 100%-slope, 0 100%).
   function blueTopY(x) {
-    const r = blueBlock.getBoundingClientRect();
+    const r = window.FrameLoop.rect(blueBlock);
     const f = Math.min(1, Math.max(0, x / window.innerWidth));
     return r.top + blueSlope * (1 - f);
   }
   function blueBottomY(x) {
-    const r = blueBlock.getBoundingClientRect();
+    const r = window.FrameLoop.rect(blueBlock);
     const f = Math.min(1, Math.max(0, x / window.innerWidth));
     return r.bottom - blueSlope * f;
   }
 
   function overDarkZone(x, y) {
     if (contact) {
-      const r = contact.getBoundingClientRect();
+      const r = window.FrameLoop.rect(contact);
       if (y > contactTopY(x) && y < r.bottom) return true;
     }
     if (blueBlock) {
@@ -785,9 +783,12 @@
     return false;
   }
 
+  // Mesure mutualisée avec tout ce qui tourne dans l'image (cf. js/frame.js) : les aplats bleus
+  // que overDarkZone consulte sont les mêmes que ceux mesurés par la forme du hero, par le point
+  // du curseur et par les découpes de bouton.
   function toggle(el) {
     if (!el) return;
-    const r = el.getBoundingClientRect();
+    const r = window.FrameLoop.rect(el);
     const cx = r.left + r.width / 2;
     const cy = r.top + r.height / 2;
     el.classList.toggle('is-on-dark', overDarkZone(cx, cy));
@@ -810,12 +811,15 @@
   }
 
   update();
-  window.addEventListener('scroll', update, { passive: true });
-  window.addEventListener('resize', update);
+  // Reporté à la prochaine image plutôt que rejoué à chaque évènement : "scroll" et
+  // "parallax-tick" peuvent tomber plusieurs fois dans la même. Voir js/frame.js.
+  const schedule = window.FrameLoop.throttle(window.FrameLoop.ORDER.SCROLL, update);
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule);
   // Le bloc bleu et #contact bougent encore quelques frames après l'arrêt du scroll
   // (lissage du parallax, cf. initCompetencesParallax) : on recalcule aussi sur ce tick
   // pour que la teinte claire/foncée reste calée sur leur position réelle jusqu'au repos.
-  window.addEventListener('parallax-tick', update);
+  window.addEventListener('parallax-tick', schedule);
 })();
 
 // Flèche "défiler vers le bas" du header : se cache dès qu'on quitte le haut de page.
