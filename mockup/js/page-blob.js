@@ -92,6 +92,22 @@
   }
   syncCloneSize();
   window.addEventListener('resize', syncCloneSize);
+
+  // Distance totale défilable du document, pour l'animation à timeline de scroll ci-dessus
+  // (styles.css, .page-blob-clone-shift) : elle mappe linéairement 0%→100% de la course réelle sur
+  // translateY(0)→translateY(-max), il lui faut donc connaître max pour retomber exactement sur
+  // -scrollY à chaque instant. N'affecte que ce navigateurs qui la supportent, mais posée
+  // inconditionnellement : lire scrollHeight force une mise en page de toute façon, autant ne pas
+  // dupliquer les points d'appel selon le support.
+  let scrollMax = -1;
+  function updateScrollMax() {
+    const max = Math.max(0, document.documentElement.scrollHeight - document.documentElement.clientHeight);
+    if (max === scrollMax) return;
+    scrollMax = max;
+    blob.style.setProperty('--pgblob-scroll-max', `${max}px`);
+  }
+  updateScrollMax();
+  window.addEventListener('resize', updateScrollMax);
   // La largeur utile change AUSSI sans redimensionnement de fenêtre, et ça nous est arrivé de
   // plein fouet : ce module démarre pendant l'écran d'accueil, or html.is-preloading pose
   // overflow:hidden — donc aucune barre de défilement, donc un clientWidth plus large d'une
@@ -612,6 +628,7 @@
       const h = entries[0].contentRect.height;
       if (Math.abs(h - lastBodyH) < 1) return;
       lastBodyH = h;
+      updateScrollMax();
       scheduleRebuild();
     }).observe(document.body);
   }
@@ -933,6 +950,13 @@
     }
     blob.style.setProperty('--pgblob-x', `${x.toFixed(1)}px`);
     blob.style.setProperty('--pgblob-y', `${y.toFixed(1)}px`);
+    // Recopié ICI en plus de updateScroll : le "scroll" DOM n'est pas garanti de se déclencher à
+    // chaque image pendant un défilement rapide/à l'inertie (les navigateurs peuvent le limiter à
+    // moins d'une fois par image sous charge), alors que le défilement RÉEL, lui, continue d'avancer
+    // à chaque image via le compositeur. Sans ce second point de synchronisation, le contenu recopié
+    // dans la forme retardait de quelques images sur ce qui est réellement affiché à l'écran pendant
+    // le scroll — un décalage vertical visible et grandissant tant que l'inertie dure.
+    blob.style.setProperty('--pgblob-scroll-y', `${window.scrollY}px`);
     syncRailIndicator();
     syncTransforms();
     syncSticky();

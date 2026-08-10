@@ -377,6 +377,28 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 .page-blob-clone-shift{
   transform:translateY(calc(-1 * var(--pgblob-scroll-y, 0px)));
 }
+/* Là où le navigateur le permet, ce translateY est repris par une animation liée au défilement
+   plutôt qu'à --pgblob-scroll-y (posée par JS depuis l'évènement "scroll"/rAF, cf. page-blob.js) :
+   pendant un défilement à l'inertie, le fil principal peut recevoir "scroll" moins souvent qu'à
+   chaque image alors que le compositeur, lui, continue de faire avancer la page à chaque image —
+   la copie retardait alors de quelques images sur ce qui est réellement affiché. Une animation à
+   timeline de scroll est calculée par le compositeur à partir de la position réelle de défilement,
+   sans jamais repasser par le fil principal : plus aucun retard possible, par construction.
+   from()/to() sur toute la course du document (0%→100% = haut→bas réel) avec un timing linéaire
+   donne exactement translateY(-scrollY) à chaque instant, --pgblob-scroll-max (posé par JS,
+   cf. updateScrollMax) étant la distance totale défilable. "both" fige les bornes hors [0,1].
+   La règle transform ci-dessus reste seule active dans les navigateurs sans ce support :
+   une animation absente ne l'écrase pas. */
+@supports (animation-timeline: scroll()){
+  .page-blob-clone-shift{
+    animation:pgblob-scroll-follow linear both;
+    animation-timeline:scroll(root block);
+  }
+  @keyframes pgblob-scroll-follow{
+    from{transform:translateY(0);}
+    to{transform:translateY(calc(-1 * var(--pgblob-scroll-max, 0px)));}
+  }
+}
 /* Tout le texte de la copie (titres, paragraphes, liens…) repasse en blanc — les icônes en
    trait (stroke="currentColor") suivent d'elles-mêmes, currentColor obligeant. */
 .page-blob-clone, .page-blob-clone *{color:#fff !important;}
