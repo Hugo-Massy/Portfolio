@@ -266,8 +266,12 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    plutôt qu'un défilement vertical plein écran par carte. */
 .dp-carousel{position:relative; overflow:hidden;}
 /* les 4 panneaux se superposent dans la même cellule de grille (empilement plutôt
-   que côte à côte) : passer de l'un à l'autre devient un simple fondu croisé
-   d'opacité, plus besoin de faire glisser le track. */
+   que côte à côte) : passer de l'un à l'autre glisse le panneau sortant hors du
+   cadre pendant que l'entrant vient prendre sa place (translateX piloté en style
+   inline par goTo/slideTo, js/details.js — voir les commentaires là-bas pour le
+   choix du sens). overflow:hidden sur .dp-carousel (ci-dessus) masque tout
+   panneau en cours de sortie/entrée hors de son cadre : aucun voisin ne dépasse
+   au repos, seule l'animation de transition est visible. */
 .dp-carousel-track{display:grid;}
 .dp-carousel-track > .dp-slide{
   grid-column:1; grid-row:1;
@@ -277,10 +281,10 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   overflow-y:visible;
   scroll-snap-align:none; scroll-snap-stop:normal;
   padding:8px 24px;
-  opacity:0; pointer-events:none;
-  transition:opacity .4s ease;
+  transform:translateX(100%); pointer-events:none;
+  transition:transform .45s cubic-bezier(.65,0,.35,1);
 }
-.dp-carousel-track > .dp-slide.is-active{opacity:1; pointer-events:auto;}
+.dp-carousel-track > .dp-slide.is-active{pointer-events:auto;}
 
 /* Pagination : flèches précédent/suivant alignées avec les points, même ligne. */
 .dp-carousel-nav{
@@ -935,8 +939,9 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 @media (max-width:640px){
   .dp-stack-groups{grid-template-columns:1fr;}
   .dp-list{grid-template-columns:1fr;}
-  .dp-slide{padding:26px 12px;}
-  .dp-entry{padding:26px 20px 30px;}
+  .dp-slide{padding:26px 8px 8px;}
+  .dp-carousel-track > .dp-slide{padding:26px 8px 8px;}
+  .dp-entry{padding:26px 10px 8px;}
   .dp-entry-head{gap:14px; margin-bottom:14px;}
   .dp-entry-titles h3{left:20px; font-size:30px;}
   .dp-entry-cols--compare{grid-template-columns:1fr; gap:28px 0;}
@@ -944,6 +949,28 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
     padding-left:0; border-left:none;
     padding-top:24px; border-top:1px solid var(--border-soft);
   }
+  /* moins de bleu perdu de chaque côté du récit une fois la carte réduite
+     à la largeur du téléphone (marges négatives + padding pensés pour une
+     carte large, voir .dp-blue-block .dp-entry-copy-text plus haut) */
+  .dp-blue-block .dp-entry-copy-text{
+    margin-left:0; margin-right:0; margin-bottom:0; padding:20px 16px 4px;
+  }
+  .dp-blue-block .dp-entry-cols{padding:18px 16px;}
+  /* bloc "ce que j'ai appris" + badges RNCP : masqué sur téléphone, la carte
+     ne garde que les logos et le récit */
+  .dp-entry-cols.dp-entry-skills-summary{display:none;}
+  #dp-carousel-competences .dp-slide{min-height:auto; max-height:none;}
+  .dp-carousel-nav{margin-top:8px;}
+  .dp-carousel-arrow{display:none;}
+  .dp-blue-block .dp-entry-body .dp-entry-story{margin-bottom:0;}
+  /* les 180px de padding-top sont calés sur le pilier décoratif, déjà masqué
+     en dessous de 1480px (voir plus haut) : sur téléphone ça ne laisse
+     qu'un grand vide bleu au-dessus de la carte */
+  .dp-blue-block-wrap{padding:48px 0 110px;}
+  /* .wrap (styles.css, commun à tout le site) garde 24px de chaque côté sur
+     petit écran ; cette page a déjà ses propres marges de carte en dessous,
+     donc ce gouttière globale s'ajoute en trop côté détails */
+  .wrap.dp-layout{padding-left:8px; padding-right:8px;}
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -1119,10 +1146,39 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   .dp-xp-entry-body--rev{display:flex; flex-direction:column;}
   .dp-xp-entry-body--rev .dp-xp-entry-media{width:100%; margin-top:0;}
   .dp-xp-entry-body--rev .dp-xp-logos{flex-direction:row; flex-wrap:wrap; justify-self:auto;}
+  /* logos des outils utilisés au-dessus du récit plutôt qu'en dessous,
+     une fois les colonnes empilées */
+  .dp-xp-logos{order:-1;}
 }
 @media(max-width:640px){
-  .dp-xp-entry{padding:22px 20px 30px;}
+  .dp-xp-entry{padding:22px 10px 30px;}
   .dp-xp-entry-head{margin-bottom:12px;}
   .dp-xp-entry-tag-num{font-size:26px;}
   .dp-xp-entry-tag-slug{font-size:15px;}
+
+  /* même logique côté cartes compétences (.dp-entry-body est déjà en
+     colonne flex dans .dp-blue-block) : logos avant le récit */
+  .dp-skills-summary-logos{order:-1;}
+  /* certaines cartes comptent jusqu'à 6 logos : sur téléphone on n'en garde
+     que 4, pour ne pas manger l'espace vertical au-dessus du récit */
+  .dp-skills-summary-logos .dp-summary-logo:nth-child(n+4),
+  .dp-xp-logos .dp-summary-logo:nth-child(n+4){display:none;}
+}
+
+/* sur téléphone, la justification creuse des rivières de blanc dans des lignes
+   trop courtes : on repasse tous les textes en fer à gauche */
+@media(max-width:640px){
+  .dp-entry-story,
+  .dp-entry-lead,
+  .dp-entry-copy-text p,
+  .dp-xp-entry-text p,
+  .dp-xp-entry-body--rev .dp-xp-entry-copy .dp-entry-story{text-align:left;}
+
+  /* le léger effet "post-it" (rotate) des cartes compétences est à peine
+     visible sur une grande carte desktop, mais devient un bloc clairement
+     penché sur une carte étroite en téléphone */
+  .dp-blue-block .dp-entry-copy-text,
+  .dp-blue-block .dp-entry-copy-text:hover,
+  .dp-blue-block .dp-entry-cols,
+  .dp-blue-block .dp-entry-cols:hover{transform:none;}
 }

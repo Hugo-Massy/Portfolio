@@ -425,6 +425,16 @@
       el.classList.toggle('is-active', i === index);
       el.setAttribute('aria-hidden', i === index ? 'false' : 'true');
     });
+    // Position de départ (avant tout goTo) : le panneau actif doit démarrer
+    // centré, pas dans son coin parqué par défaut (voir la règle CSS de base de
+    // .dp-carousel-track > .dp-slide) — posée sans transition pour ne pas jouer
+    // l'animation de glissement au premier rendu de la page.
+    if (first) {
+      panels[index].style.transition = 'none';
+      panels[index].style.transform = 'translateX(0)';
+      void panels[index].offsetWidth;
+      panels[index].style.transition = '';
+    }
     dots.forEach((d, i) => d.classList.toggle('is-active', i === index));
     floaterSets.forEach((el) => el.classList.toggle('is-active', Number(el.dataset.index) === index));
     playTyping(panels[index]);
@@ -445,9 +455,38 @@
     }, 220);
   }
 
-  function goTo(i) {
-    index = (i + panels.length) % panels.length;
+  // Transition gauche/droite (et inversement) entre panneaux, sans toucher à la
+  // disposition (toujours empilés dans la même cellule de grille, voir
+  // .dp-carousel-track dans details.css — .dp-carousel garde son overflow:hidden,
+  // donc rien du voisin ne dépasse une fois la transition terminée). Le transform
+  // est piloté ici en style inline plutôt que par la classe .is-active : la classe
+  // ne sert plus qu'à pointer-events/aria, pour éviter qu'un changement de classe
+  // ne déclenche sa propre transition CSS en parallèle de celle animée ici et ne
+  // parte dans le mauvais sens.
+  function slideTo(newIndex, direction) {
+    const outgoing = panels[index];
+    const incoming = panels[newIndex];
+    index = newIndex;
+
+    incoming.style.transition = 'none';
+    incoming.style.transform = `translateX(${direction > 0 ? '100%' : '-100%'})`;
+    void incoming.offsetWidth; // reflow : fige la position de départ avant de réactiver la transition
+
+    requestAnimationFrame(() => {
+      incoming.style.transition = '';
+      incoming.style.transform = 'translateX(0)';
+      outgoing.style.transition = '';
+      outgoing.style.transform = `translateX(${direction > 0 ? '-100%' : '100%'})`;
+    });
+
     apply();
+  }
+
+  function goTo(i) {
+    const newIndex = (i + panels.length) % panels.length;
+    if (newIndex === index) return;
+    const direction = i > index ? 1 : -1;
+    slideTo(newIndex, direction);
   }
 
   dots.forEach((d) => {
@@ -458,6 +497,26 @@
   const nextBtn = carousel.querySelector('.dp-carousel-arrow--next');
   if (prevBtn) prevBtn.addEventListener('click', () => goTo(index - 1));
   if (nextBtn) nextBtn.addEventListener('click', () => goTo(index + 1));
+
+  // Glissement au doigt (mobile, flèches masquées sous 640px — voir .dp-carousel-arrow
+  // dans details.css) : les panneaux restent empilés dans la même cellule de grille
+  // (voir .dp-carousel-track plus haut), donc pas de scroll-snap façon carrousel Impact
+  // de la page veille — un simple seuil de distance horizontale suffit à déclencher
+  // goTo(), qui se charge lui-même de l'animation de glissement (slideTo ci-dessus).
+  let touchStartX = null;
+  let touchStartY = null;
+  track.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+  track.addEventListener('touchend', (e) => {
+    if (touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    touchStartX = null;
+    if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+    goTo(dx < 0 ? index + 1 : index - 1);
+  }, { passive: true });
 
   document.querySelectorAll('a[href^="#"]').forEach((a) => {
     const targetId = a.getAttribute('href').slice(1);
