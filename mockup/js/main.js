@@ -1821,11 +1821,29 @@ function initTerminal() {
 // (#preloader-scroll-hint) apparaît, et seule une interaction explicite (scroll/clic/touche/
 // molette) referme l'écran. #app reste inert tant que l'écran est affiché pour ne pas laisser
 // le clavier/lecteur d'écran atteindre un contenu encore masqué derrière lui.
+// Ne se rejoue qu'à la première arrivée sur le site : sessionStorage retient qu'on l'a déjà
+// montré tant que l'onglet reste ouvert (recharger la page d'accueil ne le redéclenche pas),
+// mais l'oublie à la fermeture du navigateur — un nouvel onglet/une nouvelle session le revoit.
+const PRELOADER_SEEN_KEY = 'preloaderSeen';
+
 function initPreloader() {
   const el = document.getElementById('preloader');
   const word = document.getElementById('preloader-svg');
   const scrollHint = document.getElementById('preloader-scroll-hint');
   if (!el || !word) return;
+
+  let alreadySeen = false;
+  try {
+    alreadySeen = window.sessionStorage.getItem(PRELOADER_SEEN_KEY) === '1';
+  } catch (err) {
+    // Stockage indisponible (navigation privée stricte...) : on retombe sur le comportement
+    // habituel plutôt que de bloquer l'écran d'accueil.
+  }
+  if (alreadySeen) {
+    el.remove();
+    document.dispatchEvent(new CustomEvent('preloader-hidden'));
+    return;
+  }
 
   const app = document.getElementById('app');
   // Doit correspondre aux data-word présents dans le SVG (index.html). Le cycle ne démarre
@@ -1910,6 +1928,11 @@ function initPreloader() {
   function hide() {
     if (hidden) return;
     hidden = true;
+    try {
+      window.sessionStorage.setItem(PRELOADER_SEEN_KEY, '1');
+    } catch (err) {
+      // Idem : stockage indisponible, tant pis, l'écran se rejouera simplement au prochain chargement.
+    }
     if (stopBlob) stopBlob();
     if (cycleTimer !== null) clearInterval(cycleTimer);
     clearTimeout(watchdog);
