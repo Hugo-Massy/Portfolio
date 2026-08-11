@@ -358,6 +358,15 @@
   function pageBlobClipPoly() {
     return (window.PageBlobShape && window.PageBlobShape.clip()) || null;
   }
+  // La forme peint-elle encore quelque chose ? Question DISTINCTE du contour ci-dessus, qui
+  // vaut null aussi bien quand il n'y a rien à rogner que quand le rognage ne laisse rien
+  // passer. Confondre les deux revenait à prendre l'ellipse entière pour peinte alors que la
+  // forme avait disparu : passé le hero, le bleu occupe tout le haut de la fenêtre, page-blob.js
+  // rogne la forme à néant (polygon(0 0, 0 0, 0 0)) et remet son contour à null — le point du
+  // curseur virait alors au blanc dans un disque invisible qui le suivait sur toute la page.
+  function pageBlobPainted() {
+    return !!(window.PageBlobShape && window.PageBlobShape.painted());
+  }
 
   // Boîte réellement peinte par une forme, ou null si elle est inactive (la classe is-active
   // n'est posée qu'une fois le curseur localisé, cf. les deux modules).
