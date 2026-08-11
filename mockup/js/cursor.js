@@ -412,6 +412,7 @@
   // Silhouette du blob du hero, rabotée sur son contour de rognage — c'est exactement la portion
   // peinte à l'écran, donc l'arête que suivra la découpe du point.
   function pageBlobPolygon() {
+    if (!pageBlobPainted()) return null;
     const r = blobRect(pageBlob, pageBlobShape);
     if (!r) return null;
     const poly = ellipsePolygon(r);
@@ -420,6 +421,7 @@
   }
 
   function insidePageBlob(x, y) {
+    if (!pageBlobPainted()) return false;
     const r = blobRect(pageBlob, pageBlobShape);
     if (!r || !insideEllipse(r, x, y)) return false;
     const clip = pageBlobClipPoly();
