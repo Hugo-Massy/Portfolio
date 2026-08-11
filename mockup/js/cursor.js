@@ -589,10 +589,21 @@
     if (insidePageBlob(x, y)) return 'page-blob';
     const stack = document.elementsFromPoint(x, y);
     for (const el of stack) {
-      if (el === document.body || el === document.documentElement) break;
       for (const fill of fills) {
         if (el.contains(fill) && surfaceCoversPoint(fill, x, y)) return fill;
       }
+      // <body> et <html> sont testés pour les aplats (ils les contiennent tous), mais leur
+      // PROPRE fond ne conclut jamais : c'est le fond de page, le point y garde sa teinte
+      // par défaut. D'où le test des aplats AVANT cette sortie, et non après.
+      //
+      // Sans ce passage par <body>, un aplat qui déborde de son conteneur n'était jamais
+      // atteint dans la partie du débord : le test « el.contains(fill) » ne le rend visible
+      // qu'une fois arrivé sur l'un de ses ANCÊTRES dans la pile, or dans le débord le point
+      // ne touche justement aucun d'eux. C'est le cas de toute la page détails, dont le
+      // contenu vit dans .wrap.dp-layout (largeur limitée, enfant direct de <body>) tandis
+      // que ses bandeaux bleus s'étendent sur 100vw/112vw : dans les marges gauche et droite,
+      // la pile ne contenait que <body> et <html>, et le point restait accent sur du bleu.
+      if (el === document.body || el === document.documentElement) break;
       const bg = opaqueBackground(el);
       if (bg) return isDarkColor(bg) ? el : null;
     }

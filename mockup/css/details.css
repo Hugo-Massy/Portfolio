@@ -137,9 +137,18 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
    fait déborder en pleine largeur via le classique trick left:50%/translateX. --- */
 /* --dp-slope exposée en custom property (plutôt qu'en dur dans le clip-path) pour que
    details.js puisse lire la même valeur et savoir, au pixel près, où le bleu s'arrête
-   sur le bord droit — c'est là que vivent le rail de nav et le bouton remonter. */
+   sur le bord droit — c'est là que vivent le rail de nav et le bouton remonter.
+   Posée sur :root et NON sur .dp-blue-block (comme --contact-slope et --wave-h dans
+   styles.css) : cet aplat est RECOPIÉ hors de son bloc — dans le bouton « remonter » et
+   les pastilles du rail (initButtonKnockout, js/knockout.js), dans la fenêtre de découpe
+   de la forme du hero (.page-blob-clone) — et une custom property déclarée sur le bloc
+   ne descend évidemment pas jusque-là. Le var() du clip-path ci-dessous devenait alors
+   invalide sur ces copies, donc clip-path:none, donc un aplat RECTANGULAIRE : la découpe
+   blanche débordait dans les deux triangles laissés blancs par la pente, et le bouton
+   s'affichait en blanc sur fond blanc juste sous la diagonale. */
+:root{ --dp-slope:140px; }
 .dp-blue-block{
-  position:relative; isolation:isolate; --dp-slope:140px;
+  position:relative; isolation:isolate;
   --dp-pillar-left:clamp(24px, 4vw, 90px); --dp-pillar-w:280px;
 }
 .dp-blue-block-fill{
@@ -937,8 +946,19 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
 
 /* =============================== RESPONSIVE =============================== */
 @media (max-width:640px){
+  .dp-stack-banner{height:56px; margin-top:100px;}
+  .dp-stack-banner--2{margin-top:-40px; margin-bottom:100px;}
+  .dp-stack-banner-title{font-size:clamp(13px, 4.2vw, 18px); padding:0 12px;}
+  .dp-stack-banner-ticker-track{font-size:10px; gap:26px;}
+  .dp-stack-banner-desc{display:none;}
   .dp-stack-groups{grid-template-columns:1fr;}
   .dp-list{grid-template-columns:1fr;}
+  .dp-col-title{font-size:11px; margin-bottom:14px;}
+  .dp-chips{gap:6px;}
+  .dp-chip{font-size:11px; padding:5px 10px;}
+  .dp-chip--logo{gap:6px; padding-left:8px;}
+  .dp-chip--logo img{width:13px; height:13px;}
+  .dp-chip--logo img[src*="jtr-logo-transparent"]{width:18px; height:18px;}
   .dp-slide{padding:26px 8px 8px;}
   .dp-carousel-track > .dp-slide{padding:26px 8px 8px;}
   .dp-entry{padding:26px 10px 8px;}
@@ -971,6 +991,10 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
      petit écran ; cette page a déjà ses propres marges de carte en dessous,
      donc ce gouttière globale s'ajoute en trop côté détails */
   .wrap.dp-layout{padding-left:8px; padding-right:8px;}
+  /* .dp-stack-groups n'a pas de padding de carte propre (contrairement aux
+     .dp-xp-entry ci-dessus), donc la gouttière réduite de .wrap.dp-layout
+     laisse les chips coller aux bords de l'écran. */
+  .dp-stack-groups{padding-left:14px; padding-right:14px;}
 }
 
 @media (prefers-reduced-motion: reduce){
@@ -1135,24 +1159,40 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   align-items:center; text-align:center;
 }
 @media(max-width:640px){
-  .dp-xp-list{flex-wrap:wrap;}
-  .dp-xp-list li{flex:1 1 auto; min-width:140px;}
+  .dp-xp-list{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:22px 12px;
+    flex-wrap:unset; width:100%;
+  }
+  .dp-xp-list li{flex:unset; min-width:0; padding:0;}
 }
 
 @media(max-width:1080px){
   .dp-xp-entry-body{flex-direction:column;}
-  .dp-xp-entry-media{width:100%; flex-basis:auto;}
-  .dp-xp-logos{flex-direction:row; flex-wrap:wrap; align-self:auto;}
+  .dp-xp-entry-media{display:none;}
   .dp-xp-entry-body--rev{display:flex; flex-direction:column;}
   .dp-xp-entry-body--rev .dp-xp-entry-media{width:100%; margin-top:0;}
-  .dp-xp-entry-body--rev .dp-xp-logos{flex-direction:row; flex-wrap:wrap; justify-self:auto;}
-  /* logos des outils utilisés au-dessus du récit plutôt qu'en dessous,
-     une fois les colonnes empilées */
-  .dp-xp-logos{order:-1;}
+
+  /* logos calés à droite du titre plutôt qu'en rangée sous celui-ci :
+     .dp-xp-entry (position:relative) sert de repère pour les sortir du flux
+     de .dp-xp-entry-body une fois les colonnes empilées, et les caler dans
+     l'espace réservé par le padding-right ajouté sur .dp-xp-entry-head. */
+  .dp-xp-entry-head{padding-right:130px;}
+  .dp-xp-logos,
+  .dp-xp-entry-body--rev .dp-xp-logos{
+    position:absolute; top:32px; right:48px; left:auto; z-index:2;
+    flex-direction:row; flex-wrap:wrap; margin:0; gap:8px;
+    order:0; align-self:auto; justify-self:auto;
+    grid-column:auto; grid-row:auto;
+  }
+  /* variante inversée (titre aligné à droite, ex. "02 · _homelab/") :
+     les logos passent à gauche du titre plutôt qu'à droite, pour rester du
+     même côté que l'illustration qu'ils accompagnent en desktop. */
+  .dp-xp-entry:has(.dp-xp-entry-body--rev) .dp-xp-entry-head{padding-right:0; padding-left:130px;}
+  .dp-xp-entry-body--rev .dp-xp-logos{left:48px; right:auto;}
 }
 @media(max-width:640px){
-  .dp-xp-entry{padding:22px 10px 30px;}
-  .dp-xp-entry-head{margin-bottom:12px;}
+  .dp-xp-entry{padding:22px 22px 30px;}
+  .dp-xp-entry-head{margin-bottom:28px; padding-right:155px;}
   .dp-xp-entry-tag-num{font-size:26px;}
   .dp-xp-entry-tag-slug{font-size:15px;}
 
@@ -1163,6 +1203,25 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
      que 4, pour ne pas manger l'espace vertical au-dessus du récit */
   .dp-skills-summary-logos .dp-summary-logo:nth-child(n+4),
   .dp-xp-logos .dp-summary-logo:nth-child(n+4){display:none;}
+
+  /* logos placés à droite du titre plutôt qu'en rangée sous celui-ci :
+     .dp-xp-entry (position:relative) sert de repère pour les sortir du flux
+     de .dp-xp-entry-body et les caler dans l'espace réservé par le
+     padding-right ajouté ci-dessus sur .dp-xp-entry-head. */
+  .dp-xp-entry-body--rev .dp-xp-logos,
+  .dp-xp-logos{
+    position:absolute; top:10px; right:22px; left:auto; z-index:2;
+    flex-direction:row; margin:0; gap:8px; order:0; align-self:auto;
+    grid-column:auto; grid-row:auto;
+  }
+  .dp-xp-entry:has(.dp-xp-entry-body--rev) .dp-xp-entry-head{padding-right:0; padding-left:155px;}
+  .dp-xp-entry-body--rev .dp-xp-logos{left:22px; right:auto;}
+  .dp-xp-logos .dp-summary-logo,
+  .dp-xp-entry-body--rev .dp-xp-logos .dp-summary-logo{
+    width:44px; height:44px; padding:8px; border-radius:11px;
+    box-shadow:0 6px 14px rgba(15,22,50,.28);
+    margin-left:0 !important;
+  }
 }
 
 /* sur téléphone, la justification creuse des rivières de blanc dans des lignes
@@ -1173,6 +1232,8 @@ html{background:var(--bg); scroll-snap-type:y proximity; scroll-behavior:smooth;
   .dp-entry-copy-text p,
   .dp-xp-entry-text p,
   .dp-xp-entry-body--rev .dp-xp-entry-copy .dp-entry-story{text-align:left;}
+
+  .dp-entry-story{font-size:13.5px; line-height:1.75;}
 
   /* le léger effet "post-it" (rotate) des cartes compétences est à peine
      visible sur une grande carte desktop, mais devient un bloc clairement
