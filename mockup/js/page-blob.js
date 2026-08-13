@@ -1077,7 +1077,11 @@
 
   // Zone réellement peinte par la forme, pour js/cursor.js (qui doit y inverser son point en
   // blanc). Une seule source de vérité : c'est le contour effectivement passé au clip-path.
-  window.PageBlobShape = { clip: () => lastClip };
+  // `painted` est indispensable À CÔTÉ de `clip` : celui-ci vaut null dans DEUX cas opposés —
+  // rien à rogner (tout est peint) et rognage total (rien n'est peint, cf. !shapeVisible dans
+  // updateScroll). Un consommateur qui lit clip() seul confond les deux et croit la forme
+  // partout dès qu'elle a disparu.
+  window.PageBlobShape = { clip: () => lastClip, painted: () => shapeVisible };
 
   window.addEventListener('pointermove', onMove, { passive: true });
   document.documentElement.addEventListener('pointerleave', onLeave);

@@ -101,11 +101,16 @@
       fill.removeAttribute('id');
       // filter:none — l'original porte une ombre portée ; recopiée telle quelle sur une forme
       // blanche, elle deviendrait un halo blanc flou par-dessus l'aplat accent du bouton.
-      fill.style.cssText += ';position:absolute; inset:auto; margin:0; background:#fff; filter:none;';
+      // overflow:hidden — c'est lui qui borne la copie accent de l'icône à l'aplat. Les aplats
+      // en biseau (.contact-fill, .dp-blue-block-fill) portent un clip-path, qui rogne déjà
+      // leurs descendants ; les bandeaux droits de details.html (.dp-stack-banner) n'en ont
+      // aucun, et leur copie d'icône se peignait donc sur le bouton même à des milliers de px
+      // de l'aplat — chevrons accent sur pastille accent, illisibles.
+      fill.style.cssText += ';position:absolute; inset:auto; margin:0; background:#fff; filter:none; overflow:hidden;';
       layer.appendChild(fill);
 
-      // L'icône est recopiée DANS l'aplat, et non à côté : clip-path rogne aussi les
-      // descendants, donc cette copie accent n'apparaît qu'à l'intérieur de la zone blanche —
+      // L'icône est recopiée DANS l'aplat, et non à côté : le rognage de l'aplat vaut aussi pour
+      // ses descendants, donc cette copie accent n'apparaît qu'à l'intérieur de la zone blanche —
       // exactement là où l'icône blanche du dessous deviendrait illisible.
       let iconCopy = null;
       if (icon) {

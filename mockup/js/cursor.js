@@ -358,6 +358,15 @@
   function pageBlobClipPoly() {
     return (window.PageBlobShape && window.PageBlobShape.clip()) || null;
   }
+  // La forme peint-elle encore quelque chose ? Question DISTINCTE du contour ci-dessus, qui
+  // vaut null aussi bien quand il n'y a rien à rogner que quand le rognage ne laisse rien
+  // passer. Confondre les deux revenait à prendre l'ellipse entière pour peinte alors que la
+  // forme avait disparu : passé le hero, le bleu occupe tout le haut de la fenêtre, page-blob.js
+  // rogne la forme à néant (polygon(0 0, 0 0, 0 0)) et remet son contour à null — le point du
+  // curseur virait alors au blanc dans un disque invisible qui le suivait sur toute la page.
+  function pageBlobPainted() {
+    return !!(window.PageBlobShape && window.PageBlobShape.painted());
+  }
 
   // Boîte réellement peinte par une forme, ou null si elle est inactive (la classe is-active
   // n'est posée qu'une fois le curseur localisé, cf. les deux modules).
@@ -403,6 +412,7 @@
   // Silhouette du blob du hero, rabotée sur son contour de rognage — c'est exactement la portion
   // peinte à l'écran, donc l'arête que suivra la découpe du point.
   function pageBlobPolygon() {
+    if (!pageBlobPainted()) return null;
     const r = blobRect(pageBlob, pageBlobShape);
     if (!r) return null;
     const poly = ellipsePolygon(r);
@@ -411,6 +421,7 @@
   }
 
   function insidePageBlob(x, y) {
+    if (!pageBlobPainted()) return false;
     const r = blobRect(pageBlob, pageBlobShape);
     if (!r || !insideEllipse(r, x, y)) return false;
     const clip = pageBlobClipPoly();
@@ -589,10 +600,21 @@
     if (insidePageBlob(x, y)) return 'page-blob';
     const stack = document.elementsFromPoint(x, y);
     for (const el of stack) {
-      if (el === document.body || el === document.documentElement) break;
       for (const fill of fills) {
         if (el.contains(fill) && surfaceCoversPoint(fill, x, y)) return fill;
       }
+      // <body> et <html> sont testés pour les aplats (ils les contiennent tous), mais leur
+      // PROPRE fond ne conclut jamais : c'est le fond de page, le point y garde sa teinte
+      // par défaut. D'où le test des aplats AVANT cette sortie, et non après.
+      //
+      // Sans ce passage par <body>, un aplat qui déborde de son conteneur n'était jamais
+      // atteint dans la partie du débord : le test « el.contains(fill) » ne le rend visible
+      // qu'une fois arrivé sur l'un de ses ANCÊTRES dans la pile, or dans le débord le point
+      // ne touche justement aucun d'eux. C'est le cas de toute la page détails, dont le
+      // contenu vit dans .wrap.dp-layout (largeur limitée, enfant direct de <body>) tandis
+      // que ses bandeaux bleus s'étendent sur 100vw/112vw : dans les marges gauche et droite,
+      // la pile ne contenait que <body> et <html>, et le point restait accent sur du bleu.
+      if (el === document.body || el === document.documentElement) break;
       const bg = opaqueBackground(el);
       if (bg) return isDarkColor(bg) ? el : null;
     }
