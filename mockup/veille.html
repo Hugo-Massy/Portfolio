@@ -2,6 +2,21 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
+<script>
+// Première connexion (préchargeur "bienvenue" jamais vu cette session) : on n'affiche jamais
+// cette page en entrée directe, on renvoie vers l'accueil qui se charge de montrer l'écran
+// de bienvenue. replace() évite de garder cette page dans l'historique (pas de retour dessus
+// avant d'avoir vu l'accueil). Placé avant tout autre <link>/<script> pour bloquer le rendu
+// immédiatement, sans flash de contenu.
+try {
+  if (window.sessionStorage.getItem('preloaderSeen') !== '1') {
+    window.location.replace('index.html');
+  }
+} catch (err) {
+  // Stockage indisponible (navigation privée stricte...) : on laisse la page s'afficher
+  // normalement plutôt que de bloquer la navigation.
+}
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hugo — Veille</title>
 <meta name="theme-color" content="#fbfbfa">

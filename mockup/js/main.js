@@ -2022,7 +2022,20 @@ function initPreloader() {
     if (app) app.removeAttribute('inert');
     el.classList.add('is-hidden');
     el.setAttribute('aria-hidden', 'true');
-    el.addEventListener('transitionend', () => el.remove(), { once: true });
+    // "transitionend" remonte depuis les enfants (fondu de la pastille scroll-hint, de son
+    // ombre au survol, du mot en cours de fondu...) : sans filtre, le premier de CES fondus à
+    // finir — souvent bien avant les 1.4s du rideau — retirerait #preloader en avance, coupant
+    // l'animation court. Un second clic sur la pastille (qui relance sa transition d'ombre au
+    // survol) suffisait à la faire disparaître encore plus tôt. On ignore donc tout évènement
+    // qui ne vient pas du rideau lui-même, SANS se désinscrire au passage (once ferait perdre
+    // le vrai évènement s'il arrive après un faux) : le retrait n'a lieu qu'une fois le rideau
+    // réellement arrivé en fin de course.
+    function onCurtainEnd(e) {
+      if (e.target !== el || e.propertyName !== 'transform') return;
+      el.removeEventListener('transitionend', onCurtainEnd);
+      el.remove();
+    }
+    el.addEventListener('transitionend', onCurtainEnd);
     // Retirer .is-preloading enlève aussi le translateY(24px) de #app : tout ce qui est en
     // position:fixed À L'INTÉRIEUR de #app (la nav de page) se résolvait contre cette transform
     // et retrouve maintenant sa place définitive. js/page-blob.js s'en sert pour replacer la
