@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-22T06:57:47.202Z",
+  "generatedAt": "2026-08-22T18:47:23.413Z",
   "windowDays": 30,
   "count": 108,
   "sources": [
@@ -64,6 +64,65 @@
     }
   },
   "items": [
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "TikTok Agrees to $400 Million Settlement in U.S. Child Privacy Lawsuit",
+      "link": "https://thehackernews.com/2026/08/tiktok-agrees-to-400-million-settlement.html",
+      "date": "2026-08-22T14:32:41.000Z",
+      "summary": "The U.S. Department of Justice (DoJ) announced on Friday that ByteDance-owned TikTok will pay $400 million to settle a 2024 lawsuit accusing the company of violating child privacy laws in the country. As part of the settlement, the socia…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Hackers infect Android car head units with proxy botnet malware",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-infect-android-car-head-units-with-proxy-botnet-malware/",
+      "date": "2026-08-22T14:14:24.000Z",
+      "summary": "A supply-chain attack targeting Android-based car head units is using a legitimate device-update app to spread malware that enlists compromised devices in a proxy botnet or uses them for ad fraud. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Active Directory",
+        "Supply chain"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Named Pipes Under Attack: Securing Windows Interprocess Communication",
+      "link": "https://www.bleepingcomputer.com/news/security/named-pipes-under-attack-securing-windows-interprocess-communication/",
+      "date": "2026-08-22T13:00:09.000Z",
+      "summary": "Windows named pipes provide fast interprocess communication, but weak access controls can expose privileged services to untrusted processes. ThreatLocker explains how endpoint verification, command authorization, strict input validation,…",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Windows Server"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "The Hacker News",
       "sourceType": "press",
@@ -288,7 +347,7 @@
       "source": "BleepingComputer",
       "sourceType": "press",
       "kind": "article",
-      "title": "Microsoft warns of max severity Entra ID flaw exploited in attacks",
+      "title": "Microsoft patches max severity code execution, privilege escalation flaws",
       "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-warns-of-max-severity-entra-id-flaw-exploited-in-attacks/",
       "date": "2026-08-21T11:04:10.000Z",
       "summary": "Microsoft has patched a maximum-severity vulnerability in the Entra ID identity and access management (IAM) platform that has been exploited in attacks. [...]",
@@ -1073,31 +1132,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "CISA warns of hackers exploiting critical MLflow vulnerability",
-      "link": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-exploiting-critical-mlflow-vulnerability/",
-      "date": "2026-08-20T11:06:14.000Z",
-      "summary": "The Cybersecurity and Infrastructure Security Agency (CISA) warned federal agencies that threat actors are now exploiting a critical vulnerability in the MLflow open-source AI engineering platform. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "high",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -1126,27 +1160,6 @@
       "link": "https://thehackernews.com/2026/08/toxicpanda-20-and-golddigger-expand.html",
       "date": "2026-08-20T10:38:28.000Z",
       "summary": "Cybersecurity researchers have shed light on an updated version of ToxicPanda (aka TgToxic) that comes with \"significant enhancements,\" including a set of 167 remote commands and expands its targeting footprint globally. Zimperium zLabs,…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "New Manic Android malware can exfiltrate data through nearby devices",
-      "link": "https://www.bleepingcomputer.com/news/security/new-manic-android-malware-can-exfiltrate-data-through-nearby-devices/",
-      "date": "2026-08-20T10:02:02.000Z",
-      "summary": "A new Android malware named Manic targeting users in multiple European countries has a fallback data exfiltration mechanism that uses nearby infected devices. [...]",
       "pillar": "security",
       "pillarLabel": {
         "fr": "Sécurité défensive",
@@ -2307,30 +2320,6 @@
       "projects": [
         "homelab"
       ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Suspected China-Nexus Actor Exploits VMware vCenter Flaw, Deploys Babuk-Derived Ransomware",
-      "link": "https://thehackernews.com/2026/08/suspected-china-nexus-actor-exploits.html",
-      "date": "2026-08-17T07:36:19.000Z",
-      "summary": "Cybersecurity researchers have attributed the exploitation of a newly patched security flaw in Broadcom VMware vCenter to a suspected China-nexus advanced persistent threat (APT). The attacks involve the exploitation of CVE-2026-59310 (C…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware",
-        "VMware",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
       "severity": "info",
       "image": null
     },
