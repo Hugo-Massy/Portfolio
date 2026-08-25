@@ -52,9 +52,6 @@
   viewport.className = 'page-blob-viewport';
   viewport.setAttribute('aria-hidden', 'true');
 
-  const bubbleLayer = document.createElement('span');
-  bubbleLayer.className = 'page-blob-bubbles';
-
   const blob = document.createElement('span');
   blob.className = 'page-blob';
   blob.innerHTML = `
@@ -68,8 +65,6 @@
       </span>
     </span>`;
 
-  // ordre d'ajout = ordre de peinture : les bulles doivent rester sous la forme.
-  viewport.appendChild(bubbleLayer);
   viewport.appendChild(blob);
   document.body.appendChild(viewport);
 
@@ -834,91 +829,6 @@
   // image de la synchronisation même quand frame() est arrêtée.
   window.addEventListener('parallax-tick', () => { syncTransforms(); syncSticky(); syncClasses(); });
 
-  /* ---------- sillage de bulles (identique à initPreloaderBlob, js/main.js) ---------- */
-
-  const BUBBLE_COUNT = 14;
-  const SPAWN_STEP = 90;
-  const MAX_PER_FRAME = 1;
-  const BUBBLE_MIN = 3;
-  const BUBBLE_MAX = 10;
-  const LIFE_MIN = 0.9;
-  const LIFE_MAX = 2.6;
-  const LIFE_JITTER = 0.22;
-  const INHERIT = 0.09;
-  const SCATTER = 30;
-  const DRAG = 2.8;
-  const RISE = 28;
-  const POP_S = 0.18;
-  const RADIUS_JITTER = 16;
-
-  function randomBlobRadius() {
-    const r = [];
-    for (let n = 0; n < 8; n++) r.push(`${Math.round(50 + (Math.random() * 2 - 1) * RADIUS_JITTER)}%`);
-    return `${r.slice(0, 4).join(' ')} / ${r.slice(4).join(' ')}`;
-  }
-
-  const bubbles = [];
-  if (!reduce) {
-    for (let n = 0; n < BUBBLE_COUNT; n++) {
-      const node = document.createElement('span');
-      node.className = 'page-blob-bubble';
-      bubbleLayer.appendChild(node);
-      bubbles.push({ node, alive: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 0, rot: 0 });
-    }
-  }
-  let nextBubble = 0;
-  let travel = 0;
-
-  function spawnBubble(px, py, svx, svy) {
-    const b = bubbles[nextBubble];
-    nextBubble = (nextBubble + 1) % bubbles.length;
-    const size = BUBBLE_MIN + Math.random() * (BUBBLE_MAX - BUBBLE_MIN);
-    const a = Math.random() * Math.PI * 2;
-    const r = Math.sqrt(Math.random()) * blob.offsetWidth * 0.42;
-    b.x = px + Math.cos(a) * r;
-    b.y = py + Math.sin(a) * r;
-    b.vx = svx * INHERIT + (Math.random() - 0.5) * SCATTER;
-    b.vy = svy * INHERIT + (Math.random() - 0.5) * SCATTER;
-    b.life = 0;
-    const grow = (size - BUBBLE_MIN) / (BUBBLE_MAX - BUBBLE_MIN);
-    b.max = LIFE_MIN + grow * (LIFE_MAX - LIFE_MIN) + (Math.random() - 0.5) * LIFE_JITTER;
-    b.node.style.width = `${size.toFixed(1)}px`;
-    b.node.style.height = `${(size * (0.82 + Math.random() * 0.36)).toFixed(1)}px`;
-    b.node.style.setProperty('--bubble-radius', randomBlobRadius());
-    b.rot = Math.random() * 360;
-    b.alive = true;
-  }
-
-  // Renvoie le nombre de bulles encore en vie : la boucle du ressort ne peut pas s'endormir
-  // tant qu'il en reste une à faire monter et s'effacer, même si la forme, elle, est posée.
-  function updateBubbles(dt) {
-    const damp = Math.exp(-DRAG * dt);
-    let live = 0;
-    for (const b of bubbles) {
-      if (!b.alive) continue;
-      b.life += dt;
-      if (b.life >= b.max) {
-        b.alive = false;
-        b.node.style.opacity = '0';
-        continue;
-      }
-      live++;
-      b.vy -= RISE * dt;
-      b.vx *= damp;
-      b.vy *= damp;
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
-      const pop = Math.min(b.life / POP_S, 1);
-      const scale = 0.35 + 0.65 * pop * (2 - pop);
-      const t = b.life / b.max;
-      b.node.style.opacity = ((1 - t * t) * 0.9).toFixed(3);
-      b.node.style.transform =
-        `translate3d(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px, 0) translate(-50%, -50%) ` +
-        `rotate(${b.rot.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
-    }
-    return live;
-  }
-
   /* ---------- ressort à amortissement critique (identique à initPreloaderBlob) ---------- */
 
   const STIFFNESS = 14;
@@ -989,7 +899,6 @@
     prev = now;
     const fromX = x;
     const fromY = y;
-    let liveBubbles = 0;
     let speed = 0;
     if (reduce) {
       x = targetX;
@@ -1008,18 +917,6 @@
       setVar(blob, '--pgblob-angle', `${angle.toFixed(1)}deg`);
       setVar(blob, '--pgblob-stretch', stretch.toFixed(3));
       setVar(blob, '--pgblob-squash', (1 / stretch).toFixed(3));
-
-      if (placed && bubbles.length) {
-        travel += Math.hypot(x - fromX, y - fromY);
-        let n = 0;
-        while (travel >= SPAWN_STEP && n < MAX_PER_FRAME) {
-          travel -= SPAWN_STEP;
-          spawnBubble(x, y, vx, vy);
-          n++;
-        }
-        if (n === MAX_PER_FRAME) travel = 0;
-      }
-      liveBubbles = updateBubbles(dt);
     }
     setVar(blob, '--pgblob-x', `${x.toFixed(1)}px`);
     setVar(blob, '--pgblob-y', `${y.toFixed(1)}px`);
@@ -1055,7 +952,6 @@
     // Plusieurs choses peuvent encore bouger alors que la forme, elle, est posée — et chacune doit
     // retenir la boucle :
     //   - le ressort n'a pas fini de rattraper le curseur (distance ou vitesse résiduelle) ;
-    //   - une bulle du sillage n'a pas fini de monter et de s'effacer ;
     //   - une des recopies ci-dessus a encore quelque chose à écrire (`busy`), ce qui couvre
     //     l'indicateur du rail en plein voyage, le parallax en cours de lissage, un élément figé
     //     qui glisse encore et les classes posées au fil du défilement.
@@ -1066,7 +962,7 @@
     const atRest = Math.abs(targetX - x) < REST_DIST && Math.abs(targetY - y) < REST_DIST
       && speed < REST_SPEED
       && moved <= 0.3;
-    if (dt && atRest && !liveBubbles && !busy) return stopLoop();
+    if (dt && atRest && !busy) return stopLoop();
     return true;
   }
 

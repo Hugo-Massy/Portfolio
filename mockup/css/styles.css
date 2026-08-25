@@ -273,34 +273,9 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
   .dot-rail .dot-core,
   .dot-rail-indicator{animation:none;}
 }
-/* SILLAGE — petites bulles semées par la forme au fil de son déplacement (voir la partie
-   "bulles" de initPreloaderBlob, js/main.js). Elles se figent quasiment là où elles naissent,
-   avec juste ce qu'il faut de dérive pour lire une bulle qui s'échappe, puis s'effacent.
-   Calque au-dessus du mot (z-index) mais SOUS la forme (z-index:3) : les bulles semblent
-   sortir de dessous elle, au lieu de flotter par-dessus. Le JS pose transform/opacity image
-   par image ; aucune animation CSS ici, sinon les deux se disputeraient la même propriété. */
-.preloader-bubbles{
-  position:absolute; inset:0; z-index:2;
-  pointer-events:none;
-  /* Pas de débordement visible : une bulle semée au ras du bord ne doit pas créer de
-     défilement sur un écran qui n'en a pas. */
-  overflow:hidden;
-}
-.preloader-bubble{
-  position:absolute; top:0; left:0;
-  /* Silhouette irrégulière comme celle de la forme, et non un rond parfait : les huit rayons
-     sont tirés au hasard à chaque naissance (--bubble-radius, posée par le JS), sur le même
-     principe de dissymétrie horizontaux/verticaux que @keyframes preloader-blob-morph. La
-     valeur de repli ne sert qu'avant le premier semis. */
-  border-radius:var(--bubble-radius, 50%);
-  /* Même bleu que la forme : les bulles en sont détachées, pas d'une autre matière. */
-  background:var(--accent);
-  opacity:0;
-  will-change:transform, opacity;
-}
 /* Rien à suivre au doigt : inutile d'afficher (ni d'animer) le halo sur tactile. */
 @media (hover: none), (pointer: coarse){
-  .preloader-blob, .preloader-bubbles{display:none;}
+  .preloader-blob{display:none;}
 }
 
 /* BLOB DU HERO — voir js/page-blob.js. Reprend telle quelle la mécanique de
@@ -535,18 +510,6 @@ html.is-preloading, html.is-preloading body{overflow:hidden;}
 .page-blob-clone .dot-rail-indicator *,
 .page-blob-clone .lang-switch *,
 .page-blob-clone .btn-primary *{color:var(--accent) !important;}
-.page-blob-bubbles{
-  position:absolute; inset:0; z-index:2;
-  pointer-events:none;
-  overflow:hidden;
-}
-.page-blob-bubble{
-  position:absolute; top:0; left:0;
-  border-radius:var(--bubble-radius, 50%);
-  background:var(--accent);
-  opacity:0;
-  will-change:transform, opacity;
-}
 @media (hover: none), (pointer: coarse){
   .page-blob-viewport{display:none;}
 }

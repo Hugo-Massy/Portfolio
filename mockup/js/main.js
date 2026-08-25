@@ -2119,8 +2119,6 @@ function initPreloaderBlob(el) {
   // qui masque le halo côté CSS).
   if (!blob || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return null;
 
-  const bubbleLayer = document.getElementById('preloader-bubbles');
-
   // Remplit la découpe blanche (voir .preloader-blob-clone dans styles.css) avec une copie de
   // tout ce que l'écran affiche : c'est cette copie, rognée par la forme, qui fait apparaître
   // en blanc ce qu'elle survole. Copier le contenu plutôt que le décrire une seconde fois en
@@ -2128,10 +2126,9 @@ function initPreloaderBlob(el) {
   const clone = document.getElementById('preloader-blob-clone');
   if (clone) {
     Array.from(el.children).forEach((child) => {
-      // La forme elle-même (sinon la copie se contiendrait), le sillage de bulles (peuplé par
-      // le JS après la copie, donc toujours vide ici) et le texte pour lecteur d'écran
+      // La forme elle-même (sinon la copie se contiendrait) et le texte pour lecteur d'écran
       // (invisible, et il ne doit surtout pas être annoncé deux fois) restent en dehors.
-      if (child === blob || child === bubbleLayer) return;
+      if (child === blob) return;
       if (child.classList.contains('preloader-status')) return;
       const copy = child.cloneNode(true);
       // Les id doivent disparaître : la découpe précède l'original dans le document, donc ses
@@ -2165,126 +2162,6 @@ function initPreloaderBlob(el) {
   // dernier angle connu, sinon l'axe d'étirement partirait dans tous les sens à l'arrêt.
   const MIN_SPEED = 30;
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  /* ---------- sillage de bulles ----------
-     Les bulles ne sont PAS semées au rythme du temps mais à celui de la DISTANCE parcourue :
-     une bulle tous les SPAWN_STEP pixels. Un déplacement rapide couvre plus de pixels par
-     image, il en sème donc davantage — sans qu'aucune vitesse n'ait à être lue ni seuillée.
-     Pool fixe recyclé en anneau : à ce rythme d'émission, créer/détruire des nœuds ferait
-     travailler le ramasse-miettes en plein milieu de l'animation. */
-  const BUBBLE_COUNT = 14;
-  const SPAWN_STEP = 90;
-  // Plafond par image : après une image sautée (ou un coup de souris très large), le rattrapage
-  // de distance en réclamerait plusieurs d'un coup, toutes au même endroit.
-  const MAX_PER_FRAME = 1;
-  const BUBBLE_MIN = 3;
-  const BUBBLE_MAX = 10;
-  // Durée de vie (s) : PAS tirée au hasard, mais lue sur la taille — la plus petite bulle vit
-  // LIFE_MIN, la plus grosse LIFE_MAX. Une grosse bulle qui s'effacerait avant une petite se
-  // lirait comme une erreur : à l'œil, la masse tient, le fin s'évapore.
-  const LIFE_MIN = 0.9;
-  const LIFE_MAX = 2.6;
-  // Flottement ajouté par-dessus, assez faible pour ne pas inverser l'ordre des tailles : il
-  // ne sert qu'à ce que deux bulles de même calibre ne disparaissent pas exactement ensemble.
-  const LIFE_JITTER = 0.22;
-  // Part de la vitesse de la forme transmise à la bulle : volontairement faible, la bulle doit
-  // rester en arrière et non accompagner le curseur.
-  const INHERIT = 0.09;
-  // Dispersion initiale (px/s), qui empêche des bulles voisines de partir toutes pareil.
-  const SCATTER = 30;
-  // Frottement (s⁻¹) et poussée vers le haut (px/s²). Leur rapport fixe la vitesse limite de
-  // remontée — ici ~10 px/s : la bulle se fige presque sur place, avec juste assez de dérive
-  // pour qu'on la lise comme un gaz qui s'échappe et non comme une tache posée.
-  const DRAG = 2.8;
-  const RISE = 28;
-  // Durée du gonflement initial (s) : la bulle se forme, elle n'apparaît pas déjà pleine.
-  const POP_S = 0.18;
-
-  const bubbles = [];
-  if (bubbleLayer && !reduce) {
-    for (let n = 0; n < BUBBLE_COUNT; n++) {
-      const node = document.createElement('span');
-      node.className = 'preloader-bubble';
-      bubbleLayer.appendChild(node);
-      bubbles.push({ node, alive: false, x: 0, y: 0, vx: 0, vy: 0, life: 0, max: 0, rot: 0 });
-    }
-  }
-  let nextBubble = 0;
-  // Distance parcourue depuis la dernière bulle, en attente d'atteindre SPAWN_STEP.
-  let travel = 0;
-
-  // Écart maximal (en points de %) des rayons par rapport au 50% du cercle parfait : au-delà,
-  // la bulle se met à ressembler à une goutte ou à un haricot plutôt qu'à une masse molle.
-  const RADIUS_JITTER = 16;
-
-  // Huit rayons "a% b% c% d% / e% f% g% h%" tirés autour de 50%. Les quatre premiers valent pour
-  // les horizontaux, les quatre suivants pour les verticaux : c'est le décalage entre les deux
-  // séries, et non leur irrégularité seule, qui empêche la forme de retomber sur une ellipse.
-  function randomBlobRadius() {
-    const r = [];
-    for (let n = 0; n < 8; n++) r.push(`${Math.round(50 + (Math.random() * 2 - 1) * RADIUS_JITTER)}%`);
-    return `${r.slice(0, 4).join(' ')} / ${r.slice(4).join(' ')}`;
-  }
-
-  // (px, py) = position de la forme, (svx, svy) = sa vitesse au moment du lâcher.
-  function spawnBubble(px, py, svx, svy) {
-    const b = bubbles[nextBubble];
-    nextBubble = (nextBubble + 1) % bubbles.length;
-    const size = BUBBLE_MIN + Math.random() * (BUBBLE_MAX - BUBBLE_MIN);
-    // Point de naissance tiré dans le disque de la forme, et non sur son centre : les bulles
-    // se détachent de toute sa surface. La racine carrée répartit uniformément dans le disque
-    // (sans elle, le tirage se masse au centre).
-    const a = Math.random() * Math.PI * 2;
-    const r = Math.sqrt(Math.random()) * blob.offsetWidth * 0.42;
-    b.x = px + Math.cos(a) * r;
-    b.y = py + Math.sin(a) * r;
-    b.vx = svx * INHERIT + (Math.random() - 0.5) * SCATTER;
-    b.vy = svy * INHERIT + (Math.random() - 0.5) * SCATTER;
-    b.life = 0;
-    const grow = (size - BUBBLE_MIN) / (BUBBLE_MAX - BUBBLE_MIN);
-    b.max = LIFE_MIN + grow * (LIFE_MAX - LIFE_MIN) + (Math.random() - 0.5) * LIFE_JITTER;
-    // Boîte volontairement non carrée : même avec des rayons irréguliers, une boîte carrée
-    // ramène toujours la silhouette vers le rond.
-    b.node.style.width = `${size.toFixed(1)}px`;
-    b.node.style.height = `${(size * (0.82 + Math.random() * 0.36)).toFixed(1)}px`;
-    b.node.style.setProperty('--bubble-radius', randomBlobRadius());
-    // Orientation tirée au hasard : sans elle, toutes les bulles pencheraient du même côté,
-    // la répétition se verrait immédiatement. Elle est reprise dans le transform de chaque image.
-    b.rot = Math.random() * 360;
-    b.alive = true;
-  }
-
-  function updateBubbles(dt) {
-    // Frottement intégré exactement (et non v -= k·v·dt) : le résultat ne dépend alors pas du
-    // pas de temps, donc l'amortissement est le même à 60 Hz et à 144 Hz.
-    const damp = Math.exp(-DRAG * dt);
-    for (const b of bubbles) {
-      if (!b.alive) continue;
-      b.life += dt;
-      if (b.life >= b.max) {
-        b.alive = false;
-        b.node.style.opacity = '0';
-        continue;
-      }
-      b.vy -= RISE * dt;
-      b.vx *= damp;
-      b.vy *= damp;
-      b.x += b.vx * dt;
-      b.y += b.vy * dt;
-      // Gonflement en ease-out sur les premières images, puis taille pleine.
-      const pop = Math.min(b.life / POP_S, 1);
-      const scale = 0.35 + 0.65 * pop * (2 - pop);
-      // Effacement en carré du temps : la bulle tient franchement sa couleur, puis part vite
-      // sur la fin — l'inverse d'un fondu linéaire, qui la ferait pâlir dès sa naissance.
-      const t = b.life / b.max;
-      b.node.style.opacity = ((1 - t * t) * 0.9).toFixed(3);
-      // Le recentrage translate(-50%, -50%) précède la rotation : posé après, il serait tourné
-      // avec elle et la bulle se décalerait de son point de naissance.
-      b.node.style.transform =
-        `translate3d(${b.x.toFixed(1)}px, ${b.y.toFixed(1)}px, 0) translate(-50%, -50%) ` +
-        `rotate(${b.rot.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
-    }
-  }
 
   let targetX = window.innerWidth / 2;
   let targetY = window.innerHeight / 2;
@@ -2329,10 +2206,6 @@ function initPreloaderBlob(el) {
   function frame(now) {
     const dt = prev ? Math.min((now - prev) / 1000, MAX_DT) : 0;
     prev = now;
-    // Position d'avant intégration : c'est l'écart avec celle d'après qui mesure la distance
-    // parcourue, donc le nombre de bulles à semer.
-    const fromX = x;
-    const fromY = y;
     if (reduce) {
       x = targetX;
       y = targetY;
@@ -2354,22 +2227,6 @@ function initPreloaderBlob(el) {
       blob.style.setProperty('--blob-angle', `${angle.toFixed(1)}deg`);
       blob.style.setProperty('--blob-stretch', stretch.toFixed(3));
       blob.style.setProperty('--blob-squash', (1 / stretch).toFixed(3));
-
-      // Semis, puis vie des bulles déjà lâchées. Tant que le curseur n'a pas été localisé
-      // (placed), la forme n'est pas à sa place : rien à semer.
-      if (placed && bubbles.length) {
-        travel += Math.hypot(x - fromX, y - fromY);
-        let n = 0;
-        while (travel >= SPAWN_STEP && n < MAX_PER_FRAME) {
-          travel -= SPAWN_STEP;
-          spawnBubble(x, y, vx, vy);
-          n++;
-        }
-        // Plafond atteint : le reliquat est abandonné plutôt que reporté, sinon il se
-        // rembourserait aux images suivantes en un chapelet régulier sans rapport avec le geste.
-        if (n === MAX_PER_FRAME) travel = 0;
-      }
-      updateBubbles(dt);
     }
     blob.style.setProperty('--blob-x', `${x.toFixed(1)}px`);
     blob.style.setProperty('--blob-y', `${y.toFixed(1)}px`);
