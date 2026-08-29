@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-28T18:39:23.692Z",
+  "generatedAt": "2026-08-29T12:40:01.173Z",
   "windowDays": 30,
   "count": 109,
   "sources": [
@@ -64,6 +64,86 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "McKesson discloses breach after ShinyHunters claims patient data theft",
+      "link": "https://www.bleepingcomputer.com/news/security/mckesson-discloses-breach-after-shinyhunters-claims-patient-data-theft/",
+      "date": "2026-08-28T22:40:17.000Z",
+      "summary": "Healthcare and pharmaceutical distribution giant McKesson has disclosed a cybersecurity incident involving unauthorized access to third-party applications and data theft, with the ShinyHunters extortion group claiming it stole 284 millio…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Berlin Refuses to Pay Hackers Who Stole Data From the City's State Network",
+      "link": "https://thehackernews.com/2026/08/berlin-refuses-to-pay-hackers-who-stole.html",
+      "date": "2026-08-28T21:30:52.000Z",
+      "summary": "Berlin's state government has confirmed that it is the target of an extortion attempt following the August compromise of the city's state administrative network, and said it will not meet the extortionists' demands. The same statement di…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Cosmos EVM Flaw Exploited After Cosmos Labs Knew Every Blockchain Running It Was Vulnerable",
+      "link": "https://thehackernews.com/2026/08/cosmos-evm-flaw-exploited-after-cosmos.html",
+      "date": "2026-08-28T20:38:47.000Z",
+      "summary": "Cosmos Labs has warned that a critical balance-handling flaw in the shared Cosmos EVM module was exploited to drain funds from six blockchains between August 20 and August 25, 2026. The vulnerability, designated GHSA-7g4w-cg88-2cq2, is r…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "PaperCut releases second emergency patch for exploited flaws",
+      "link": "https://www.bleepingcomputer.com/news/security/papercut-releases-second-emergency-patch-for-exploited-flaws/",
+      "date": "2026-08-28T19:08:26.000Z",
+      "summary": "PaperCut has released a second emergency security update for two actively exploited vulnerabilities in its PaperCut NG and MF print management software after researchers discovered multiple ways to bypass the initial fixes. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-3.jpg"
+    },
     {
       "source": "BleepingComputer",
       "sourceType": "press",
@@ -164,7 +244,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
@@ -816,48 +896,6 @@
       "projects": [],
       "severity": "info",
       "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft rolls out fix for Windows 11 crashes, gaming issues",
-      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-rolls-out-fix-for-windows-11-crashes-gaming-issues/",
-      "date": "2026-08-27T12:16:32.000Z",
-      "summary": "Microsoft has started rolling out a permanent fix for a known issue that causes system crashes and gaming issues on Windows 11 devices. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Webinar: How Google Workspace breaches happen and what to do next",
-      "link": "https://www.bleepingcomputer.com/news/security/webinar-how-google-workspace-breaches-happen-and-what-to-do-next/",
-      "date": "2026-08-27T12:16:24.000Z",
-      "summary": "Google Workspace breaches can begin with social engineering or forgotten third-party integrations rather than sophisticated exploits. This webinar examines real-world breaches, what happens during the critical first hours, and the securi…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1844,49 +1882,6 @@
         "Ransomware",
         "Malware",
         "Windows Server"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Critical Keycloak Password Reset Flaw Could Let Unauthenticated Attackers Take Over Any Account",
-      "link": "https://thehackernews.com/2026/08/critical-keycloak-password-reset-flaw.html",
-      "date": "2026-08-24T11:56:34.000Z",
-      "summary": "Red Hat and the Keycloak project have released patches to address a critical security flaw in the open-source identity and access management server that could allow an unauthenticated remote attacker to take over any user account by forc…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Operation QUICSILVER Targets Myanmar Government and IT with QUICAgent Backdoor",
-      "link": "https://thehackernews.com/2026/08/operation-quicsilver-targets-myanmar.html",
-      "date": "2026-08-24T11:51:36.000Z",
-      "summary": "Cybersecurity researchers have flagged a cyber espionage campaign targeting Myanmar that uses graduation ceremony invitation lures to deliver a Go backdoor called QUICAgent. The campaign, codenamed Operation QUICSILVER, has been found to…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware"
       ],
       "projects": [],
       "severity": "info",
