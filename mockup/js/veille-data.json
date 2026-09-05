@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-05T10:32:33.818Z",
+  "generatedAt": "2026-09-05T20:18:22.143Z",
   "windowDays": 30,
   "count": 110,
   "sources": [
@@ -64,6 +64,105 @@
     }
   },
   "items": [
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Attackers Breached JetBrains Cadence via Unpatched TeamCity, Extracting AWS Credentials",
+      "link": "https://thehackernews.com/2026/09/attackers-breached-jetbrains-cadence.html",
+      "date": "2026-09-05T16:52:33.000Z",
+      "summary": "JetBrains is urging Cadence users to revoke and rotate all credentials following a security incident last month in which unidentified threat actors exploited a recently disclosed critical vulnerability in TeamCity to breach its own envir…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "AWS",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-1.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Critical VMware Workstation and Fusion Flaw Lets VM Admins Execute Host Code",
+      "link": "https://thehackernews.com/2026/09/critical-vmware-workstation-and-fusion.html",
+      "date": "2026-09-05T16:05:08.000Z",
+      "summary": "Broadcom has released security updates for two security flaws impacting VMware Workstation and Fusion, including one critical bug that could result in arbitrary code execution under certain conditions. The vulnerability, tracked as CVE-2…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "VMware",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-8.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Over 5,400 hacked sites serve ClickFix payloads stored on the blockchain",
+      "link": "https://www.bleepingcomputer.com/news/security/over-5-400-hacked-sites-serve-clickfix-payloads-stored-on-the-blockchain/",
+      "date": "2026-09-05T14:29:13.000Z",
+      "summary": "A massive cybercriminal operation is leveraging thousands of compromised small-business websites to deliver ClickFix payloads stored in smart contracts on the BNB Smart Chain (BSC). [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Trezor Says ShipMonk Breach Exposed 67,000 U.S. Customers' Data It Said Was Deleted",
+      "link": "https://thehackernews.com/2026/09/trezor-says-shipmonk-breach-exposed.html",
+      "date": "2026-09-05T14:17:02.000Z",
+      "summary": "Hardware wallet manufacturer Trezor on Friday disclosed that another 67,000 customers from the U.S. have been impacted in a breach at its shipping provider ShipMonk. The exposed information includes customer names, email addresses, phone…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI admits it didn't disclose rogue AI wiki hijacking incident",
+      "link": "https://www.bleepingcomputer.com/news/security/openai-admits-it-didnt-disclose-rogue-ai-wiki-hijacking-incident/",
+      "date": "2026-09-05T11:11:50.000Z",
+      "summary": "OpenAI admits it did not disclose an incident where autonomous AI agents hijacked a German wiki, created 18,000 posts, shared answers, and bypassed restrictions, saying it treated the activity as model \"misalignment\" rather than a securi…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "The Hacker News",
       "sourceType": "press",
@@ -167,7 +266,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "The Hacker News",
@@ -272,7 +371,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-1.jpg"
+      "image": "assets/veille/top-2.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -315,7 +414,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-2.jpg"
+      "image": "assets/veille/top-3.jpg"
     },
     {
       "source": "The Hacker News",
@@ -337,7 +436,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-8.jpg"
+      "image": "assets/veille/top-9.jpg"
     },
     {
       "source": "The Hacker News",
@@ -375,7 +474,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
@@ -727,7 +826,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-9.jpg"
+      "image": "assets/veille/top-10.jpg"
     },
     {
       "source": "The Hacker News",
@@ -814,28 +913,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Critical Elementor Pro flaw exploited to take over WordPress sites",
-      "link": "https://www.bleepingcomputer.com/news/security/critical-elementor-pro-flaw-exploited-to-take-over-wordpress-sites/",
-      "date": "2026-09-03T14:52:20.000Z",
-      "summary": "A recently patched critical vulnerability (CVE-2026-32475) in the Elementor Pro plugin for WordPress is being exploited in attacks that deliver a webshell payload and execute arbitrary commands on the server. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-10.jpg"
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -846,27 +923,6 @@
       "pillar": null,
       "pillarLabel": null,
       "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Your Employee’s Password Appeared in an Infostealer Log. Now What?",
-      "link": "https://www.bleepingcomputer.com/news/security/your-employees-password-appeared-in-an-infostealer-log-now-what/",
-      "date": "2026-09-03T13:50:59.000Z",
-      "summary": "Infostealers can expose far more than passwords, including authenticated sessions that may let attackers bypass MFA. Flare explains how defenders can prioritize compromised identities, determine whether stolen access is still usable, and…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware"
-      ],
       "projects": [],
       "severity": "info",
       "image": null
@@ -980,7 +1036,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-4.jpg"
+      "image": "assets/veille/top-5.jpg"
     },
     {
       "source": "The Hacker News",
@@ -2002,75 +2058,6 @@
       },
       "tags": [
         "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "TerminalFix Uses Fake Cloudflare CAPTCHAs to Deploy Reverse-Tunnel Backdoor",
-      "link": "https://thehackernews.com/2026/08/terminalfix-uses-fake-cloudflare.html",
-      "date": "2026-08-30T07:36:33.000Z",
-      "summary": "Microsoft has disclosed details of a new ClickFix variant, dubbed TerminalFix, that aims to trick users into running a malicious command in Windows Terminal or PowerShell. \"While traditional ClickFix campaigns direct victims to the Windo…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Malware",
-        "Windows Server",
-        "PowerShell",
-        "Cloudflare"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Five Critical WordPress Plugin and Theme Flaws Enable Site Takeover or RCE",
-      "link": "https://thehackernews.com/2026/08/five-critical-wordpress-plugin-and.html",
-      "date": "2026-08-29T16:25:03.000Z",
-      "summary": "Multiple critical security flaws have been disclosed in WordPress plugins and themes, including WPMU DEV Dashboard, Avada, TranslatePress, Pods, and GiveWP, that could lead to authentication bypass, account takeover, and arbitrary code e…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-6.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Berlin Refuses to Pay Hackers Who Stole Data From the City's State Network",
-      "link": "https://thehackernews.com/2026/08/berlin-refuses-to-pay-hackers-who-stole.html",
-      "date": "2026-08-28T21:30:52.000Z",
-      "summary": "Berlin's state government has confirmed that it is the target of an extortion attempt following the August compromise of the city's state administrative network, and said it will not meet the extortionists' demands. The same statement di…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau"
       ],
       "projects": [],
       "severity": "info",
