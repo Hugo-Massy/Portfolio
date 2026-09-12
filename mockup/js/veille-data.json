@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-11T20:56:31.438Z",
+  "generatedAt": "2026-09-12T10:43:12.787Z",
   "windowDays": 30,
   "count": 110,
   "sources": [
@@ -64,6 +64,30 @@
     }
   },
   "items": [
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI Agents Linked to RubyGems Campaign That Gained RCE on RubyDoc Servers",
+      "link": "https://thehackernews.com/2026/09/openai-agents-linked-to-rubygems.html",
+      "date": "2026-09-12T09:07:56.000Z",
+      "summary": "The \"major malicious attack\" that targeted RubyGems in May 2026 was the work of a swarm of OpenAI agents, according to a new report published by researchers Spencer Kitts, Thomas Larsen, and Sydney Von Arx. On May 12, Maciej Mensfeld, se…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "Supply chain",
+        "Exploit"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "BleepingComputer",
       "sourceType": "press",
@@ -2324,30 +2348,6 @@
         "CVE"
       ],
       "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Attackers Hijack MikroTik Routers Through Internet-Exposed SSH Without Authentication",
-      "link": "https://thehackernews.com/2026/09/attackers-hijack-mikrotik-routers.html",
-      "date": "2026-09-06T09:32:38.000Z",
-      "summary": "Attackers are exploiting MikroTik routers with their Secure Shell (SSH) remote-access service, which is reachable from the internet, to gain full administrative control without authentication, according to CERT Polska's attack warning, p…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "Exploit"
-      ],
-      "projects": [
-        "homelab"
-      ],
       "severity": "info",
       "image": null
     },
