@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-18T11:00:44.438Z",
+  "generatedAt": "2026-10-18T20:39:11.654Z",
   "windowDays": 30,
   "count": 112,
   "sources": [
@@ -64,6 +64,29 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Hackers exploit SiteGuard WAF flaw to run commands as admins",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-exploit-siteguard-waf-flaw-to-run-commands-as-system-root/",
+      "date": "2026-10-18T14:23:16.000Z",
+      "summary": "Attackers are targeting an OS command injection vulnerability in SiteGuard Server Edition that lets them execute commands as root or SYSTEM on affected servers. [...]",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "pfSense/FW",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "The Hacker News",
       "sourceType": "press",
@@ -962,27 +985,6 @@
       "projects": [
         "massy-innove"
       ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft: Windows Server 2022 reached end of mainstream support",
-      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-windows-server-2022-reached-end-of-mainstream-support/",
-      "date": "2026-10-15T13:18:36.000Z",
-      "summary": "Microsoft announced that Windows Server 2022 has reached the end of mainstream support and will remain in extended support until October 2031. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server"
-      ],
-      "projects": [],
       "severity": "info",
       "image": null
     },
