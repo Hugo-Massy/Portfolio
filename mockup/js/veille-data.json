@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-20T11:32:07.286Z",
+  "generatedAt": "2026-10-20T21:34:52.759Z",
   "windowDays": 30,
   "count": 113,
   "sources": [
@@ -68,6 +68,325 @@
       "source": "BleepingComputer",
       "sourceType": "press",
       "kind": "article",
+      "title": "PHP warns admins of two critical flaws, emergency patches coming tomorrow",
+      "link": "https://www.bleepingcomputer.com/news/security/php-warns-admins-of-two-critical-flaws-emergency-patches-coming-tomorrow/",
+      "date": "2026-10-20T20:56:43.000Z",
+      "summary": "The PHP security team is warning administrators to prepare for emergency security updates tomorrow to address two critical vulnerabilities, as information about the flaws has reportedly leaked ahead of their scheduled disclosure. [...]",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "PHP",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-1.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Zeabur shutting down after second security breach in two months",
+      "link": "https://www.bleepingcomputer.com/news/security/zeabur-shutting-down-after-second-security-breach-in-two-months/",
+      "date": "2026-10-20T19:33:02.000Z",
+      "summary": "Development platform Zeabur has disclosed details of a cybersecurity incident in which an attacker used leaked internal credentials stored in plaintext to compromise its infrastructure and steal over 3.2 million environment variable reco…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI says GPT-6.1 Sol is dramatically better at migrating legacy code",
+      "link": "https://www.bleepingcomputer.com/news/artificial-intelligence/openai-says-gpt-61-sol-is-dramatically-better-at-migrating-legacy-code/",
+      "date": "2026-10-20T18:11:03.000Z",
+      "summary": "OpenAI confirmed that its newer models are much better at writing and migrating software in older programming languages. [...]",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Eight eMudhra CA Keys Compromised, Triggering Emergency Fixes Across Browsers and Software",
+      "link": "https://thehackernews.com/2026/10/eight-emudhra-ca-keys-compromised.html",
+      "date": "2026-10-20T17:09:53.000Z",
+      "summary": "The private keys of eight eMudhra intermediate certificate authority (CA) certificates are compromised, Mozilla and Google's Chrome Root Program confirms on October 20. An intermediate CA signs the certificates that websites present, so…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Critical FortiSIEM Flaw Gets Public Exploit PoC for Unauthenticated Remote Code Execution",
+      "link": "https://thehackernews.com/2026/10/critical-fortisiem-flaw-gets-public.html",
+      "date": "2026-10-20T15:38:52.000Z",
+      "summary": "Cybersecurity researchers have released a proof-of-concept (PoC) exploit for a recently patched critical security flaw impacting Fortinet FortiSIEM that could result in arbitrary code execution. The vulnerability, tracked as CVE-2026-106…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-5.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Qilin and INC Ransomware Groups Exploit Palo Alto Networks Flaw to Bypass MFA",
+      "link": "https://thehackernews.com/2026/10/qilin-and-inc-ransomware-groups-exploit.html",
+      "date": "2026-10-20T15:32:27.000Z",
+      "summary": "Palo Alto Networks has disclosed that it's continuing to observe exploitation of a now-patched security flaw impacting PAN-OS and Prisma Access by ransomware actors. The activity relates to CVE-2026-0257 (CVSS score: 7.8), an authenticat…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Ransomware",
+        "pfSense/FW",
+        "Réseau",
+        "Exploit"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "DHS bans DeepSeek products across US federal civilian agencies",
+      "link": "https://www.bleepingcomputer.com/news/security/dhs-bans-deepseek-products-across-us-federal-civilian-agencies/",
+      "date": "2026-10-20T14:19:05.000Z",
+      "summary": "The U.S. Department of Homeland Security (DHS) is ordering federal civilian agencies to stop using DeepSeek products and remove them from government systems. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Hackers Use Autonomous AI Agents to Breach Company Websites, Target Over 1,200 Sites",
+      "link": "https://thehackernews.com/2026/10/hackers-use-autonomous-ai-agents-to.html",
+      "date": "2026-10-20T14:07:17.000Z",
+      "summary": "A Chinese-speaking criminal pointed autonomous AI agents at company websites and let them break in with almost no help, and a security researcher watched it happen because the operators left their control panels open on the internet. The…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "CJIS v6.1 Compliance: 5 Practical Priorities for Agencies",
+      "link": "https://www.bleepingcomputer.com/news/security/cjis-v61-compliance-5-practical-priorities-for-agencies/",
+      "date": "2026-10-20T13:51:00.000Z",
+      "summary": "CJIS v6.1 requires agencies to maintain strong authentication, account security, and audit controls while demonstrating ongoing compliance. Specops outlines five practical priorities covering MFA, account management, passwords, logging,…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Hacker gets 8 years for stealing $3.3 million from taxpayers",
+      "link": "https://www.bleepingcomputer.com/news/security/hacker-gets-8-years-for-stealing-33-million-from-taxpayers/",
+      "date": "2026-10-20T13:18:36.000Z",
+      "summary": "A Nigerian national was sentenced to eight years in prison for his involvement in a series of spearphishing attacks targeting US tax preparation businesses since 2019. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Pegasus Spyware Infection Confirmed on Serbian University Rector's iPhone Days Before Election",
+      "link": "https://thehackernews.com/2026/10/pegasus-spyware-infection-confirmed-on.html",
+      "date": "2026-10-20T12:59:44.000Z",
+      "summary": "The iPhone of Vladan Đokić, rector of the University of Belgrade and a prominent supporter of Serbia's student protest movement, was infected with NSO Group's Pegasus spyware in 2026, the Citizen Lab said on October 19. The finding came…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Windows Server 2025 gets support for quick machine recovery",
+      "link": "https://www.bleepingcomputer.com/news/microsoft/windows-server-2025-gets-support-for-quick-machine-recovery/",
+      "date": "2026-10-20T12:16:32.000Z",
+      "summary": "Microsoft announced that IT administrators can now use quick machine recovery on Windows Server 2025 after installing the October 2026 security update. [...]",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Windows Server"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "WhatsApp Hid Instructions in Help Pages Telling Its AI Chatbot Not to Recommend Privacy Regulators",
+      "link": "https://thehackernews.com/2026/10/whatsapp-hid-instructions-in-help-pages.html",
+      "date": "2026-10-20T11:41:06.000Z",
+      "summary": "WhatsApp's help pages carried hidden instructions for its support chatbot that told it not to recommend a data protection authority or regulator to users who could no longer delete their accounts, even though WhatsApp's own privacy polic…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "What Security Teams Can Do To Tame Wild Code",
+      "link": "https://thehackernews.com/2026/10/what-security-teams-can-do-to-tame-wild.html",
+      "date": "2026-10-20T11:33:04.000Z",
+      "summary": "A sales manager builds an AI-assisted workflow to route leads. It connects to customer records, summarizes inbound requests, and posts updates to a shared channel. The workflow saves time, reduces manual work, and soon becomes part of th…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Go Issues Emergency Update Blocking Eight CA Keys Over Undisclosed Security Concerns",
+      "link": "https://thehackernews.com/2026/10/go-issues-emergency-update-blocking.html",
+      "date": "2026-10-20T11:32:59.000Z",
+      "summary": "Go 1.27.3 and Go 1.26.10, released on October 20, make Go's certificate verifier reject any certificate chain that passes through one of eight intermediate certificate authority keys. Programs built on the new release will refuse connect…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OVHcloud CLI releases backdoored on GitHub to steal developer secrets",
+      "link": "https://www.bleepingcomputer.com/news/security/ovhcloud-cli-releases-backdoored-on-github-to-steal-developer-secrets/",
+      "date": "2026-10-20T11:31:22.000Z",
+      "summary": "French cloud and hosting provider OVHcloud is warning users that attackers compromised its open-source command-line interface (CLI) tool to distribute information-stealing malware. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "OVHcloud",
+        "Git",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
       "title": "Ahold Delhaize: Cyberattack affects services across US and Europe",
       "link": "https://www.bleepingcomputer.com/news/security/ahold-delhaize-cyberattack-affects-services-across-us-and-europe/",
       "date": "2026-10-20T11:18:35.000Z",
@@ -76,6 +395,50 @@
       "pillarLabel": null,
       "tags": [],
       "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Russian APT28 Breaches NATO Naval Shipbuilder in NATO Country, Deploys New Reflective Loader",
+      "link": "https://thehackernews.com/2026/10/russian-apt28-breaches-nato-naval.html",
+      "date": "2026-10-20T11:06:25.000Z",
+      "summary": "The Russia-linked state-sponsored threat actor tracked as APT28 (aka BlueDelta, Fancy Bear, and Forest Blizzard) has been attributed to attacks targeting two member states of the North Atlantic Treaty Organization (NATO). The Symantec Th…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "ConnectWise Resets Credentials as Cloud Backup Remains Offline After Security Incident",
+      "link": "https://thehackernews.com/2026/10/connectwise-resets-credentials-as-cloud.html",
+      "date": "2026-10-20T10:56:08.000Z",
+      "summary": "ConnectWise on Monday said it has taken remediation measures, including strengthening administrative-access protections and resetting accounts and replacing application credentials, as it continues to respond to a security incident that…",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Sauvegarde"
+      ],
+      "projects": [
+        "homelab"
+      ],
       "severity": "info",
       "image": null
     },
@@ -176,6 +539,48 @@
       ],
       "projects": [],
       "severity": "info",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Laravel (20 octobre 2026)",
+      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1343/",
+      "date": "2026-10-20T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Laravel. Certaines d'entre elles permettent à un attaquant de provoquer un déni de service à distance, une atteinte à l'intégrité des données et un contournement de la politique de séc…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Mattermost Server (20 octobre 2026)",
+      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1344/",
+      "date": "2026-10-20T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Mattermost Server. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
       "image": null
     },
     {
@@ -327,27 +732,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft fixes game, app crashes caused by recent Windows update",
-      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-game-app-crashes-caused-by-windows-kb5124010-preview-update/",
-      "date": "2026-10-19T14:55:23.000Z",
-      "summary": "Microsoft has resolved a bug that caused games and apps using AC-3 (Dolby Digital) audio decoding to crash after installing the September 2026 Windows 11 preview update (KB5124010). [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -367,45 +751,6 @@
       ],
       "projects": [
         "massy-innove"
-      ],
-      "severity": "high",
-      "image": "assets/veille/top-1.jpg"
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Inside the Underground Market for Know Your Client Services",
-      "link": "https://www.bleepingcomputer.com/news/security/inside-the-underground-market-for-know-your-client-services/",
-      "date": "2026-10-19T14:00:10.000Z",
-      "summary": "Cybercriminals are selling forged identity documents, deepfake videos, and live verification services to help buyers bypass Know Your Client (KYC) checks. Flare examines how these underground services operate and the techniques used to c…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "F5 releases out-of-band patches for critical NGINX vulnerabilities",
-      "link": "https://www.bleepingcomputer.com/news/security/f5-releases-out-of-band-patches-for-critical-nginx-vulnerabilities/",
-      "date": "2026-10-19T13:49:24.000Z",
-      "summary": "F5 has released out-of-band security patches to address multiple NGINX web server flaws, including three critical-severity vulnerabilities that can let attackers execute code on vulnerable systems. [...]",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Nginx",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
       ],
       "severity": "high",
       "image": "assets/veille/top-2.jpg"
@@ -431,30 +776,6 @@
         "Exploit"
       ],
       "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft fixes classic Outlook bug that hid Copilot buttons",
-      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-bug-that-hid-copilot-buttons-in-classic-outlook/",
-      "date": "2026-10-19T12:44:44.000Z",
-      "summary": "Microsoft has fixed a known issue that removed the Copilot Chat and Copilot buttons in the classic Outlook desktop mail client for some Windows users. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
       "severity": "info",
       "image": null
     },
@@ -502,28 +823,6 @@
       "projects": [
         "massy-innove"
       ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft: October Windows Server updates break Exchange sign-in, mail flow",
-      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-october-windows-server-updates-cause-exchange-issues/",
-      "date": "2026-10-19T08:58:41.000Z",
-      "summary": "Microsoft has confirmed that this month's Windows Server security updates are causing OWA sign-in and mail delivery issues on some Exchange Server systems. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server",
-        "Microsoft 365"
-      ],
-      "projects": [],
       "severity": "info",
       "image": null
     },
@@ -722,29 +1021,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Hackers exploit SiteGuard WAF flaw to run commands as admins",
-      "link": "https://www.bleepingcomputer.com/news/security/hackers-exploit-siteguard-waf-flaw-to-run-commands-as-system-root/",
-      "date": "2026-10-18T14:23:16.000Z",
-      "summary": "Attackers are targeting an OS command injection vulnerability in SiteGuard Server Edition that lets them execute commands as root or SYSTEM on affected servers. [...]",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "pfSense/FW",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -766,53 +1042,6 @@
         "homelab"
       ],
       "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Hackers breach Microsoft 365 tenants via ConnectWise supply-chain attack",
-      "link": "https://www.bleepingcomputer.com/news/security/hackers-breach-microsoft-365-tenants-via-connectwise-supply-chain-attack/",
-      "date": "2026-10-17T15:18:51.000Z",
-      "summary": "ConnectWise has shut down customer access to its Cloud Backup service (formerly SkyKick Cloud Backup) after hackers accessed application identities and compromised Microsoft 365 tenants. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Microsoft 365",
-        "Sauvegarde",
-        "Supply chain"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Drupal patches critical RCE flaws, warns exploits may emerge soon",
-      "link": "https://www.bleepingcomputer.com/news/security/drupal-patches-critical-rce-flaws-warns-exploits-may-emerge-soon/",
-      "date": "2026-10-17T14:32:48.000Z",
-      "summary": "Drupal has patched two critical vulnerabilities that could allow attackers to execute code remotely on websites running any supported version of the content management system. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
       "image": null
     },
     {
@@ -1292,7 +1521,7 @@
         "homelab"
       ],
       "severity": "high",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1852,7 +2081,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1881,215 +2110,6 @@
       "image": null
     },
     {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft Disrupts 3 Phishing Kits Linked to Over 1 Billion Scam Messages",
-      "link": "https://thehackernews.com/2026/10/microsoft-disrupts-3-phishing-kits.html",
-      "date": "2026-10-14T17:09:15.000Z",
-      "summary": "Microsoft and Health-ISAC, along with the Japan Cybercrime Control Center (JC3) and a coalition of private sector companies, such as Resecurity, Cloudflare, Oracle, Proofpoint, and TRM Labs, announced the disruption of three phishing kit…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Cloudflare"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "U.S. Shuts Down Over 40 Laptop Farms, Charges 14 in North Korean IT Worker Fraud",
-      "link": "https://thehackernews.com/2026/10/us-shuts-down-over-40-laptop-farms.html",
-      "date": "2026-10-14T16:34:31.000Z",
-      "summary": "The U.S. Department of Justice (DoJ) on Tuesday charged 14 people and seized about 187 computers and KVM devices as part of its ongoing efforts to disrupt North Korea's fraudulent remote IT worker (ITW) scheme. The indictment charges a m…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "CISA Urges Immediate Ivanti Connect Secure Updates as Honeypots Log 105 Exploit Attempts",
-      "link": "https://thehackernews.com/2026/10/cisa-urges-immediate-ivanti-connect.html",
-      "date": "2026-10-14T12:30:42.000Z",
-      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Tuesday urged organizations to take steps to immediately update their Ivanti Connect Secure (ICS) appliances and deployments to the latest version following the disclosu…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Honeypot",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "curl Patches HTTP/2 Upload Flaw After PoC Demonstrates Client-Side Code Execution",
-      "link": "https://thehackernews.com/2026/10/curl-patches-http2-upload-flaw-after.html",
-      "date": "2026-10-14T12:13:36.000Z",
-      "summary": "A flaw in how curl handles HTTP/2 uploads lets a malicious server receiving an upload corrupt the client's memory, and the researcher who reported it turned that into code execution on the uploading machine. The curl project fixed it on…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "How to Run a Deepfake Readiness Drill Before a Cloned Voice Calls Your Team",
-      "link": "https://thehackernews.com/2026/10/how-to-run-deepfake-readiness-drill.html",
-      "date": "2026-10-14T11:50:00.000Z",
-      "summary": "Cloned voices and synthetic video calls now show up in payment fraud, help desk resets, and access requests. A structured drill shows security teams exactly where verification breaks down, while nothing is at stake. The call comes in at…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Researchers Used a Public OpenAI Model to Build a $250,000 Chrome Full-Chain Exploit in Six Days",
-      "link": "https://thehackernews.com/2026/10/researchers-used-public-openai-model-to.html",
-      "date": "2026-10-14T11:19:02.000Z",
-      "summary": "A team at security firm XBOW chained three then-unknown Google Chrome bugs into a single attack that runs code on a Windows computer when the user only loads a web page, the company said. Its researchers built the attack in six days by d…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server",
-        "IA/LLM",
-        "Exploit"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Hirudo Android Trojan Uses Patched Banking Apps to Bypass Their Built-In Security Checks",
-      "link": "https://thehackernews.com/2026/10/hirudo-android-trojan-uses-patched.html",
-      "date": "2026-10-14T11:08:22.000Z",
-      "summary": "Cybersecurity researchers have disclosed details of a new Android banking trojan called Hirudo that works by replacing legitimate banking apps with purpose-built patched versions designed to bypass security checks from inside the app its…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "An AI Agent Found a Critical OTP Bypass in Production. The Attack Was the Easy Part.",
-      "link": "https://thehackernews.com/2026/10/an-ai-agent-found-critical-otp-bypass.html",
-      "date": "2026-10-14T11:00:00.000Z",
-      "summary": "The bug was simple: the login let you choose where your sign-in code went. Proving it on a live website was the hard part. TL;DR During an authorized assessment, an AI pentesting agent found a critical authentication bypass on a major in…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "high",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "AI-Found Linux Kernel Flaw Gives Local Users Root, and Can Break a Guest Out to the Host",
-      "link": "https://thehackernews.com/2026/10/ai-found-linux-kernel-flaw-gives-local.html",
-      "date": "2026-10-14T07:46:57.000Z",
-      "summary": "A flaw in Linux's vhost subsystem lets a local user read and write kernel memory at will and become root across nearly a decade of kernel versions. In one virtualization setup, it lets an untrusted virtual machine write to the host's mem…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "IA/LLM",
-        "CVE"
-      ],
-      "projects": [
-        "massy-innove",
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Four-Byte Write and Timing Bug Let Researchers Run Code in Windows SmartScreen Enclave",
-      "link": "https://thehackernews.com/2026/10/four-byte-write-and-timing-bug-let.html",
-      "date": "2026-10-14T05:52:28.000Z",
-      "summary": "Security researchers ran their own code inside a protected part of Windows that is meant to stay sealed off even when the rest of the computer is taken over. The protected area is a VBS enclave, an isolated slice of memory the operating…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Windows Server"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
       "source": "CERT-FR",
       "sourceType": "official",
       "kind": "alerte",
@@ -2108,48 +2128,6 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans Symantec Endpoint Detection and Response (14 octobre 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1303/",
-      "date": "2026-10-14T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans Symantec Endpoint Detection and Response. Elle permet à un attaquant de provoquer une injection de code indirecte à distance (XSS).",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans MongoDB Server (14 octobre 2026)",
-      "link": "https://www.cert.ssi.gouv.fr/avis/CERTFR-2026-AVI-1304/",
-      "date": "2026-10-14T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans MongoDB Server. Elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance et un déni de service à distance.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
       "image": null
     },
     {
