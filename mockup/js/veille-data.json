@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-29T12:56:25.507Z",
+  "generatedAt": "2026-10-29T22:43:04.784Z",
   "windowDays": 30,
   "count": 112,
   "sources": [
@@ -68,6 +68,287 @@
       "source": "BleepingComputer",
       "sourceType": "press",
       "kind": "article",
+      "title": "Hugging Face malware campaign returns to hijack GPUs for crypto mining",
+      "link": "https://www.bleepingcomputer.com/news/security/hugging-face-malware-campaign-returns-to-hijack-gpus-for-crypto-mining/",
+      "date": "2026-10-29T22:09:24.000Z",
+      "summary": "A crypto-mining campaign abusing Hugging Face models returned days after takedown, hijacking GPU servers and planting backdoors, with one model downloaded over 28,000 times. Separately, a fake Solana starter kit on GitHub is positioned t…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "Malware",
+        "Git",
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Japan Airlines suffers third-party data breach exposing passenger info",
+      "link": "https://www.bleepingcomputer.com/news/security/japan-airlines-suffers-third-party-data-breach-exposing-passenger-info/",
+      "date": "2026-10-29T22:08:04.000Z",
+      "summary": "Japan Airlines (JAL) has announced that a data breach at Amadeus's Passenger Service System exposed the data of about 92,000 customers. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Polymarket halts trading after crypto-draining script breach, $2.5M traced",
+      "link": "https://www.bleepingcomputer.com/news/security/polymarket-halts-trading-after-crypto-draining-script-breach-25m-traced/",
+      "date": "2026-10-29T21:47:25.000Z",
+      "summary": "Prediction market platform Polymarket temporarily suspended trading on Thursday after hackers compromised a third-party service to distribute cryptocurrency-draining JavaScript, with approximately $2.5 million in assets traced to a suspe…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "JavaScript"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Fake crypto app on Apple App Store linked to $23K wallet theft",
+      "link": "https://www.bleepingcomputer.com/news/security/fake-crypto-app-on-apple-app-store-linked-to-23k-wallet-theft/",
+      "date": "2026-10-29T19:23:41.000Z",
+      "summary": "A fake cryptocurrency trading app called Padre Terminal, previously available on the Apple App Store for iOS devices, has been linked to the theft of approximately $23,000 from 27 Solana wallets. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "ThreatsDay: Critical Firewall Flaws, Banking Trojans Rented, Weaponized PDF, Token Theft + 26 More Stories",
+      "link": "https://thehackernews.com/2026/10/threatsday-critical-firewall-flaws.html",
+      "date": "2026-10-29T19:11:58.000Z",
+      "summary": "Some attacks take real skill. Others just need someone to leave a door open. This week has both. Exposed passwords, old bugs still getting exploited, and trusted software doing things it shouldn't. There's a strange mix of clever tricks…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "pfSense/FW",
+        "IA/LLM",
+        "Exploit"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "high",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Hackers exploit Cisco SD-WAN flaw to deploy custom KeyDrift malware",
+      "link": "https://www.bleepingcomputer.com/news/security/hackers-exploit-cisco-sd-wan-flaw-to-deploy-custom-keydrift-malware/",
+      "date": "2026-10-29T18:38:26.000Z",
+      "summary": "A newly identified advanced persistent threat (APT) group tracked as UAT-11473 was observed exploiting CVE-2026-20127, an authentication-bypass flaw in Cisco Catalyst SD-WAN Controllers, to deploy a custom malware framework called KeyDri…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Chrome extensions with 13.4 million installs caught hijacking searches",
+      "link": "https://www.bleepingcomputer.com/news/security/chrome-extensions-with-134-million-installs-caught-hijacking-searches/",
+      "date": "2026-10-29T16:10:31.000Z",
+      "summary": "A massive search-hijacking campaign involving 319 Chrome extensions with a combined 13.4 million reported installations redirected users' searches through tracking servers to generate advertising revenue from Bing and Yahoo. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Linux Kernel TCP Flaw With 9.8 CVSS Score Affects Ubuntu, Red Hat and Other Distributions",
+      "link": "https://thehackernews.com/2026/10/linux-kernel-tcp-flaw-with-98-cvss.html",
+      "date": "2026-10-29T15:57:05.000Z",
+      "summary": "A flaw in the Linux kernel's TCP code, tracked as CVE-2026-98432, affects Ubuntu, Red Hat Enterprise Linux (RHEL), and other Linux distributions. The kernel's own CVE team rates it 9.8 out of 10 on the CVSS scale. Anthropic said on Octob…",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Debian/Linux",
+        "IA/LLM",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [
+        "massy-innove",
+        "homelab"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Fake ChatGPT and Claude Apps Abuse Signed Executables to Deploy Crypto Miners",
+      "link": "https://thehackernews.com/2026/10/fake-chatgpt-and-claude-apps-abuse.html",
+      "date": "2026-10-29T15:20:29.000Z",
+      "summary": "Threat actors are delivering malicious loaders and cryptocurrency miners under the guise of artificial intelligence (AI) desktop applications for Anthropic Claude and OpenAI ChatGPT as part of a campaign dubbed Yoba. The activity involve…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "Malware",
+        "Git",
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Microsoft fixes Remote Desktop failures caused by recent Windows updates",
+      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-fixes-remote-desktop-failures-caused-by-recent-windows-updates/",
+      "date": "2026-10-29T14:35:40.000Z",
+      "summary": "Microsoft has resolved a known issue that prevents non-admin users from connecting to devices via Remote Desktop when the \"Administrator protection\" security feature is enabled. [...]",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Windows Server"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "3 Ways AI Agents Already Operate in Your Browser",
+      "link": "https://www.bleepingcomputer.com/news/security/3-ways-ai-agents-already-operate-in-your-browser/",
+      "date": "2026-10-29T14:00:10.000Z",
+      "summary": "AI agents can control authenticated browsers, interact with corporate applications, and access sensitive data while appearing to act as legitimate employees. Keep Aware examines three ways agents operate inside browsers and why tradition…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "CISA warns of Fragnesia Linux flaw chained in PHP2Shell attacks",
+      "link": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-fragnesia-linux-flaw-chained-in-php2shell-attacks/",
+      "date": "2026-10-29T13:59:48.000Z",
+      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) warned federal agencies to patch a high-severity Linux kernel privilege escalation bug that attackers are chaining with the PHP2Shell flaws in the wild. [...]",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Debian/Linux"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Google's Gemini 4 Carbon Leads Benchmarks for Finding, Exploiting, and Patching Vulnerabilities",
+      "link": "https://thehackernews.com/2026/10/googles-gemini-4-carbon-leads.html",
+      "date": "2026-10-29T13:42:40.000Z",
+      "summary": "Google on Wednesday took the wraps off Gemini 4 Carbon, its latest frontier model with state-of-the-art cybersecurity and long-horizon capabilities. \"It shows significant gains across coding and agentic tasks as well as across key capabi…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
       "title": "Windows 11 KB5127936 update released with 41 changes and fixes",
       "link": "https://www.bleepingcomputer.com/news/microsoft/windows-11-kb5127936-update-released-with-41-changes-and-fixes/",
       "date": "2026-10-29T12:00:07.000Z",
@@ -117,7 +398,7 @@
       "title": "Telegram Android Flaw Lets Attackers Run Code When Users Answer Voice Calls",
       "link": "https://thehackernews.com/2026/10/telegram-android-flaw-lets-attackers.html",
       "date": "2026-10-29T11:39:18.000Z",
-      "summary": "A flaw in Telegram for Android allowed an attacker to run code on a victim's phone via a voice call once the victim answered, according to security startup NebuSec. The attacker needed only an ordinary Telegram account. Telegram fixed th…",
+      "summary": "A flaw in Telegram for Android could be chained with two other bugs to take full control of a victim's phone through a voice call, once the victim answered, according to security startup NebuSec. The attacker needed only an ordinary Tele…",
       "pillar": null,
       "pillarLabel": null,
       "tags": [],
@@ -193,7 +474,7 @@
         "homelab"
       ],
       "severity": "high",
-      "image": "assets/veille/top-3.jpg"
+      "image": "assets/veille/top-2.jpg"
     },
     {
       "source": "The Hacker News",
@@ -218,7 +499,7 @@
         "homelab"
       ],
       "severity": "high",
-      "image": "assets/veille/top-4.jpg"
+      "image": "assets/veille/top-3.jpg"
     },
     {
       "source": "The Hacker News",
@@ -313,7 +594,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
@@ -336,6 +617,267 @@
       ],
       "projects": [],
       "severity": "info",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans Mattermost Server (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1409/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans Mattermost Server. Elle permet à un attaquant de provoquer un contournement de la politique de sécurité.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans les produits NetApp (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1410/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans les produits NetApp. Elle permet à un attaquant de provoquer une élévation de privilèges.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Veeam Backup for Microsoft 365 (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1411/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Veeam Backup for Microsoft 365. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et une atteinte…",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Microsoft 365",
+        "Sauvegarde",
+        "CVE"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans les produits Cisco (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1412/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans les produits Cisco. Elle permet à un attaquant de provoquer un déni de service à distance. Cisco indique que la vulnérabilité CVE-2026-76418 est activement exploitée.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans PostgreSQL Anonymizer (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1413/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans PostgreSQL Anonymizer. Certaines d'entre elles permettent à un attaquant de provoquer un déni de service à distance, une atteinte à la confidentialité des données et un contournement d…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits Juniper Networks (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1414/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Juniper Networks. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et un déni de ser…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Apache Kafka (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1415/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Apache Kafka. Certaines d'entre elles permettent à un attaquant de provoquer un déni de service à distance, une atteinte à la confidentialité des données et une atteinte à l'intégrité…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Nginx",
+        "CVE"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans les produits ESET (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1416/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans les produits ESET. Elle permet à un attaquant de provoquer une atteinte à la confidentialité des données, une atteinte à l'intégrité des données et un contournement de la politique de sécurité.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans les produits Kaspersky (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1417/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans les produits Kaspersky. Elle permet à un attaquant de provoquer un déni de service.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Foxit Online Services (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1418/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Foxit Online Services. Certaines d'entre elles permettent à un attaquant de provoquer une atteinte à la confidentialité des données, une atteinte à l'intégrité des données et une falsi…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Elastic Cloud Enterprise (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1419/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Elastic Cloud Enterprise. Certaines d'entre elles permettent à un attaquant de provoquer une élévation de privilèges, une atteinte à la confidentialité des données et une atteinte à l'…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans WordPress (29 octobre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1420/",
+      "date": "2026-10-29T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans WordPress. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, un déni de service à distance et une atteinte à la confidentialit…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
       "image": null
     },
     {
@@ -394,7 +936,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-8.jpg"
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "The Hacker News",
@@ -504,79 +1046,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-9.jpg"
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft urges Entra ID admins to migrate users to passkeys",
-      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-reminds-entra-id-admins-to-migrate-users-to-passkeys/",
-      "date": "2026-10-28T14:48:32.000Z",
-      "summary": "Microsoft again asked Entra ID administrators to migrate users to phishing-resistant methods to avoid sign-in disruptions before it retires SMS and voice authentication in February 2027. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Entra ID"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "InfraTrust report warns of exploited flaws in critical network infrastructure",
-      "link": "https://www.bleepingcomputer.com/news/security/infratrust-report-warns-of-exploited-flaws-in-critical-network-infrastructure/",
-      "date": "2026-10-28T14:00:00.000Z",
-      "summary": "Attackers are actively exploiting vulnerabilities across critical network infrastructure, and PHP flaws known as \"PHP2Shell\" put the web management interfaces of firewalls, VPNs, application delivery controllers, and other appliances at…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "pfSense/FW",
-        "Réseau",
-        "PHP",
-        "Exploit"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-2.jpg"
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Even after PHP2Shell, blast radius matters more than a CVSS score",
-      "link": "https://www.bleepingcomputer.com/news/security/even-after-php2shell-blast-radius-matters-more-than-a-cvss-score/",
-      "date": "2026-10-28T13:50:59.000Z",
-      "summary": "PHP2Shell shows how quickly attackers can exploit critical vulnerabilities, often before organizations have time to patch. Token Security explains why limiting the access of service accounts, API keys, and AI agents is just as important…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "API",
-        "IA/LLM",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "high",
-      "image": null
+      "image": "assets/veille/top-8.jpg"
     },
     {
       "source": "The Hacker News",
@@ -594,27 +1064,6 @@
       },
       "tags": [
         "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Hackers now scanning systems for recently-patched Oracle flaw",
-      "link": "https://www.bleepingcomputer.com/news/security/hackers-now-scanning-systems-for-recently-patched-oracle-flaw/",
-      "date": "2026-10-28T12:19:57.000Z",
-      "summary": "Attackers have begun probing the Internet for systems unpatched against a recently disclosed critical Oracle E-Business Suite (EBS) vulnerability. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
         "CVE"
       ],
       "projects": [],
@@ -691,28 +1140,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "CISA warns of hackers now exploiting critical Node2Shell flaw",
-      "link": "https://www.bleepingcomputer.com/news/security/cisa-warns-of-hackers-now-exploiting-critical-node2shell-flaw/",
-      "date": "2026-10-28T10:46:23.000Z",
-      "summary": "On Tuesday, the US Cybersecurity and Infrastructure Security Agency (CISA) confirmed that hackers have begun exploiting a critical Brotli vulnerability known as Node2Shell, Broccoli2Shell, and HTTP2Shell. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -728,27 +1155,6 @@
       },
       "tags": [
         "Phishing"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Nefilim and Hive ransomware affiliate gets 70 months in prison",
-      "link": "https://www.bleepingcomputer.com/news/security/nefilim-and-hive-ransomware-affiliate-gets-70-months-in-prison/",
-      "date": "2026-10-28T09:43:15.000Z",
-      "summary": "A Ukrainian national was sentenced to 70 months in prison for his role in ransomware attacks targeting hospitals, government entities, and high-revenue businesses worldwide between 2018 and 2021. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware"
       ],
       "projects": [],
       "severity": "info",
@@ -882,7 +1288,7 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-5.jpg"
     },
     {
       "source": "CERT-FR",
@@ -1142,71 +1548,6 @@
       ],
       "projects": [],
       "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Japan's GMO urges customers to shut down PCs amid ransomware threat",
-      "link": "https://www.bleepingcomputer.com/news/security/japans-gmo-urges-customers-to-shut-down-pcs-amid-ransomware-threat/",
-      "date": "2026-10-27T23:35:51.000Z",
-      "summary": "The GMO Group has urged customers to disconnect their systems from the internet and shut down computers after a threat actor who breached the company's Onamae Desktop Cloud threatened to launch a ransomware attack today. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "OpenAI's GPT-6.1 Terra is safer overall, but shows more destructive-action flags in tests",
-      "link": "https://www.bleepingcomputer.com/news/artificial-intelligence/openais-gpt-61-terra-is-safer-overall-but-shows-more-destructive-action-flags-in-tests/",
-      "date": "2026-10-27T22:43:27.000Z",
-      "summary": "OpenAI confirmed GPT-6.1 Terra is safer overall than some of its older models, but its safety testing also found other problems. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "UNM Health ransomware attack disrupts patient care, surgeries",
-      "link": "https://www.bleepingcomputer.com/news/security/unm-health-ransomware-attack-disrupts-patient-care-surgeries/",
-      "date": "2026-10-27T22:07:34.000Z",
-      "summary": "The University of New Mexico Health Sciences Center disclosed a cyberattack that caused system outages and disrupted patient care and academic activities. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware"
-      ],
-      "projects": [],
-      "severity": "info",
       "image": null
     },
     {
@@ -1732,7 +2073,7 @@
         "massy-innove"
       ],
       "severity": "high",
-      "image": "assets/veille/top-7.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1857,48 +2198,6 @@
         "massy-innove"
       ],
       "severity": "info",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans CPython (26 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1379/",
-      "date": "2026-10-26T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans CPython. Elles permettent à un attaquant de provoquer un contournement de la politique de sécurité.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans Mattermost Server (26 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1380/",
-      "date": "2026-10-26T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans Mattermost Server. Elle permet à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
       "image": null
     },
     {
@@ -2047,321 +2346,6 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Unpatched Tailscale SSH Flaws Could Let a Hacked Device Reach Root on Other Servers",
-      "link": "https://thehackernews.com/2026/10/unpatched-tailscale-ssh-flaws-could-let.html",
-      "date": "2026-10-25T17:44:09.000Z",
-      "summary": "A single hacked device on a Tailscale network can be used to gain root access to other servers it can reach, according to a security researcher who published the findings this week. The attack requires two things: Tailscale SSH set up to…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "PHP2Shell Exploitation Attempts Continue Amid Suspected N. Korea Global Scanning Activity",
-      "link": "https://thehackernews.com/2026/10/php2shell-exploitation-hits-government.html",
-      "date": "2026-10-25T17:19:46.000Z",
-      "summary": "In an update, Palo Alto Networks Unit 42 said it's retracting its earlier assessment that the post-compromise activity targeting the European government agency involved the exploitation of the PHP2Shell flaws. \"What researchers saw was a…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "PHP",
-        "Exploit"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "OpenAI AI Agents Demonstrate VM Escapes and Secret Cross-Sandbox Communication",
-      "link": "https://thehackernews.com/2026/10/openai-ai-agents-demonstrate-vm-escapes.html",
-      "date": "2026-10-25T06:54:29.000Z",
-      "summary": "OpenAI has announced plans to conduct frontier model training with no live internet access, as it resumes reinforcement learning (RL) training and internal inference of its most advanced AI models. \"Based on the current state of alignmen…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM",
-        "Exploit"
-      ],
-      "projects": [
-        "massy-innove",
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Brotli Decoder Flaw Behind Node.js RCE Also Affects Bun, Python and Other Widely Used Software",
-      "link": "https://thehackernews.com/2026/10/brotli-decoder-flaw-behind-nodejs-rce.html",
-      "date": "2026-10-24T11:09:29.000Z",
-      "summary": "A memory-corruption flaw in Google's Brotli decoder sits in many programs that unpack Brotli-compressed data, among them Bun, Microsoft's .NET, the Python Brotli and brotlicffi packages, and Envoy proxies set up to decompress Brotli. Tra…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "Python",
-        "JavaScript",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits HPE Aruba Networking (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1369/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits HPE Aruba Networking. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et un déni de…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits Tenable (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1370/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Tenable. Elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Microsoft Edge (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1371/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Microsoft Edge. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits SUSE (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1372/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits SUSE. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et une atteinte à la confiden…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits Red Hat (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1373/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Red Hat. Certaines d'entre elles permettent à un attaquant de provoquer un contournement de la politique de sécurité, un déni de service et un problème de sécurité non spé…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans le noyau Linux de Debian (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1374/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans le noyau Linux de Debian. Certaines d'entre elles permettent à un attaquant de provoquer une élévation de privilèges, une atteinte à la confidentialité des données et un déni de service.",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans le noyau Linux de Debian LTS (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1375/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans le noyau Linux de Debian LTS. Certaines d'entre elles permettent à un attaquant de provoquer une élévation de privilèges, une atteinte à la confidentialité des données et un déni de se…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans le noyau Linux d'Ubuntu (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1376/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans le noyau Linux d'Ubuntu. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et un déni de service à…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits Papercut (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1377/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Papercut. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une atteinte à la confidentialité des données et une…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits IBM (23 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1378/",
-      "date": "2026-10-23T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits IBM. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et un déni de service à distance.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
       "image": null
     },
     {
