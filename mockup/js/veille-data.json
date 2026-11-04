@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T14:28:05.401Z",
+  "generatedAt": "2026-11-04T23:38:16.133Z",
   "windowDays": 30,
   "count": 112,
   "sources": [
@@ -64,6 +64,245 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Vercel rolls out new protection against stolen session cookie attacks",
+      "link": "https://www.bleepingcomputer.com/news/security/vercel-rolls-out-new-protection-against-stolen-session-cookie-attacks/",
+      "date": "2026-11-04T21:31:18.000Z",
+      "summary": "Vercel is gradually rolling out Device Bound Session Credentials (DBSC) on its platform as a key defense against information stealer malware. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Zyxel fixes zero-day exploited to hack nearly 1,000 network switches",
+      "link": "https://www.bleepingcomputer.com/news/security/zyxel-fixes-zero-day-exploited-to-hack-nearly-1-000-network-switches/",
+      "date": "2026-11-04T20:58:19.000Z",
+      "summary": "Zyxel has patched a zero-day vulnerability in its GS1900 series network switches that hackers exploited to compromise nearly 1,000 devices worldwide and steal configuration files and credentials. [...]",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-5.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "DreamHost confirms data breach exposed FTP logins and webmail sessions",
+      "link": "https://www.bleepingcomputer.com/news/security/dreamhost-confirms-data-breach-exposed-ftp-logins-and-webmail-sessions/",
+      "date": "2026-11-04T19:05:19.000Z",
+      "summary": "DreamHost is warning of a data breach after attackers gained access to its File Manager platform for two months and stole customers' FTP/SFTP usernames and passwords. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Cyberattack disrupts blood storage refrigeration systems in France",
+      "link": "https://www.bleepingcomputer.com/news/security/cyberattack-disrupts-blood-storage-refrigeration-systems-in-france/",
+      "date": "2026-11-04T18:02:56.000Z",
+      "summary": "France's national blood service has confirmed that a cyberattack targeting a refrigeration equipment provider raised temperature and defrost settings at three of its facilities, threatening stored blood products. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Debian and Ubuntu APT Flaw Lets MitM Attackers Swap Verified Packages and Run Code as Root",
+      "link": "https://thehackernews.com/2026/11/debian-and-ubuntu-apt-flaw-lets-mitm.html",
+      "date": "2026-11-04T17:00:46.000Z",
+      "summary": "A flaw in APT, the package manager for Debian and Ubuntu, allows an attacker who can modify package downloads to swap a checked package for their own. The attacker's code then runs as root, according to advisories that Debian, Ubuntu, an…",
+      "pillar": "sysadmin",
+      "pillarLabel": {
+        "fr": "Administration systèmes",
+        "en": "Systems administration",
+        "es": "Administración de sistemas"
+      },
+      "tags": [
+        "Debian/Linux"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "SonicWall Won't Patch EoL GMS Flaws That Could Expose Files, Alter Database Records",
+      "link": "https://thehackernews.com/2026/11/sonicwall-wont-patch-eol-gms-flaws-that.html",
+      "date": "2026-11-04T17:00:38.000Z",
+      "summary": "SonicWall has warned of two vulnerabilities impacting end-of-life Global Management System (GMS) systems that it said will not be patched. Details of the security flaws, which affect SonicWall GMS 9.5.2 and earlier versions, are below -…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "NIKKE PC game launcher hacked to spread remote access, data-stealing malware",
+      "link": "https://www.bleepingcomputer.com/news/security/nikke-pc-game-launcher-hacked-to-spread-remote-access-data-stealing-malware/",
+      "date": "2026-11-04T16:58:46.000Z",
+      "summary": "The developers of Goddess of Victory: NIKKE have confirmed that hackers tampered with the game's PC launcher scripts in a supply-chain attack, distributing malware capable of stealing credentials and cryptocurrency wallet data. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Supply chain"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Researchers Uncover Prompt Adware Hidden in OpenAI Codex Jailbreak Toolkit",
+      "link": "https://thehackernews.com/2026/11/researchers-uncover-prompt-adware.html",
+      "date": "2026-11-04T16:06:43.000Z",
+      "summary": "Cybersecurity researchers have disclosed details of an OpenAI Codex jailbreak bundle that's designed to modify an artificial intelligence (AI) agent's trusted instructions to insert advertisements for a third-party AI gateway. The phenom…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "mSecure password manager hack prompts password reset warnings",
+      "link": "https://www.bleepingcomputer.com/news/security/msecure-password-manager-hack-prompts-password-reset-warnings/",
+      "date": "2026-11-04T16:00:18.000Z",
+      "summary": "mSeven Software is warning current and former mSecure password manager customers to change passwords, reset two-factor authentication, and remove passkeys following a cyberattack that reportedly exposed an encrypted customer database. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Google Calendar phishing campaign hijacks sessions, bypasses MFA",
+      "link": "https://www.bleepingcomputer.com/news/security/google-calendar-phishing-campaign-hijacks-sessions-bypasses-mfa/",
+      "date": "2026-11-04T15:00:10.000Z",
+      "summary": "A phishing campaign used Google Calendar invites, trusted redirects, and fake login pages to hijack corporate Google sessions and bypass MFA protections. Material Security examines how Operation CloudFire tracked the attacks, blocked mal…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Phishing"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "SonicWall warns of unpatched flaws in end-of-life GMS software",
+      "link": "https://www.bleepingcomputer.com/news/security/sonicwall-warns-of-unpatched-flaws-in-end-of-life-gms-software/",
+      "date": "2026-11-04T14:42:25.000Z",
+      "summary": "SonicWall warned customers of two security flaws affecting end-of-life Global Management System (GMS) systems that will not be patched. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "APT29-Linked Hackers Hijack Web Analytics Script to Deliver iOS and Android Exploits",
+      "link": "https://thehackernews.com/2026/11/apt29-linked-hackers-hijack-web.html",
+      "date": "2026-11-04T14:27:52.000Z",
+      "summary": "The Russia-linked threat actor known as APT29 is said to be behind a large-scale watering hole campaign targeting iOS and Android users through compromised websites, fake domains, and a supply chain attack involving a Ukrainian web analy…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "JavaScript",
+        "Supply chain",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "BleepingComputer",
       "sourceType": "press",
@@ -233,7 +472,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "The Hacker News",
@@ -255,6 +494,304 @@
       ],
       "projects": [],
       "severity": "info",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Apache Zookeeper (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1448/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Apache Zookeeper. Elles permettent à un attaquant de provoquer un déni de service à distance et un contournement de la politique de sécurité.",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Nginx",
+        "CVE"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits Citrix (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1449/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Citrix. Elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance et une élévation de privilèges.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Google Chrome (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1450/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Google Chrome. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits HPE Aruba Networking (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1451/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits HPE Aruba Networking. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et un déni de…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans Ruby on Rails (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1452/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans Ruby on Rails. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, un déni de service à distance et une atteinte à la confidenti…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans NetApp StorageGRID (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1453/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans NetApp StorageGRID. Elles permettent à un attaquant de provoquer une atteinte à la confidentialité des données et une atteinte à l'intégrité des données.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans MongoDB (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1454/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans MongoDB. Elle permet à un attaquant de provoquer une atteinte à la confidentialité des données et une atteinte à l'intégrité des données.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans Mozilla Firefox (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1455/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans Mozilla Firefox. Elle permet à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits SonicWall (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1456/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits SonicWall. Elles permettent à un attaquant de provoquer une atteinte à la confidentialité des données et une injection SQL (SQLi).",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Vulnérabilité dans Laravel (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1457/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "Une vulnérabilité a été découverte dans Laravel. Elle permet à un attaquant de provoquer une exécution de code arbitraire à distance.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits Mattermost (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1458/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Mattermost. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans SolarWinds Dameware (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1459/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans SolarWinds Dameware. Elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance et un contournement de la politique de sécurité.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits Symfony (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1460/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Symfony. Certaines d'entre elles permettent à un attaquant de provoquer un déni de service à distance, une atteinte à la confidentialité des données et un contournement de…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits Elastic (04 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1461/",
+      "date": "2026-11-04T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Elastic. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, un déni de service à distance et une atteinte à la con…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
       "image": null
     },
     {
@@ -481,118 +1018,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Barracuda warns of critical flaws allowing root access to devices",
-      "link": "https://www.bleepingcomputer.com/news/security/barracuda-warns-of-critical-flaws-allowing-root-access-to-devices/",
-      "date": "2026-11-03T15:06:16.000Z",
-      "summary": "Cybersecurity company Barracuda Networks warned customers to patch two vulnerabilities that can let attackers run commands with root privileges. [...]",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Gartner Predicts SOCs Will Have 50% More Engineers Than Analysts by 2028",
-      "link": "https://www.bleepingcomputer.com/news/security/gartner-predicts-socs-will-have-50-percent-more-engineers-than-analysts-by-2028/",
-      "date": "2026-11-03T15:00:10.000Z",
-      "summary": "Gartner predicts that security operations centers will have 50% more engineers than analysts by 2028 as AI agents take over routine alert handling. Prophet Security examines how AI is reshaping SOC roles, from analyst responsibilities an…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "SOC/EDR",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "UK school estate hit by 3AM ransomware in suspected AI-assisted attack",
-      "link": "https://www.bleepingcomputer.com/news/security/uk-school-estate-hit-by-3am-ransomware-in-suspected-ai-assisted-attack/",
-      "date": "2026-11-03T14:00:00.000Z",
-      "summary": "A 3AM ransomware affiliate targeted a school estate in the UK and successfully encrypted around 37 of nearly 50 machines reached from an unmanaged host. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Ransomware",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Police seizes over 100 servers in investment scam crackdown",
-      "link": "https://www.bleepingcomputer.com/news/security/police-seizes-over-100-servers-in-investment-scam-crackdown/",
-      "date": "2026-11-03T13:33:49.000Z",
-      "summary": "European law enforcement authorities arrested seven suspects and seized more than 100 servers in a joint action targeting an unnamed company suspected of providing fraudulent trading websites to criminal gangs. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Google adds new $250,000 Cloud VRP reward for Root-in-Cloud bugs",
-      "link": "https://www.bleepingcomputer.com/news/google/google-adds-new-250-000-cloud-vrp-reward-for-root-in-cloud-bugs/",
-      "date": "2026-11-03T12:05:52.000Z",
-      "summary": "Google has expanded its Cloud Vulnerability Reward Program (VRP) with a new top-tier reward for high-impact architectural security flaws. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -657,21 +1082,6 @@
         "Malware",
         "Exploit"
       ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Harvard University data breach exposed info of 851,000 accounts",
-      "link": "https://www.bleepingcomputer.com/news/security/harvard-university-data-breach-exposed-info-of-851-000-accounts/",
-      "date": "2026-11-03T10:53:25.000Z",
-      "summary": "Hackers who breached Harvard University's Alumni Affairs and Development systems in November 2025 stole data linked to more than 850,000 unique email addresses, according to breach notification service Have I Been Pwned. [...]",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
       "projects": [],
       "severity": "info",
       "image": null
@@ -892,45 +1302,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Chinese hackers use ARTEX AI in automated attacks against 200 orgs",
-      "link": "https://www.bleepingcomputer.com/news/security/chinese-hackers-use-artex-ai-in-automated-attacks-against-200-orgs/",
-      "date": "2026-11-02T21:40:14.000Z",
-      "summary": "Chinese hackers used ARTEX, an open-source, multi-agent AI penetration-testing framework, in attacks against more than 200 organizations across 14 countries. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM",
-        "Exploit"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Fintech platform Sageworks taken offline after suspected cyberattack",
-      "link": "https://www.bleepingcomputer.com/news/security/fintech-platform-sageworks-taken-offline-after-suspected-cyberattack/",
-      "date": "2026-11-02T19:00:45.000Z",
-      "summary": "Financial technology company Abrigo has restored its Sageworks risk management application, except for borrower-facing capabilities, following an outage triggered by \"irregular activity\" in its environment. [...]",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -954,7 +1325,7 @@
         "homelab"
       ],
       "severity": "high",
-      "image": "assets/veille/top-7.jpg"
+      "image": "assets/veille/top-8.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1016,7 +1387,7 @@
         "massy-innove"
       ],
       "severity": "high",
-      "image": "assets/veille/top-8.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -1579,7 +1950,7 @@
       "tags": [],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1666,69 +2037,6 @@
       "projects": [],
       "severity": "high",
       "image": "assets/veille/top-3.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Binance Suffers Security Breach Affecting $6.3 Billion in Assets, Nearly $3 Billion Frozen",
-      "link": "https://thehackernews.com/2026/10/binance-suffers-security-breach.html",
-      "date": "2026-10-30T04:14:59.000Z",
-      "summary": "Cryptocurrency giant Binance said on Thursday that a \"security incident\" on its platform has impacted about $6.3 billion worth of assets. The world's biggest cryptocurrency exchange said nearly $3 billion of those assets have been frozen…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Microsoft 365"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits Apple (30 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1421/",
-      "date": "2026-10-30T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Apple. Elles permettent à un attaquant de provoquer une atteinte à la confidentialité des données.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Google Chrome (30 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1422/",
-      "date": "2026-10-30T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Google Chrome. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
     },
     {
       "source": "CERT-FR",
@@ -1959,345 +2267,6 @@
       "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1433/",
       "date": "2026-10-30T00:00:00.000Z",
       "summary": "De multiples vulnérabilités ont été découvertes dans les produits IBM. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, un déni de service à distance et une atteinte à la confide…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "ThreatsDay: Critical Firewall Flaws, Banking Trojans Rented, Weaponized PDF, Token Theft + 26 More Stories",
-      "link": "https://thehackernews.com/2026/10/threatsday-critical-firewall-flaws.html",
-      "date": "2026-10-29T19:11:58.000Z",
-      "summary": "Some attacks take real skill. Others just need someone to leave a door open. This week has both. Exposed passwords, old bugs still getting exploited, and trusted software doing things it shouldn't. There's a strange mix of clever tricks…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware",
-        "pfSense/FW",
-        "IA/LLM",
-        "Exploit"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "high",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Linux Kernel TCP Flaw With 9.8 CVSS Score Affects Ubuntu, Red Hat and Other Distributions",
-      "link": "https://thehackernews.com/2026/10/linux-kernel-tcp-flaw-with-98-cvss.html",
-      "date": "2026-10-29T15:57:05.000Z",
-      "summary": "A flaw in the Linux kernel's TCP code, tracked as CVE-2026-98432, affects Ubuntu, Red Hat Enterprise Linux (RHEL), and other Linux distributions. The kernel's own CVE team rates it 9.8 out of 10 on the CVSS scale. Anthropic said on Octob…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "IA/LLM",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [
-        "massy-innove",
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Fake ChatGPT and Claude Apps Abuse Signed Executables to Deploy Crypto Miners",
-      "link": "https://thehackernews.com/2026/10/fake-chatgpt-and-claude-apps-abuse.html",
-      "date": "2026-10-29T15:20:29.000Z",
-      "summary": "Threat actors are delivering malicious loaders and cryptocurrency miners under the guise of artificial intelligence (AI) desktop applications for Anthropic Claude and OpenAI ChatGPT as part of a campaign dubbed Yoba. The activity involve…",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "Malware",
-        "Git",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans Mattermost Server (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1409/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans Mattermost Server. Elle permet à un attaquant de provoquer un contournement de la politique de sécurité.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans les produits NetApp (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1410/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans les produits NetApp. Elle permet à un attaquant de provoquer une élévation de privilèges.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Veeam Backup for Microsoft 365 (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1411/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Veeam Backup for Microsoft 365. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et une atteinte…",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Microsoft 365",
-        "Sauvegarde",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans les produits Cisco (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1412/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans les produits Cisco. Elle permet à un attaquant de provoquer un déni de service à distance. Cisco indique que la vulnérabilité CVE-2026-76418 est activement exploitée.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans PostgreSQL Anonymizer (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1413/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans PostgreSQL Anonymizer. Certaines d'entre elles permettent à un attaquant de provoquer un déni de service à distance, une atteinte à la confidentialité des données et un contournement d…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans les produits Juniper Networks (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1414/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans les produits Juniper Networks. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, une élévation de privilèges et un déni de ser…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Apache Kafka (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1415/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Apache Kafka. Certaines d'entre elles permettent à un attaquant de provoquer un déni de service à distance, une atteinte à la confidentialité des données et une atteinte à l'intégrité…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Nginx",
-        "CVE"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans les produits ESET (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1416/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans les produits ESET. Elle permet à un attaquant de provoquer une atteinte à la confidentialité des données, une atteinte à l'intégrité des données et un contournement de la politique de sécurité.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Vulnérabilité dans les produits Kaspersky (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1417/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "Une vulnérabilité a été découverte dans les produits Kaspersky. Elle permet à un attaquant de provoquer un déni de service.",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Foxit Online Services (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1418/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Foxit Online Services. Certaines d'entre elles permettent à un attaquant de provoquer une atteinte à la confidentialité des données, une atteinte à l'intégrité des données et une falsi…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans Elastic Cloud Enterprise (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1419/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans Elastic Cloud Enterprise. Certaines d'entre elles permettent à un attaquant de provoquer une élévation de privilèges, une atteinte à la confidentialité des données et une atteinte à l'…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
-      "title": "Multiples vulnérabilités dans WordPress (29 octobre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1420/",
-      "date": "2026-10-29T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans WordPress. Certaines d'entre elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, un déni de service à distance et une atteinte à la confidentialit…",
       "pillar": "security",
       "pillarLabel": {
         "fr": "Sécurité défensive",
