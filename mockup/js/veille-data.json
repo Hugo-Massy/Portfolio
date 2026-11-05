@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T23:38:16.133Z",
+  "generatedAt": "2026-11-05T14:35:40.176Z",
   "windowDays": 30,
   "count": 112,
   "sources": [
@@ -65,6 +65,180 @@
   },
   "items": [
     {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Is Your Exposure Management Platform Leaving You Exposed? Five Tests to Find Out",
+      "link": "https://thehackernews.com/2026/11/is-your-exposure-management-platform.html",
+      "date": "2026-11-05T12:25:00.000Z",
+      "summary": "A critical finding can move through several security tools and still leave the organization exposed. The vulnerability has a severity score, and a ticket has reached the queue. Progress then depends on information the finding may lack: w…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "OpenAI AI Pipeline Generates 948 Linux Root Escalation Exploits in 30-Hour Run",
+      "link": "https://thehackernews.com/2026/11/openai-ai-pipeline-generates-948-linux.html",
+      "date": "2026-11-05T12:08:54.000Z",
+      "summary": "OpenAI on Wednesday detailed a pipeline that employed an upcoming cyber-focused artificial intelligence (AI) model to validate and patch 948 local privilege escalation vulnerabilities in Linux for $1.2 million in API costs. \"Our prototyp…",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "Debian/Linux",
+        "API",
+        "CI/CD",
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove",
+        "homelab"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "5 Active Cyber Threats That Put US Enterprises at Risk in October 2026",
+      "link": "https://thehackernews.com/2026/11/5-active-cyber-threats-that-put-us.html",
+      "date": "2026-11-05T10:06:19.000Z",
+      "summary": "October 2026 brought another wave of cyber threats targeting US businesses, with attackers exploiting trusted platforms, legitimate authentication processes, and everyday business workflows. For enterprises, these campaigns raise the sta…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "GhostMap Android flaw lets malicious app trigger persistent boot loop",
+      "link": "https://www.bleepingcomputer.com/news/security/ghostmap-android-flaw-lets-malicious-app-trigger-persistent-boot-loop/",
+      "date": "2026-11-05T09:18:29.000Z",
+      "summary": "Attackers can force Android devices into a continuous boot loop using a specially crafted app that requires no permissions and only needs to be installed. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Apple to Start Scanning Publicly Shared iCloud Photos and Files for Harmful Content",
+      "link": "https://thehackernews.com/2026/11/apple-to-start-scanning-publicly-shared.html",
+      "date": "2026-11-05T09:13:28.000Z",
+      "summary": "Apple has revealed that it plans to start checking public iCloud links for harmful content starting with iOS 27.3, iPadOS 27.3, macOS 27.3, and visionOS 27.3. The change specifically applies to scenarios where users share iCloud content,…",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "CERT-In Flags AI-Driven Attacks as Backdoored ARTEX Exposes 62 Consoles to Root Access",
+      "link": "https://thehackernews.com/2026/11/backdoored-docker-image-for-artex-ai.html",
+      "date": "2026-11-05T08:42:03.000Z",
+      "summary": "The Indian Computer Emergency Response Team (CERT-In) has disclosed that an artificial intelligence (AI)-assisted threat actor it tracks as Crafty Falcon is targeting organizations in the Banking, Financial Services, and Insurance (BFSI)…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Zyxel GS1900 Patch Fails to Block Zero-Day Exploit Allowing Root Command Execution",
+      "link": "https://thehackernews.com/2026/11/zyxel-gs1900-patch-fails-to-block-zero.html",
+      "date": "2026-11-05T07:06:33.000Z",
+      "summary": "Zyxel GS1900 network switches that received the vendor's earlier fix for an actively exploited flaw are still open to the exploit attackers used, researchers at Binarly found. The exploit lets anyone who can reach a switch's web manageme…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Réseau",
+        "Exploit"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-4.jpg"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Hackers Exploit Patched Apple Flaw to Deliver Info-Stealing Malware, CISA Says",
+      "link": "https://thehackernews.com/2026/11/hackers-exploit-patched-apple-flaw-to.html",
+      "date": "2026-11-05T05:17:04.000Z",
+      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Wednesday added a medium-severity security flaw impacting multiple Apple operating systems to its Known Exploited Vulnerabilities (KEV) catalog, following reports of act…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Malware",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
       "source": "BleepingComputer",
       "sourceType": "press",
       "kind": "article",
@@ -107,7 +281,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-3.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -287,7 +461,7 @@
       "title": "APT29-Linked Hackers Hijack Web Analytics Script to Deliver iOS and Android Exploits",
       "link": "https://thehackernews.com/2026/11/apt29-linked-hackers-hijack-web.html",
       "date": "2026-11-04T14:27:52.000Z",
-      "summary": "The Russia-linked threat actor known as APT29 is said to be behind a large-scale watering hole campaign targeting iOS and Android users through compromised websites, fake domains, and a supply chain attack involving a Ukrainian web analy…",
+      "summary": "The Russia-linked threat actor known as APT29 is presumed to be behind a large-scale watering hole campaign targeting iOS and Android users through compromised websites, fake domains, and a supply chain attack involving a Ukrainian web a…",
       "pillar": "dev",
       "pillarLabel": {
         "fr": "Dev & Automatisation",
@@ -472,7 +646,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-7.jpg"
+      "image": "assets/veille/top-5.jpg"
     },
     {
       "source": "The Hacker News",
@@ -857,29 +1031,6 @@
         "Microsoft 365"
       ],
       "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Google: LLMjacking attacks rack up $1 million in cloud AI charges",
-      "link": "https://www.bleepingcomputer.com/news/security/google-llmjacking-attacks-rack-up-1-million-in-cloud-ai-charges/",
-      "date": "2026-11-03T18:51:04.000Z",
-      "summary": "Large language model hijacking attacks, also known as LLMjacking, are generating large fraudulent cloud charges, with some organizations losing more than $100,000 per day. [...]",
-      "pillar": "dev",
-      "pillarLabel": {
-        "fr": "Dev & Automatisation",
-        "en": "Dev & Automation",
-        "es": "Desarrollo y Automatización"
-      },
-      "tags": [
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove"
-      ],
       "severity": "info",
       "image": null
     },
@@ -1325,7 +1476,7 @@
         "homelab"
       ],
       "severity": "high",
-      "image": "assets/veille/top-8.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1387,7 +1538,7 @@
         "massy-innove"
       ],
       "severity": "high",
-      "image": null
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1893,150 +2044,6 @@
       "projects": [],
       "severity": "info",
       "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "WordPress RCE Flaw Draws Nearly 63,000 Attack Attempts in Just 24 Hours",
-      "link": "https://thehackernews.com/2026/10/wordpress-rce-flaw-draws-nearly-63000.html",
-      "date": "2026-10-30T14:08:14.000Z",
-      "summary": "Threat actors have been observed attempting to exploit a high-severity security flaw in WordPress Core shortly after patches were released. The vulnerability, which does not have a CVE identifier, relates to a case of remote code executi…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Trezor Warns of Suspected Hardware Implant in One of Its Wallets Sold by CryptoBilis",
-      "link": "https://thehackernews.com/2026/10/trezor-warns-of-suspected-hardware.html",
-      "date": "2026-10-30T12:21:56.000Z",
-      "summary": "A Trezor Safe 5 hardware wallet bought from the reseller CryptoBilis has an extra circuit board that sends out the recovery phrase over a mobile network, a customer has reported. Trezor has not yet examined the device. It is telling ever…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "Réseau"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Why Urgent Security Fixes Aren't Fixed. Observe, Prove, Act, Confirm Gets Them Moving",
-      "link": "https://thehackernews.com/2026/10/why-urgent-security-fixes-arent-fixed.html",
-      "date": "2026-10-30T11:58:53.000Z",
-      "summary": "The alert is critical. The fix is known. And the ticket sits in a queue for days. Security teams understand the risk, but the people who keep applications available need proof that the change won’t break anything. Their concerns are prac…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-6.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Syrian Hacker Behind Fake Tweet That Triggered $136 Billion Market Drop Gets 42 Months in Prison",
-      "link": "https://thehackernews.com/2026/10/syrian-hacker-behind-fake-tweet-that.html",
-      "date": "2026-10-30T10:40:45.000Z",
-      "summary": "Ahmad Umar Agha, a Syrian Electronic Army hacker known online as \"Th3Pr0,\" has been sentenced by a U.S. federal court to 42 months in prison for his role in a hacking conspiracy that targeted Western news outlets. The conspiracy was orga…",
-      "pillar": null,
-      "pillarLabel": null,
-      "tags": [],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Official Claude Code Extension on Cursor Marketplace Trojanized with Persistent SSH Backdoor",
-      "link": "https://thehackernews.com/2026/10/official-claude-code-vs-code-extension.html",
-      "date": "2026-10-30T08:55:47.000Z",
-      "summary": "Cybersecurity researchers have disclosed that a trojanized version of Anthropic's official Claude Code extension was distributed through the Cursor Marketplace as a legitimate update, attempting to install a persistent SSH backdoor on af…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware",
-        "IA/LLM"
-      ],
-      "projects": [
-        "massy-innove",
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Hackers Actively Exploit Highly Critical Drupal Commerce Core Authorization Bypass Flaw",
-      "link": "https://thehackernews.com/2026/10/hackers-actively-exploit-highly.html",
-      "date": "2026-10-30T07:45:30.000Z",
-      "summary": "Drupal has warned that threat actors are exploiting a \"highly critical\" security flaw in its Commerce Core component. The vulnerability, tracked as CVE-2026-118539 (CVSS score: N/A), is a case of missing authorization affecting Commerce…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-4.jpg"
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "CISA Adds Actively Exploited GitLab RCE and Cisco Firewall DoS Flaws to KEV",
-      "link": "https://thehackernews.com/2026/10/cisa-adds-actively-exploited-gitlab-rce.html",
-      "date": "2026-10-30T07:27:05.000Z",
-      "summary": "The U.S. Cybersecurity and Infrastructure Security Agency (CISA) on Thursday added two security flaws impacting Cisco and GitLab software to its Known Exploited Vulnerabilities (KEV), citing evidence of active exploitation. The vulnerabi…",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "pfSense/FW",
-        "Git",
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-3.jpg"
     },
     {
       "source": "CERT-FR",
