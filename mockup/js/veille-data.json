@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T13:27:48.982Z",
+  "generatedAt": "2026-11-14T22:20:18.873Z",
   "windowDays": 30,
   "count": 111,
   "sources": [
@@ -64,6 +64,44 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Cursor confirms security breach led to malicious Claude Code extension",
+      "link": "https://www.bleepingcomputer.com/news/security/cursor-confirms-security-breach-led-to-malicious-claude-code-extension/",
+      "date": "2026-11-14T17:27:25.000Z",
+      "summary": "Cursor confirmed it suffered a security breach that let hackers distribute a malicious Claude Code extension through its marketplace after stealing credentials from AI infrastructure provider Fireworks AI. [...]",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "US disrupts North Korean campaign behind $400 million crypto theft",
+      "link": "https://www.bleepingcomputer.com/news/security/us-disrupts-north-korean-campaign-behind-400-million-crypto-theft/",
+      "date": "2026-11-14T15:15:49.000Z",
+      "summary": "The U.S. government has disrupted a North Korean social engineering campaign called 'FaceStealer', responsible for stealing more than $400 million in cryptocurrency. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "The Hacker News",
       "sourceType": "press",
@@ -820,7 +858,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-8.jpg"
+      "image": "assets/veille/top-7.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -943,28 +981,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "New Windows SignDrop zero-day gives hackers SYSTEM privileges",
-      "link": "https://www.bleepingcomputer.com/news/security/new-windows-signdrop-zero-day-gives-hackers-system-privileges/",
-      "date": "2026-11-12T16:04:00.000Z",
-      "summary": "Security researcher Abdelhamid Naceri (also known as Nightmare Eclipse) has released a new Windows zero-day exploit that can let attackers gain SYSTEM privileges. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server",
-        "Exploit"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": "assets/veille/top-4.jpg"
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -983,7 +999,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-5.jpg"
     },
     {
       "source": "The Hacker News",
@@ -1006,28 +1022,6 @@
       "projects": [
         "massy-innove"
       ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Police dismantle Gootloader, CastleRAT, StealC malware infrastructure",
-      "link": "https://www.bleepingcomputer.com/news/security/police-dismantles-gootloader-castlerat-stealc-malware-infrastructure/",
-      "date": "2026-11-12T15:07:20.000Z",
-      "summary": "Europol and law enforcement partners from nine countries have seized hundreds of servers and domains used by the Gootloader, CastleRAT, and StealC malware operations. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Malware",
-        "Exploit"
-      ],
-      "projects": [],
       "severity": "info",
       "image": null
     },
@@ -1820,7 +1814,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-7.jpg"
+      "image": "assets/veille/top-6.jpg"
     },
     {
       "source": "The Hacker News",
@@ -2029,7 +2023,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-5.jpg"
+      "image": "assets/veille/top-4.jpg"
     },
     {
       "source": "The Hacker News",
