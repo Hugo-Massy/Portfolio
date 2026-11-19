@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-11-18T15:35:41.176Z",
+  "generatedAt": "2026-11-19T00:19:31.684Z",
   "windowDays": 30,
-  "count": 112,
+  "count": 113,
   "sources": [
     {
       "name": "CERT-FR",
@@ -64,6 +64,158 @@
     }
   },
   "items": [
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Ukraine, FBI arrest ransomware gang members tied to $40M in ransoms",
+      "link": "https://www.bleepingcomputer.com/news/security/ukraine-fbi-arrest-ransomware-gang-members-tied-to-40m-in-ransoms/",
+      "date": "2026-11-18T23:08:33.000Z",
+      "summary": "Ukrainian authorities, working with the FBI, have arrested four suspected members of an international ransomware organization linked to more than $40.5 million in ransom payments from at least 28 companies worldwide. [...]",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Ransomware"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Coinbase blocks $4.7 million in transfers to Elon Musk deepfake scam",
+      "link": "https://www.bleepingcomputer.com/news/security/coinbase-blocks-47-million-in-transfers-to-elon-musk-deepfake-scam/",
+      "date": "2026-11-18T20:49:32.000Z",
+      "summary": "Coinbase says it blocked $4.7 million in cryptocurrency transfers to scammers promoting a fake giveaway using an AI-generated deepfake of Elon Musk during a Tesla livestream that attracted more than 500,000 viewers. [...]",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "IA/LLM"
+      ],
+      "projects": [
+        "massy-innove"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Data breach impacts 40 Irish credit unions in reported IT provider hack",
+      "link": "https://www.bleepingcomputer.com/news/security/data-breach-impacts-40-irish-credit-unions-in-reported-it-provider-hack/",
+      "date": "2026-11-18T19:39:33.000Z",
+      "summary": "A reported cyberattack on Wellington IT has exposed sensitive information belonging to members of 50 credit unions, the majority of which are located in Ireland. [...]",
+      "pillar": null,
+      "pillarLabel": null,
+      "tags": [],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "10-Year-Old NGINX HTTP/2 Flaw Lets Unauthenticated Attackers Execute Code on Servers",
+      "link": "https://thehackernews.com/2026/11/10-year-old-nginx-http2-flaw-lets.html",
+      "date": "2026-11-18T18:31:17.000Z",
+      "summary": "A flaw in NGINX's HTTP/2 support can allow an attacker to run code on servers with HTTP/2 enabled, without needing to log in. The decade-old flaw, CVE-2026-123007, dubbed \"nginx2root,\" has been present in NGINX's open-source code since v…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Nginx",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "info",
+      "image": null
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "F5 Warns 6 Critical BIG-IP Flaws Can Crash Traffic in Specific Setups, May Allow RCE",
+      "link": "https://thehackernews.com/2026/11/f5-warns-6-critical-big-ip-flaws-can.html",
+      "date": "2026-11-18T18:15:39.000Z",
+      "summary": "Six critical vulnerabilities in F5 BIG-IP allow an attacker to crash the Traffic Management Microkernel (TMM) without logging in, disrupting traffic until the TMM restarts. Each flaw needs a specific setup on a virtual server: an iRule t…",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "high",
+      "image": "assets/veille/top-6.png"
+    },
+    {
+      "source": "The Hacker News",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Critical Apache Roller RCE Flaw Under Active Exploitation, No Authentication Required",
+      "link": "https://thehackernews.com/2026/11/critical-apache-roller-rce-flaw-under.html",
+      "date": "2026-11-18T17:10:45.000Z",
+      "summary": "A critical security flaw in Apache Roller, an open-source, Java-based blogging platform, has come under active exploitation in the wild, according to the Apache Software Foundation (ASF) The vulnerability, tracked as CVE-2026-129448 (CVS…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Nginx",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [
+        "homelab"
+      ],
+      "severity": "high",
+      "image": "assets/veille/top-7.jpg"
+    },
+    {
+      "source": "BleepingComputer",
+      "sourceType": "press",
+      "kind": "article",
+      "title": "Microsoft’s Agent Framework PyPI package compromised to steal credentials",
+      "link": "https://www.bleepingcomputer.com/news/security/microsofts-agent-framework-pypi-package-compromised-to-steal-credentials/",
+      "date": "2026-11-18T16:58:42.000Z",
+      "summary": "Hackers compromised Microsoft's official Agent Framework Python package on PyPI, publishing two malicious versions designed to steal cloud credentials and other sensitive information from developers' systems. [...]",
+      "pillar": "dev",
+      "pillarLabel": {
+        "fr": "Dev & Automatisation",
+        "en": "Dev & Automation",
+        "es": "Desarrollo y Automatización"
+      },
+      "tags": [
+        "Python"
+      ],
+      "projects": [],
+      "severity": "info",
+      "image": null
+    },
     {
       "source": "BleepingComputer",
       "sourceType": "press",
@@ -231,7 +383,7 @@
         "homelab"
       ],
       "severity": "high",
-      "image": "assets/veille/top-6.jpg"
+      "image": "assets/veille/top-8.jpg"
     },
     {
       "source": "BleepingComputer",
@@ -274,7 +426,7 @@
       ],
       "projects": [],
       "severity": "high",
-      "image": "assets/veille/top-7.jpg"
+      "image": null
     },
     {
       "source": "The Hacker News",
@@ -367,6 +519,31 @@
         "CVE"
       ],
       "projects": [],
+      "severity": "high",
+      "image": null
+    },
+    {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "alerte",
+      "title": "Multiples vulnérabilités dans F5 NGINX (18 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/alerte/CERTFR-2026-ALE-017/",
+      "date": "2026-11-18T00:00:00.000Z",
+      "summary": "Le 18 novembre 2026, F5 a publié deux avis de sécurité concernant les vulnérabilités CVE-2026-123633 et CVE-2026-123007. Celles-ci affectent NGINX Open Source et NGINX Plus permettent à un attaquant non authentifié d'exécuter du code à d…",
+      "pillar": "infra",
+      "pillarLabel": {
+        "fr": "Infrastructure & Cloud",
+        "en": "Infrastructure & Cloud",
+        "es": "Infraestructura y Cloud"
+      },
+      "tags": [
+        "Nginx",
+        "Exploit",
+        "CVE"
+      ],
+      "projects": [
+        "homelab"
+      ],
       "severity": "high",
       "image": null
     },
@@ -603,6 +780,27 @@
       "image": null
     },
     {
+      "source": "CERT-FR",
+      "sourceType": "official",
+      "kind": "avis",
+      "title": "Multiples vulnérabilités dans les produits F5 (18 novembre 2026)",
+      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1567/",
+      "date": "2026-11-18T00:00:00.000Z",
+      "summary": "De multiples vulnérabilités ont été découvertes dans les produits F5. Elles permettent à un attaquant de provoquer une exécution de code arbitraire à distance, un déni de service à distance et un contournement de la politique de sécurité.",
+      "pillar": "security",
+      "pillarLabel": {
+        "fr": "Sécurité défensive",
+        "en": "Defensive security",
+        "es": "Seguridad defensiva"
+      },
+      "tags": [
+        "CVE"
+      ],
+      "projects": [],
+      "severity": "medium",
+      "image": null
+    },
+    {
       "source": "BleepingComputer",
       "sourceType": "press",
       "kind": "article",
@@ -746,30 +944,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Flipper Devices launches $399 ‘Flipper One’ Linux-based multi-tool",
-      "link": "https://www.bleepingcomputer.com/news/hardware/flipper-devices-launches-399-flipper-one-linux-based-multi-tool/",
-      "date": "2026-11-17T16:00:00.000Z",
-      "summary": "Flipper Devices, the company behind the popular Flipper Zero pentesting device, has launched a crowdfunding campaign for Flipper One, a portable Linux computer and networking multi-tool. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Debian/Linux",
-        "Réseau"
-      ],
-      "projects": [
-        "homelab"
-      ],
-      "severity": "info",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -812,28 +986,6 @@
       "projects": [
         "massy-innove"
       ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Inside Modern Phishing Kits Built to Steal Microsoft 365 Sessions",
-      "link": "https://www.bleepingcomputer.com/news/security/inside-modern-phishing-kits-built-to-steal-microsoft-365-sessions/",
-      "date": "2026-11-17T15:01:11.000Z",
-      "summary": "Huntress researchers break down how EvilTokens, Knight Office, and Kali365 capture and replay M365 tokens, plus how defenders can detect and contain them. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing",
-        "Microsoft 365"
-      ],
-      "projects": [],
       "severity": "info",
       "image": null
     },
@@ -899,27 +1051,6 @@
       "image": null
     },
     {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Microsoft testing Remote Lock for lost or stolen Windows devices",
-      "link": "https://www.bleepingcomputer.com/news/microsoft/microsoft-testing-remote-lock-for-lost-or-stolen-windows-devices/",
-      "date": "2026-11-17T11:19:51.000Z",
-      "summary": "Microsoft is testing a new feature that lets enterprise IT administrators remotely lock stolen or lost Windows devices without wiping them. [...]",
-      "pillar": "sysadmin",
-      "pillarLabel": {
-        "fr": "Administration systèmes",
-        "en": "Systems administration",
-        "es": "Administración de sistemas"
-      },
-      "tags": [
-        "Windows Server"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
       "source": "The Hacker News",
       "sourceType": "press",
       "kind": "article",
@@ -939,27 +1070,6 @@
       "projects": [
         "massy-innove"
       ],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "BleepingComputer",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Court clears brothers of $25 million Ethereum crypto heist charges",
-      "link": "https://www.bleepingcomputer.com/news/security/court-clears-brothers-of-25-million-ethereum-crypto-heist-charges/",
-      "date": "2026-11-17T09:44:22.000Z",
-      "summary": "US District Judge Jessica Clarke has acquitted two brothers accused of stealing $25 million in cryptocurrency in about 12 seconds through a scheme that exploited a bug in the Ethereum blockchain. [...]",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit"
-      ],
-      "projects": [],
       "severity": "info",
       "image": null
     },
@@ -1794,28 +1904,6 @@
       "source": "CERT-FR",
       "sourceType": "official",
       "kind": "avis",
-      "title": "Multiples vulnérabilités dans VMware Tanzu Greenplum (13 novembre 2026)",
-      "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1527/",
-      "date": "2026-11-13T00:00:00.000Z",
-      "summary": "De multiples vulnérabilités ont été découvertes dans VMware Tanzu Greenplum. Elles permettent à un attaquant de provoquer un problème de sécurité non spécifié par l'éditeur.",
-      "pillar": "infra",
-      "pillarLabel": {
-        "fr": "Infrastructure & Cloud",
-        "en": "Infrastructure & Cloud",
-        "es": "Infraestructura y Cloud"
-      },
-      "tags": [
-        "VMware",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "medium",
-      "image": null
-    },
-    {
-      "source": "CERT-FR",
-      "sourceType": "official",
-      "kind": "avis",
       "title": "Multiples vulnérabilités dans les produits Citrix (13 novembre 2026)",
       "link": "https://www.cert.cyber.gouv.fr/avis/CERTFR-2026-AVI-1528/",
       "date": "2026-11-13T00:00:00.000Z",
@@ -2277,70 +2365,6 @@
       ],
       "projects": [],
       "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Calendar Invites and Live Proxies: Inside a Google Session Hijacking Campaign",
-      "link": "https://thehackernews.com/2026/11/calendar-invites-and-live-proxies.html",
-      "date": "2026-11-12T11:51:31.000Z",
-      "summary": "Since mid-August 2026, a phishing operation has been stealing live Google sessions from corporate users. Every check defenders normally lean on to judge a link came back clean, and the operator designed it that way on purpose. The Threat…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Phishing"
-      ],
-      "projects": [],
-      "severity": "info",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "PTC Patches Critical Windchill and FlexPLM Flaw That Could Enable Remote Code Execution",
-      "link": "https://thehackernews.com/2026/11/ptc-patches-critical-windchill-and.html",
-      "date": "2026-11-12T11:33:15.000Z",
-      "summary": "PTC has released patches for a new critical vulnerability impacting Windchill and FlexPLM software that, if successfully exploited, could result in remote code execution. The security flaw, tracked as CVE-2026-126325, carries a CVSS v4 s…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "Exploit",
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
-      "image": null
-    },
-    {
-      "source": "The Hacker News",
-      "sourceType": "press",
-      "kind": "article",
-      "title": "Critical Pre-Auth MongoDB Flaw (CVE-2026-118383) Can Crash Lagging Servers on Failover",
-      "link": "https://thehackernews.com/2026/11/critical-pre-auth-mongodb-flaw-cve-2026.html",
-      "date": "2026-11-12T09:25:00.000Z",
-      "summary": "A critical flaw in MongoDB Server allows an unauthenticated attacker to send two requests that trigger a crash on the database server. The crash occurs only if that server is later chosen to take over as the main server while it still la…",
-      "pillar": "security",
-      "pillarLabel": {
-        "fr": "Sécurité défensive",
-        "en": "Defensive security",
-        "es": "Seguridad defensiva"
-      },
-      "tags": [
-        "CVE"
-      ],
-      "projects": [],
-      "severity": "high",
       "image": null
     },
     {
